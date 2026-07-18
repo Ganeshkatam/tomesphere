@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { Toolbar } from './toolbar/Toolbar';
 import { Viewer } from './viewer/Viewer';
 import { EpubJsRenderer } from '@/modules/reading/reader/services/parser/epub/EpubJsRenderer';
@@ -22,6 +22,7 @@ interface ReaderShellProps {
 export function ReaderShell({ bookId, fileUrl, fileType, userId }: ReaderShellProps) {
     const viewerRef = useRef<HTMLDivElement>(null);
     const serviceRef = useRef<ReaderService | null>(null);
+    const [service, setService] = useState<ReaderService | null>(null);
 
     useEffect(() => {
         if (!userId || !viewerRef.current) return;
@@ -30,13 +31,16 @@ export function ReaderShell({ bookId, fileUrl, fileType, userId }: ReaderShellPr
 
         async function init() {
             try {
-                const service = new ReaderService(userId, bookId);
-                serviceRef.current = service;
+                const newService = new ReaderService(userId, bookId);
+                serviceRef.current = newService;
                 
                 const renderer = new EpubJsRenderer();
 
                 if (mounted && viewerRef.current) {
-                    await service.initialize(renderer, fileUrl, viewerRef.current);
+                    await newService.initialize(renderer, fileUrl, viewerRef.current);
+                    if (mounted) {
+                        setService(newService);
+                    }
                 }
             } catch (err) {
                 console.error('Failed to initialize Reader:', err);
@@ -50,6 +54,7 @@ export function ReaderShell({ bookId, fileUrl, fileType, userId }: ReaderShellPr
             if (serviceRef.current) {
                 serviceRef.current.destroy();
                 serviceRef.current = null;
+                setService(null);
             }
         };
     }, [bookId, fileUrl, userId]);
@@ -102,7 +107,7 @@ export function ReaderShell({ bookId, fileUrl, fileType, userId }: ReaderShellPr
 
     return (
         <div className="flex flex-col h-screen w-full bg-slate-950 overflow-hidden">
-            <Toolbar service={serviceRef.current} />
+            <Toolbar service={service} />
             <div className="flex flex-1 overflow-hidden relative">
                 <main className="flex-1 relative">
                     <Viewer ref={viewerRef} />
@@ -119,7 +124,7 @@ export function ReaderShell({ bookId, fileUrl, fileType, userId }: ReaderShellPr
                         onCancel={handleCancelNote}
                     />
                 </main>
-                <AnnotationSidebar service={serviceRef.current} />
+                <AnnotationSidebar service={service} />
             </div>
         </div>
     );
