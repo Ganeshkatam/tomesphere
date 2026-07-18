@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { LocationAnchor, SelectionAnchor, AnnotationTarget, ReaderNote } from '@/modules/shared/core/events/types';
+import { LocationAnchor, SelectionAnchor, AnnotationTarget, ReaderNote, ReaderBookmark } from '@/modules/shared/core/events/types';
 
 // 🚨 STRICT ARCHITECTURAL RULE:
 // This store ONLY holds presentation and session state.
@@ -37,6 +37,11 @@ interface ReaderSessionState {
 
     // Loaded notes for the current book
     notes: ReaderNote[];
+    bookmarks: ReaderBookmark[];
+
+    // Sidebar state
+    sidebarOpen: boolean;
+    sidebarTab: 'annotations' | 'bookmarks';
     
     // Actions
     setBook: (id: string) => void;
@@ -48,6 +53,9 @@ interface ReaderSessionState {
     setClickedHighlightId: (id: string | null) => void;
     setActiveNote: (note: ActiveNoteEditor | null) => void;
     setNotes: (notes: ReaderNote[]) => void;
+    setBookmarks: (bookmarks: ReaderBookmark[]) => void;
+    setSidebarOpen: (open: boolean) => void;
+    setSidebarTab: (tab: 'annotations' | 'bookmarks') => void;
 }
 
 export const useReaderStore = create<ReaderSessionState>((set) => ({
@@ -61,6 +69,9 @@ export const useReaderStore = create<ReaderSessionState>((set) => ({
     clickedHighlightId: null,
     activeNote: null,
     notes: [],
+    bookmarks: [],
+    sidebarOpen: false,
+    sidebarTab: 'annotations',
 
     setBook: (id) => set({ currentBookId: id }),
     setAnchor: (anchor) => set({ currentAnchor: anchor }),
@@ -70,5 +81,8 @@ export const useReaderStore = create<ReaderSessionState>((set) => ({
     setActiveSelection: (selection) => set({ activeSelection: selection }),
     setClickedHighlightId: (id) => set({ clickedHighlightId: id }),
     setActiveNote: (note) => set({ activeNote: note }),
-    setNotes: (notes) => set({ notes })
+    setNotes: (notes) => set({ notes }),
+    setBookmarks: (bookmarks) => set({ bookmarks }),
+    setSidebarOpen: (open) => set({ sidebarOpen: open }),
+    setSidebarTab: (tab) => set({ sidebarTab: tab })
 }));

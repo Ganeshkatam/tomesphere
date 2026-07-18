@@ -46,6 +46,29 @@ export interface ReaderNote {
     updatedAt: string;
 }
 
+// Domain Object for Bookmarks
+export interface ReaderBookmark {
+    id: string;
+    userId: string;
+    bookId: string;
+    anchor: LocationAnchor;
+    label?: string;
+    createdAt: string;
+}
+
+// UI Projection: Annotation (Highlight + Note)
+export interface ReaderAnnotation {
+    highlight: ReaderHighlight;
+    note?: ReaderNote;
+}
+
+// UI Projection: Bookmark View (Bookmark + Context)
+export interface ReaderBookmarkView {
+    bookmark: ReaderBookmark;
+    isCurrent: boolean;
+    preview?: string;
+}
+
 // 1. Define standard event names as a strict union to prevent typos
 export type PlatformEventName = 
     | 'reader:progress_updated'
@@ -54,6 +77,7 @@ export type PlatformEventName =
     | 'reader:note_created'
     | 'reader:page_completed'
     | 'reader:session_ended'
+    | 'reader:bookmark_created'
     | 'auth:user_logged_in'
     | 'library:book_added'
     | 'profile:identity_updated'
@@ -73,6 +97,7 @@ export interface EventPayloads {
     'reader:position_updated': { userId: string; bookId: string; locationAnchor: LocationAnchor; occurredAt: string };
     'reader:highlight_created': { userId: string; bookId: string; highlightId: string; selectionAnchor: SelectionAnchor; selectedText: string; color: string };
     'reader:note_created': { userId: string; bookId: string; noteId: string; target: AnnotationTarget };
+    'reader:bookmark_created': { userId: string; bookId: string; bookmarkId: string; anchor: LocationAnchor };
     'reader:page_completed': { userId: string; bookId: string; pageNumber: number; timestamp: number };
     'reader:session_ended': { userId: string; bookId: string; durationSeconds: number };
     'auth:user_logged_in': { userId: string; timestamp: number };

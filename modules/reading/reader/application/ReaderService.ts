@@ -1,5 +1,5 @@
 import { ReaderRenderer } from '../contracts/ReaderRenderer';
-import { LocationAnchor, SelectionAnchor, ReaderHighlight, ReaderNote, AnnotationTarget } from '@/modules/shared/core/events/types';
+import { LocationAnchor, SelectionAnchor, ReaderHighlight, ReaderNote, AnnotationTarget, ReaderBookmark, ReaderAnnotation, ReaderBookmarkView } from '@/modules/shared/core/events/types';
 import { executeUpdateReaderPosition } from './commands/UpdateReaderPositionCommand';
 import { executeCompleteReadingSession } from './commands/CompleteReadingSessionCommand';
 import { executeCreateHighlight } from './commands/CreateHighlightCommand';
@@ -9,6 +9,9 @@ import { executeUpdateNote } from './commands/UpdateNoteCommand';
 import { executeDeleteNote } from './commands/DeleteNoteCommand';
 import { executeGetHighlights } from './queries/GetHighlightsQuery';
 import { executeGetNotes } from './queries/GetNotesQuery';
+import { executeCreateBookmark } from './commands/CreateBookmarkCommand';
+import { executeDeleteBookmark } from './commands/DeleteBookmarkCommand';
+import { executeGetBookmarks } from './queries/GetBookmarksQuery';
 import { useReaderStore } from '../state/reader-store';
 
 export class ReaderService {
@@ -27,6 +30,7 @@ export class ReaderService {
     // In-memory highlight list for hasNote computation and target promotion
     private highlights: ReaderHighlight[] = [];
     private notes: ReaderNote[] = [];
+    private bookmarks: ReaderBookmark[] = [];
 
     constructor(userId: string, bookId: string) {
         this.userId = userId;
@@ -63,9 +67,10 @@ export class ReaderService {
         // Open the document
         await this.renderer.open(bookUrl, container);
         
-        // Load annotations in order: highlights first, then notes
+        // Load annotations in order: highlights first, then notes, then bookmarks
         await this.loadHighlights();
         await this.loadNotes();
+        await this.loadBookmarks();
 
         store.setRendererReady(true);
         this.startSession();
@@ -294,11 +299,97 @@ export class ReaderService {
         }
     }
 
+    // ─── Projections (Application Layer) ─────────────────────────────
+
+    public getAnnotations(): ReaderAnnotation[] {
+        return this.highlights.map(highlight => {
+            const note = this.notes.find(
+                n => n.target.type === 'highlight' && n.target.highlightId === highlight.id
+            );
+            return { highlight, note };
+        });
+    }
+
+    public getBookmarkViews(): ReaderBookmarkView[] {
+        const currentAnchor = useReaderStore.getState().currentAnchor;
+        return this.bookmarks.map(bookmark => ({
+            bookmark,
+            isCurrent: currentAnchor?.value === bookmark.anchor.value
+        }));
+    }
+
+    // ─── Bookmarks ───────────────────────────────────────────────────
+
+    private async loadBookmarks(): Promise<void> {
+        try {
+            this.bookmarks = await executeGetBookmarks({ userId: this.userId, bookId: this.bookId });
+            useReaderStore.getState().setBookmarks(this.bookmarks);
+        } catch (error) {
+            console.error('Failed to load bookmarks', error);
+        }
+    }
+
+    public isCurrentLocationBookmarked(): boolean {
+        const currentAnchor = useReaderStore.getState().currentAnchor;
+        if (!currentAnchor) return false;
+        return this.bookmarks.some(b => b.anchor.value === currentAnchor.value);
+    }
+
+    public async toggleBookmark(): Promise<void> {
+        const currentAnchor = useReaderStore.getState().currentAnchor;
+        if (!currentAnchor) return;
+
+        const existing = this.bookmarks.find(b => b.anchor.value === currentAnchor.value);
+
+        if (existing) {
+            await this.deleteBookmark(existing.id);
+        } else {
+            try {
+                const { id } = await executeCreateBookmark({
+                    userId: this.userId,
+                    bookId: this.bookId,
+                    anchor: currentAnchor
+                });
+
+                const newBookmark: ReaderBookmark = {
+                    id,
+                    userId: this.userId,
+                    bookId: this.bookId,
+                    anchor: currentAnchor,
+                    createdAt: new Date().toISOString()
+                };
+
+                this.bookmarks = [newBookmark, ...this.bookmarks];
+                useReaderStore.getState().setBookmarks(this.bookmarks);
+            } catch (error) {
+                console.error('Failed to create bookmark', error);
+            }
+        }
+    }
+
+    public async deleteBookmark(bookmarkId: string): Promise<void> {
+        try {
+            await executeDeleteBookmark({ userId: this.userId, bookmarkId });
+            this.bookmarks = this.bookmarks.filter(b => b.id !== bookmarkId);
+            useReaderStore.getState().setBookmarks(this.bookmarks);
+        } catch (error) {
+            console.error('Failed to delete bookmark', error);
+        }
+    }
+
     // ─── Session ─────────────────────────────────────────────────────
 
     public async resume(anchor: LocationAnchor): Promise<void> {
         if (!this.renderer) return;
         await this.renderer.goTo(anchor);
+    }
+
+    public async goToLocation(anchor: LocationAnchor): Promise<void> {
+        if (!this.renderer) return;
+        await this.renderer.goTo(anchor);
+        
+        // Brief visual pulse logic could go here if renderer supported it.
+        // For now, navigating directly is sufficient.
     }
 
     public startSession(): void {

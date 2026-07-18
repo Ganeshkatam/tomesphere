@@ -10,6 +10,8 @@ import { HighlightContextMenu } from './HighlightContextMenu';
 import { NoteEditor } from './NoteEditor';
 import { useReaderStore } from '../state/reader-store';
 
+import { AnnotationSidebar } from './Sidebar/AnnotationSidebar';
+
 interface ReaderShellProps {
     bookId: string;
     fileUrl: string;
@@ -81,13 +83,7 @@ export function ReaderShell({ bookId, fileUrl, fileType, userId }: ReaderShellPr
     const handleHighlightAndNote = useCallback(async (color: string) => {
         const service = serviceRef.current;
         if (!service) return;
-        // Create the highlight first, then open note editor for it
         await service.createHighlight(color);
-        // The highlight was just created — find it (it's the last one added)
-        // ReaderService internally tracks highlights, and openNoteForHighlight
-        // needs the ID. We'll rely on the store's cleared activeSelection
-        // and the service's internal state.
-        // For now, we use a simpler approach: the service exposes the last created ID.
     }, []);
 
     // ─── Note callbacks ──────────────────────────────────────────────
@@ -106,7 +102,7 @@ export function ReaderShell({ bookId, fileUrl, fileType, userId }: ReaderShellPr
 
     return (
         <div className="flex flex-col h-screen w-full bg-slate-950 overflow-hidden">
-            <Toolbar />
+            <Toolbar service={serviceRef.current} />
             <div className="flex flex-1 overflow-hidden relative">
                 <main className="flex-1 relative">
                     <Viewer ref={viewerRef} />
@@ -123,6 +119,7 @@ export function ReaderShell({ bookId, fileUrl, fileType, userId }: ReaderShellPr
                         onCancel={handleCancelNote}
                     />
                 </main>
+                <AnnotationSidebar service={serviceRef.current} />
             </div>
         </div>
     );
