@@ -1,0 +1,89 @@
+.wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.trigger {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-2);
+  background: var(--surface-default);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-premium-md);
+  min-width: 200px;
+  z-index: var(--z-dropdown);
+  padding: var(--space-2) 0;
+  display: flex;
+  flex-direction: column;
+  animation: dropdownEnter var(--duration-fast) var(--ease-in-out) forwards;
+}
+
+.glassMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-2);
+  background: var(--bg-glass);
+  backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px 0 var(--glass-shadow);
+  min-width: 200px;
+  z-index: var(--z-dropdown);
+  padding: var(--space-2) 0;
+  display: flex;
+  flex-direction: column;
+  animation: dropdownEnter var(--duration-fast) var(--ease-in-out) forwards;
+}
+
+@keyframes dropdownEnter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.item {
+  width: 100%;
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  transition: all var(--duration-fast) var(--ease-in-out);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.item:hover {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+
+.item:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--space-1) 0;
+}

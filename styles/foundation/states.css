@@ -1,0 +1,14 @@
+/* State and Interaction tokens */
+:root {
+  --opacity-hover: 0.08;
+  --opacity-active: 0.16;
+  --opacity-selected: 0.12;
+  --opacity-disabled: 0.5;
+
+  /* Focus rings */
+  --focus-ring-width: 3px;
+  --focus-ring-style: solid;
+  
+  /* Drag and overlays */
+  --drag-overlay-opacity: 0.4;
+}

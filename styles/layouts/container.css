@@ -1,0 +1,23 @@
+/* Max width wrapper containers */
+.container-optimal {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .container-optimal {
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-optimal {
+    padding-left: var(--space-8);
+    padding-right: var(--space-8);
+  }
+}

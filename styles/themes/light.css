@@ -1,0 +1,71 @@
+/* Light theme semantic variables */
+html.light {
+  color-scheme: light;
+  --primary: var(--indigo-600);
+  --primary-light: var(--indigo-500);
+  --primary-dark: var(--indigo-700);
+
+  --secondary: var(--sky-600);
+  --accent: var(--amber-600);
+  --success: var(--emerald-600);
+  --error: var(--red-600);
+
+  /* Semantic surfaces - optimized for premium slate/white light mode */
+  --surface-canvas: var(--slate-50);
+  --surface-default: var(--white);
+  --surface-raised: var(--slate-100);
+  --surface-overlay: var(--slate-200);
+  --surface-floating: var(--white);
+  
+  /* Semantic borders (referencing foundation border opacity tokens) */
+  --border-subtle: var(--border-slate-subtle);
+  --border-default: var(--border-slate-default);
+  --border-strong: var(--border-slate-strong);
+
+  /* Text hierarchy */
+  --text-primary: var(--slate-900);
+  --text-secondary: var(--slate-600);
+  --text-tertiary: var(--slate-500);
+  --text-disabled: var(--slate-400);
+
+  /* Glass specifics & elevation */
+  --bg-glass: rgba(255, 255, 255, 0.7);
+  --bg-glass-hover: rgba(255, 255, 255, 0.85);
+  --glass-border: var(--border-slate-subtle);
+  --glass-border-strong: var(--border-slate-default);
+  
+  /* Unified 3-level Shadow system */
+  --shadow-card: var(--shadow-premium-sm);
+  --shadow-dropdown: var(--shadow-premium-md);
+  --shadow-dialog: var(--shadow-premium-lg);
+
+  --glass-shadow: var(--shadow-card);
+  --glass-shadow-strong: var(--shadow-dropdown);
+
+  /* Gradients */
+  --gradient-primary: var(--gradient-indigo-sky);
+  --gradient-mesh: none;
+
+  /* Colored shadows & focus rings */
+  --shadow-glow: 0 0 20px rgba(79, 70, 229, 0.15);
+  --focus-ring-color: rgba(79, 70, 229, 0.3);
+  
+  /* Page background configuration */
+  --body-bg-gradient: var(--slate-50);
+  --body-overlay-opacity: 0.8;
+  --hero-overlay: linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0%, rgba(241, 245, 249, 0.75) 50%, var(--slate-50) 100%);
+
+  /* Inverted Slate Scale for Light Theme */
+  --theme-slate-50: var(--slate-950);
+  --theme-slate-100: var(--slate-900);
+  --theme-slate-200: var(--slate-800);
+  --theme-slate-300: var(--slate-700);
+  --theme-slate-400: var(--slate-600);
+  --theme-slate-500: var(--slate-500);
+  --theme-slate-600: var(--slate-300);
+  --theme-slate-700: var(--slate-200);
+  --theme-slate-800: var(--slate-100);
+  --theme-slate-900: var(--slate-50);
+  --theme-slate-950: #ffffff;
+  --study-tools-bg: linear-gradient(to bottom right, rgba(224, 231, 255, 0.3) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(243, 232, 255, 0.3) 100%);
+}

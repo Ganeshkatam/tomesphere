@@ -1,0 +1,37 @@
+.card {
+  background: var(--surface-default);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-subtle);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-premium-sm);
+  transition: all var(--duration-base) var(--ease-in-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.glassCard {
+  background: var(--bg-glass);
+  backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 var(--glass-shadow);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  transition: all var(--duration-base) var(--ease-in-out);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover effects */
+.hoverable:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-premium-md);
+  transform: translateY(-4px);
+}
+
+.glassCard.hoverable:hover {
+  background: var(--bg-glass-hover);
+  border-color: var(--border-default);
+  box-shadow: 0 12px 40px 0 var(--glass-shadow-strong);
+  transform: translateY(-4px);
+}

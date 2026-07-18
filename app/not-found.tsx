@@ -11,9 +11,9 @@ export default function NotFound() {
 
                 {/* Text */}
                 <div className="space-y-2">
-                    <h2 className="text-3xl font-bold text-white">Page Not Found</h2>
+                    <h2 className="text-3xl font-bold text-slate-50">Page Not Found</h2>
                     <p className="text-slate-400">
-                        The page you are looking for doesn't exist or has been moved.
+                        The page you are looking for doesn&apos;t exist or has been moved.
                     </p>
                 </div>
 

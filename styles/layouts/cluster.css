@@ -1,0 +1,23 @@
+/* Horizontal row wrapping group layout primitive */
+.layout-cluster {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.layout-cluster-xs {
+  gap: var(--space-1);
+}
+
+.layout-cluster-sm {
+  gap: var(--space-2);
+}
+
+.layout-cluster-md {
+  gap: var(--space-4);
+}
+
+.layout-cluster-lg {
+  gap: var(--space-6);
+}

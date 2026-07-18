@@ -1,7 +1,7 @@
 {
     "name": "TomeSphere - Your Digital Library",
     "short_name": "TomeSphere",
-    "description": "Advanced digital library platform with AI-powered reading, student verification, study groups, and comprehensive book management. Features include real-time analytics, admin dashboard, voice-enabled search, and offline reading capabilities.",
+    "description": "Advanced digital library platform with AI-powered reading, student verification, study groups, and comprehensive book management. Features include real-time analytics, voice-enabled search, and offline reading capabilities.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#0f172a",
@@ -78,18 +78,6 @@
                     "sizes": "192x192"
                 }
             ]
-        },
-        {
-            "name": "Admin Panel",
-            "short_name": "Admin",
-            "description": "Access admin dashboard",
-            "url": "/admin",
-            "icons": [
-                {
-                    "src": "/icon-192.png",
-                    "sizes": "192x192"
-                }
-            ]
         }
     ],
     "share_target": {
@@ -122,7 +110,6 @@
         "Textbook Exchange",
         "Student Verification",
         "Real-time Analytics",
-        "Admin Dashboard",
         "Book Reviews",
         "Reading Progress Tracking",
         "Achievements & Gamification",

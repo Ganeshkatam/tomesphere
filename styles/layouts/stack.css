@@ -1,0 +1,31 @@
+/* Vertical stacking primitive */
+.layout-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Enforce no vertical margin on stack children */
+.layout-stack > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.layout-stack-xs {
+  gap: var(--space-1); /* 4px */
+}
+
+.layout-stack-sm {
+  gap: var(--space-2); /* 8px */
+}
+
+.layout-stack-md {
+  gap: var(--space-4); /* 16px */
+}
+
+.layout-stack-lg {
+  gap: var(--space-6); /* 24px */
+}
+
+.layout-stack-xl {
+  gap: var(--space-10); /* 40px */
+}

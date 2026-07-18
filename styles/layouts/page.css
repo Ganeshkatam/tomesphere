@@ -1,0 +1,38 @@
+/* Page spacing and vertical structural sections */
+.page-spacing {
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-12);
+}
+
+@media (min-width: 640px) {
+  .page-spacing {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-16);
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-spacing {
+    padding-top: var(--space-20);
+    padding-bottom: var(--space-20);
+  }
+}
+
+.page-spacing-sm {
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-8);
+}
+
+@media (min-width: 640px) {
+  .page-spacing-sm {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-spacing-sm {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-16);
+  }
+}

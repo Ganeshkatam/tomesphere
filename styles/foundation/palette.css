@@ -1,0 +1,92 @@
+/* raw color palette tokens */
+:root {
+  /* Indigo Scale */
+  --indigo-50: #f5f3ff;
+  --indigo-100: #ede9fe;
+  --indigo-200: #ddd6fe;
+  --indigo-300: #c084fc;
+  --indigo-400: #818cf8;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+  --indigo-800: #3730a3;
+  --indigo-900: #312e81;
+  --indigo-950: #1e1b4b;
+
+  /* Slate Scale */
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --slate-950: #020617;
+
+  /* Sky Scale (Secondary) */
+  --sky-50: #f0f9ff;
+  --sky-100: #e0f2fe;
+  --sky-200: #bae6fd;
+  --sky-300: #7dd3fc;
+  --sky-400: #38bdf8;
+  --sky-500: #0ea5e9;
+  --sky-600: #0284c7;
+  --sky-700: #0369a1;
+
+  /* Amber Scale (Accent) */
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+
+  /* Emerald Scale (Success) */
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+
+  /* Red Scale (Error) */
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+
+  /* Gradients */
+  --gradient-mesh-indigo: rgba(99, 102, 241, 0.15);
+  --gradient-mesh-purple: rgba(168, 85, 247, 0.15);
+  --gradient-mesh-sky: rgba(14, 165, 233, 0.15);
+
+  --gradient-mesh-indigo-light: rgba(79, 70, 229, 0.08);
+  --gradient-mesh-purple-light: rgba(124, 58, 237, 0.08);
+  --gradient-mesh-sky-light: rgba(6, 182, 212, 0.08);
+
+  /* White token */
+  --white: #ffffff;
+
+  /* Reusable Gradients */
+  --gradient-indigo-purple: linear-gradient(135deg, var(--indigo-500) 0%, #a855f7 100%);
+  --gradient-indigo-sky: linear-gradient(135deg, var(--indigo-600) 0%, var(--sky-500) 100%);
+  --gradient-light-bg: linear-gradient(to bottom right, var(--slate-50), var(--indigo-50));
+  --gradient-dark-bg: linear-gradient(to bottom right, #0f172a, #1e293b);
+
+  /* Border Opacity Foundations (Light Theme) */
+  --border-slate-subtle: rgba(15, 23, 42, 0.05);
+  --border-slate-default: rgba(15, 23, 42, 0.08);
+  --border-slate-strong: rgba(15, 23, 42, 0.15);
+
+  /* Border Opacity Foundations (Dark Theme) */
+  --border-white-subtle: rgba(255, 255, 255, 0.08);
+  --border-white-default: rgba(255, 255, 255, 0.12);
+  --border-white-strong: rgba(255, 255, 255, 0.2);
+
+  /* Theme-aware slate defaults (resolves to standard slate scale) */
+  --theme-slate-50: var(--slate-50);
+  --theme-slate-100: var(--slate-100);
+  --theme-slate-200: var(--slate-200);
+  --theme-slate-300: var(--slate-300);
+  --theme-slate-400: var(--slate-400);
+  --theme-slate-500: var(--slate-500);
+  --theme-slate-600: var(--slate-600);
+  --theme-slate-700: var(--slate-700);
+  --theme-slate-800: var(--slate-800);
+  --theme-slate-900: var(--slate-900);
+  --theme-slate-950: var(--slate-950);
+}
+

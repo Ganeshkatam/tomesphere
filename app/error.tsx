@@ -23,7 +23,7 @@ export default function Error({
 
                 {/* Text */}
                 <div className="space-y-2">
-                    <h2 className="text-3xl font-bold text-white">Something went wrong</h2>
+                    <h2 className="text-3xl font-bold text-slate-50">Something went wrong</h2>
                     <p className="text-slate-400">
                         We encountered an unexpected error. Our team has been notified.
                     </p>
@@ -35,7 +35,7 @@ export default function Error({
                 {/* Action */}
                 <button
                     onClick={reset}
-                    className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-white text-slate-900 font-medium hover:bg-slate-200 transition-all"
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium transition-all shadow-lg shadow-indigo-500/25"
                 >
                     Try again
                 </button>

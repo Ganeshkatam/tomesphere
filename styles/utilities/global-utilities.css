@@ -1,0 +1,227 @@
+/* Global design system utility classes and backward compatibility overrides */
+  .theme-changing * {
+    transition: none !important;
+  }
+  
+  /* Visually hidden but accessible to screen readers */
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  /* No Scrollbar utility */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Text Gradients */
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Focus ring helper */
+  .focus-ring:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: 2px;
+  }
+
+  /* Glassmorphism primitives */
+  .glass {
+    background: var(--bg-glass);
+    backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      0 8px 32px 0 var(--glass-shadow),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .glass-strong {
+    background: var(--bg-glass);
+    backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate-strong));
+    -webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate-strong));
+    border: 1px solid var(--glass-border-strong);
+    box-shadow:
+      0 8px 32px 0 var(--glass-shadow-strong),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-nav {
+    background: var(--bg-glass);
+    backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: 0 4px 20px 0 var(--glass-shadow);
+  }
+
+  /* Global Loading Spinner */
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-default);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Toast notification animations */
+  .animate-enter {
+    animation: toast-enter 0.35s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+  }
+
+  .animate-leave {
+    animation: toast-leave 0.4s cubic-bezier(0.06, 0.71, 0.55, 1) forwards;
+  }
+
+  @keyframes toast-enter {
+    0% {
+      opacity: 0;
+      transform: translateX(100%) scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @keyframes toast-leave {
+    0% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(100%) scale(0.9);
+    }
+  }
+
+  /* ======================================================== */
+  /* BACKWARD COMPATIBILITY CLASSES (For legacy HTML templates) */
+  /* ======================================================== */
+
+  /* Global legacy .card class */
+  .card {
+    background: var(--surface-default);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-subtle);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-premium-sm);
+    transition: all var(--duration-base) var(--ease-in-out);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    border-color: var(--border-default);
+    box-shadow: var(--shadow-premium-md);
+    transform: translateY(-4px);
+  }
+
+  /* Global legacy .glass-card class */
+  .glass-card {
+    background: var(--bg-glass);
+    backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 var(--glass-shadow);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    transition: all var(--duration-base) var(--ease-in-out);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-card:hover {
+    background: var(--bg-glass-hover);
+    border-color: var(--border-default);
+    box-shadow: 0 12px 40px 0 var(--glass-shadow-strong);
+    transform: translateY(-4px);
+  }
+
+  /* Global legacy .btn buttons styling */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    line-height: var(--lh-tight);
+    border-radius: var(--radius-lg);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all var(--duration-base) var(--ease-in-out);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .btn-primary {
+    background: var(--gradient-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+  }
+
+  .btn-secondary {
+    background: var(--surface-raised);
+    color: var(--text-primary);
+    border-color: var(--border-default);
+  }
+
+  .btn-secondary:hover {
+    background: var(--surface-overlay);
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: var(--bg-glass);
+    color: var(--text-primary);
+    border-color: var(--border-subtle);
+    backdrop-filter: blur(var(--glass-blur-sm));
+  }
+
+  .btn-ghost:hover {
+    background: var(--bg-glass-hover);
+    border-color: var(--border-default);
+    transform: translateY(-1px);
+  }
+
+  .btn-accent {
+    background: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+  }
+
+  .btn-accent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+  }

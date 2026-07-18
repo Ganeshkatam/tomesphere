@@ -1,0 +1,31 @@
+# Design Tokens Documentation
+
+Design tokens are the visual atoms of the design system. They are raw values stored in variables that establish visual consistency.
+
+## Palette
+- We use a primary indigo scale and a slate base scale for backgrounds.
+- Raw values reside inside `styles/foundation/palette.css`. Components must never reference raw palette values directly.
+
+## Spacing Scale
+Spacing tokens reside in `styles/foundation/spacing.css`.
+- `--space-1`: `0.25rem` (4px)
+- `--space-2`: `0.5rem` (8px)
+- `--space-3`: `0.75rem` (12px)
+- `--space-4`: `1rem` (16px)
+- `--space-5`: `1.25rem` (20px)
+- `--space-6`: `1.5rem` (24px)
+- `--space-8`: `2rem` (32px)
+- `--space-10`: `2.5rem` (40px)
+- `--space-12`: `3rem` (48px)
+- `--space-16`: `4rem` (64px)
+- `--space-20`: `5rem` (80px)
+
+## Radius Scale
+Radius tokens reside in `styles/foundation/radius.css`.
+- `--radius-sm`: `0.375rem` (6px)
+- `--radius-md`: `0.5rem` (8px)
+- `--radius-lg`: `0.75rem` (12px)
+- `--radius-xl`: `1rem` (16px)
+- `--radius-2xl`: `1.5rem` (24px)
+- `--radius-3xl`: `2rem` (32px)
+- `--radius-full`: `9999px`

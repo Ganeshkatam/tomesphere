@@ -1,0 +1,10 @@
+/* Surface and glassmorphism structure tokens */
+:root {
+  --glass-blur-sm: 8px;
+  --glass-blur-md: 12px;
+  --glass-blur-lg: 20px;
+  --glass-blur-xl: 40px;
+
+  --glass-saturate: 180%;
+  --glass-saturate-strong: 200%;
+}

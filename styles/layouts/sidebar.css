@@ -1,0 +1,17 @@
+/* Split layout dual-panel sidebar primitive */
+.layout-sidebar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+}
+
+.layout-sidebar-main {
+  flex-grow: 999;
+  flex-basis: 0;
+  min-width: 50%;
+}
+
+.layout-sidebar-side {
+  flex-grow: 1;
+  flex-basis: 280px;
+}

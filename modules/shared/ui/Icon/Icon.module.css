@@ -1,0 +1,43 @@
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+  flex-shrink: 0;
+  transition: transform var(--duration-base) var(--ease-in-out), color var(--duration-base) var(--ease-in-out);
+}
+
+/* Sizing */
+.sm {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+.md {
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.lg {
+  width: var(--space-6);
+  height: var(--space-6);
+}
+
+.xl {
+  width: var(--space-8);
+  height: var(--space-8);
+}
+
+/* Behaviors */
+.bounce:hover {
+  animation: bounceSmall 0.6s var(--ease-in-out);
+}
+
+@keyframes bounceSmall {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}

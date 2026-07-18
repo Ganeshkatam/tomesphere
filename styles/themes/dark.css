@@ -1,0 +1,62 @@
+/* Dark theme semantic variables */
+:root,
+html.dark {
+  color-scheme: dark;
+  --primary: var(--indigo-500);
+  --primary-light: var(--indigo-400);
+  --primary-dark: var(--indigo-700);
+
+  --secondary: var(--sky-500);
+  --accent: var(--amber-500);
+  --success: var(--emerald-500);
+  --error: var(--red-500);
+
+  /* Semantic surfaces */
+  --surface-canvas: var(--slate-950);
+  --surface-default: var(--slate-900);
+  --surface-raised: var(--slate-800);
+  --surface-overlay: var(--slate-700);
+  --surface-floating: var(--slate-600);
+  
+  /* Semantic borders (referencing foundation white opacity tokens) */
+  --border-subtle: var(--border-white-subtle);
+  --border-default: var(--border-white-default);
+  --border-strong: var(--border-white-strong);
+
+  /* Text hierarchy */
+  --text-primary: var(--slate-50);
+  --text-secondary: var(--slate-300);
+  --text-tertiary: var(--slate-400);
+  --text-disabled: var(--slate-500);
+
+  /* Glass specifics & elevation */
+  --bg-glass: rgba(15, 23, 42, 0.6);
+  --bg-glass-hover: rgba(30, 41, 59, 0.7);
+  --glass-border: var(--border-white-subtle);
+  --glass-border-strong: var(--border-white-default);
+  
+  /* Unified 3-level Shadow system */
+  --shadow-card: var(--shadow-premium-sm);
+  --shadow-dropdown: var(--shadow-premium-md);
+  --shadow-dialog: var(--shadow-premium-lg);
+
+  --glass-shadow: var(--shadow-card);
+  --glass-shadow-strong: var(--shadow-dropdown);
+
+  /* Gradients */
+  --gradient-primary: var(--gradient-indigo-purple);
+  --gradient-mesh:
+    radial-gradient(at 0% 0%, var(--gradient-mesh-indigo) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, var(--gradient-mesh-purple) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, var(--gradient-mesh-sky) 0px, transparent 50%);
+
+  /* Colored shadows & focus rings */
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+  --focus-ring-color: rgba(99, 102, 241, 0.4);
+  
+  /* Page background configuration */
+  --body-bg-gradient: var(--gradient-dark-bg);
+  --body-overlay-opacity: 0.3;
+  --hero-overlay: linear-gradient(to bottom, rgba(2, 6, 23, 0.85) 0%, rgba(15, 23, 42, 0.6) 50%, rgba(15, 23, 42, 1) 100%);
+  --study-tools-bg: linear-gradient(to bottom right, rgba(30, 27, 75, 0.4) 0%, rgba(15, 23, 42, 0.6) 50%, rgba(88, 28, 135, 0.4) 100%);
+}
