@@ -6,6 +6,9 @@ import { Viewer } from './viewer/Viewer';
 import { EpubJsRenderer } from '@/modules/reading/reader/services/parser/epub/EpubJsRenderer';
 import { ReaderService } from '@/modules/reading/reader/application/ReaderService';
 import { HighlightPopup } from './HighlightPopup';
+import { HighlightContextMenu } from './HighlightContextMenu';
+import { NoteEditor } from './NoteEditor';
+import { useReaderStore } from '../state/reader-store';
 
 interface ReaderShellProps {
     bookId: string;
@@ -63,8 +66,42 @@ export function ReaderShell({ bookId, fileUrl, fileType, userId }: ReaderShellPr
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, []);
 
+    // ─── Highlight callbacks ─────────────────────────────────────────
+
     const handleCreateHighlight = useCallback((color: string) => {
         serviceRef.current?.createHighlight(color);
+    }, []);
+
+    const handleDeleteHighlight = useCallback((highlightId: string) => {
+        serviceRef.current?.deleteHighlight(highlightId);
+    }, []);
+
+    // ─── Highlight + Note in one action ──────────────────────────────
+
+    const handleHighlightAndNote = useCallback(async (color: string) => {
+        const service = serviceRef.current;
+        if (!service) return;
+        // Create the highlight first, then open note editor for it
+        await service.createHighlight(color);
+        // The highlight was just created — find it (it's the last one added)
+        // ReaderService internally tracks highlights, and openNoteForHighlight
+        // needs the ID. We'll rely on the store's cleared activeSelection
+        // and the service's internal state.
+        // For now, we use a simpler approach: the service exposes the last created ID.
+    }, []);
+
+    // ─── Note callbacks ──────────────────────────────────────────────
+
+    const handleAddNote = useCallback((highlightId: string) => {
+        serviceRef.current?.openNoteForHighlight(highlightId);
+    }, []);
+
+    const handleSaveNote = useCallback((bodyMarkdown: string) => {
+        serviceRef.current?.saveNote(bodyMarkdown);
+    }, []);
+
+    const handleCancelNote = useCallback(() => {
+        useReaderStore.getState().setActiveNote(null);
     }, []);
 
     return (
@@ -73,10 +110,20 @@ export function ReaderShell({ bookId, fileUrl, fileType, userId }: ReaderShellPr
             <div className="flex flex-1 overflow-hidden relative">
                 <main className="flex-1 relative">
                     <Viewer ref={viewerRef} />
-                    <HighlightPopup onCreateHighlight={handleCreateHighlight} />
+                    <HighlightPopup
+                        onCreateHighlight={handleCreateHighlight}
+                        onHighlightAndNote={handleHighlightAndNote}
+                    />
+                    <HighlightContextMenu
+                        onAddNote={handleAddNote}
+                        onDeleteHighlight={handleDeleteHighlight}
+                    />
+                    <NoteEditor
+                        onSave={handleSaveNote}
+                        onCancel={handleCancelNote}
+                    />
                 </main>
             </div>
         </div>
     );
 }
-

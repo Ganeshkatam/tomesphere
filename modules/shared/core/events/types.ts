@@ -27,6 +27,23 @@ export interface ReaderHighlight {
     selectionAnchor: SelectionAnchor;
     selectedText: string;
     color: string;
+    hasNote: boolean; // Derived at load time, not persisted
+}
+
+// Discriminated union: what a Note is attached to
+export type AnnotationTarget =
+    | { type: 'highlight'; highlightId: string }
+    | { type: 'location'; anchor: LocationAnchor };
+
+// Domain Object for Notes
+export interface ReaderNote {
+    id: string;
+    userId: string;
+    bookId: string;
+    target: AnnotationTarget;
+    bodyMarkdown: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 // 1. Define standard event names as a strict union to prevent typos
@@ -55,7 +72,7 @@ export interface EventPayloads {
     'reader:progress_updated': { userId: string; bookId: string; readerSessionId: string; previousPage: number; currentPage: number; pagesReadDelta: number; occurredAt: string };
     'reader:position_updated': { userId: string; bookId: string; locationAnchor: LocationAnchor; occurredAt: string };
     'reader:highlight_created': { userId: string; bookId: string; highlightId: string; selectionAnchor: SelectionAnchor; selectedText: string; color: string };
-    'reader:note_created': { userId: string; bookId: string; noteId: string; locationAnchor: LocationAnchor; highlightId?: string };
+    'reader:note_created': { userId: string; bookId: string; noteId: string; target: AnnotationTarget };
     'reader:page_completed': { userId: string; bookId: string; pageNumber: number; timestamp: number };
     'reader:session_ended': { userId: string; bookId: string; durationSeconds: number };
     'auth:user_logged_in': { userId: string; timestamp: number };

@@ -1,17 +1,38 @@
+'use server';
+
 import { createSupabaseServerClient } from '@/modules/shared/core/database/server';
-import { LocationAnchor } from '@/modules/shared/core/events/types';
+import { AnnotationTarget, LocationAnchor } from '@/modules/shared/core/events/types';
 import { emitOutboxEvent } from '@/modules/shared/core/infrastructure/outbox/outbox';
 
 export interface CreateNoteRequest {
     userId: string;
     bookId: string;
-    locationAnchor: LocationAnchor;
+    target: AnnotationTarget;
     bodyMarkdown: string;
-    highlightId?: string; // Optional: attached to a highlight
 }
 
 export async function executeCreateNote(request: CreateNoteRequest): Promise<{ id: string }> {
     const supabase = await createSupabaseServerClient();
+
+    // Resolve highlight_id and location_anchor from the AnnotationTarget
+    let highlightId: string | null = null;
+    let locationAnchor: LocationAnchor;
+
+    if (request.target.type === 'highlight') {
+        highlightId = request.target.highlightId;
+
+        // Fetch the highlight's anchor to store alongside the note
+        const { data: highlight } = await supabase
+            .from('reader_highlights')
+            .select('location_anchor')
+            .eq('id', highlightId)
+            .single();
+
+        // Use the highlight's stored anchor as the note's location
+        locationAnchor = highlight?.location_anchor?.start || { type: 'epubcfi', value: '' };
+    } else {
+        locationAnchor = request.target.anchor;
+    }
 
     // 1. Insert the note
     const { data, error } = await supabase
@@ -19,8 +40,8 @@ export async function executeCreateNote(request: CreateNoteRequest): Promise<{ i
         .insert({
             user_id: request.userId,
             book_id: request.bookId,
-            highlight_id: request.highlightId || null,
-            location_anchor: request.locationAnchor as any,
+            highlight_id: highlightId,
+            location_anchor: locationAnchor as any,
             body_markdown: request.bodyMarkdown
         })
         .select('id')
@@ -38,8 +59,7 @@ export async function executeCreateNote(request: CreateNoteRequest): Promise<{ i
         userId: request.userId,
         bookId: request.bookId,
         noteId: noteId,
-        locationAnchor: request.locationAnchor,
-        highlightId: request.highlightId
+        target: request.target
     });
 
     return { id: noteId };

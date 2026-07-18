@@ -1,3 +1,5 @@
+'use server';
+
 import { createSupabaseServerClient } from '@/modules/shared/core/database/server';
 
 export interface UpdateNoteRequest {

@@ -29,6 +29,7 @@ export async function executeGetHighlights(request: GetHighlightsRequest): Promi
         bookId: row.book_id,
         selectionAnchor: row.location_anchor,
         selectedText: row.selected_text,
-        color: row.color
+        color: row.color,
+        hasNote: false // Computed later by ReaderService after notes are loaded
     }));
 }

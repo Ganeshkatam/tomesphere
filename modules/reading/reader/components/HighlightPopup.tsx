@@ -1,12 +1,14 @@
 'use client';
 
 import { useReaderStore } from '../state/reader-store';
+import { MessageSquarePlus } from 'lucide-react';
 
 interface HighlightPopupProps {
     onCreateHighlight: (color: string) => void;
+    onHighlightAndNote: (color: string) => void;
 }
 
-export function HighlightPopup({ onCreateHighlight }: HighlightPopupProps) {
+export function HighlightPopup({ onCreateHighlight, onHighlightAndNote }: HighlightPopupProps) {
     const { activeSelection } = useReaderStore();
 
     if (!activeSelection) return null;
@@ -29,6 +31,14 @@ export function HighlightPopup({ onCreateHighlight }: HighlightPopupProps) {
                     onClick={() => onCreateHighlight(color.name)}
                 />
             ))}
+            <div className="w-px h-6 bg-slate-600 mx-1" />
+            <button
+                onClick={() => onHighlightAndNote('yellow')}
+                className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                title="Highlight and add note"
+            >
+                <MessageSquarePlus size={18} className="text-indigo-400" />
+            </button>
         </div>
     );
 }
