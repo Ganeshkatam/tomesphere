@@ -1,10 +1,10 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 const DIRECTORIES = [
-  path.join(__dirname, '../app'),
-  path.join(__dirname, '../modules'),
-  path.join(__dirname, '../lib')
+  path.join(__dirname, "../app"),
+  path.join(__dirname, "../modules"),
+  path.join(__dirname, "../lib"),
 ];
 
 function walk(dir, callback) {
@@ -25,22 +25,28 @@ let modifiedCount = 0;
 DIRECTORIES.forEach((dir) => {
   if (fs.existsSync(dir)) {
     walk(dir, (filePath) => {
-      if (filePath.endsWith('.tsx') || filePath.endsWith('.ts')) {
-        let content = fs.readFileSync(filePath, 'utf-8');
+      if (filePath.endsWith(".tsx") || filePath.endsWith(".ts")) {
+        let content = fs.readFileSync(filePath, "utf-8");
         let modified = false;
 
-        if (content.includes('@/components/ui/')) {
-          content = content.replace(/@\/components\/ui\//g, '@/modules/shared/ui/');
+        if (content.includes("@/components/ui/")) {
+          content = content.replace(
+            /@\/components\/ui\//g,
+            "@/modules/shared/ui/",
+          );
           modified = true;
         }
 
-        if (content.includes('@/components/providers/')) {
-          content = content.replace(/@\/components\/providers\//g, '@/modules/shared/providers/');
+        if (content.includes("@/components/providers/")) {
+          content = content.replace(
+            /@\/components\/providers\//g,
+            "@/modules/shared/providers/",
+          );
           modified = true;
         }
 
         if (modified) {
-          fs.writeFileSync(filePath, content, 'utf-8');
+          fs.writeFileSync(filePath, content, "utf-8");
           console.log(`Updated imports in: ${filePath}`);
           modifiedCount++;
         }

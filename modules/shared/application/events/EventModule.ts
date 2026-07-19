@@ -1,5 +1,5 @@
-import { EventRegistry } from './EventRegistry';
+import { EventRegistry } from "./EventRegistry";
 
 export interface EventModule {
-    registerEventHandlers(registry: EventRegistry): void;
+  registerEventHandlers(registry: EventRegistry): void;
 }

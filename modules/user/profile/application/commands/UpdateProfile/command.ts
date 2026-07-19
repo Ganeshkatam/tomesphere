@@ -1,7 +1,7 @@
-import { DomainEvent } from '@/modules/core/domain/DomainEvent';
-import { ProfileOutput } from '../../queries/GetProfileDashboard/read-model';
+import { DomainEvent } from "@/modules/core/domain/DomainEvent";
+import { ProfileDto } from "../../queries/GetProfile/read-model";
 
 export interface UpdateProfileOutput {
-    readonly output: ProfileOutput;
-    readonly events: DomainEvent[];
+  readonly output: ProfileDto;
+  readonly events: DomainEvent[];
 }

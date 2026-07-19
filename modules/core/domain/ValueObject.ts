@@ -2,23 +2,23 @@
  * Base Value Object class to enforce deep equality and immutability semantics.
  */
 export abstract class ValueObject<T> {
-    protected readonly props: T;
+  protected readonly props: T;
 
-    constructor(props: T) {
-        this.props = Object.freeze(props);
+  constructor(props: T) {
+    this.props = Object.freeze(props);
+  }
+
+  /**
+   * Compare this Value Object with another one of the same type.
+   */
+  public equals(vo?: ValueObject<T>): boolean {
+    if (vo === null || vo === undefined) {
+      return false;
+    }
+    if (vo.props === undefined) {
+      return false;
     }
 
-    /**
-     * Compare this Value Object with another one of the same type.
-     */
-    public equals(vo?: ValueObject<T>): boolean {
-        if (vo === null || vo === undefined) {
-            return false;
-        }
-        if (vo.props === undefined) {
-            return false;
-        }
-        
-        return JSON.stringify(this.props) === JSON.stringify(vo.props);
-    }
+    return JSON.stringify(this.props) === JSON.stringify(vo.props);
+  }
 }

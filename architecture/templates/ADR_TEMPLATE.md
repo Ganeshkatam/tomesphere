@@ -10,14 +10,14 @@
 
 ## Decision Drivers
 
-* [Driver 1, e.g., a force, facing concern, ...]
-* [Driver 2, e.g., a force, facing concern, ...]
+- [Driver 1, e.g., a force, facing concern, ...]
+- [Driver 2, e.g., a force, facing concern, ...]
 
 ## Considered Options
 
-* [Option 1]
-* [Option 2]
-* [Option 3]
+- [Option 1]
+- [Option 2]
+- [Option 3]
 
 ## Decision Outcome
 
@@ -25,11 +25,11 @@ Chosen option: "[Option 1]", because [justification. e.g., only option, which me
 
 ### Positive Consequences
 
-* [e.g., improvement of quality attribute satisfaction, follow-up decisions required, ...]
+- [e.g., improvement of quality attribute satisfaction, follow-up decisions required, ...]
 
 ### Negative Consequences
 
-* [e.g., compromising quality attribute, follow-up decisions required, ...]
+- [e.g., compromising quality attribute, follow-up decisions required, ...]
 
 ## Pros and Cons of the Options
 
@@ -37,14 +37,14 @@ Chosen option: "[Option 1]", because [justification. e.g., only option, which me
 
 [description | example | code snippet]
 
-* Good, because [argument a]
-* Good, because [argument b]
-* Bad, because [argument c]
+- Good, because [argument a]
+- Good, because [argument b]
+- Bad, because [argument c]
 
 ### [Option 2]
 
 [description | example | code snippet]
 
-* Good, because [argument a]
-* Good, because [argument b]
-* Bad, because [argument c]
+- Good, because [argument a]
+- Good, because [argument b]
+- Bad, because [argument c]

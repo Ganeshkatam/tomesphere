@@ -1,41 +1,43 @@
-import { UpdateIndexedBookCommand } from './command';
-import { UpdateIndexedBookOutput } from './output';
-import { SearchRepository } from '../../../domain/repositories/SearchRepository';
-import { ActionResult } from '../../../../../shared/core/types/ActionResult';
+import { UpdateIndexedBookCommand } from "./command";
+import { UpdateIndexedBookOutput } from "./output";
+import { SearchRepository } from "../../../domain/repositories/SearchRepository";
 
 export class UpdateIndexedBookHandler {
-    constructor(private readonly searchRepository: SearchRepository) {}
+  constructor(private readonly searchRepository: SearchRepository) {}
 
-    async execute(command: UpdateIndexedBookCommand): Promise<ActionResult<UpdateIndexedBookOutput>> {
-        try {
-            const { bookId, updates } = command.input;
-            
-            // Recalculate keywords if necessary
-            let newKeywords: string[] | undefined = undefined;
-            if (updates.title || updates.authors || updates.categories) {
-                newKeywords = Array.from(new Set([
-                    ...(updates.title?.toLowerCase().split(/\s+/) || []),
-                    ...(updates.authors?.map(a => a.toLowerCase()) || []),
-                    ...(updates.categories?.map(c => c.toLowerCase()) || [])
-                ]));
-            }
+  async execute(
+    command: UpdateIndexedBookCommand,
+  ): Promise<UpdateIndexedBookOutput> {
+    try {
+      const { bookId, updates } = command.input;
 
-            const repoUpdates = {
-                ...updates,
-                ...(newKeywords ? { keywords: newKeywords } : {})
-            };
+      // Recalculate keywords if necessary
+      let newKeywords: string[] | undefined = undefined;
+      if (updates.title || updates.authors || updates.categories) {
+        newKeywords = Array.from(
+          new Set([
+            ...(updates.title?.toLowerCase().split(/\s+/) || []),
+            ...(updates.authors?.map((a) => a.toLowerCase()) || []),
+            ...(updates.categories?.map((c) => c.toLowerCase()) || []),
+          ]),
+        );
+      }
 
-            await this.searchRepository.updateIndex(bookId, repoUpdates);
+      const repoUpdates = {
+        ...updates,
+        ...(newKeywords ? { keywords: newKeywords } : {}),
+      };
 
-            return {
-                success: true,
-                data: { success: true }
-            };
-        } catch (error) {
-            return {
-                success: false,
-                error: error instanceof Error ? error.message : 'Unknown error updating index',
-            };
-        }
+      await this.searchRepository.updateIndex(bookId, repoUpdates);
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      throw new Error(error instanceof Error
+            ? error.message
+            : "Unknown error updating index",
+      );
     }
+  }
 }

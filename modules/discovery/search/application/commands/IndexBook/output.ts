@@ -1,3 +1,3 @@
 export interface IndexBookOutput {
-    success: boolean;
+  success: boolean;
 }

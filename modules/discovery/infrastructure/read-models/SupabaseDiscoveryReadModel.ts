@@ -1,0 +1,170 @@
+import { SupabaseClient } from "@supabase/supabase-js";
+import { DiscoveryReadModel } from "../../application/ports/read-models/DiscoveryReadModel";
+import { DiscoveryOverviewDto } from "../../application/queries/GetDiscoveryOverview/read-model";
+import { SearchResultDto } from "../../application/queries/SearchBooks/read-model";
+import { BookDto } from "@/modules/library/application/dto/response/BookDto";
+import { BookMapper } from "@/modules/library/application/mappers/BookMapper";
+import { GetTrendingBooksQuery } from "../../application/queries/GetTrendingBooks/query";
+import { TrendingBooksResponseDto } from "../../application/queries/GetTrendingBooks/response";
+
+export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
+  constructor(private readonly supabase: SupabaseClient) {}
+
+  async getOverview(): Promise<DiscoveryOverviewDto> {
+    const [featuredRes, newBooksRes, trendingRes, authorsRes, genresRes, subjectsRes] = await Promise.all([
+      this.supabase.from("books").select("*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))").eq("is_featured", true).limit(8),
+      this.supabase.from("books").select("*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))").order("created_at", { ascending: false }).limit(8),
+      this.supabase.from("trending_books").select("books!inner(*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*)))").order("daily_score", { ascending: false }).limit(8),
+      this.supabase.from("authors").select("name").limit(10),
+      this.supabase.from("genres").select("name").limit(12),
+      this.supabase.from("subjects").select("name").limit(12)
+    ]);
+
+    // Distinct Genres (max 12 for preview)
+    const genres = (genresRes.data || []).map((g: any) => g.name);
+    const authors = (authorsRes.data || []).map((a: any) => a.name);
+    const subjects = (subjectsRes.data || []).map((s: any) => s.name);
+    const languages = ["English"]; // Placeholder since we don't have a languages table yet
+
+    const trendingBooksData = (trendingRes.data || []).map((row: any) => row.books);
+
+    return {
+      featuredBooks: (featuredRes.data || []).map(BookMapper.toDto),
+      trendingBooks: trendingBooksData.map(BookMapper.toDto),
+      newBooks: (newBooksRes.data || []).map(BookMapper.toDto),
+      featuredCollections: [], // Placeholder for V1 until collections table exists
+      genres,
+      subjects,
+      languages,
+      authors
+    };
+  }
+
+  async searchBooks(query: string, genre: string, page: number, pageSize: number, sort: string): Promise<SearchResultDto> {
+    const { data: searchResult, error: rpcError } = await this.supabase.rpc("search_catalog", {
+      search_query: query || "",
+      genre_filter: genre || "all",
+      page_num: page,
+      page_size: pageSize
+    });
+
+    if (rpcError || !searchResult || searchResult.length === 0) {
+      return {
+        books: [],
+        totalCount: 0,
+        page,
+        pageSize,
+      };
+    }
+
+    const matchingIds = searchResult.map((r: any) => r.id);
+    const totalCount = searchResult.length > 0 ? Number(searchResult[0].total_count) : 0;
+
+    let dbQuery = this.supabase
+      .from("books")
+      .select("*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))")
+      .in("id", matchingIds);
+
+    if (sort === "newest") {
+      dbQuery = dbQuery.order("created_at", { ascending: false });
+    } else {
+      // For sorting by title when using IN, we just sort the result in memory or use db order
+      dbQuery = dbQuery.order("title", { ascending: true });
+    }
+
+    const { data } = await dbQuery;
+    
+    // Sort in-memory to match RPC order if needed, but RPC already sorts by title. 
+    // Here we just use the DB sort which handles it.
+    
+    return {
+      books: (data || []).map(BookMapper.toDto),
+      totalCount,
+      page,
+      pageSize,
+    };
+  }
+
+  async getSearchSuggestions(query: string): Promise<Partial<BookDto>[]> {
+    if (!query || query.length < 2) return [];
+
+    const { data } = await this.supabase
+      .from("books")
+      .select("id, title, book_authors(authors(name)), book_genres(genres(name))")
+      .ilike("title", `%${query}%`)
+      .limit(5);
+
+    return (data || []).map((b: any) => ({
+      id: b.id,
+      title: b.title,
+      authors: b.book_authors?.map((ba: any) => ba.authors).filter(Boolean) || [],
+      genres: b.book_genres?.map((bg: any) => bg.genres).filter(Boolean) || [],
+    }));
+  }
+
+  async getTrendingBooks(query: GetTrendingBooksQuery): Promise<TrendingBooksResponseDto> {
+    const periodScoreMap = {
+      "daily": "daily_score",
+      "weekly": "weekly_score",
+      "monthly": "monthly_score",
+      "all-time": "all_time_score",
+    };
+    const periodRankMap = {
+      "daily": "daily_rank",
+      "weekly": "weekly_rank",
+      "monthly": "monthly_rank",
+      "all-time": "all_time_rank",
+    };
+    const scoreCol = periodScoreMap[query.period];
+    const rankCol = periodRankMap[query.period];
+
+    let dbQuery = this.supabase
+      .from("trending_books")
+      .select(`
+        ${scoreCol},
+        ${rankCol},
+        books!inner (
+          id, title, cover_url, language, is_featured,
+          book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))
+        )
+      `, { count: "exact" })
+      .order(scoreCol, { ascending: false });
+
+    if (query.genre && query.genre !== "all") {
+      // Same constraint as searchBooks, filtering by related table requires inner join setup
+    }
+
+    const start = (query.page - 1) * query.limit;
+    const end = start + query.limit - 1;
+    dbQuery = dbQuery.range(start, end);
+
+    const { data, count, error } = await dbQuery;
+
+    if (error) {
+       console.error("Error fetching trending books:", error);
+    }
+
+    const books = (data || []).map((row: any) => ({
+      id: row.books.id,
+      title: row.books.title,
+      authors: (row.books.book_authors || []).map((ba: any) => ba.authors).filter(Boolean),
+      genres: (row.books.book_genres || []).map((bg: any) => bg.genres).filter(Boolean),
+      subjects: (row.books.book_subjects || []).map((bs: any) => bs.subjects).filter(Boolean),
+      coverUrl: row.books.cover_url ? row.books.cover_url.replace(/ /g, '%20') : null,
+      language: row.books.language,
+      isFeatured: row.books.is_featured || false,
+      trendingScore: row[scoreCol],
+      rank: row[rankCol],
+    }));
+
+    return {
+      books,
+      period: query.period,
+      page: query.page,
+      pageSize: query.limit,
+      totalCount: count || 0,
+      hasNext: count ? start + query.limit < count : false,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+}

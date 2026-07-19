@@ -1,28 +1,25 @@
-import { createSupabaseServerClient } from '@/modules/shared/core/database/server';
-import { getDashboardData } from '@/modules/me/application/GetTodayOverview/actions/dashboard';
-import { redirect } from 'next/navigation';
-import CollectionsScreen from '@/modules/me/presentation/screens/CollectionsScreen';
+import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { getDashboardOverview } from "@/modules/me/application/queries/GetDashboardOverview/handler";
+import { SupabaseDashboardReadModel } from "@/modules/me/infrastructure/read-models/SupabaseDashboardReadModel";
+import { redirect } from "next/navigation";
+import CollectionsScreen from "@/modules/me/presentation/screens/CollectionsScreen";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default async function CollectionsPage() {
-    const supabase = await createSupabaseServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    if (!user) {
-        redirect('/login');
-    }
+  if (!user) {
+    redirect("/login");
+  }
 
-    const res = await getDashboardData();
-    const dashboardData = res.success && res.data ? res.data : {
-        likedBooks: [],
-        ratedBooks: [],
-        comments: [],
-        readingList: [],
-        dailyStats: []
-    };
+  const dashboardRepo = new SupabaseDashboardReadModel(supabase);
+  const dashboardDto = await getDashboardOverview(dashboardRepo, user.id).catch(() => ({
+    recentBooks: []
+  }));
 
-    return (
-        <CollectionsScreen likedBooks={dashboardData.likedBooks} />
-    );
+  return <CollectionsScreen recentBooks={dashboardDto.recentBooks || []} />;
 }

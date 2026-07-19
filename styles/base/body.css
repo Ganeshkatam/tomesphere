@@ -6,7 +6,7 @@ body {
   font-size: 1rem;
   line-height: var(--lh-relaxed);
   letter-spacing: -0.011em;
-  overflow-x: hidden;
+  overflow-x: clip;
   width: 100%;
   max-width: 100vw;
   min-height: 100vh;
@@ -26,7 +26,7 @@ body > * {
 
 /* Beautiful library background - dark/light reactive */
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   background-image: var(--body-bg-gradient);
@@ -36,12 +36,14 @@ body::before {
   background-attachment: fixed;
   opacity: var(--body-overlay-opacity);
   z-index: -2;
-  transition: opacity var(--duration-base) var(--ease-in-out), background-image var(--duration-base) var(--ease-in-out);
+  transition:
+    opacity var(--duration-base) var(--ease-in-out),
+    background-image var(--duration-base) var(--ease-in-out);
 }
 
 /* Gradient overlay mesh - dark/light reactive */
 body::after {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   background: var(--gradient-mesh);
@@ -103,4 +105,3 @@ textarea:disabled {
   opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
-

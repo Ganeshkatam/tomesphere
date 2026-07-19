@@ -4,7 +4,9 @@
   justify-content: center;
   color: currentColor;
   flex-shrink: 0;
-  transition: transform var(--duration-base) var(--ease-in-out), color var(--duration-base) var(--ease-in-out);
+  transition:
+    transform var(--duration-base) var(--ease-in-out),
+    color var(--duration-base) var(--ease-in-out);
 }
 
 /* Sizing */
@@ -34,7 +36,8 @@
 }
 
 @keyframes bounceSmall {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {

@@ -1,34 +1,41 @@
-import { Book } from '@/modules/shared/core/database/client';
+import { BookDto } from "@/modules/library/application/dto/response/BookDto";
 
-export function getRandomBook(books: Book[], selectedGenres: string[] = []): Book | null {
-    if (books.length === 0) return null;
+export function getRandomBook(
+  books: BookDto[],
+  selectedGenres: string[] = [],
+): BookDto | null {
+  if (books.length === 0) return null;
 
-    let filteredBooks = books;
+  let filteredBooks = books;
 
-    // Filter by genres if specified
-    if (selectedGenres.length > 0) {
-        filteredBooks = books.filter(book => selectedGenres.includes(book.genre));
-    }
+  // Filter by genres if specified
+  if (selectedGenres.length > 0) {
+    filteredBooks = books.filter((book) => book.genres?.some(g => selectedGenres.includes(g.name)) ?? false);
+  }
 
-    if (filteredBooks.length === 0) return null;
+  if (filteredBooks.length === 0) return null;
 
-    // Get random index
-    const randomIndex = Math.floor(Math.random() * filteredBooks.length);
-    return filteredBooks[randomIndex];
+  // Get random index
+  const randomIndex = Math.floor(Math.random() * filteredBooks.length);
+  return filteredBooks[randomIndex];
 }
 
-export function getRandomBooks(books: Book[], count: number, selectedGenres: string[] = []): Book[] {
-    if (books.length === 0) return [];
+export function getRandomBooks(
+  books: BookDto[],
+  count: number,
+  selectedGenres: string[] = [],
+): BookDto[] {
+  if (books.length === 0) return [];
 
-    let filteredBooks = books;
+  let filteredBooks = books;
 
-    if (selectedGenres.length > 0) {
-        filteredBooks = books.filter(book => selectedGenres.includes(book.genre));
-    }
+  if (selectedGenres.length > 0) {
+    filteredBooks = books.filter((book) => book.genres?.some(g => selectedGenres.includes(g.name)) ?? false);
+  }
 
-    // Shuffle array
-    const shuffled = [...filteredBooks].sort(() => Math.random() - 0.5);
+  // Shuffle array
+  const shuffled = [...filteredBooks].sort(() => Math.random() - 0.5);
 
-    // Return requested count
-    return shuffled.slice(0, Math.min(count, shuffled.length));
+  // Return requested count
+  return shuffled.slice(0, Math.min(count, shuffled.length));
 }

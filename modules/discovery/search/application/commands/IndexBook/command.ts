@@ -1,5 +1,5 @@
-import { IndexBookInput } from './input';
+import { IndexBookInput } from "./input";
 
 export class IndexBookCommand {
-    constructor(public readonly input: IndexBookInput) {}
+  constructor(public readonly input: IndexBookInput) {}
 }

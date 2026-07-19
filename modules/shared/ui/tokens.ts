@@ -12,36 +12,36 @@ export const spacing = {
   "10": "2.5rem",
   "12": "3rem",
   "16": "4rem",
-  "20": "5rem"
+  "20": "5rem",
 } as const;
 
 export const radius = {
-  "sm": "0.375rem",
-  "md": "0.5rem",
-  "lg": "0.75rem",
-  "xl": "1rem",
+  sm: "0.375rem",
+  md: "0.5rem",
+  lg: "0.75rem",
+  xl: "1rem",
   "2xl": "1.5rem",
   "3xl": "2rem",
-  "full": "9999px"
+  full: "9999px",
 } as const;
 
 export const zIndex = {
-  "base": "0",
-  "header": "100",
-  "sidebar": "200",
-  "dropdown": "300",
-  "popover": "400",
-  "modal": "500",
-  "toast": "600",
-  "overlay": "700"
+  base: "0",
+  header: "100",
+  sidebar: "200",
+  dropdown: "300",
+  popover: "400",
+  modal: "500",
+  toast: "600",
+  overlay: "700",
 } as const;
 
 export const motion = {
-  "fast": "150ms",
-  "base": "200ms",
-  "slow": "300ms",
+  fast: "150ms",
+  base: "200ms",
+  slow: "300ms",
   "in-out": "cubic-bezier(0.4, 0, 0.2, 1)",
-  "out": "cubic-bezier(0, 0, 0.2, 1)",
-  "in": "cubic-bezier(0.4, 0, 1, 1)",
-  "spring": "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+  out: "cubic-bezier(0, 0, 0.2, 1)",
+  in: "cubic-bezier(0.4, 0, 1, 1)",
+  spring: "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
 } as const;

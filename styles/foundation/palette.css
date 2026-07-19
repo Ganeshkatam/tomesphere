@@ -61,9 +61,21 @@
   --white: #ffffff;
 
   /* Reusable Gradients */
-  --gradient-indigo-purple: linear-gradient(135deg, var(--indigo-500) 0%, #a855f7 100%);
-  --gradient-indigo-sky: linear-gradient(135deg, var(--indigo-600) 0%, var(--sky-500) 100%);
-  --gradient-light-bg: linear-gradient(to bottom right, var(--slate-50), var(--indigo-50));
+  --gradient-indigo-purple: linear-gradient(
+    135deg,
+    var(--indigo-500) 0%,
+    #a855f7 100%
+  );
+  --gradient-indigo-sky: linear-gradient(
+    135deg,
+    var(--indigo-600) 0%,
+    var(--sky-500) 100%
+  );
+  --gradient-light-bg: linear-gradient(
+    to bottom right,
+    var(--slate-50),
+    var(--indigo-50)
+  );
   --gradient-dark-bg: linear-gradient(to bottom right, #0f172a, #1e293b);
 
   /* Border Opacity Foundations (Light Theme) */
@@ -89,4 +101,3 @@
   --theme-slate-900: var(--slate-900);
   --theme-slate-950: var(--slate-950);
 }
-

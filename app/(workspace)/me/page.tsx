@@ -1,37 +1,43 @@
-import { createSupabaseServerClient } from '@/modules/shared/core/database/server';
-import { getProfileData } from '@/modules/user/profile/actions/profile';
-import { getDashboardData } from '@/modules/me/application/GetTodayOverview/actions/dashboard';
-import { getUserNotes } from '@/modules/learning/notes/actions/notes';
-import { redirect } from 'next/navigation';
-import TodayScreen from '@/modules/me/presentation/screens/TodayScreen';
+import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { getProfile } from "@/modules/user/profile/application/queries/GetProfile/handler";
+import { SupabaseProfileRepository } from "@/modules/user/profile/infrastructure/repositories/SupabaseProfileRepository";
+import { getDashboardOverview } from "@/modules/me/application/queries/GetDashboardOverview/handler";
+import { SupabaseDashboardReadModel } from "@/modules/me/infrastructure/read-models/SupabaseDashboardReadModel";
+import { redirect } from "next/navigation";
+import TodayScreen from "@/modules/me/presentation/screens/TodayScreen";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default async function TodayPage() {
-    const supabase = await createSupabaseServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    if (!user) {
-        redirect('/login');
-    }
+  if (!user) {
+    redirect("/login");
+  }
 
-    const [profileRes, dashboardRes, notesRes] = await Promise.all([
-        getProfileData(),
-        getDashboardData(),
-        getUserNotes()
-    ]);
+  const profileRepo = new SupabaseProfileRepository(supabase);
+  const dashboardRepo = new SupabaseDashboardReadModel(supabase);
 
-    const profileData = profileRes.success ? profileRes.data : null;
-    const dashboardData = dashboardRes.success && dashboardRes.data ? dashboardRes.data : {
-        likedBooks: [],
-        ratedBooks: [],
-        comments: [],
-        readingList: [],
-        dailyStats: []
-    };
-    const notesData = notesRes.success && notesRes.data ? notesRes.data : [];
+  const [profileData, dashboardData] = await Promise.all([
+    getProfile(profileRepo, user.id).catch(() => null),
+    getDashboardOverview(dashboardRepo, user.id).catch(() => ({
+      currentReading: [],
+      recentBooks: [],
+      progress: { booksRead: 0, totalBooksGoal: null },
+      streak: { current: 0, best: 0 },
+      librarySummary: { totalBooks: 0, currentlyReadingCount: 0, wantToReadCount: 0 },
+      collectionsSummary: { totalCollections: 0 }
+    })),
+  ]);
 
-    return (
-        <TodayScreen user={user} profileData={profileData} dashboardData={dashboardData} notes={notesData} />
-    );
+  return (
+    <TodayScreen
+      user={user}
+      profileData={profileData}
+      dashboardData={dashboardData}
+    />
+  );
 }

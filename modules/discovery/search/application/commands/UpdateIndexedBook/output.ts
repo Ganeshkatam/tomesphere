@@ -1,3 +1,3 @@
 export interface UpdateIndexedBookOutput {
-    success: boolean;
+  success: boolean;
 }

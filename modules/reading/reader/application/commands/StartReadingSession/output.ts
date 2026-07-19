@@ -1,3 +1,3 @@
 export interface StartReadingSessionOutput {
-    sessionId: string;
+  sessionId: string;
 }

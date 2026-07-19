@@ -1,22 +1,23 @@
-import { createSupabaseServerClient } from '@/modules/shared/core/database/server';
-import { getProfileData } from '@/modules/user/profile/actions/profile';
-import { redirect } from 'next/navigation';
-import PreferencesScreen from '@/modules/me/presentation/screens/PreferencesScreen';
+import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { getProfile } from "@/modules/user/profile/application/queries/GetProfile/handler";
+import { SupabaseProfileRepository } from "@/modules/user/profile/infrastructure/repositories/SupabaseProfileRepository";
+import { redirect } from "next/navigation";
+import PreferencesScreen from "@/modules/me/presentation/screens/PreferencesScreen";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default async function PreferencesPage() {
-    const supabase = await createSupabaseServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    if (!user) {
-        redirect('/login');
-    }
+  if (!user) {
+    redirect("/login");
+  }
 
-    const res = await getProfileData();
-    const profileData = res.success ? res.data : null;
+  const profileRepo = new SupabaseProfileRepository(supabase);
+  const profileDto = await getProfile(profileRepo, user.id).catch(() => null);
 
-    return (
-        <PreferencesScreen initialProfile={profileData?.profile || null} />
-    );
+  return <PreferencesScreen initialProfile={profileDto} />;
 }

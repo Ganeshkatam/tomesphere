@@ -1,5 +1,5 @@
-import { BookId } from '../../../domain/value-objects';
+import { BookId } from "../../../domain/value-objects";
 
 export interface GetBookInput {
-    readonly bookId: BookId;
+  readonly bookId: BookId;
 }

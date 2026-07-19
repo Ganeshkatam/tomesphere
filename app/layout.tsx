@@ -1,34 +1,36 @@
 import type { Metadata } from "next";
 import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Footer from '@/modules/shared/navigation/components/Footer';
-import { Providers } from './providers';
-import { themeInitScript } from './theme-init';
+import Footer from "@/modules/shared/navigation/components/Footer";
+import { Providers } from "./providers";
+import { themeInitScript } from "./theme-init";
+import Script from "next/script";
 
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-inter',
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
 });
 
 const outfit = Outfit({
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-outfit',
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-outfit",
 });
 
 const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['400', '500'],
-  variable: '--font-jetbrains-mono',
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500"],
+  variable: "--font-jetbrains-mono",
 });
 
 export const metadata: Metadata = {
   title: "TomeSphere - Discover Your Next Favorite Book",
-  description: "A comprehensive book discovery platform with curated recommendations, curated collections, and personalized reading lists.",
+  description:
+    "A comprehensive book discovery platform with curated recommendations, curated collections, and personalized reading lists.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -54,25 +56,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html 
-      lang="en" 
-      suppressHydrationWarning 
+    <html
+      lang="en"
+      suppressHydrationWarning
       data-scroll-behavior="smooth"
       className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}
     >
       <head>
-        <script
+        <Script
+          id="theme-init-script"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
-            __html: themeInitScript
+            __html: themeInitScript,
           }}
         />
       </head>
       <body className="antialiased font-sans" suppressHydrationWarning>
         <Providers>
           <div className="min-h-screen flex flex-col">
-            <main className="flex-1 flex flex-col">
-              {children}
-            </main>
+            <main className="flex-1 flex flex-col">{children}</main>
             <Footer />
           </div>
         </Providers>

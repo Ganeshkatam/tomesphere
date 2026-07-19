@@ -1,3 +1,3 @@
 export interface RemoveIndexedBookInput {
-    bookId: string;
+  bookId: string;
 }

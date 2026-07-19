@@ -1,32 +1,17 @@
-import { BookRepository } from '../../../domain/repositories/BookRepository';
-import { GetBookInput } from './query';
-import { GetBookOutput } from './read-model';
-import { Book } from '../../../domain/entities/Book';
+import { BookRepository } from "../../../domain/repositories/BookRepository";
+import { GetBookInput } from "./query";
+import { BookDetailDto } from "@/modules/library/application/dto/response/BookDetailDto";
+import { BookMapper } from "@/modules/library/application/mappers/BookMapper";
 
 export async function getBook(
-    repository: BookRepository, 
-    input: GetBookInput
-): Promise<GetBookOutput | null> {
-    const book = await repository.findById(input.bookId);
+  repository: BookRepository,
+  input: GetBookInput,
+): Promise<BookDetailDto | null> {
+  const book = await repository.findById(input.bookId);
 
-    if (!book) {
-        return null;
-    }
+  if (!book) {
+    return null;
+  }
 
-    return mapBookToOutput(book);
-}
-
-export function mapBookToOutput(book: Book): GetBookOutput {
-    return {
-        id: book.id,
-        title: book.title,
-        author: book.author,
-        coverUrl: book.coverUrl ?? undefined,
-        description: book.description ?? undefined,
-        genre: book.genre ?? undefined,
-        isTextbook: book.isTextbook,
-        academicSubject: book.academicSubject ?? undefined,
-        publishedDate: book.publishedDate ?? undefined,
-        pageCount: book.pageCount ?? undefined,
-    };
+  return BookMapper.toDetailDto(book);
 }

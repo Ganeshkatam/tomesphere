@@ -1,17 +1,17 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 const CSS_FILES = {
-  spacing: path.join(__dirname, '../styles/foundation/spacing.css'),
-  radius: path.join(__dirname, '../styles/foundation/radius.css'),
-  zIndex: path.join(__dirname, '../styles/foundation/z-index.css'),
-  motion: path.join(__dirname, '../styles/foundation/motion.css')
+  spacing: path.join(__dirname, "../styles/foundation/spacing.css"),
+  radius: path.join(__dirname, "../styles/foundation/radius.css"),
+  zIndex: path.join(__dirname, "../styles/foundation/z-index.css"),
+  motion: path.join(__dirname, "../styles/foundation/motion.css"),
 };
 
-const OUTPUT_FILE = path.join(__dirname, '../modules/shared/ui/tokens.ts');
+const OUTPUT_FILE = path.join(__dirname, "../modules/shared/ui/tokens.ts");
 
 function parseCssVariables(filePath) {
-  const content = fs.readFileSync(filePath, 'utf-8');
+  const content = fs.readFileSync(filePath, "utf-8");
   const regex = /--([\w-]+):\s*([^;]+);/g;
   const tokens = {};
   let match;
@@ -32,15 +32,21 @@ function formatTokensGroup(tokens) {
   for (const [key, val] of Object.entries(tokens)) {
     // Strip group prefixes to make keys cleaner (e.g. space-1 -> 1, radius-sm -> sm, z-base -> base)
     const cleanedKey = key
-      .replace(/^space-/, '')
-      .replace(/^radius-/, '')
-      .replace(/^z-/, '')
-      .replace(/^duration-/, '')
-      .replace(/^ease-/, '');
-    
+      .replace(/^space-/, "")
+      .replace(/^radius-/, "")
+      .replace(/^z-/, "")
+      .replace(/^duration-/, "")
+      .replace(/^ease-/, "");
+
     // Parse numeric values where possible for runtime arithmetic
     const numVal = parseFloat(val);
-    if (!isNaN(numVal) && (val.endsWith('px') || val.endsWith('rem') || val.endsWith('ms') || !val.match(/[a-zA-Z]/))) {
+    if (
+      !isNaN(numVal) &&
+      (val.endsWith("px") ||
+        val.endsWith("rem") ||
+        val.endsWith("ms") ||
+        !val.match(/[a-zA-Z]/))
+    ) {
       formatted[cleanedKey] = val;
     } else {
       formatted[cleanedKey] = val;
@@ -76,7 +82,7 @@ export const motion = ${JSON.stringify(motion, null, 2)} as const;
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
-  fs.writeFileSync(OUTPUT_FILE, code, 'utf-8');
+  fs.writeFileSync(OUTPUT_FILE, code, "utf-8");
   console.log(`Successfully generated tokens at ${OUTPUT_FILE}`);
 }
 

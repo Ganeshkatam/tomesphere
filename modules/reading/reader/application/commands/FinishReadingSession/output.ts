@@ -1,4 +1,4 @@
 export interface FinishReadingSessionOutput {
-    sessionId: string;
-    durationSeconds: number;
+  sessionId: string;
+  durationSeconds: number;
 }

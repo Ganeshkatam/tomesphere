@@ -1,23 +1,36 @@
-import { ValueObject } from '@/modules/core/domain/ValueObject';
+import { ValueObject } from "@/modules/core/domain/ValueObject";
 
 interface ReadingActivityProps {
-    minutes: number;
-    pages: number;
-    completedBooks: number;
-    date: Date;
+  minutes: number;
+  pages: number;
+  completedBooks: number;
+  date: Date;
 }
 
 export class ReadingActivity extends ValueObject<ReadingActivityProps> {
-    get minutes(): number { return this.props.minutes; }
-    get pages(): number { return this.props.pages; }
-    get completedBooks(): number { return this.props.completedBooks; }
-    get date(): Date { return this.props.date; }
+  get minutes(): number {
+    return this.props.minutes;
+  }
+  get pages(): number {
+    return this.props.pages;
+  }
+  get completedBooks(): number {
+    return this.props.completedBooks;
+  }
+  get date(): Date {
+    return this.props.date;
+  }
 
-    private constructor(props: ReadingActivityProps) {
-        super(props);
-    }
+  private constructor(props: ReadingActivityProps) {
+    super(props);
+  }
 
-    static create(minutes: number, pages: number, completedBooks: number = 0, date: Date = new Date()): ReadingActivity {
-        return new ReadingActivity({ minutes, pages, completedBooks, date });
-    }
+  static create(
+    minutes: number,
+    pages: number,
+    completedBooks: number = 0,
+    date: Date = new Date(),
+  ): ReadingActivity {
+    return new ReadingActivity({ minutes, pages, completedBooks, date });
+  }
 }

@@ -3,12 +3,15 @@
 Layout primitives are reusable CSS patterns for spacing and grouping components. They are designed to prevent visual layout drift.
 
 ## General Spacing Rule
+
 > **CRITICAL RULE**: Layout components must NEVER use bottom or top margins on children. Spacing is strictly controlled via `gap` or stack containers.
 
 ---
 
 ## 1. Stack (`.layout-stack`)
+
 Provides vertical spacing.
+
 - **Rules**: Never apply vertical margins to children. Always use the stack spacing classes.
 - **Modifiers**:
   - `.layout-stack-xs`: `0.25rem` (4px gap)
@@ -20,7 +23,9 @@ Provides vertical spacing.
 ---
 
 ## 2. Cluster (`.layout-cluster`)
+
 Horizontal alignment with wrapping.
+
 - **Rules**: Wraps elements when space is insufficient. Useful for tags, action buttons, chip lists.
 - **Modifiers**:
   - `.layout-cluster-xs`: `0.25rem` gap
@@ -31,7 +36,9 @@ Horizontal alignment with wrapping.
 ---
 
 ## 3. Rail (`.layout-rail`)
+
 Horizontal scroll snap carousel/slider layout.
+
 - **Rules**: Hides scrollbars, Snaps child components starting at the left boundary.
 - **Classes**:
   - `.layout-rail`: The flex row container.
@@ -40,7 +47,9 @@ Horizontal scroll snap carousel/slider layout.
 ---
 
 ## 4. Sidebar (`.layout-sidebar`)
+
 Split layout for dual panel structures (e.g., search page, reader settings).
+
 - **Classes**:
   - `.layout-sidebar`: Container
   - `.layout-sidebar-main`: Takes remaining space.

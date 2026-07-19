@@ -27,8 +27,10 @@
 
 .glassContent {
   background: var(--bg-glass);
-  backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate-strong));
-  -webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate-strong));
+  backdrop-filter: blur(var(--glass-blur-lg))
+    saturate(var(--glass-saturate-strong));
+  -webkit-backdrop-filter: blur(var(--glass-blur-lg))
+    saturate(var(--glass-saturate-strong));
   border: 1px solid var(--glass-border-strong);
   border-radius: var(--radius-2xl);
   box-shadow: 0 8px 32px 0 var(--glass-shadow-strong);

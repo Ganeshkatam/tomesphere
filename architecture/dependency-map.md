@@ -15,7 +15,8 @@ Reader
   ↓
 Books
 ```
-*(Reader may import BookId or Book metadata from the Books domain, as Books represents an immutable external catalog).*
+
+_(Reader may import BookId or Book metadata from the Books domain, as Books represents an immutable external catalog)._
 
 ### Forbidden
 
@@ -26,21 +27,24 @@ Reader
   ✕
 Profile
 ```
-*(Reading experience has nothing to do with identity).*
+
+_(Reading experience has nothing to do with identity)._
 
 ```text
 Progress
   ✕
 Reader
 ```
-*(Progress consumes generic reading activities; it does not know what a "Reader Session" or "Highlight" is).*
+
+_(Progress consumes generic reading activities; it does not know what a "Reader Session" or "Highlight" is)._
 
 ```text
 Books
   ✕
 Library
 ```
-*(The catalog does not know whether a user has added a book to their library).*
+
+_(The catalog does not know whether a user has added a book to their library)._
 
 ### Cross-cutting
 
@@ -51,14 +55,15 @@ Reader
   ↓
 Shared Kernel
 ```
-*(All domains may depend on the Shared Kernel for primitive types and standard infrastructure).*
 
+_(All domains may depend on the Shared Kernel for primitive types and standard infrastructure)._
 
 ## Layer Dependencies
 
 We adhere to a strict top-down structure per bounded context.
 
 ### Allowed
+
 ```text
 Presentation
   ↓
@@ -74,35 +79,41 @@ Infrastructure
   ↓
 Domain
 ```
-*(Infrastructure implements the domain's repository interfaces).*
+
+_(Infrastructure implements the domain's repository interfaces)._
 
 ### Forbidden
+
 ```text
 Domain
   ✕
 Infrastructure
 ```
-*(Domain is pure. It cannot import database clients or generated type schemas).*
+
+_(Domain is pure. It cannot import database clients or generated type schemas)._
 
 ```text
 Application
   ✕
 Presentation
 ```
-*(Orchestration has no concept of React components or HTTP request formats).*
+
+_(Orchestration has no concept of React components or HTTP request formats)._
 
 ```text
 Application
   ✕
 Infrastructure (Supabase Client)
 ```
-*(Application relies on Repository interfaces. Dependency injection or factory methods instantiate the infrastructure).*
+
+_(Application relies on Repository interfaces. Dependency injection or factory methods instantiate the infrastructure)._
 
 ## Read Models & UI
 
 React components consume Read Models, never Aggregates.
 
 ### Allowed
+
 ```text
 Presentation
   ↓
@@ -112,21 +123,25 @@ Application
 ```
 
 ### Forbidden
+
 ```text
 Presentation
   ✕
 Aggregate
 ```
-*(Aggregates should never become React props. This prevents UI code from accidentally depending on domain behavior).*
+
+_(Aggregates should never become React props. This prevents UI code from accidentally depending on domain behavior)._
 
 ## Presentation Isolation
 
 UI coupling is a common failure point in Next.js applications.
 
 ### Forbidden
+
 ```text
 Reader Presentation
   ✕
 Profile Presentation
 ```
-*(A React component in the Reader domain must not import a React component from the Profile domain. Shared UI components must live in the platform/shared design system).*
+
+_(A React component in the Reader domain must not import a React component from the Profile domain. Shared UI components must live in the platform/shared design system)._

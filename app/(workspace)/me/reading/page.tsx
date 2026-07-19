@@ -1,28 +1,36 @@
-import { createSupabaseServerClient } from '@/modules/shared/core/database/server';
-import { getDashboardData } from '@/modules/me/application/GetTodayOverview/actions/dashboard';
-import { redirect } from 'next/navigation';
-import ReadingScreen from '@/modules/me/presentation/screens/ReadingScreen';
+import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import {
+  getCurrentlyReadingAction,
+  getFinishedBooksAction,
+  getWantToReadAction,
+} from "@/modules/reading/library/actions/library";
+import { redirect } from "next/navigation";
+import ReadingScreen from "@/modules/me/presentation/screens/ReadingScreen";
+import { LibraryCollectionItemDto } from "@/modules/library/application/dto/response/LibraryEntryDto";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default async function ReadingPage() {
-    const supabase = await createSupabaseServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    if (!user) {
-        redirect('/login');
-    }
+  if (!user) {
+    redirect("/login");
+  }
 
-    const res = await getDashboardData();
-    const dashboardData = res.success && res.data ? res.data : {
-        likedBooks: [],
-        ratedBooks: [],
-        comments: [],
-        readingList: [],
-        dailyStats: []
-    };
+  const [readingRes, finishedRes, wantRes] = await Promise.all([
+    getCurrentlyReadingAction(),
+    getFinishedBooksAction(),
+    getWantToReadAction(),
+  ]);
 
-    return (
-        <ReadingScreen readingList={dashboardData.readingList} />
-    );
+  const readingList: LibraryCollectionItemDto[] = [
+    ...(readingRes.success ? readingRes.data : []),
+    ...(finishedRes.success ? finishedRes.data : []),
+    ...(wantRes.success ? wantRes.data : []),
+  ];
+
+  return <ReadingScreen readingList={readingList} />;
 }

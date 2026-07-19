@@ -5,6 +5,7 @@ Maintain strict naming consistency across TomeSphere styles, design tokens, prim
 ---
 
 ## 1. CSS Custom Properties (Variables)
+
 - **Format**: All variables must use kebab-case.
 - **Prefixes**:
   - Raw color palette: `--[color]-[shade]` (e.g., `--slate-950`, `--indigo-500`).
@@ -18,6 +19,7 @@ Maintain strict naming consistency across TomeSphere styles, design tokens, prim
 ---
 
 ## 2. CSS Class Names (Global & Layout)
+
 - **Format**: Kebab-case.
 - **Prefixes**:
   - Layout primitives: `.layout-[name]` (e.g., `.layout-stack`, `.layout-cluster`, `.layout-rail`).
@@ -27,6 +29,7 @@ Maintain strict naming consistency across TomeSphere styles, design tokens, prim
 ---
 
 ## 3. CSS Modules
+
 - **Format**: camelCase for class selectors to enable direct key access in JavaScript.
   ```typescript
   import styles from './Button.module.css';
@@ -38,6 +41,7 @@ Maintain strict naming consistency across TomeSphere styles, design tokens, prim
 ---
 
 ## 4. React Components
+
 - **Format**: PascalCase.
 - **Directories**:
   - UI Primitives (domain-agnostic): `modules/shared/ui/[ComponentName]/[ComponentName].tsx`

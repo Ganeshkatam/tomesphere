@@ -6,26 +6,26 @@ This document tracks the health and integrity of our architectural migration. Ra
 
 This section tracks the integrity of our domain architecture. These metrics ensure that the established rules and boundaries are respected.
 
-| Metric                              | Target | Current |
-| :---------------------------------- | -----: | ------: |
-| Circular Dependencies               |      0 |       0 |
-| Forbidden Imports                   |      0 |       0 |
-| Repository Contracts                |   100% |    100% |
-| Aggregate Coverage                  |   100% |    100% |
-| Read Model Coverage                 |   100% |    100% |
+| Metric                | Target | Current |
+| :-------------------- | -----: | ------: |
+| Circular Dependencies |      0 |       0 |
+| Forbidden Imports     |      0 |       0 |
+| Repository Contracts  |   100% |    100% |
+| Aggregate Coverage    |   100% |    100% |
+| Read Model Coverage   |   100% |    100% |
 
-*(Note: Target is 100% for existing Level 3 domains)*
+_(Note: Target is 100% for existing Level 3 domains)_
 
 ## Technical Debt
 
 This section tracks legacy concerns and migration progress from older patterns to our standard architecture.
 
-| Metric                              | Target | Current |
-| :---------------------------------- | -----: | ------: |
-| Direct Supabase imports             |      0 |      15 |
-| Legacy services                     |      0 |      TBD|
-| Deprecated modules                  |      0 |      TBD|
-| Legacy routes remaining             |      0 |      TBD|
+| Metric                  | Target | Current |
+| :---------------------- | -----: | ------: |
+| Direct Supabase imports |      0 |      15 |
+| Legacy services         |      0 |     TBD |
+| Deprecated modules      |      0 |     TBD |
+| Legacy routes remaining |      0 |     TBD |
 
 ## Architectural Components Tracker
 

@@ -32,11 +32,12 @@ Progress (`/progress`) is currently tracked here, but it will eventually become 
 ```text
 /modules/reader
 ├── contracts/       # 🚨 Foundation: Abstract models and engine interfaces
-├── actions/         # Server mutations
+├── application/     # Application services and CQRS commands
+├── domain/          # Domain entities and events
+├── infrastructure/  # Repositories and external integrations
+├── presentation/    # Screens and composite views
 ├── components/      # Pure UI components (Viewer, Toolbar)
 ├── services/        # Adapters (PdfJsEngine) and parsers
 ├── state/           # Session-level Zustand stores
-├── annotations/     # Annotations bounded context
-├── progress/        # Progress bounded context
-└── pages/           # Server-composed layouts
+└── annotations/     # Annotations bounded context
 ```

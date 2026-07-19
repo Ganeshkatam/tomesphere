@@ -1,20 +1,28 @@
-import React from 'react';
-import styles from './Button.module.css';
+import React from "react";
+import styles from "./Button.module.css";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "secondary" | "ghost";
+  size?: "sm" | "md" | "lg";
   loading?: boolean;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ children, variant = 'primary', size = 'md', loading = false, className = '', disabled, ...props }, ref) => {
-    const classNames = [
-      styles.btn,
-      styles[variant],
-      styles[size],
-      className
-    ].filter(Boolean).join(' ');
+  (
+    {
+      children,
+      variant = "primary",
+      size = "md",
+      loading = false,
+      className = "",
+      disabled,
+      ...props
+    },
+    ref,
+  ) => {
+    const classNames = [styles.btn, styles[variant], styles[size], className]
+      .filter(Boolean)
+      .join(" ");
 
     return (
       <button
@@ -27,7 +35,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </button>
     );
-  }
+  },
 );
 
-Button.displayName = 'Button';
+Button.displayName = "Button";

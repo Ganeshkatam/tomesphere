@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import styles from './Modal.module.css';
+import React, { useEffect } from "react";
+import styles from "./Modal.module.css";
 
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  variant?: 'default' | 'glass';
+  variant?: "default" | "glass";
   footer?: React.ReactNode;
   children: React.ReactNode;
 }
@@ -14,26 +14,26 @@ export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,
-  variant = 'default',
+  variant = "default",
   footer,
-  children
+  children,
 }) => {
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
     // Lock scroll
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
     };
   }, [isOpen, onClose]);
 
@@ -42,7 +42,7 @@ export const Modal: React.FC<ModalProps> = ({
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div
-        className={variant === 'glass' ? styles.glassContent : styles.content}
+        className={variant === "glass" ? styles.glassContent : styles.content}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

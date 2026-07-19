@@ -13,7 +13,9 @@ TomeSphere separates components into two categories: **UI Primitives** (shared U
 ---
 
 ## 1. UI Primitives
+
 UI Primitives live under `modules/shared/ui/`.
+
 - **Definition**: Core visual atoms of the application (e.g. Button, Card, Input, Modal).
 - **Rules**:
   - Primitives must be **domain-agnostic**. They must NEVER import domain types or reference reading/learning/books concepts.
@@ -23,7 +25,9 @@ UI Primitives live under `modules/shared/ui/`.
 ---
 
 ## 2. Domain Components
+
 Domain Components live beside their respective domain presentation folders (e.g., `modules/reading/home/presentation/`).
+
 - **Definition**: Reusable components representing business features (e.g., `BookRail`, `FeaturedBookCard`, `ContinueReadingCard`).
 - **Rules**:
   - Build domain components using UI Primitives (`Card`, `Button`) combined with Tailwind composition utility classes.

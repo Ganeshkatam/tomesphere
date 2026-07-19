@@ -1,3 +1,3 @@
 export interface GetActiveSessionQuery {
-    readerId: string;
+  readerId: string;
 }

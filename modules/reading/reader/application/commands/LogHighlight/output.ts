@@ -1,3 +1,3 @@
 export interface LogHighlightOutput {
-    highlightId: string;
+  highlightId: string;
 }

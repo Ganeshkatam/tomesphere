@@ -1,8 +1,8 @@
 import next from "eslint-config-next";
 
-export default [
+const eslintConfig = [
   {
-    ignores: ["archive/**/*"]
+    ignores: ["archive/**/*"],
   },
   ...(Array.isArray(next) ? next : [next]),
   {
@@ -13,13 +13,16 @@ export default [
         {
           patterns: [
             {
-              group: ["@/modules/!(reading/books|shared/core|shared/navigation|reading/search)/**/*"],
-              message: "Books module is restricted from importing other feature modules directly."
-            }
-          ]
-        }
-      ]
-    }
+              group: [
+                "@/modules/!(reading/books|shared/core|shared/navigation|reading/search)/**/*",
+              ],
+              message:
+                "Books module is restricted from importing other feature modules directly.",
+            },
+          ],
+        },
+      ],
+    },
   },
   {
     files: ["modules/reading/reader/**/*"],
@@ -29,13 +32,16 @@ export default [
         {
           patterns: [
             {
-              group: ["@/modules/!(reading/reader|shared/core|shared/navigation)/**/*"],
-              message: "Reader module must remain isolated and cannot import from other feature modules."
-            }
-          ]
-        }
-      ]
-    }
+              group: [
+                "@/modules/!(reading/reader|shared/core|shared/navigation)/**/*",
+              ],
+              message:
+                "Reader module must remain isolated and cannot import from other feature modules.",
+            },
+          ],
+        },
+      ],
+    },
   },
   {
     files: ["modules/learning/analytics/**/*"],
@@ -45,13 +51,16 @@ export default [
         {
           patterns: [
             {
-              group: ["@/modules/!(learning/analytics|shared/core|shared/navigation|reading/books)/**/*"],
-              message: "Analytics module is restricted from importing other feature modules directly."
-            }
-          ]
-        }
-      ]
-    }
+              group: [
+                "@/modules/!(learning/analytics|shared/core|shared/navigation|reading/books)/**/*",
+              ],
+              message:
+                "Analytics module is restricted from importing other feature modules directly.",
+            },
+          ],
+        },
+      ],
+    },
   },
   {
     files: ["modules/shared/ui/**/*"],
@@ -62,16 +71,19 @@ export default [
           patterns: [
             {
               group: ["@/modules/!(shared/ui)/**/*"],
-              message: "Shared UI components must remain completely domain-agnostic and are restricted from importing feature modules."
-            }
-          ]
-        }
-      ]
-    }
+              message:
+                "Shared UI components must remain completely domain-agnostic and are restricted from importing feature modules.",
+            },
+          ],
+        },
+      ],
+    },
   },
   {
     rules: {
-      "react-hooks/set-state-in-effect": "off"
-    }
-  }
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
 ];
+
+export default eslintConfig;

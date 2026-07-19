@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="bookGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#A855F7" />
+    </linearGradient>
+  </defs>
+  
+  <g stroke="url(#bookGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Book outline -->
+    <path d="M 50,85 L 50,25" />
+    <path d="M 50,85 C 40,90 20,85 10,85 L 10,25 C 20,25 40,30 50,25 C 60,30 80,25 90,25 L 90,85 C 80,85 60,90 50,85 Z" />
+    
+    <!-- Left page contents -->
+    <!-- Top left block -->
+    <rect x="20" y="35" width="10" height="15" fill="url(#bookGrad)" stroke="none" opacity="0.5" />
+    <rect x="35" y="35" width="10" height="15" fill="url(#bookGrad)" stroke="none" opacity="0.5" />
+    
+    <!-- Middle block -->
+    <rect x="20" y="55" width="25" height="8" fill="url(#bookGrad)" stroke="none" opacity="0.5" />
+    
+    <!-- Bottom blocks -->
+    <rect x="20" y="68" width="6" height="10" fill="url(#bookGrad)" stroke="none" opacity="0.5" />
+    <rect x="29.5" y="68" width="6" height="10" fill="url(#bookGrad)" stroke="none" opacity="0.5" />
+    <rect x="39" y="68" width="6" height="10" fill="url(#bookGrad)" stroke="none" opacity="0.5" />
+
+    <!-- Right page contents -->
+    <rect x="55" y="35" width="30" height="10" fill="url(#bookGrad)" stroke="none" opacity="0.5" />
+    <rect x="55" y="50" width="30" height="28" fill="url(#bookGrad)" stroke="none" opacity="0.5" />
+  </g>
+</svg>

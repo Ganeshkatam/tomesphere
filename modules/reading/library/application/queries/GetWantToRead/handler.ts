@@ -1,27 +1,27 @@
-import { LibraryRepository } from '../../../domain/repositories/LibraryRepository';
-import { BookRepository } from '../../../../books/domain/repositories/BookRepository';
-import { CurrentlyReadingOutput, mapLibraryBookToOutput } from '../../Outputs';
-import { mapBookToOutput } from '../../../../books/application/queries/GetBook/handler';
+import { LibraryRepository } from "../../../domain/repositories/LibraryRepository";
+import { BookRepository } from "../../../../books/domain/repositories/BookRepository";
+import { LibraryCollectionItemDto } from "@/modules/library/application/dto/response/LibraryEntryDto";
+import { LibraryMapper } from "@/modules/library/application/mappers/LibraryMapper";
+import { BookMapper } from "@/modules/library/application/mappers/BookMapper";
 
-export async function getWantToRead(
-    libraryRepo: LibraryRepository,
-    bookRepo: BookRepository,
-    userId: string
-): Promise<CurrentlyReadingOutput[]> {
-    const libraryBooks = await libraryRepo.getWantToRead(userId);
-    if (libraryBooks.length === 0) return [];
+export async function getWantToReadBooks(
+  libraryRepo: LibraryRepository,
+  bookRepo: BookRepository,
+  userId: string,
+): Promise<LibraryCollectionItemDto[]> {
+  const libraryBooks = await libraryRepo.getWantToRead(userId);
 
-    const compositeOutputs: CurrentlyReadingOutput[] = [];
-    
-    for (const lb of libraryBooks) {
-        const domainBook = await bookRepo.findById(lb.bookId as any); 
-        if (domainBook) {
-            compositeOutputs.push({
-                library: mapLibraryBookToOutput(lb),
-                book: mapBookToOutput(domainBook)
-            });
-        }
+  const compositeOutputs: LibraryCollectionItemDto[] = [];
+
+  for (const lb of libraryBooks) {
+    const domainBook = await bookRepo.findById(lb.bookId as any);
+    if (domainBook) {
+      compositeOutputs.push({
+        library: LibraryMapper.toEntryDto(lb),
+        book: BookMapper.toDto(domainBook),
+      });
     }
+  }
 
-    return compositeOutputs;
+  return compositeOutputs;
 }

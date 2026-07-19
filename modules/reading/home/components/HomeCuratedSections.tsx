@@ -1,38 +1,34 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Sparkles, BookOpen, Layers, Clock } from 'lucide-react';
-import BookCard from '@/modules/reading/books/components/BookCard';
-import { Book } from '@/modules/shared/core/database/client';
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Sparkles, BookOpen, Layers, Clock } from "lucide-react";
+import BookCard from "@/modules/reading/books/components/BookCard";
+import { BookDto } from "@/modules/library/application/dto/response/BookDto";
 
 interface HomeCuratedSectionsProps {
-  allBooks: Book[];
-  currentlyReadingBooks: Book[];
-  wantToReadBooks: Book[];
-  userLikes: Set<string>;
-  userRatings: Map<string, number>;
-  handleLike: (id: string) => Promise<void>;
-  handleRate: (id: string, rating: number) => Promise<void>;
+  allBooks: BookDto[];
+  currentlyReadingBooks: BookDto[];
+  wantToReadBooks: BookDto[];
   handleAddToList: (id: string, status: any) => Promise<void>;
 }
 
 const SUBJECT_ICONS: Record<string, string> = {
-  All: '🌐',
-  Fiction: '📖',
-  'Non-Fiction': '📰',
-  Programming: '💻',
-  'Computer Science': '🖥️',
-  Mathematics: '📐',
-  Science: '🔬',
-  History: '🏛️',
-  Philosophy: '🧠',
-  Psychology: '🧬',
-  Business: '📊',
-  Romance: '💌',
-  Mystery: '🔎',
-  Fantasy: '🧙',
-  'Science Fiction': '🚀',
+  All: "🌐",
+  Fiction: "📖",
+  "Non-Fiction": "📰",
+  Programming: "💻",
+  "Computer Science": "🖥️",
+  Mathematics: "📐",
+  Science: "🔬",
+  History: "🏛️",
+  Philosophy: "🧠",
+  Psychology: "🧬",
+  Business: "📊",
+  Romance: "💌",
+  Mystery: "🔎",
+  Fantasy: "🧙",
+  "Science Fiction": "🚀",
 };
 
 const cardVariants = {
@@ -41,7 +37,7 @@ const cardVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { delay: i * 0.06, duration: 0.4, ease: 'easeOut' },
+    transition: { delay: i * 0.06, duration: 0.4, ease: "easeOut" },
   }),
   exit: { opacity: 0, y: -12, scale: 0.97, transition: { duration: 0.25 } },
 };
@@ -50,50 +46,50 @@ export default function HomeCuratedSections({
   allBooks,
   currentlyReadingBooks,
   wantToReadBooks,
-  userLikes,
-  userRatings,
-  handleLike,
-  handleRate,
   handleAddToList,
 }: HomeCuratedSectionsProps) {
-  const [activeSubject, setActiveSubject] = useState<string>('All');
+  const [activeSubject, setActiveSubject] = useState<string>("All");
 
   const subjects = useMemo(() => {
-    const raw = allBooks.map(b => b.academic_subject || b.genre).filter(Boolean) as string[];
+    const raw = allBooks
+      .flatMap((b) => [
+        ...(b.subjects?.map(s => s.name) || []),
+        ...(b.genres?.map(g => g.name) || [])
+      ])
+      .filter(Boolean) as string[];
     const unique = Array.from(new Set(raw)).slice(0, 10);
-    return ['All', ...unique];
+    return ["All", ...unique];
   }, [allBooks]);
 
   const getCount = (sub: string) =>
-    sub === 'All'
+    sub === "All"
       ? allBooks.length
-      : allBooks.filter(b =>
-          (b.academic_subject || b.genre || '').toLowerCase() === sub.toLowerCase()
+      : allBooks.filter(
+          (b) =>
+            b.subjects?.some(s => s.name.toLowerCase() === sub.toLowerCase()) ||
+            b.genres?.some(g => g.name.toLowerCase() === sub.toLowerCase())
         ).length;
 
   const subjectBooks = useMemo(() => {
-    if (activeSubject === 'All') return allBooks.slice(0, 6);
+    if (activeSubject === "All") return allBooks.slice(0, 6);
     return allBooks
-      .filter(b =>
-        (b.academic_subject || b.genre || '').toLowerCase() === activeSubject.toLowerCase()
+      .filter(
+        (b) =>
+          b.subjects?.some(s => s.name.toLowerCase() === activeSubject.toLowerCase()) ||
+          b.genres?.some(g => g.name.toLowerCase() === activeSubject.toLowerCase())
       )
       .slice(0, 6);
   }, [activeSubject, allBooks]);
 
   const featuredBooks = useMemo(() => allBooks.slice(0, 6), [allBooks]);
 
-  const bookCardProps = (book: Book) => ({
+  const bookCardProps = (book: BookDto) => ({
     book,
-    onLike: () => handleLike(book.id),
-    onRate: (rating: number) => handleRate(book.id, rating),
     onAddToList: (status: any) => handleAddToList(book.id, status),
-    isLiked: userLikes.has(book.id),
-    userRating: userRatings.get(book.id) || 0,
   });
 
   return (
     <div className="w-full space-y-0 mt-12">
-
       {/* ──────── Continue Reading ──────── */}
       {currentlyReadingBooks.length > 0 && (
         <section className="py-16 w-full">
@@ -103,7 +99,7 @@ export default function HomeCuratedSections({
               Pick Up Where You Left Off
             </p>
             <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
-              Continue{' '}
+              Continue{" "}
               <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
                 Reading
               </span>
@@ -116,7 +112,7 @@ export default function HomeCuratedSections({
                 key={book.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.07, duration: 0.4, ease: 'easeOut' }}
+                transition={{ delay: i * 0.07, duration: 0.4, ease: "easeOut" }}
               >
                 <BookCard {...bookCardProps(book)} />
               </motion.div>
@@ -127,7 +123,6 @@ export default function HomeCuratedSections({
 
       {/* ──────── Explore by Subject ──────── */}
       <section className="py-16 w-full">
-
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
@@ -136,7 +131,7 @@ export default function HomeCuratedSections({
               Browse by Topic
             </p>
             <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
-              Explore by{' '}
+              Explore by{" "}
               <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Subject
               </span>
@@ -148,8 +143,8 @@ export default function HomeCuratedSections({
 
           {/* Subject Chips */}
           <div className="flex flex-wrap gap-2 max-w-xl">
-            {subjects.map(sub => {
-              const icon = SUBJECT_ICONS[sub] ?? '📚';
+            {subjects.map((sub) => {
+              const icon = SUBJECT_ICONS[sub] ?? "📚";
               const count = getCount(sub);
               const active = activeSubject === sub;
               return (
@@ -158,15 +153,17 @@ export default function HomeCuratedSections({
                   onClick={() => setActiveSubject(sub)}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all duration-300 flex items-center gap-1.5 ${
                     active
-                      ? 'bg-indigo-600 border-indigo-500 text-white shadow-[0_0_16px_rgba(99,102,241,0.45)]'
-                      : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20'
+                      ? "bg-indigo-600 border-indigo-500 text-white shadow-[0_0_16px_rgba(99,102,241,0.45)]"
+                      : "bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20"
                   }`}
                 >
                   <span>{icon}</span>
                   <span>{sub}</span>
                   <span
                     className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                      active ? 'bg-white/20 text-white' : 'bg-white/10 text-slate-500'
+                      active
+                        ? "bg-white/20 text-white"
+                        : "bg-white/10 text-slate-500"
                     }`}
                   >
                     {count}
@@ -184,12 +181,19 @@ export default function HomeCuratedSections({
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
             className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5"
           >
             {subjectBooks.length > 0 ? (
               subjectBooks.map((book, i) => (
-                <motion.div key={book.id} custom={i} variants={cardVariants} initial="hidden" animate="visible" exit="exit">
+                <motion.div
+                  key={book.id}
+                  custom={i}
+                  variants={cardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
                   <BookCard {...bookCardProps(book)} />
                 </motion.div>
               ))
@@ -197,7 +201,7 @@ export default function HomeCuratedSections({
               <div className="col-span-full flex flex-col items-center gap-3 py-16 text-slate-500">
                 <BookOpen size={40} className="opacity-30" />
                 <p className="text-sm">
-                  No books found under{' '}
+                  No books found under{" "}
                   <span className="text-white/60">{activeSubject}</span> yet.
                 </p>
               </div>
@@ -212,7 +216,10 @@ export default function HomeCuratedSections({
             className="group flex items-center gap-2 px-8 py-3.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 hover:border-indigo-500/40 text-white font-semibold text-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)]"
           >
             <span>Browse all {getCount(activeSubject)} books</span>
-            <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+            <ArrowRight
+              size={16}
+              className="transition-transform group-hover:translate-x-1"
+            />
           </a>
         </div>
       </section>
@@ -230,13 +237,14 @@ export default function HomeCuratedSections({
                 Editor&apos;s Picks
               </p>
               <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
-                Featured{' '}
+                Featured{" "}
                 <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400 bg-clip-text text-transparent">
                   Reading Collection
                 </span>
               </h2>
               <p className="text-slate-400 mt-2 max-w-md text-sm">
-                Curated titles for students, researchers, and professional learners.
+                Curated titles for students, researchers, and professional
+                learners.
               </p>
             </div>
             <a
@@ -244,7 +252,10 @@ export default function HomeCuratedSections({
               className="group hidden sm:flex items-center gap-2 px-6 py-2.5 rounded-full border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-semibold text-sm transition-all duration-300 self-end"
             >
               <span>Explore Library</span>
-              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              <ArrowRight
+                size={14}
+                className="transition-transform group-hover:translate-x-1"
+              />
             </a>
           </div>
 
@@ -256,7 +267,7 @@ export default function HomeCuratedSections({
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.07, duration: 0.4, ease: 'easeOut' }}
+                transition={{ delay: i * 0.07, duration: 0.4, ease: "easeOut" }}
               >
                 <BookCard {...bookCardProps(book)} />
               </motion.div>
@@ -270,12 +281,14 @@ export default function HomeCuratedSections({
               className="group flex items-center gap-2 px-8 py-3.5 rounded-full border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-semibold text-sm transition-all"
             >
               <span>Explore Library</span>
-              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              <ArrowRight
+                size={14}
+                className="transition-transform group-hover:translate-x-1"
+              />
             </a>
           </div>
         </div>
       </section>
-
     </div>
   );
 }

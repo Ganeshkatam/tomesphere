@@ -232,6 +232,51 @@ export type Database = {
         }
         Relationships: []
       }
+      announcements: {
+        Row: {
+          content: string
+          created_at: string | null
+          ends_at: string
+          id: string
+          is_active: boolean | null
+          is_dismissible: boolean | null
+          link_text: string | null
+          link_url: string | null
+          starts_at: string
+          title: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          ends_at: string
+          id?: string
+          is_active?: boolean | null
+          is_dismissible?: boolean | null
+          link_text?: string | null
+          link_url?: string | null
+          starts_at: string
+          title: string
+          type?: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          ends_at?: string
+          id?: string
+          is_active?: boolean | null
+          is_dismissible?: boolean | null
+          link_text?: string | null
+          link_url?: string | null
+          starts_at?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -265,117 +310,143 @@ export type Database = {
         }
         Relationships: []
       }
-      badges: {
+      auth_rate_limits: {
         Row: {
-          created_at: string | null
-          criteria: Json | null
-          description: string | null
-          icon_url: string | null
+          created_at: string
           id: string
-          name: string
+          key: string
+          locked_until: string | null
         }
         Insert: {
-          created_at?: string | null
-          criteria?: Json | null
-          description?: string | null
-          icon_url?: string | null
+          created_at?: string
           id?: string
-          name: string
+          key: string
+          locked_until?: string | null
         }
         Update: {
-          created_at?: string | null
-          criteria?: Json | null
-          description?: string | null
-          icon_url?: string | null
+          created_at?: string
           id?: string
-          name?: string
+          key?: string
+          locked_until?: string | null
         }
         Relationships: []
       }
-      book_comments: {
+      authors: {
         Row: {
-          book_id: string
-          content: string
+          avatar_url: string | null
+          bio: string | null
           created_at: string | null
           id: string
-          parent_id: string | null
+          name: string
+          slug: string
           updated_at: string | null
-          user_id: string
         }
         Insert: {
-          book_id: string
-          content: string
+          avatar_url?: string | null
+          bio?: string | null
           created_at?: string | null
           id?: string
-          parent_id?: string | null
+          name: string
+          slug: string
           updated_at?: string | null
-          user_id: string
         }
         Update: {
-          book_id?: string
-          content?: string
+          avatar_url?: string | null
+          bio?: string | null
           created_at?: string | null
           id?: string
-          parent_id?: string | null
+          name?: string
+          slug?: string
           updated_at?: string | null
-          user_id?: string
+        }
+        Relationships: []
+      }
+      book_authors: {
+        Row: {
+          author_id: string
+          book_id: string
+        }
+        Insert: {
+          author_id: string
+          book_id: string
+        }
+        Update: {
+          author_id?: string
+          book_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "book_comments_book_id_fkey"
+            foreignKeyName: "book_authors_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_authors_book_id_fkey"
             columns: ["book_id"]
             isOneToOne: false
             referencedRelation: "books"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "book_comments_parent_id_fkey"
-            columns: ["parent_id"]
-            isOneToOne: false
-            referencedRelation: "book_comments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "book_comments_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
-      book_likes: {
+      book_genres: {
         Row: {
           book_id: string
-          created_at: string | null
-          id: string
-          user_id: string
+          genre_id: string
         }
         Insert: {
           book_id: string
-          created_at?: string | null
-          id?: string
-          user_id: string
+          genre_id: string
         }
         Update: {
           book_id?: string
-          created_at?: string | null
-          id?: string
-          user_id?: string
+          genre_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "book_likes_book_id_fkey"
+            foreignKeyName: "book_genres_book_id_fkey"
             columns: ["book_id"]
             isOneToOne: false
             referencedRelation: "books"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "book_likes_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "book_genres_genre_id_fkey"
+            columns: ["genre_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "genres"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      book_subjects: {
+        Row: {
+          book_id: string
+          subject_id: string
+        }
+        Insert: {
+          book_id: string
+          subject_id: string
+        }
+        Update: {
+          book_id?: string
+          subject_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_subjects_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_subjects_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
             referencedColumns: ["id"]
           },
         ]
@@ -424,8 +495,6 @@ export type Database = {
       }
       books: {
         Row: {
-          academic_subject: string | null
-          author: string
           cover_url: string | null
           created_at: string | null
           description: string | null
@@ -437,7 +506,6 @@ export type Database = {
           file_size_mb: number | null
           format: string | null
           fts: unknown
-          genre: string
           hash: string | null
           id: string
           is_featured: boolean | null
@@ -456,8 +524,6 @@ export type Database = {
           view_count: number | null
         }
         Insert: {
-          academic_subject?: string | null
-          author: string
           cover_url?: string | null
           created_at?: string | null
           description?: string | null
@@ -469,7 +535,6 @@ export type Database = {
           file_size_mb?: number | null
           format?: string | null
           fts?: unknown
-          genre: string
           hash?: string | null
           id?: string
           is_featured?: boolean | null
@@ -488,8 +553,6 @@ export type Database = {
           view_count?: number | null
         }
         Update: {
-          academic_subject?: string | null
-          author?: string
           cover_url?: string | null
           created_at?: string | null
           description?: string | null
@@ -501,7 +564,6 @@ export type Database = {
           file_size_mb?: number | null
           format?: string | null
           fts?: unknown
-          genre?: string
           hash?: string | null
           id?: string
           is_featured?: boolean | null
@@ -553,35 +615,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
-      }
-      comment_likes: {
-        Row: {
-          comment_id: string
-          created_at: string | null
-          id: string
-          user_id: string
-        }
-        Insert: {
-          comment_id: string
-          created_at?: string | null
-          id?: string
-          user_id: string
-        }
-        Update: {
-          comment_id?: string
-          created_at?: string | null
-          id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "comment_likes_comment_id_fkey"
-            columns: ["comment_id"]
-            isOneToOne: false
-            referencedRelation: "discussion_comments"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       discovery_book_features: {
         Row: {
@@ -739,183 +772,6 @@ export type Database = {
           },
         ]
       }
-      discussion_comments: {
-        Row: {
-          content: string
-          created_at: string | null
-          discussion_id: string
-          id: string
-          parent_comment_id: string | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string | null
-          discussion_id: string
-          id?: string
-          parent_comment_id?: string | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string | null
-          discussion_id?: string
-          id?: string
-          parent_comment_id?: string | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "discussion_comments_discussion_id_fkey"
-            columns: ["discussion_id"]
-            isOneToOne: false
-            referencedRelation: "discussions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "discussion_comments_parent_comment_id_fkey"
-            columns: ["parent_comment_id"]
-            isOneToOne: false
-            referencedRelation: "discussion_comments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      discussion_likes: {
-        Row: {
-          created_at: string | null
-          discussion_id: string
-          id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          discussion_id: string
-          id?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          discussion_id?: string
-          id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "discussion_likes_discussion_id_fkey"
-            columns: ["discussion_id"]
-            isOneToOne: false
-            referencedRelation: "discussions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      discussion_replies: {
-        Row: {
-          content: string
-          created_at: string | null
-          discussion_id: string
-          id: string
-          parent_reply_id: string | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string | null
-          discussion_id: string
-          id?: string
-          parent_reply_id?: string | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string | null
-          discussion_id?: string
-          id?: string
-          parent_reply_id?: string | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "discussion_replies_discussion_id_fkey"
-            columns: ["discussion_id"]
-            isOneToOne: false
-            referencedRelation: "discussions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "discussion_replies_parent_reply_id_fkey"
-            columns: ["parent_reply_id"]
-            isOneToOne: false
-            referencedRelation: "discussion_replies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "discussion_replies_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      discussions: {
-        Row: {
-          book_id: string
-          content: string
-          created_at: string | null
-          id: string
-          is_pinned: boolean | null
-          title: string
-          updated_at: string | null
-          user_id: string
-          view_count: number | null
-        }
-        Insert: {
-          book_id: string
-          content: string
-          created_at?: string | null
-          id?: string
-          is_pinned?: boolean | null
-          title: string
-          updated_at?: string | null
-          user_id: string
-          view_count?: number | null
-        }
-        Update: {
-          book_id?: string
-          content?: string
-          created_at?: string | null
-          id?: string
-          is_pinned?: boolean | null
-          title?: string
-          updated_at?: string | null
-          user_id?: string
-          view_count?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "discussions_book_id_fkey"
-            columns: ["book_id"]
-            isOneToOne: false
-            referencedRelation: "books"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "discussions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       faqs: {
         Row: {
           answer: string
@@ -999,6 +855,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      genres: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       highlights: {
         Row: {
@@ -1305,48 +1191,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ratings: {
-        Row: {
-          book_id: string
-          created_at: string | null
-          id: string
-          rating: number
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          book_id: string
-          created_at?: string | null
-          id?: string
-          rating: number
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          book_id?: string
-          created_at?: string | null
-          id?: string
-          rating?: number
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ratings_book_id_fkey"
-            columns: ["book_id"]
-            isOneToOne: false
-            referencedRelation: "books"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ratings_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       reader_highlights: {
         Row: {
           book_id: string
@@ -1601,54 +1445,6 @@ export type Database = {
         }
         Relationships: []
       }
-      reviews: {
-        Row: {
-          book_id: string
-          content: string
-          created_at: string | null
-          flagged: boolean | null
-          flagged_reason: string | null
-          id: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          book_id: string
-          content: string
-          created_at?: string | null
-          flagged?: boolean | null
-          flagged_reason?: string | null
-          id?: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          book_id?: string
-          content?: string
-          created_at?: string | null
-          flagged?: boolean | null
-          flagged_reason?: string | null
-          id?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "reviews_book_id_fkey"
-            columns: ["book_id"]
-            isOneToOne: false
-            referencedRelation: "books"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "reviews_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       role_permissions: {
         Row: {
           created_at: string | null
@@ -1739,37 +1535,32 @@ export type Database = {
         }
         Relationships: []
       }
-      suggestions: {
+      subjects: {
         Row: {
-          content: string
           created_at: string | null
+          description: string | null
           id: string
-          status: string | null
-          user_id: string | null
+          name: string
+          slug: string
+          updated_at: string | null
         }
         Insert: {
-          content: string
           created_at?: string | null
+          description?: string | null
           id?: string
-          status?: string | null
-          user_id?: string | null
+          name: string
+          slug: string
+          updated_at?: string | null
         }
         Update: {
-          content?: string
           created_at?: string | null
+          description?: string | null
           id?: string
-          status?: string | null
-          user_id?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "suggestions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       system_logs: {
         Row: {
@@ -1875,6 +1666,53 @@ export type Database = {
           },
         ]
       }
+      trending_books: {
+        Row: {
+          all_time_rank: number | null
+          all_time_score: number
+          book_id: string
+          daily_rank: number | null
+          daily_score: number
+          monthly_rank: number | null
+          monthly_score: number
+          updated_at: string
+          weekly_rank: number | null
+          weekly_score: number
+        }
+        Insert: {
+          all_time_rank?: number | null
+          all_time_score?: number
+          book_id: string
+          daily_rank?: number | null
+          daily_score?: number
+          monthly_rank?: number | null
+          monthly_score?: number
+          updated_at?: string
+          weekly_rank?: number | null
+          weekly_score?: number
+        }
+        Update: {
+          all_time_rank?: number | null
+          all_time_score?: number
+          book_id?: string
+          daily_rank?: number | null
+          daily_score?: number
+          monthly_rank?: number | null
+          monthly_score?: number
+          updated_at?: string
+          weekly_rank?: number | null
+          weekly_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trending_books_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: true
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -1901,39 +1739,6 @@ export type Database = {
           },
           {
             foreignKeyName: "user_achievements_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_badges: {
-        Row: {
-          badge_id: string
-          earned_at: string | null
-          user_id: string
-        }
-        Insert: {
-          badge_id: string
-          earned_at?: string | null
-          user_id: string
-        }
-        Update: {
-          badge_id?: string
-          earned_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_badges_badge_id_fkey"
-            columns: ["badge_id"]
-            isOneToOne: false
-            referencedRelation: "badges"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_badges_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -2056,32 +1861,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
-      }
-      user_recommendations: {
-        Row: {
-          recommendations: Json | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          recommendations?: Json | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          recommendations?: Json | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_recommendations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       user_roles: {
         Row: {
@@ -2249,6 +2028,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      cleanup_expired_rate_limits: { Args: never; Returns: undefined }
       format_file_size: { Args: { size_bytes: number }; Returns: string }
       get_active_announcements: {
         Args: { p_user_role?: string }
@@ -2326,6 +2106,10 @@ export type Database = {
         Args: { p_month: string; p_pages: number; p_user_id: string }
         Returns: undefined
       }
+      increment_download_count: {
+        Args: { target_book_id: string }
+        Returns: undefined
+      }
       match_books: {
         Args: {
           match_count: number
@@ -2355,6 +2139,10 @@ export type Database = {
       }
       refresh_search_document: {
         Args: { target_book_id: string }
+        Returns: undefined
+      }
+      sanitize_account_logs: {
+        Args: { target_user_id: string }
         Returns: undefined
       }
       save_book_action_with_events: {

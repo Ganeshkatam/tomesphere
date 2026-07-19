@@ -16,7 +16,7 @@ html.light {
   --surface-raised: var(--slate-100);
   --surface-overlay: var(--slate-200);
   --surface-floating: var(--white);
-  
+
   /* Semantic borders (referencing foundation border opacity tokens) */
   --border-subtle: var(--border-slate-subtle);
   --border-default: var(--border-slate-default);
@@ -33,7 +33,7 @@ html.light {
   --bg-glass-hover: rgba(255, 255, 255, 0.85);
   --glass-border: var(--border-slate-subtle);
   --glass-border-strong: var(--border-slate-default);
-  
+
   /* Unified 3-level Shadow system */
   --shadow-card: var(--shadow-premium-sm);
   --shadow-dropdown: var(--shadow-premium-md);
@@ -49,11 +49,16 @@ html.light {
   /* Colored shadows & focus rings */
   --shadow-glow: 0 0 20px rgba(79, 70, 229, 0.15);
   --focus-ring-color: rgba(79, 70, 229, 0.3);
-  
+
   /* Page background configuration */
   --body-bg-gradient: var(--slate-50);
   --body-overlay-opacity: 0.8;
-  --hero-overlay: linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0%, rgba(241, 245, 249, 0.75) 50%, var(--slate-50) 100%);
+  --hero-overlay: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(241, 245, 249, 0.75) 50%,
+    var(--slate-50) 100%
+  );
 
   /* Inverted Slate Scale for Light Theme */
   --theme-slate-50: var(--slate-950);
@@ -67,5 +72,10 @@ html.light {
   --theme-slate-800: var(--slate-100);
   --theme-slate-900: var(--slate-50);
   --theme-slate-950: #ffffff;
-  --study-tools-bg: linear-gradient(to bottom right, rgba(224, 231, 255, 0.3) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(243, 232, 255, 0.3) 100%);
+  --study-tools-bg: linear-gradient(
+    to bottom right,
+    rgba(224, 231, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(243, 232, 255, 0.3) 100%
+  );
 }

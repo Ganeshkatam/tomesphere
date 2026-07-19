@@ -18,7 +18,7 @@ Infrastructure
 
 - **Presentation (UI)** can depend on Application and Domain, but never Infrastructure.
 - **Application** depends on Domain. It orchestrates use cases.
-- **Domain** depends on *nothing*. It contains pure business logic and interfaces.
+- **Domain** depends on _nothing_. It contains pure business logic and interfaces.
 - **Infrastructure** depends on Domain. It implements the interfaces defined by the Domain.
 
 > [!CAUTION]
@@ -38,22 +38,28 @@ Not every feature needs a full DDD implementation on day one. We use a maturity 
 Use these checklists to design your building blocks correctly.
 
 ### 1. Aggregate Root Checklist
+
 Does this entity deserve to be an Aggregate Root?
+
 - [ ] Does it own business invariants that must be protected?
 - [ ] Does it own transactional consistency for a boundary?
 - [ ] Does it raise domain events?
 - [ ] Are its parts always persisted together?
-*If yes → Aggregate Root. If no → Entity or Value Object.*
+      _If yes → Aggregate Root. If no → Entity or Value Object._
 
 ### 2. Repository Checklist
+
 Are you designing a Repository interface correctly?
+
 - [ ] Is it named after a business capability (e.g. `BookRepository`), not a table?
 - [ ] Are persistence details (e.g., Supabase) completely hidden?
 - [ ] Does it take and return Domain Models (Entities/Aggregates), never database rows?
 - [ ] Are query parameters encapsulated in request objects instead of exposing SQL concepts?
 
 ### 3. Use Case Checklist
+
 Are you writing a clean Application Use Case?
+
 - [ ] Is it a pure function (or class) with a single public method?
 - [ ] Does it only orchestrate (validate -> fetch -> act -> save)?
 - [ ] Is it completely free of persistence logic or SQL?

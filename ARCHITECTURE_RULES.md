@@ -40,4 +40,5 @@ Every module (e.g., `/modules/books`) MUST strictly own its:
 - **`✅ USE GRANULAR SUSPENSE`**: Wrap heavy data-fetching components in `<Suspense>` rather than relying exclusively on global `loading.tsx` files.
 
 ---
-*These rules are designed to prevent architectural entropy. If a pattern doesn't fit within these rules, the pattern is likely wrong.*
+
+_These rules are designed to prevent architectural entropy. If a pattern doesn't fit within these rules, the pattern is likely wrong._

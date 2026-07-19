@@ -1,5 +1,5 @@
-import { FinishReadingSessionInput } from './input';
+import { FinishReadingSessionInput } from "./input";
 
 export class FinishReadingSessionCommand {
-    constructor(public readonly input: FinishReadingSessionInput) {}
+  constructor(public readonly input: FinishReadingSessionInput) {}
 }

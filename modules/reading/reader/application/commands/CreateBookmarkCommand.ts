@@ -1,43 +1,33 @@
-'use server';
-
-import { createSupabaseServerClient } from '@/modules/shared/core/database/server';
-import { LocationAnchor } from '@/modules/shared/core/events/types';
-import { emitOutboxEvent } from '@/modules/shared/core/infrastructure/outbox/outbox';
+import { LocationAnchor } from "@/modules/shared/core/events/types";
+import { emitOutboxEvent } from "@/modules/shared/core/infrastructure/outbox/outbox";
+import { BookmarkRepository } from "../../domain/repositories/BookmarkRepository";
+import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
 
 export interface CreateBookmarkRequest {
-    userId: string;
-    bookId: string;
-    anchor: LocationAnchor;
-    label?: string;
+  userId: string;
+  bookId: string;
+  anchor: LocationAnchor;
+  label?: string;
 }
 
-export async function executeCreateBookmark(request: CreateBookmarkRequest): Promise<{ id: string }> {
-    const supabase = await createSupabaseServerClient();
+export async function executeCreateBookmark(
+  repository: BookmarkRepository,
+  request: CreateBookmarkRequest,
+): Promise<{ id: string }> {
+  const bookmark = await repository.createBookmark(
+    request.userId, 
+    request.bookId, 
+    request.anchor.value, 
+    request.label
+  );
 
-    const { data, error } = await supabase
-        .from('reader_bookmarks')
-        .insert({
-            user_id: request.userId,
-            book_id: request.bookId,
-            location_anchor: request.anchor as any,
-            label: request.label || null
-        })
-        .select('id')
-        .single();
+  const supabase = await createSupabaseServerClient();
+  await emitOutboxEvent(supabase, "reader:bookmark_created", {
+    userId: request.userId,
+    bookId: request.bookId,
+    bookmarkId: bookmark.id,
+    anchor: request.anchor,
+  });
 
-    if (error || !data) {
-        console.error('Failed to create bookmark:', error);
-        throw new Error('Failed to create bookmark');
-    }
-
-    const bookmarkId = data.id;
-
-    await emitOutboxEvent(supabase, 'reader:bookmark_created', {
-        userId: request.userId,
-        bookId: request.bookId,
-        bookmarkId,
-        anchor: request.anchor
-    });
-
-    return { id: bookmarkId };
+  return { id: bookmark.id };
 }

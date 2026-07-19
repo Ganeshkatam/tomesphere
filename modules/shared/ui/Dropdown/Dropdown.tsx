@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import styles from './Dropdown.module.css';
+import React, { useState, useRef, useEffect } from "react";
+import styles from "./Dropdown.module.css";
 
 export interface DropdownItem {
   label: string;
@@ -12,29 +12,32 @@ export interface DropdownItem {
 export interface DropdownProps {
   trigger: React.ReactNode;
   items: DropdownItem[];
-  variant?: 'default' | 'glass';
+  variant?: "default" | "glass";
   className?: string;
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
   trigger,
   items,
-  variant = 'default',
-  className = ''
+  variant = "default",
+  className = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -44,7 +47,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         {trigger}
       </div>
       {isOpen && (
-        <div className={variant === 'glass' ? styles.glassMenu : styles.menu}>
+        <div className={variant === "glass" ? styles.glassMenu : styles.menu}>
           {items.map((item, idx) => {
             if (item.divider) {
               return <div key={`div-${idx}`} className={styles.divider} />;

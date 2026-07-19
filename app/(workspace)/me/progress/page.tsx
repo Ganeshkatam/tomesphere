@@ -1,23 +1,21 @@
-import { getProgressDashboard } from '@/modules/user/progress/presentation/actions/progress';
-import { getDashboardData } from '@/modules/me/application/GetTodayOverview/actions/dashboard';
-import { redirect } from 'next/navigation';
-import ProgressDashboardScreen from '@/modules/user/progress/presentation/components/ProgressDashboardScreen';
+import { getProgressDashboard } from "@/modules/user/progress/presentation/actions/progress";
+import { redirect } from "next/navigation";
+import ProgressDashboardScreen from "@/modules/user/progress/presentation/components/ProgressDashboardScreen";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default async function ProgressPage() {
-    const [progress, dashboardRes] = await Promise.all([
-        getProgressDashboard(),
-        getDashboardData() // We keep this for the dailyStats chart for now
-    ]);
+  const progressResult = await getProgressDashboard();
+  const progress = progressResult.success ? progressResult.data : null;
 
-    if (!progress) {
-        redirect('/login');
-    }
+  if (!progress) {
+    redirect("/login");
+  }
 
-    const dashboardData = dashboardRes.success && dashboardRes.data ? dashboardRes.data : { dailyStats: [] };
-
-    return (
-        <ProgressDashboardScreen progress={progress} dailyStats={dashboardData.dailyStats} />
-    );
+  return (
+    <ProgressDashboardScreen
+      progress={progress}
+      dailyStats={[]}
+    />
+  );
 }

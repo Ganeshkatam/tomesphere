@@ -1,0 +1,8 @@
+{
+  "ignore": [
+    "archive/**",
+    "future/**",
+    "scratch/**",
+    "scripts/**"
+  ]
+}
