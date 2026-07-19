@@ -1,5 +1,5 @@
-import LibraryScreen from "@/modules/reading/library/presentation/screens/LibraryScreen";
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import LibraryScreen from "@/modules/library/presentation/screens/LibraryScreen";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";

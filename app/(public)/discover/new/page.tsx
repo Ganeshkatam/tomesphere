@@ -1,5 +1,5 @@
 import { executeGetDiscoveryOverviewQuery } from "@/modules/discovery/application/queries/GetDiscoveryOverview";
-import BookCard from "@/modules/reading/books/components/BookCard";
+import BookCard from "@/modules/books/components/BookCard";
 
 export default async function NewArrivalsPage() {
   const overview = await executeGetDiscoveryOverviewQuery();

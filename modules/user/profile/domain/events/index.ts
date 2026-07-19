@@ -1,4 +1,4 @@
-import { DomainEvent } from "@/modules/core/domain/DomainEvent";
+import { DomainEvent } from "@/shared/kernel/DomainEvent";
 import * as crypto from "crypto";
 
 export class ProfileIdentityUpdated implements DomainEvent {

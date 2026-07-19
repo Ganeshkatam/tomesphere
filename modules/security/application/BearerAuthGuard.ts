@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { User } from "@supabase/supabase-js";
 
 export class BearerAuthGuard {

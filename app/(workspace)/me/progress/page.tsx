@@ -1,6 +1,6 @@
-import { getProgressDashboard } from "@/modules/user/progress/presentation/actions/progress";
+import { getProgressDashboard } from "@/modules/progress/presentation/actions/progress";
 import { redirect } from "next/navigation";
-import ProgressDashboardScreen from "@/modules/user/progress/presentation/components/ProgressDashboardScreen";
+import ProgressDashboardScreen from "@/modules/progress/presentation/components/ProgressDashboardScreen";
 
 export const dynamic = "force-dynamic";
 

@@ -1,4 +1,4 @@
-import { Entity } from "@/modules/core/domain/Entity";
+import { Entity } from "@/shared/kernel/Entity";
 
 export interface ActivityLogProps {
   userId: string;

@@ -1,6 +1,6 @@
 import { ReadingGoalRepository } from "../../domain/repositories/ReadingGoalRepository";
 import { ReadingGoal } from "../../domain/entities/ReadingGoal";
-import { UseCaseResult } from "@/modules/shared/core/application/UseCaseResult";
+import { UseCaseResult } from "@/shared/core/application/UseCaseResult";
 
 export interface UpdateReadingGoalCommandPayload {
   userId: string;

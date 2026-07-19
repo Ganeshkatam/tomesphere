@@ -78,8 +78,8 @@ replaceFile('modules/reading/reader/application/commands/LogHighlight/handler.ts
 ]);
 
 replaceFile('modules/reading/search/actions/search.ts', [
-  ['import { ActionResult } from "@/modules/shared/core/types/ActionResult";\n', ''],
-  ['import { ActionResult } from "@/modules/shared/core/types/ActionResult";\r\n', ''],
+  ['import { ActionResult } from "@/shared/core/types/ActionResult";\n', ''],
+  ['import { ActionResult } from "@/shared/core/types/ActionResult";\r\n', ''],
   ['return {\r\n      success: true,\r\n      data: result,\r\n    };', 'return result;'],
   ['return {\n      success: true,\n      data: result,\n    };', 'return result;'],
   ['return {\r\n      success: true,\r\n      data: {\r\n        books: result.books,\r\n        count: result.count,\r\n        page: result.page,\r\n        pageSize: result.pageSize,\r\n        hasMore: result.hasMore,\r\n      },\r\n    };', 'return result;'],

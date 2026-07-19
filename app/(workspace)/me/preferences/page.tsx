@@ -1,8 +1,8 @@
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { getProfile } from "@/modules/user/profile/application/queries/GetProfile/handler";
 import { SupabaseProfileRepository } from "@/modules/user/profile/infrastructure/repositories/SupabaseProfileRepository";
 import { redirect } from "next/navigation";
-import PreferencesScreen from "@/modules/me/presentation/screens/PreferencesScreen";
+import PreferencesScreen from "@/modules/account/presentation/screens/PreferencesScreen";
 
 export const dynamic = "force-dynamic";
 

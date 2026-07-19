@@ -1,9 +1,9 @@
 "use client";
 
 import { SearchResultDto } from "@/modules/discovery/application/queries/SearchBooks/read-model";
-import BookCard from "@/modules/reading/books/components/BookCard";
-import { FadeIn, StaggerContainer, StaggerItem } from "@/modules/shared/ui/motion";
-import { EmptyState } from "@/modules/shared/ui/EmptyState";
+import BookCard from "@/modules/books/components/BookCard";
+import { FadeIn, StaggerContainer, StaggerItem } from "@/shared/ui/motion";
+import { EmptyState } from "@/shared/ui/EmptyState";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState, useEffect, useTransition } from "react";
 import { Search } from "lucide-react";

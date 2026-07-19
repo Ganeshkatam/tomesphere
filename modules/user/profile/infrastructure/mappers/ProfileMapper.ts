@@ -1,4 +1,4 @@
-import { Tables } from "@/modules/shared/core/types/supabase";
+import { Tables } from "@/shared/core/types/supabase";
 import { UserProfile } from "../../domain/entities/UserProfile";
 
 type ProfileRow = Tables<"profiles">;

@@ -1,7 +1,7 @@
-import { IEventBus } from "@/modules/shared/core/events/types";
+import { IEventBus } from "@/shared/core/events/types";
 import { AnalyticsEventHandlers } from "./application/event-handlers/AnalyticsEventHandlers";
 import { SupabaseAnalyticsProjectionStore } from "./infrastructure/SupabaseAnalyticsProjectionStore";
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 
 export class AnalyticsModule {
   static async registerEventHandlers(bus: IEventBus): Promise<void> {

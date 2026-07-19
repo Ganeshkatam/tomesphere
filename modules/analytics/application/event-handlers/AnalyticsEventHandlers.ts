@@ -1,7 +1,7 @@
 import {
   EventPayloads,
   PlatformEventName,
-} from "@/modules/shared/core/events/types";
+} from "@/shared/core/events/types";
 import { AnalyticsProjectionStore } from "../../infrastructure/SupabaseAnalyticsProjectionStore";
 
 export class AnalyticsEventHandlers {

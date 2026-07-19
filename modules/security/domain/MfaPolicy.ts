@@ -1,4 +1,4 @@
-import { SecurityAction } from "@/modules/shared/kernel/security/SecurityAction";
+import { SecurityAction } from "@/shared/kernel/security/SecurityAction";
 
 /**
  * Defines which security actions require multi-factor authentication (AAL2).

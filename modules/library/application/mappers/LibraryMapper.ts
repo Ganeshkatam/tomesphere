@@ -1,4 +1,4 @@
-import { LibraryBook } from "@/modules/reading/library/domain/entities/LibraryBook";
+import { LibraryBook } from "@/modules/library/domain/entities/LibraryBook";
 import { LibraryEntryDto } from "../dto/response/LibraryEntryDto";
 
 export class LibraryMapper {

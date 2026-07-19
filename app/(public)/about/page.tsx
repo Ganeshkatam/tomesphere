@@ -1,11 +1,11 @@
 import Link from "next/link";
-import Navbar from "@/modules/shared/navigation/components/Navbar";
+import Navbar from "@/shared/navigation/components/Navbar";
 import {
   FadeIn,
   SlideUp,
   StaggerContainer,
   StaggerItem,
-} from "@/modules/shared/ui/animations";
+} from "@/shared/ui/animations";
 
 export const metadata = {
   title: "About | TomeSphere",

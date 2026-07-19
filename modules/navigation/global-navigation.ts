@@ -1,5 +1,5 @@
 import { Home, Compass, Book, User, Sparkles, HelpCircle, Info, LucideIcon, Flame } from "lucide-react";
-import { AppRoutes } from "@/modules/shared/kernel/navigation/AppRoutes";
+import { AppRoutes } from "@/shared/kernel/navigation/AppRoutes";
 
 export interface NavigationItem {
   href: string;

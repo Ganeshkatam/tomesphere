@@ -1,6 +1,6 @@
-import { EventHandler } from "../../../../shared/application/events/EventHandler";
-import { EventEnvelope } from "../../../../shared/application/events/EventEnvelope";
-import { ReadingCompletedEvent } from "../../../../reading/reader/domain/events/ReaderEvents";
+import { EventHandler } from "@/shared/application/events/EventHandler";
+import { EventEnvelope } from "@/shared/application/events/EventEnvelope";
+import { ReadingCompletedEvent } from "../../../../reader/domain/events/ReaderEvents";
 import { RecommendationContextStore } from "../projections/RecommendationContextStore";
 
 export class ReadingCompletedHandler implements EventHandler<ReadingCompletedEvent> {

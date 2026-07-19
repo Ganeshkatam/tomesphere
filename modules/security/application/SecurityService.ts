@@ -1,6 +1,6 @@
 import { AuthenticationProvider } from "../domain/AuthenticationProvider";
 import { MfaPolicy } from "../domain/MfaPolicy";
-import { SecurityAction } from "@/modules/shared/kernel/security/SecurityAction";
+import { SecurityAction } from "@/shared/kernel/security/SecurityAction";
 
 export class MfaRequiredError extends Error {
   constructor(action: SecurityAction) {

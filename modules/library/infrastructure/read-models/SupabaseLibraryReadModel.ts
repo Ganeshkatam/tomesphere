@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "@/modules/shared/core/types/database";
+import { Database } from "@/shared/core/types/database";
 import { LibraryReadModel } from "../../application/ports/read-models/LibraryReadModel";
 import { LibraryCollectionItemDto } from "../../application/dto/response/LibraryEntryDto";
 

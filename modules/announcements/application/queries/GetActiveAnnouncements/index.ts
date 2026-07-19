@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { SupabaseAnnouncementReadModel } from "../../../infrastructure/read-models/SupabaseAnnouncementReadModel";
 import { GetActiveAnnouncementsQueryHandler } from "./handler";
 

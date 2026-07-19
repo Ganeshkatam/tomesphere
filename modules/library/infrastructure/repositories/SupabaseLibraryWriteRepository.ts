@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "@/modules/shared/core/types/database";
+import { Database } from "@/shared/core/types/database";
 import { LibraryWriteRepository } from "../../domain/repositories/LibraryWriteRepository";
 
 export class SupabaseLibraryWriteRepository implements LibraryWriteRepository {

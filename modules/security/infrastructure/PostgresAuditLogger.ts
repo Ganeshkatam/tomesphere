@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { AuditContext, AuditLogger } from "../domain/AuditLogger";
-import { SecurityAction } from "@/modules/shared/kernel/security/SecurityAction";
+import { SecurityAction } from "@/shared/kernel/security/SecurityAction";
 
 export class PostgresAuditLogger implements AuditLogger {
   constructor(private readonly supabase: SupabaseClient) {}

@@ -1,4 +1,4 @@
-import { DomainEvent } from "@/modules/core/domain/DomainEvent";
+import { DomainEvent } from "@/shared/kernel/DomainEvent";
 import { ProfileDto } from "../../queries/GetProfile/read-model";
 
 export interface UpdateProfileOutput {

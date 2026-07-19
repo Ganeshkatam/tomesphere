@@ -1,5 +1,5 @@
 import { UserProfile } from "./UserProfile";
-import { ValidationError } from "@/modules/core/domain/DomainError";
+import { ValidationError } from "@/shared/kernel/DomainError";
 import { ProfileIdentityUpdated, AvatarChanged } from "../events";
 
 describe("UserProfile", () => {

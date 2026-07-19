@@ -1,5 +1,5 @@
 import { UserProfile } from "../entities/UserProfile";
-import { UserId } from "@/modules/core/domain/UserId";
+import { UserId } from "@/shared/kernel/UserId";
 
 export interface ProfileRepository {
   findByUserId(userId: UserId): Promise<UserProfile | null>;

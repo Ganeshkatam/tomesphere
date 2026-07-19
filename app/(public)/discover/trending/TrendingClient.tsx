@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { TrendingBookDto } from "@/modules/discovery/application/queries/GetTrendingBooks/response";
-import BookCard from "@/modules/reading/books/components/BookCard";
+import BookCard from "@/modules/books/components/BookCard";
 
 interface TrendingClientProps {
   initialBooks: TrendingBookDto[];

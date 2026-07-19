@@ -1,10 +1,10 @@
-import { EventHandler } from "../../../../shared/application/events/EventHandler";
-import { EventEnvelope } from "../../../../shared/application/events/EventEnvelope";
+import { EventHandler } from "@/shared/application/events/EventHandler";
+import { EventEnvelope } from "@/shared/application/events/EventEnvelope";
 import {
   BookPublishedEvent,
   BookUpdatedEvent,
   BookDeletedEvent,
-} from "../../../../reading/books/domain/events/BookEvents";
+} from "@/modules/books/domain/events/BookEvents";
 import { SearchRepository } from "../../domain/repositories/SearchRepository";
 import { SearchIndexProjectionBuilder } from "../projections/SearchIndexProjectionBuilder";
 

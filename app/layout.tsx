@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Footer from "@/modules/shared/navigation/components/Footer";
+import Footer from "@/shared/navigation/components/Footer";
 import { Providers } from "./providers";
 import { themeInitScript } from "./theme-init";
 import Script from "next/script";

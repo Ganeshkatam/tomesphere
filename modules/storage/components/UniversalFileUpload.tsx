@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { Upload, File, X, CheckCircle, AlertCircle } from "lucide-react";
-import { uploadFileToStorage } from "@/modules/storage/actions/storage";
+import { uploadFileToStorage } from "@/modules/storage/presentation/actions/storage";
 import { showError, showSuccess } from "@/lib/toast";
 
 interface UniversalFileUploadProps {

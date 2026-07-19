@@ -1,9 +1,9 @@
-import Navbar from "@/modules/shared/navigation/components/Navbar";
-import Footer from "@/modules/shared/navigation/components/Footer";
+import Navbar from "@/shared/navigation/components/Navbar";
+import Footer from "@/shared/navigation/components/Footer";
 import { TrendingClient } from "./TrendingClient";
 import { getTrendingBooks } from "@/modules/discovery/application/queries/GetTrendingBooks/handler";
 import { SupabaseDiscoveryReadModel } from "@/modules/discovery/infrastructure/read-models/SupabaseDiscoveryReadModel";
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 
 export const metadata = {
   title: "Trending Books Right Now | TomeSphere",

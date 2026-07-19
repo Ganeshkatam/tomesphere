@@ -3,7 +3,7 @@
 import { Target, Star, Globe } from "lucide-react";
 import Image from "next/image";
 
-import { CurrentlyReadingOutput } from "@/modules/shared/core/types/LibraryReadModels";
+import { CurrentlyReadingOutput } from "@/shared/core/types/LibraryReadModels";
 
 interface ProfileOverviewProps {
   stats: any;

@@ -1,8 +1,7 @@
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
-import { getDashboardOverview } from "@/modules/me/application/queries/GetDashboardOverview/handler";
-import { SupabaseDashboardReadModel } from "@/modules/me/infrastructure/read-models/SupabaseDashboardReadModel";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
+import { executeAccountDashboardFacade } from "@/modules/account/application/facades";
 import { redirect } from "next/navigation";
-import CollectionsScreen from "@/modules/me/presentation/screens/CollectionsScreen";
+import CollectionsScreen from "@/modules/account/presentation/screens/CollectionsScreen";
 
 export const dynamic = "force-dynamic";
 
@@ -16,10 +15,7 @@ export default async function CollectionsPage() {
     redirect("/login");
   }
 
-  const dashboardRepo = new SupabaseDashboardReadModel(supabase);
-  const dashboardDto = await getDashboardOverview(dashboardRepo, user.id).catch(() => ({
-    recentBooks: []
-  }));
+  const data = await executeAccountDashboardFacade(user.id);
 
-  return <CollectionsScreen recentBooks={dashboardDto.recentBooks || []} />;
+  return <CollectionsScreen recentBooks={data.dashboard.recentBooks || []} />;
 }

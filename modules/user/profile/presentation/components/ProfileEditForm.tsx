@@ -1,9 +1,9 @@
 "use client";
 
-import VoiceInput from "@/modules/reading/search/components/VoiceInput";
+import VoiceInput from "@/modules/discovery/search/presentation/components/VoiceInput";
 import { Save, X, Globe, AtSign, Briefcase, Link2, Target, Upload, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { uploadFileToStorage } from "@/modules/storage/actions/storage";
+import { uploadFileToStorage } from "@/modules/storage/presentation/actions/storage";
 import { showError } from "@/lib/toast";
 
 interface ProfileEditFormProps {

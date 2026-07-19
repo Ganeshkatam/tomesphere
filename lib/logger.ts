@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 
 type LogLevel = "INFO" | "WARN" | "ERROR" | "CRITICAL";
 

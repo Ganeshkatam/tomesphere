@@ -1,5 +1,5 @@
-import { ProjectionBuilder } from "../../../../shared/application/projections/ProjectionBuilder";
-import { BookPublishedEvent } from "../../../../reading/books/domain/events/BookEvents";
+import { ProjectionBuilder } from "@/shared/application/projections/ProjectionBuilder";
+import { BookPublishedEvent } from "@/modules/books/domain/events/BookEvents";
 
 export interface BookSearchDocument {
   bookId: string;

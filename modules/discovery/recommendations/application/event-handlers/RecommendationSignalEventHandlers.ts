@@ -1,5 +1,5 @@
-import { eventBus } from "@/modules/shared/core/events/EventBus";
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { eventBus } from "@/shared/core/events/EventBus";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 
 /**
  * Event Handlers for Discovery Recommendation Signals

@@ -1,5 +1,5 @@
-import { EventModule } from "../../shared/application/events/EventModule";
-import { EventRegistry } from "../../shared/application/events/EventRegistry";
+import { EventModule } from "@/shared/application/events/EventModule";
+import { EventRegistry } from "@/shared/application/events/EventRegistry";
 import { SearchRepository } from "./domain/repositories/SearchRepository";
 import {
   BookPublishedHandler,
@@ -10,7 +10,7 @@ import {
   BookPublishedEvent,
   BookUpdatedEvent,
   BookDeletedEvent,
-} from "../../reading/books/domain/events/BookEvents";
+} from "../../books/domain/events/BookEvents";
 
 export class SearchModule implements EventModule {
   constructor(private readonly searchRepository: SearchRepository) {}

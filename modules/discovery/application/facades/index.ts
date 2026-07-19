@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { SupabaseDiscoveryReadModel } from "../../infrastructure/read-models/SupabaseDiscoveryReadModel";
 import { SupabasePlatformStatisticsReadModel } from "@/modules/statistics/infrastructure/read-models/SupabasePlatformStatisticsReadModel";
 import { SupabaseAnnouncementReadModel } from "@/modules/announcements/infrastructure/read-models/SupabaseAnnouncementReadModel";

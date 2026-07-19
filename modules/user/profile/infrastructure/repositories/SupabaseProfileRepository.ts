@@ -1,10 +1,10 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "@/modules/shared/core/types/database";
+import { Database } from "@/shared/core/types/database";
 import { ProfileRepository } from "../../domain/repositories/ProfileRepository";
 import { UserProfile } from "../../domain/entities/UserProfile";
-import { UserId } from "@/modules/core/domain/UserId";
+import { UserId } from "@/shared/kernel/UserId";
 import { ProfileMapper } from "../mappers/ProfileMapper";
-import { eventBus } from "@/modules/shared/core/events/EventBus";
+import { eventBus } from "@/shared/core/events/EventBus";
 
 export class SupabaseProfileRepository implements ProfileRepository {
   constructor(private readonly supabase: SupabaseClient<Database>) {}

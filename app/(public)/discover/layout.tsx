@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Compass, Search, Flame, Sparkles, Clock, List, Users, BookOpen } from "lucide-react";
-import Navbar from "@/modules/shared/navigation/components/Navbar";
-import { getCurrentUser } from "@/modules/authentication/actions/auth";
+import Navbar from "@/shared/navigation/components/Navbar";
+import { getCurrentUser } from "@/modules/authentication/presentation/actions/auth";
 
 
 import { DiscoverSidebar } from "./_components/DiscoverSidebar";

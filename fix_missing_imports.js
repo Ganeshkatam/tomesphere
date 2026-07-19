@@ -9,11 +9,11 @@ const files = [
   'modules/reading/library/presentation/screens/LibraryScreen.tsx'
 ];
 
-const importStmt = 'import { SupabaseIdentityProvider } from "@/modules/shared/infrastructure/identity/SupabaseIdentityProvider";';
+const importStmt = 'import { SupabaseIdentityProvider } from "@/shared/infrastructure/identity/SupabaseIdentityProvider";';
 
 files.forEach(file => {
   let content = fs.readFileSync(file, 'utf8');
-  if (!content.includes('@/modules/shared/infrastructure/identity/SupabaseIdentityProvider')) {
+  if (!content.includes('@/shared/infrastructure/identity/SupabaseIdentityProvider')) {
     if (content.startsWith('"use server";') || content.startsWith("'use server';")) {
       content = content.replace(/^(["']use server["'];?)/, `$1\n${importStmt}`);
     } else {

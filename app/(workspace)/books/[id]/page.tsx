@@ -1,4 +1,4 @@
-import BookDetailScreen from "@/modules/reading/books/presentation/screens/BookDetailScreen";
+import BookDetailScreen from "@/modules/books/presentation/screens/BookDetailScreen";
 
 export const dynamic = "force-dynamic";
 

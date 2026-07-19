@@ -1,4 +1,4 @@
-import Navbar from "@/modules/shared/navigation/components/Navbar";
+import Navbar from "@/shared/navigation/components/Navbar";
 
 export default function TermsPage() {
   return (

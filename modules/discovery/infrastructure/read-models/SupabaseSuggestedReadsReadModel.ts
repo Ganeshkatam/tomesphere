@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "@/modules/shared/core/types/database";
+import { Database } from "@/shared/core/types/database";
 import { SuggestedReadsReadModel } from "../../application/queries/GetSuggestedReadsQuery";
 import { SuggestedReadsDto } from "../../application/queries/GetSuggestedReadsQuery/dto";
 

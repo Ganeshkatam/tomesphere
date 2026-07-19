@@ -1,4 +1,4 @@
-import { UserId } from "@/modules/core/domain/UserId";
+import { UserId } from "@/shared/kernel/UserId";
 
 export interface SetupProfileCommand {
   readonly userId: string;

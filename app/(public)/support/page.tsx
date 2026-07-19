@@ -1,5 +1,5 @@
-import Navbar from "@/modules/shared/navigation/components/Navbar";
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import Navbar from "@/shared/navigation/components/Navbar";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { Mail, MessageCircle, HelpCircle } from "lucide-react";
 import { GetFaqsQueryHandler } from "@/modules/support/application/queries/GetFaqs/handler";
 import { SupabaseSupportReadModel } from "@/modules/support/infrastructure/read-models/SupabaseSupportReadModel";

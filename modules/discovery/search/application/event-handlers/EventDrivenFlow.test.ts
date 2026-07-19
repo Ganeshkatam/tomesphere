@@ -1,19 +1,19 @@
-import { InProcessEventBus } from "../../../../shared/infrastructure/events/InProcessEventBus";
+import { InProcessEventBus } from "@/shared/infrastructure/events/InProcessEventBus";
 import { SearchModule } from "../../SearchModule";
 import { RecommendationModule } from "../../../recommendations/RecommendationModule";
-import { ProgressModule } from "../../../../user/progress/ProgressModule";
+import { ProgressModule } from "@/modules/progress/ProgressModule";
 import { SearchRepository } from "../../domain/repositories/SearchRepository";
 import { RecommendationContextStore } from "../../../recommendations/application/projections/RecommendationContextStore";
-import { ProgressRepository } from "../../../../user/progress/domain/repositories/ProgressRepository";
-import { BookPublishedEvent } from "../../../../reading/books/domain/events/BookEvents";
-import { ReadingCompletedEvent } from "../../../../reading/reader/domain/events/ReaderEvents";
-import { AggregateRoot } from "../../../../core/domain/AggregateRoot";
-import { UserProgress } from "../../../../user/progress/domain/entities/UserProgress";
-import { ReadingGoal } from "../../../../user/progress/domain/value-objects/ReadingGoal";
-import { ReadingStreak } from "../../../../user/progress/domain/value-objects/ReadingStreak";
-import { ExperiencePoints } from "../../../../user/progress/domain/value-objects/ExperiencePoints";
-import { AchievementCollection } from "../../../../user/progress/domain/collections/AchievementCollection";
-import { UserId } from "../../../../core/domain/UserId";
+import { ProgressRepository } from "@/modules/progress/domain/repositories/ProgressRepository";
+import { BookPublishedEvent } from "@/modules/books/domain/events/BookEvents";
+import { ReadingCompletedEvent } from "../../../../reader/domain/events/ReaderEvents";
+import {  AggregateRoot  } from "@/shared/kernel/AggregateRoot";
+import { UserProgress } from "@/modules/progress/domain/entities/UserProgress";
+import { ReadingGoal } from "@/modules/progress/domain/value-objects/ReadingGoal";
+import { ReadingStreak } from "@/modules/progress/domain/value-objects/ReadingStreak";
+import { ExperiencePoints } from "@/modules/progress/domain/value-objects/ExperiencePoints";
+import { AchievementCollection } from "@/modules/progress/domain/collections/AchievementCollection";
+import {  UserId  } from "@/shared/kernel/UserId";
 
 // Simple Mocks
 class MockSearchRepository implements SearchRepository {

@@ -1,4 +1,4 @@
-import { Permission } from "@/modules/shared/kernel/security/Permission";
+import { Permission } from "@/shared/kernel/security/Permission";
 
 /**
  * A strictly read-only interface that abstracts away the underlying authorization

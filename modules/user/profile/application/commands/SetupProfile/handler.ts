@@ -1,5 +1,5 @@
 import { ProfileRepository } from "../../../domain/repositories/ProfileRepository";
-import { UserId } from "@/modules/core/domain/UserId";
+import { UserId } from "@/shared/kernel/UserId";
 import { SetupProfileCommand } from "./command";
 
 export class SetupProfileHandler {

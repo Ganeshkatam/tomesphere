@@ -5,7 +5,7 @@ import { BookSearchDocument } from "../models/BookSearchDocument";
 // Placeholder for Supabase implementation.
 // In Phase 7A, this uses PostgreSQL Full-Text Search via RPC or direct PostgREST querying.
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "../../../../shared/core/types/database";
+import { Database } from "@/shared/core/types/database";
 
 export class SupabaseSearchRepository implements SearchRepository {
   constructor(private readonly supabase: SupabaseClient<Database>) {}

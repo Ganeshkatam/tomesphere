@@ -1,4 +1,4 @@
-import { Book } from "@/modules/reading/books/domain/entities/Book";
+import { Book } from "@/modules/books/domain/entities/Book";
 import { BookDto } from "../dto/response/BookDto";
 import { BookDetailDto } from "../dto/response/BookDetailDto";
 

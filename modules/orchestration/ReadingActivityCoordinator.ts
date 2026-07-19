@@ -1,8 +1,8 @@
-import { ReadingSessionCompleted } from "@/modules/reading/reader/domain/Events";
+import { ReadingSessionCompleted } from "@/modules/reader/domain/Events";
 import {
   ApplyReadingActivity,
   ApplyReadingActivityRequest,
-} from "@/modules/user/progress/application/commands/ApplyReadingActivity/handler";
+} from "@/modules/progress/application/commands/ApplyReadingActivity/handler";
 
 export class ReadingActivityCoordinator {
   constructor(

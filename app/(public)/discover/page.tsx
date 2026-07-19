@@ -1,4 +1,4 @@
-import LandingCuratedSections from "@/modules/landing/components/LandingCuratedSections";
+import LandingCuratedSections from "@/modules/landing/presentation/components/LandingCuratedSections";
 import { executeDiscoverPageFacade } from "@/modules/discovery/application/facades";
 
 export default async function DiscoverOverviewPage() {

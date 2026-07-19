@@ -1,5 +1,5 @@
-import { AggregateRoot } from "@/modules/core/domain/AggregateRoot";
-import { UserId } from "@/modules/core/domain/UserId";
+import { AggregateRoot } from "@/shared/kernel/AggregateRoot";
+import { UserId } from "@/shared/kernel/UserId";
 import { DisplayName, AvatarUrl, Biography, Location } from "../value-objects";
 import { ProfileIdentityUpdated, AvatarChanged } from "../events";
 

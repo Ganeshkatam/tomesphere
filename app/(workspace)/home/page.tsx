@@ -1,5 +1,5 @@
-import HomeScreen from "@/modules/reading/home/presentation/screens/HomeScreen";
-import { executeHomePageFacade } from "@/modules/reading/home/application/facades";
+import HomeScreen from "@/modules/home/presentation/screens/HomeScreen";
+import { executeHomePageFacade } from "@/modules/home/application/facades";
 
 export const dynamic = "force-dynamic";
 

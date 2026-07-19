@@ -32,7 +32,7 @@ DIRECTORIES.forEach((dir) => {
         if (content.includes("@/components/ui/")) {
           content = content.replace(
             /@\/components\/ui\//g,
-            "@/modules/shared/ui/",
+            "@/shared/ui/",
           );
           modified = true;
         }
@@ -40,7 +40,7 @@ DIRECTORIES.forEach((dir) => {
         if (content.includes("@/components/providers/")) {
           content = content.replace(
             /@\/components\/providers\//g,
-            "@/modules/shared/providers/",
+            "@/shared/providers/",
           );
           modified = true;
         }

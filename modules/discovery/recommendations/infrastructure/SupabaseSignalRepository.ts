@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "@/modules/shared/core/types/database";
+import { Database } from "@/shared/core/types/database";
 import { SignalRepository } from "../domain/repositories/SignalRepository";
 import { UserInteractionFact } from "../domain/value-objects/UserInteractionFact";
 import { BookFeature } from "../domain/value-objects/BookFeature";

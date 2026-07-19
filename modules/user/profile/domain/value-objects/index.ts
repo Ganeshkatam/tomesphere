@@ -1,5 +1,5 @@
-import { ValueObject } from "@/modules/core/domain/ValueObject";
-import { ValidationError } from "@/modules/core/domain/DomainError";
+import { ValueObject } from "@/shared/kernel/ValueObject";
+import { ValidationError } from "@/shared/kernel/DomainError";
 
 interface DisplayNameProps {
   value: string;

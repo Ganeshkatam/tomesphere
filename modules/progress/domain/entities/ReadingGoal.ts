@@ -1,4 +1,4 @@
-import { AggregateRoot } from "@/modules/core/domain/AggregateRoot";
+import { AggregateRoot } from "@/shared/kernel/AggregateRoot";
 
 export interface ReadingGoalProps {
   userId: string;

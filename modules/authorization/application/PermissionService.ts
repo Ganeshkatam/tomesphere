@@ -1,4 +1,4 @@
-import { Permission } from "@/modules/shared/kernel/security/Permission";
+import { Permission } from "@/shared/kernel/security/Permission";
 import { AuthorizationRepository } from "../domain/AuthorizationRepository";
 
 export class UnauthorizedError extends Error {

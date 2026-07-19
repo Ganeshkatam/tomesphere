@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Permission } from "@/modules/shared/kernel/security/Permission";
+import { Permission } from "@/shared/kernel/security/Permission";
 import { AuthorizationRepository } from "../domain/AuthorizationRepository";
 
 export class SupabaseAuthorizationRepository implements AuthorizationRepository {

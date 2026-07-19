@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { SupabaseDiscoveryReadModel } from "@/modules/discovery/infrastructure/read-models/SupabaseDiscoveryReadModel";
 import { searchBooks } from "@/modules/discovery/application/queries/SearchBooks/handler";
 import SearchClient from "./SearchClient";

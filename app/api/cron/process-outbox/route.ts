@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { processOutbox } from "@/modules/shared/core/jobs/outbox-relay";
-import { eventBus } from "@/modules/shared/core/events/EventBus";
+import { processOutbox } from "@/shared/core/jobs/outbox-relay";
+import { eventBus } from "@/shared/core/events/EventBus";
 import { AnalyticsModule } from "@/modules/analytics/AnalyticsModule";
 
 export const maxDuration = 60;

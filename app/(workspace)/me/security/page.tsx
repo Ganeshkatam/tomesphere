@@ -1,6 +1,6 @@
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { redirect } from "next/navigation";
-import MFASetup from "@/modules/authentication/components/MFASetup";
+import MFASetup from "@/modules/authentication/presentation/components/MFASetup";
 
 export const dynamic = "force-dynamic";
 

@@ -1,4 +1,4 @@
-import { IEventBus } from "../../../../shared/core/events/types";
+import { IEventBus } from "@/shared/core/events/types";
 import { SearchRepository } from "../../domain/repositories/SearchRepository";
 
 /**

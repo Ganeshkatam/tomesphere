@@ -1,4 +1,4 @@
-import { SecurityAction } from "@/modules/shared/kernel/security/SecurityAction";
+import { SecurityAction } from "@/shared/kernel/security/SecurityAction";
 
 export interface AuditContext {
   actorId: string;

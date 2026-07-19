@@ -25,15 +25,15 @@ replaceFile('modules/reading/reader/application/commands/LogHighlight/handler.ts
 ]);
 
 replaceFile('modules/reading/search/actions/search.ts', [
-  ['import { ActionResult } from "@/modules/shared/core/types/ActionResult";\n', ''],
-  ['import { ActionResult } from "@/modules/shared/core/types/ActionResult";\r\n', ''],
+  ['import { ActionResult } from "@/shared/core/types/ActionResult";\n', ''],
+  ['import { ActionResult } from "@/shared/core/types/ActionResult";\r\n', ''],
   ['return {\n      success: true,\n      data: result,\n    };', 'return result;'],
   ['return {\r\n      success: true,\r\n      data: result,\r\n    };', 'return result;']
 ]);
 
 replaceFile('modules/reading/library/actions/library.ts', [
-  ['import { ActionResult } from "@/modules/shared/core/types/ActionResult";\n', ''],
-  ['import { ActionResult } from "@/modules/shared/core/types/ActionResult";\r\n', '']
+  ['import { ActionResult } from "@/shared/core/types/ActionResult";\n', ''],
+  ['import { ActionResult } from "@/shared/core/types/ActionResult";\r\n', '']
 ]);
 
 replaceFile('modules/reading/reader/application/ReaderService.ts', [

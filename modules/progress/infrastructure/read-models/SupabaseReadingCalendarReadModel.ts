@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "@/modules/shared/core/types/database";
+import { Database } from "@/shared/core/types/database";
 import { ReadingCalendarReadModel } from "../../application/queries/GetReadingCalendarQuery";
 import { ReadingCalendarDto } from "../../application/queries/GetReadingCalendarQuery/dto";
 

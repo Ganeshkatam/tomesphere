@@ -25,7 +25,7 @@ function replaceAuth(filePath) {
 
     if (content !== original) {
       if (!content.includes('SupabaseIdentityProvider')) {
-        content = `import { SupabaseIdentityProvider } from "@/modules/shared/infrastructure/identity/SupabaseIdentityProvider";\n` + content;
+        content = `import { SupabaseIdentityProvider } from "@/shared/infrastructure/identity/SupabaseIdentityProvider";\n` + content;
       }
       fs.writeFileSync(filePath, content);
       console.log(`Updated ${filePath}`);

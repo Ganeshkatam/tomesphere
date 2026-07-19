@@ -1,12 +1,12 @@
-import { createSupabaseServerClient } from "@/modules/shared/core/database/server";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { getProfile } from "@/modules/user/profile/application/queries/GetProfile/handler";
 import { SupabaseProfileRepository } from "@/modules/user/profile/infrastructure/repositories/SupabaseProfileRepository";
 import { SupabaseNotificationReadModel } from "@/modules/user/profile/infrastructure/read-models/SupabaseNotificationReadModel";
 import { GetUnreadNotificationCountQueryHandler } from "@/modules/user/profile/application/queries/GetUnreadNotificationCountQuery/handler";
 import { redirect } from "next/navigation";
-import { TodayLayoutShell } from "@/modules/me/presentation/components/TodayLayoutShell";
+import { TodayLayoutShell } from "@/modules/account/presentation/components/TodayLayoutShell";
 
-import { getProgressDashboard } from "@/modules/user/progress/presentation/actions/progress";
+import { getProgressDashboard } from "@/modules/progress/presentation/actions/progress";
 
 export const dynamic = "force-dynamic";
 
