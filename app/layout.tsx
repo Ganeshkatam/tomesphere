@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Atkinson_Hyperlegible, Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Footer from "@/shared/navigation/components/Footer";
+import Footer from "@/shared/layout/Footer/Footer";
 import { Providers } from "./providers";
 import { themeInitScript } from "./theme-init";
 import Script from "next/script";

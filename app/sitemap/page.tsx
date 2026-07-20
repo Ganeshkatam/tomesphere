@@ -1,11 +1,8 @@
-import Navbar from "@/shared/navigation/components/Navbar";
 import Link from "next/link";
 
 export default function SitemapPage() {
   return (
-    <div className="min-h-screen bg-gradient-page overflow-x-hidden">
-      <Navbar />
-      <main className="pt-32 pb-20 max-w-4xl mx-auto px-4 sm:px-6">
+    <div className="min-h-screen bg-gradient-page overflow-x-hidden">      <main className="pt-32 pb-20 max-w-4xl mx-auto px-4 sm:px-6">
         <div className="glass-strong p-8 sm:p-12 rounded-3xl border border-white/10">
           <h1 className="text-4xl font-display font-bold mb-8 text-white">
             Sitemap
@@ -103,3 +100,4 @@ export default function SitemapPage() {
     </div>
   );
 }
+

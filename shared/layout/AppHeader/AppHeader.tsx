@@ -1,6 +1,6 @@
 import React from "react";
 
-export function UniversalHeader({ className = "", isLoggedIn = false }: { className?: string; isLoggedIn?: boolean }) {
+export function AppHeader({ className = "", isLoggedIn = false }: { className?: string; isLoggedIn?: boolean }) {
   return (
     <header className={`fixed top-0 z-50 w-full bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline flex flex-col transition-transform duration-300 ${className}`} id="top-nav">
       {/* Upper Tier */}

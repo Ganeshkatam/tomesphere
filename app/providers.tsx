@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/shared/providers/theme-context";
 import { PWAProvider } from "@/shared/providers/pwa-context";
 import GlobalErrorBoundary from "@/shared/core/components/GlobalErrorBoundary";
 import AppToaster from "@/shared/feedback/components/AppToaster";
-import PWAUpdatePrompt from "@/shared/navigation/components/PWAUpdatePrompt";
+import PWAUpdatePrompt from "@/shared/feedback/PWAUpdatePrompt/PWAUpdatePrompt";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (

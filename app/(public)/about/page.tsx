@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Navbar from "@/shared/navigation/components/Navbar";
 import {
   FadeIn,
   SlideUp,
@@ -16,8 +15,6 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-page overflow-x-hidden">
-      <Navbar />
-
       <main className="pt-24 pb-20 sm:pt-32 sm:pb-32 relative">
         {/* Background Decor */}
         <div className="absolute top-1/4 left-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] -z-10" />
@@ -220,3 +217,4 @@ export default function AboutPage() {
     </div>
   );
 }
+

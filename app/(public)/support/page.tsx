@@ -1,4 +1,3 @@
-import Navbar from "@/shared/navigation/components/Navbar";
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { Mail, MessageCircle, HelpCircle } from "lucide-react";
 import { GetFaqsQueryHandler } from "@/modules/support/application/queries/GetFaqs/handler";
@@ -25,8 +24,6 @@ export default async function SupportPage() {
 
   return (
     <div className="min-h-screen bg-gradient-page overflow-x-hidden">
-      <Navbar />
-
       <main className="pt-32 pb-20 max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
         {/* Header Section */}
         <div className="text-center mb-16">
@@ -136,3 +133,4 @@ export default async function SupportPage() {
     </div>
   );
 }
+

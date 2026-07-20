@@ -1,8 +1,6 @@
 "use client";
 
 import { LandingViewModel } from "@/modules/landing/application/facades/LandingPageFacade";
-import Navbar from "@/shared/navigation/components/Navbar";
-
 import HeroSection from "./HeroSection";
 import FeaturedBooksSection from "./FeaturedBooksSection";
 import TrendingBooksSection from "./TrendingBooksSection";
@@ -11,14 +9,14 @@ import RecentlyAddedSection from "./RecentlyAddedSection";
 import GenreBrowserSection from "./GenreBrowserSection";
 import PopularAuthorsSection from "./PopularAuthorsSection";
 import AnnouncementSection from "./AnnouncementSection";
-import StatisticsSection from "./StatisticsSection";
+// import StatisticsSection from "./StatisticsSection";
 
 interface LandingClientProps {
   model: LandingViewModel;
 }
 
 export default function LandingClient({ model }: LandingClientProps) {
-  const { navigation, landing } = model;
+  const { landing } = model;
   const { overview, announcements, statistics } = landing;
 
   // Overview provides the curated lists and metadata
@@ -33,8 +31,6 @@ export default function LandingClient({ model }: LandingClientProps) {
 
   return (
     <div className="min-h-screen bg-gradient-page relative w-full max-w-full mx-auto overflow-x-hidden">
-      <Navbar navigation={navigation} />
-
       <HeroSection searchSuggestions={featuredBooks} />
 
       <div className="w-full relative z-20 flex flex-col gap-24 py-16">
@@ -45,7 +41,7 @@ export default function LandingClient({ model }: LandingClientProps) {
         <GenreBrowserSection genres={genres} />
         <PopularAuthorsSection authors={authors} />
         <AnnouncementSection announcements={announcements} />
-        <StatisticsSection statistics={statistics} />
+        {/* <StatisticsSection statistics={statistics} /> */}
       </div>
     </div>
   );
