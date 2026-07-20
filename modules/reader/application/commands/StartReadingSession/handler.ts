@@ -46,9 +46,10 @@ export class StartReadingSessionHandler {
 
       return { sessionId: session.id };
     } catch (error) {
-      throw new Error(error instanceof Error
-            ? error.message
-            : "Unknown error starting session",
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Unknown error starting session",
       );
     }
   }

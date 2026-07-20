@@ -16,7 +16,10 @@ export class SupabaseReadingGoalRepository implements ReadingGoalRepository {
     return this.mapToDomain(data);
   }
 
-  async findByUserIdAndYear(userId: string, year: number): Promise<ReadingGoal | null> {
+  async findByUserIdAndYear(
+    userId: string,
+    year: number,
+  ): Promise<ReadingGoal | null> {
     const { data, error } = await this.supabase
       .from("reading_goals")
       .select("*")
@@ -51,7 +54,9 @@ export class SupabaseReadingGoalRepository implements ReadingGoalRepository {
       targetBooks: data.target_books,
       booksRead: data.books_read,
       createdAt: new Date(data.created_at),
-      updatedAt: data.updated_at ? new Date(data.updated_at) : new Date(data.created_at),
+      updatedAt: data.updated_at
+        ? new Date(data.updated_at)
+        : new Date(data.created_at),
     });
   }
 }

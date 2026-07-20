@@ -1,4 +1,8 @@
-import { AuthorSummaryDto, GenreSummaryDto, SubjectSummaryDto } from "./BookDto";
+import {
+  AuthorSummaryDto,
+  GenreSummaryDto,
+  SubjectSummaryDto,
+} from "./BookDto";
 
 export interface BookDetailDto {
   id: string;
@@ -12,7 +16,10 @@ export interface BookDetailDto {
   pageCount: number | null;
   isTextbook: boolean;
   isPublicDomain: boolean;
-  pdfUrl?: string | null;
-  epubUrl?: string | null;
+  files: {
+    id: string;
+    format: string;
+    storagePath: string;
+    isPrimary: boolean;
+  }[];
 }
-

@@ -11,7 +11,7 @@ import {
   Target,
   Library,
   BookMarked,
-  FolderTree
+  FolderTree,
 } from "lucide-react";
 import type { DashboardOverviewDto } from "@/modules/account/application/queries/GetDashboardOverview/read-model";
 import type { ProfileDto } from "@/modules/user/profile/application/queries/GetProfile/read-model";
@@ -27,7 +27,8 @@ export default function TodayScreen({
   profileData,
   dashboardData,
 }: TodayScreenProps) {
-  const name = profileData?.displayName || user.email?.split("@")[0] || "Reader";
+  const name =
+    profileData?.displayName || user.email?.split("@")[0] || "Reader";
   const streak = dashboardData.streak.current;
   const readingGoal = dashboardData.progress.totalBooksGoal || 12;
   const booksReadCount = dashboardData.progress.booksRead;

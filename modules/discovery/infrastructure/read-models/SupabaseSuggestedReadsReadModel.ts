@@ -24,12 +24,19 @@ export class SupabaseSuggestedReadsReadModel implements SuggestedReadsReadModel 
     for (const item of libraryBooks) {
       const bookData = Array.isArray(item.books) ? item.books[0] : item.books;
       if (!bookData) continue;
-      
-      const bookGenres = (bookData as any).book_genres?.map((bg: any) => bg.genres?.name) || [];
-      const bookAuthors = (bookData as any).book_authors?.map((ba: any) => ba.authors?.name) || [];
-      
-      bookGenres.forEach((g: string) => { if (g) genres.add(g); });
-      bookAuthors.forEach((a: string) => { if (a) authors.add(a); });
+
+      const bookGenres =
+        (bookData as any).book_genres?.map((bg: any) => bg.genres?.name) || [];
+      const bookAuthors =
+        (bookData as any).book_authors?.map((ba: any) => ba.authors?.name) ||
+        [];
+
+      bookGenres.forEach((g: string) => {
+        if (g) genres.add(g);
+      });
+      bookAuthors.forEach((a: string) => {
+        if (a) authors.add(a);
+      });
     }
 
     // Deterministic selection: find top 5 books matching genres, exclude already in library
@@ -37,8 +44,8 @@ export class SupabaseSuggestedReadsReadModel implements SuggestedReadsReadModel 
       .from("library_books")
       .select("book_id")
       .eq("user_id", userId);
-    
-    const excludedBookIds = userLibrary?.map(l => l.book_id) || [];
+
+    const excludedBookIds = userLibrary?.map((l) => l.book_id) || [];
 
     let query = this.supabase
       .from("books")
@@ -62,9 +69,13 @@ export class SupabaseSuggestedReadsReadModel implements SuggestedReadsReadModel 
     const suggestions = suggestionsData.map((b: any) => ({
       bookId: b.id,
       title: b.title,
-      author: (b.book_authors || []).map((ba: any) => ba.authors?.name).filter(Boolean).join(", ") || "Unknown",
+      author:
+        (b.book_authors || [])
+          .map((ba: any) => ba.authors?.name)
+          .filter(Boolean)
+          .join(", ") || "Unknown",
       coverUrl: b.cover_url || undefined,
-      reason: `Because you read ${Array.from(genres)[0] || "similar books"}...`
+      reason: `Because you read ${Array.from(genres)[0] || "similar books"}...`,
     }));
 
     return { suggestions };

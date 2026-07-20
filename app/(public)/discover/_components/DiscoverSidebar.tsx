@@ -2,17 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, Search, Flame, Sparkles, Clock, List, Users, BookOpen, Globe, Tags } from "lucide-react";
+import { Compass, Flame, Sparkles, Clock, Users, BookOpen } from "lucide-react";
 
 const navItems = [
   { name: "Overview", href: "/discover", icon: Compass },
-  { name: "Search", href: "/discover/search", icon: Search },
   { name: "Featured", href: "/discover/featured", icon: Sparkles },
   { name: "Trending", href: "/discover/trending", icon: Flame },
   { name: "New Arrivals", href: "/discover/new", icon: Clock },
-  { name: "Genres", href: "/discover/genres", icon: List },
-  { name: "Subjects", href: "/discover/subjects", icon: Tags },
-  { name: "Languages", href: "/discover/languages", icon: Globe },
   { name: "Collections", href: "/discover/collections", icon: BookOpen },
   { name: "Authors", href: "/discover/authors", icon: Users },
 ];

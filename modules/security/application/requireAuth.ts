@@ -55,9 +55,7 @@ export async function requireAuth(): Promise<User> {
  * @throws AuthenticationError if not authenticated.
  * @throws AuthorizationError if the user lacks the required role.
  */
-export async function requireRole(
-  role: "admin" | "user",
-): Promise<User> {
+export async function requireRole(role: "admin" | "user"): Promise<User> {
   const user = await requireAuth();
 
   // Default role for all authenticated users
@@ -75,9 +73,7 @@ export async function requireRole(
     .maybeSingle();
 
   if (!userRole) {
-    throw new AuthorizationError(
-      `This action requires the '${role}' role.`,
-    );
+    throw new AuthorizationError(`This action requires the '${role}' role.`);
   }
 
   return user;

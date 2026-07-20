@@ -8,25 +8,17 @@ export class SupabaseReadingGoalReadModel implements ReadingGoalReadModel {
 
   async getGoalProgress(userId: string): Promise<GoalProgressDto | null> {
     const today = new Date().toISOString().split("T")[0];
-    
-    // Attempt to get from analytics_user_daily
-    const { data: dailyStats, error: statsError } = await this.supabase
-      .from("analytics_user_daily")
-      .select("pages_read, reading_time_minutes, books_completed")
-      .eq("user_id", userId)
-      .eq("date", today)
-      .maybeSingle();
 
-    // Default to a pages goal for V1 if we don't have custom goals in schema
-    const targetValue = 50; // Default 50 pages per day
-    const currentValue = dailyStats?.pages_read || 0;
-    
+    // Daily analytics is deferred to V2. We'll stub this for V1.
+    const targetValue = 50;
+    const currentValue = 0;
+
     return {
       hasGoal: true, // Assuming default goal if none set
       type: "pages",
       currentValue,
       targetValue,
-      percentage: Math.min(100, Math.round((currentValue / targetValue) * 100))
+      percentage: Math.min(100, Math.round((currentValue / targetValue) * 100)),
     };
   }
 }

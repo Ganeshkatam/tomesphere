@@ -4,7 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DiscoveryOverviewDto } from "@/modules/discovery/application/queries/GetDiscoveryOverview/read-model";
 import BookCard from "@/modules/books/components/BookCard";
-import { FadeIn, SlideUp, StaggerContainer, StaggerItem } from "@/shared/ui/motion";
+import {
+  FadeIn,
+  SlideUp,
+  StaggerContainer,
+  StaggerItem,
+} from "@/shared/ui/motion";
 import { Search } from "lucide-react";
 
 interface ExploreClientProps {
@@ -12,14 +17,19 @@ interface ExploreClientProps {
   initialData: DiscoveryOverviewDto;
 }
 
-export default function ExploreClient({ user, initialData }: ExploreClientProps) {
+export default function ExploreClient({
+  user,
+  initialData,
+}: ExploreClientProps) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      router.push(`/discover/search?q=${encodeURIComponent(searchTerm.trim())}`);
+      router.push(
+        `/discover/search?q=${encodeURIComponent(searchTerm.trim())}`,
+      );
     }
   };
 
@@ -64,7 +74,9 @@ const Section = ({ title, books }: { title: string; books: any[] }) => {
   if (!books || books.length === 0) return null;
   return (
     <div className="mb-12">
-      <h2 className="text-2xl font-bold text-white mb-6 pl-2 border-l-4 border-indigo-500">{title}</h2>
+      <h2 className="text-2xl font-bold text-white mb-6 pl-2 border-l-4 border-indigo-500">
+        {title}
+      </h2>
       <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
         {books.map((book) => (
           <StaggerItem key={book.id}>

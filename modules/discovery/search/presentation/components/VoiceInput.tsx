@@ -25,7 +25,8 @@ export default function VoiceInput({
   useEffect(() => {
     if (typeof window !== "undefined") {
       const SpeechRecognition =
-        (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        (window as any).SpeechRecognition ||
+        (window as any).webkitSpeechRecognition;
       if (!SpeechRecognition) {
         setIsSupported(false);
       }
@@ -42,7 +43,8 @@ export default function VoiceInput({
 
     try {
       const SpeechRecognition =
-        (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        (window as any).SpeechRecognition ||
+        (window as any).webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
 
       recognition.continuous = true;

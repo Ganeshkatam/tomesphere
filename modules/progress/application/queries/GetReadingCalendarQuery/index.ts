@@ -12,7 +12,7 @@ export class GetReadingCalendarQuery {
       const data = await this.repository.getReadingCalendar(userId);
       return data;
     } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch reading calendar." );
+      throw new Error(error.message || "Failed to fetch reading calendar.");
     }
   }
 }

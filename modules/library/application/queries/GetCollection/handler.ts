@@ -4,7 +4,7 @@ import { CollectionDto } from "../../dto/response/CollectionDto";
 export async function getCollection(
   repository: CollectionRepository,
   id: string,
-  userId: string
+  userId: string,
 ): Promise<CollectionDto | null> {
   return repository.getCollection(id, userId);
 }

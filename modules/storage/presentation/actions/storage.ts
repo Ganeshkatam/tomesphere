@@ -43,7 +43,10 @@ export async function uploadFileToStorage(
       });
 
     if (uploadError) {
-      return { success: false, error: { message: `Upload failed: ${uploadError.message}` } };
+      return {
+        success: false,
+        error: { message: `Upload failed: ${uploadError.message}` },
+      };
     }
 
     const {
@@ -52,6 +55,11 @@ export async function uploadFileToStorage(
 
     return { success: true, data: { url: publicUrl } };
   } catch (error: unknown) {
-    return { success: false, error: { message: error instanceof Error ? error.message : "Upload failed" } };
+    return {
+      success: false,
+      error: {
+        message: error instanceof Error ? error.message : "Upload failed",
+      },
+    };
   }
 }

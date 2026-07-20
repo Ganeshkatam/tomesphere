@@ -4,7 +4,7 @@ import { TrendingBooksResponseDto } from "./response";
 
 export async function getTrendingBooks(
   repository: DiscoveryReadModel,
-  query: GetTrendingBooksQuery
+  query: GetTrendingBooksQuery,
 ): Promise<TrendingBooksResponseDto> {
   return await repository.getTrendingBooks(query);
 }

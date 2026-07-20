@@ -11,13 +11,38 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
   constructor(private readonly supabase: SupabaseClient) {}
 
   async getOverview(): Promise<DiscoveryOverviewDto> {
-    const [featuredRes, newBooksRes, trendingRes, authorsRes, genresRes, subjectsRes] = await Promise.all([
-      this.supabase.from("books").select("*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))").eq("is_featured", true).limit(8),
-      this.supabase.from("books").select("*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))").order("created_at", { ascending: false }).limit(8),
-      this.supabase.from("trending_books").select("books!inner(*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*)))").order("daily_score", { ascending: false }).limit(8),
+    const [
+      featuredRes,
+      newBooksRes,
+      trendingRes,
+      authorsRes,
+      genresRes,
+      subjectsRes,
+    ] = await Promise.all([
+      this.supabase
+        .from("books")
+        .select(
+          "*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))",
+        )
+        .eq("is_featured", true)
+        .limit(8),
+      this.supabase
+        .from("books")
+        .select(
+          "*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))",
+        )
+        .order("created_at", { ascending: false })
+        .limit(8),
+      this.supabase
+        .from("trending_books")
+        .select(
+          "books!inner(*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*)))",
+        )
+        .order("daily_score", { ascending: false })
+        .limit(8),
       this.supabase.from("authors").select("name").limit(10),
       this.supabase.from("genres").select("name").limit(12),
-      this.supabase.from("subjects").select("name").limit(12)
+      this.supabase.from("subjects").select("name").limit(12),
     ]);
 
     // Distinct Genres (max 12 for preview)
@@ -26,7 +51,9 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
     const subjects = (subjectsRes.data || []).map((s: any) => s.name);
     const languages = ["English"]; // Placeholder since we don't have a languages table yet
 
-    const trendingBooksData = (trendingRes.data || []).map((row: any) => row.books);
+    const trendingBooksData = (trendingRes.data || []).map(
+      (row: any) => row.books,
+    );
 
     return {
       featuredBooks: (featuredRes.data || []).map(BookMapper.toDto),
@@ -36,17 +63,26 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       genres,
       subjects,
       languages,
-      authors
+      authors,
     };
   }
 
-  async searchBooks(query: string, genre: string, page: number, pageSize: number, sort: string): Promise<SearchResultDto> {
-    const { data: searchResult, error: rpcError } = await this.supabase.rpc("search_catalog", {
-      search_query: query || "",
-      genre_filter: genre || "all",
-      page_num: page,
-      page_size: pageSize
-    });
+  async searchBooks(
+    query: string,
+    genre: string,
+    page: number,
+    pageSize: number,
+    sort: string,
+  ): Promise<SearchResultDto> {
+    const { data: searchResult, error: rpcError } = await this.supabase.rpc(
+      "search_catalog",
+      {
+        search_query: query || "",
+        genre_filter: genre || "all",
+        page_num: page,
+        page_size: pageSize,
+      },
+    );
 
     if (rpcError || !searchResult || searchResult.length === 0) {
       return {
@@ -58,11 +94,14 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
     }
 
     const matchingIds = searchResult.map((r: any) => r.id);
-    const totalCount = searchResult.length > 0 ? Number(searchResult[0].total_count) : 0;
+    const totalCount =
+      searchResult.length > 0 ? Number(searchResult[0].total_count) : 0;
 
     let dbQuery = this.supabase
       .from("books")
-      .select("*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))")
+      .select(
+        "*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))",
+      )
       .in("id", matchingIds);
 
     if (sort === "newest") {
@@ -73,10 +112,10 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
     }
 
     const { data } = await dbQuery;
-    
-    // Sort in-memory to match RPC order if needed, but RPC already sorts by title. 
+
+    // Sort in-memory to match RPC order if needed, but RPC already sorts by title.
     // Here we just use the DB sort which handles it.
-    
+
     return {
       books: (data || []).map(BookMapper.toDto),
       totalCount,
@@ -90,29 +129,34 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
 
     const { data } = await this.supabase
       .from("books")
-      .select("id, title, book_authors(authors(name)), book_genres(genres(name))")
+      .select(
+        "id, title, book_authors(authors(name)), book_genres(genres(name))",
+      )
       .ilike("title", `%${query}%`)
       .limit(5);
 
     return (data || []).map((b: any) => ({
       id: b.id,
       title: b.title,
-      authors: b.book_authors?.map((ba: any) => ba.authors).filter(Boolean) || [],
+      authors:
+        b.book_authors?.map((ba: any) => ba.authors).filter(Boolean) || [],
       genres: b.book_genres?.map((bg: any) => bg.genres).filter(Boolean) || [],
     }));
   }
 
-  async getTrendingBooks(query: GetTrendingBooksQuery): Promise<TrendingBooksResponseDto> {
+  async getTrendingBooks(
+    query: GetTrendingBooksQuery,
+  ): Promise<TrendingBooksResponseDto> {
     const periodScoreMap = {
-      "daily": "daily_score",
-      "weekly": "weekly_score",
-      "monthly": "monthly_score",
+      daily: "daily_score",
+      weekly: "weekly_score",
+      monthly: "monthly_score",
       "all-time": "all_time_score",
     };
     const periodRankMap = {
-      "daily": "daily_rank",
-      "weekly": "weekly_rank",
-      "monthly": "monthly_rank",
+      daily: "daily_rank",
+      weekly: "weekly_rank",
+      monthly: "monthly_rank",
       "all-time": "all_time_rank",
     };
     const scoreCol = periodScoreMap[query.period];
@@ -120,14 +164,17 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
 
     let dbQuery = this.supabase
       .from("trending_books")
-      .select(`
+      .select(
+        `
         ${scoreCol},
         ${rankCol},
         books!inner (
           id, title, cover_url, language, is_featured,
           book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))
         )
-      `, { count: "exact" })
+      `,
+        { count: "exact" },
+      )
       .order(scoreCol, { ascending: false });
 
     if (query.genre && query.genre !== "all") {
@@ -141,16 +188,24 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
     const { data, count, error } = await dbQuery;
 
     if (error) {
-       console.error("Error fetching trending books:", error);
+      console.error("Error fetching trending books:", error);
     }
 
     const books = (data || []).map((row: any) => ({
       id: row.books.id,
       title: row.books.title,
-      authors: (row.books.book_authors || []).map((ba: any) => ba.authors).filter(Boolean),
-      genres: (row.books.book_genres || []).map((bg: any) => bg.genres).filter(Boolean),
-      subjects: (row.books.book_subjects || []).map((bs: any) => bs.subjects).filter(Boolean),
-      coverUrl: row.books.cover_url ? row.books.cover_url.replace(/ /g, '%20') : null,
+      authors: (row.books.book_authors || [])
+        .map((ba: any) => ba.authors)
+        .filter(Boolean),
+      genres: (row.books.book_genres || [])
+        .map((bg: any) => bg.genres)
+        .filter(Boolean),
+      subjects: (row.books.book_subjects || [])
+        .map((bs: any) => bs.subjects)
+        .filter(Boolean),
+      coverUrl: row.books.cover_url
+        ? row.books.cover_url.replace(/ /g, "%20")
+        : null,
       language: row.books.language,
       isFeatured: row.books.is_featured || false,
       trendingScore: row[scoreCol],
@@ -165,6 +220,104 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       totalCount: count || 0,
       hasNext: count ? start + query.limit < count : false,
       updatedAt: new Date().toISOString(),
+    };
+  }
+
+  async getFeaturedBooks(
+    query: import("../../application/queries/GetFeaturedBooks/query").GetFeaturedBooksQuery,
+  ): Promise<
+    import("../../application/queries/GetFeaturedBooks/response").GetFeaturedBooksResponseDto
+  > {
+    const overview = await this.getOverview();
+    return {
+      items: overview.featuredBooks || [],
+      total: (overview.featuredBooks || []).length,
+      page: query.page,
+      hasMore: false,
+    };
+  }
+
+  async getNewArrivals(
+    query: import("../../application/queries/GetNewArrivals/query").GetNewArrivalsQuery,
+  ): Promise<
+    import("../../application/queries/GetNewArrivals/response").GetNewArrivalsResponseDto
+  > {
+    const overview = await this.getOverview();
+    return {
+      items: overview.newBooks || [],
+      total: (overview.newBooks || []).length,
+      page: query.page,
+      hasMore: false,
+    };
+  }
+
+  async getCollections(
+    query: import("../../application/queries/GetCollections/query").GetCollectionsQuery,
+  ): Promise<
+    import("../../application/queries/GetCollections/response").GetCollectionsResponseDto
+  > {
+    const overview = await this.getOverview();
+    return {
+      items: overview.featuredCollections || [],
+      total: (overview.featuredCollections || []).length,
+      page: query.page,
+      hasMore: false,
+    };
+  }
+
+  async getGenres(
+    query: import("../../application/queries/GetGenres/query").GetGenresQuery,
+  ): Promise<
+    import("../../application/queries/GetGenres/response").GetGenresResponseDto
+  > {
+    const overview = await this.getOverview();
+    return {
+      items: overview.genres || [],
+      total: (overview.genres || []).length,
+      page: query.page,
+      hasMore: false,
+    };
+  }
+
+  async getAuthors(
+    query: import("../../application/queries/GetAuthors/query").GetAuthorsQuery,
+  ): Promise<
+    import("../../application/queries/GetAuthors/response").GetAuthorsResponseDto
+  > {
+    const overview = await this.getOverview();
+    return {
+      items: overview.authors || [],
+      total: (overview.authors || []).length,
+      page: query.page,
+      hasMore: false,
+    };
+  }
+
+  async getLanguages(
+    query: import("../../application/queries/GetLanguages/query").GetLanguagesQuery,
+  ): Promise<
+    import("../../application/queries/GetLanguages/response").GetLanguagesResponseDto
+  > {
+    const overview = await this.getOverview();
+    return {
+      items: overview.languages || [],
+      total: (overview.languages || []).length,
+      page: query.page,
+      hasMore: false,
+    };
+  }
+
+  async getSubjects(
+    query: import("../../application/queries/GetSubjects/query").GetSubjectsQuery,
+  ): Promise<
+    import("../../application/queries/GetSubjects/response").GetSubjectsResponseDto
+  > {
+    const overview = await this.getOverview();
+    return {
+      items: overview.subjects || [],
+      total: (overview.subjects || []).length,
+      page: query.page,
+      hasMore: false,
     };
   }
 }

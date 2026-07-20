@@ -11,13 +11,18 @@ export interface UpdateReadingGoalCommandPayload {
 export class UpdateReadingGoalCommand {
   constructor(private readonly goalRepo: ReadingGoalRepository) {}
 
-  async execute(payload: UpdateReadingGoalCommandPayload): Promise<UseCaseResult<void>> {
+  async execute(
+    payload: UpdateReadingGoalCommandPayload,
+  ): Promise<UseCaseResult<void>> {
     try {
       if (payload.targetBooks < 0) {
         throw new Error("Target books cannot be negative"); // In a real app we'd throw DomainError
       }
 
-      let goal = await this.goalRepo.findByUserIdAndYear(payload.userId, payload.year);
+      let goal = await this.goalRepo.findByUserIdAndYear(
+        payload.userId,
+        payload.year,
+      );
 
       if (!goal) {
         // Create new goal if it doesn't exist

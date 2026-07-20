@@ -154,7 +154,9 @@ export default function ProfileOverview({
                     className="w-16 h-16 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex flex-col items-center justify-center hover:scale-110 transition-transform cursor-help"
                     title={`${badge.name}: ${badge.description}`}
                   >
-                    <span className="text-2xl drop-shadow-md">{badge.icon}</span>
+                    <span className="text-2xl drop-shadow-md">
+                      {badge.icon}
+                    </span>
                   </div>
                 ))
               ) : (

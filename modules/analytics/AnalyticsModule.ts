@@ -9,23 +9,23 @@ export class AnalyticsModule {
     const store = new SupabaseAnalyticsProjectionStore(supabase);
     const handlers = new AnalyticsEventHandlers(store);
 
-    bus.subscribe("reader:progress_updated", async (payload) => {
+    bus.subscribe("reader.progress.updated", async (payload) => {
       await handlers.handleReaderProgressUpdated(payload);
     });
 
-    bus.subscribe("reader:book_completed", async (payload) => {
+    bus.subscribe("reader.book.completed", async (payload) => {
       await handlers.handleReaderBookCompleted(payload);
     });
 
-    bus.subscribe("library:book_added", async (payload) => {
+    bus.subscribe("library.book.added", async (payload) => {
       await handlers.handleLibraryBookAdded(payload);
     });
 
-    bus.subscribe("book:rated", async (payload) => {
+    bus.subscribe("book.rated", async (payload) => {
       await handlers.handleBookRated(payload);
     });
 
-    bus.subscribe("book:liked", async (payload) => {
+    bus.subscribe("book.liked", async (payload) => {
       await handlers.handleBookLiked(payload);
     });
   }

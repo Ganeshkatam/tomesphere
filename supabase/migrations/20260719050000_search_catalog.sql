@@ -1,3 +1,5 @@
+DROP FUNCTION IF EXISTS search_catalog(text, text, integer, integer);
+
 CREATE OR REPLACE FUNCTION search_catalog(
   search_query text,
   genre_filter text DEFAULT 'all',
@@ -9,7 +11,7 @@ CREATE OR REPLACE FUNCTION search_catalog(
   description text,
   cover_url text,
   language text,
-  published_year int,
+  release_date date,
   publisher text,
   isbn text,
   pages int,
@@ -48,7 +50,7 @@ BEGIN
     b.description,
     b.cover_url,
     b.language,
-    b.published_year,
+    b.release_date,
     b.publisher,
     b.isbn,
     b.pages,

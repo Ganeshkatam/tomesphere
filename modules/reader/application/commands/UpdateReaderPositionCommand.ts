@@ -18,13 +18,17 @@ export async function executeUpdateReaderPosition(
   request: UpdateReaderPositionRequest,
 ): Promise<void> {
   // 1. Upsert the position (last write wins) via repository
-  await repository.upsertPosition(request.userId, request.bookId, request.locationAnchor);
+  await repository.upsertPosition(
+    request.userId,
+    request.bookId,
+    request.locationAnchor,
+  );
 
   const supabase = await createSupabaseServerClient();
   const now = new Date().toISOString();
 
   // 2. Emit position_updated event
-  await emitOutboxEvent(supabase, "reader:position_updated", {
+  await emitOutboxEvent(supabase, "reader.position.updated", {
     userId: request.userId,
     bookId: request.bookId,
     locationAnchor: request.locationAnchor,

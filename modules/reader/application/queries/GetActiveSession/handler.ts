@@ -28,9 +28,10 @@ export class GetActiveSessionHandler {
 
       return readModel;
     } catch (error) {
-      throw new Error(error instanceof Error
-            ? error.message
-            : "Unknown error fetching session",
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Unknown error fetching session",
       );
     }
   }

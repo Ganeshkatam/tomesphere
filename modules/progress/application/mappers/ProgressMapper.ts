@@ -19,7 +19,9 @@ export class ProgressMapper {
     return {
       currentStreak: streak.currentStreak,
       longestStreak: streak.longestStreak,
-      lastActivityDate: streak.lastActivityDate ? streak.lastActivityDate.toISOString() : null,
+      lastActivityDate: streak.lastActivityDate
+        ? streak.lastActivityDate.toISOString()
+        : null,
       totalDaysActive: streak.totalDaysActive,
     };
   }

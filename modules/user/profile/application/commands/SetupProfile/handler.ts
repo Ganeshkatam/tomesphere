@@ -12,7 +12,7 @@ export class SetupProfileHandler {
       userId,
       command.name,
       command.favoriteGenres,
-      command.readingGoal
+      command.readingGoal,
     );
   }
 }

@@ -8,7 +8,7 @@ import { createSupabaseServerClient } from "@/shared/core/database/server";
  * and incrementally updates the read models in the Discovery context.
  */
 export function registerRecommendationSignalHandlers() {
-  eventBus.subscribe("reader:page_completed", async (event: any) => {
+  eventBus.subscribe("reader.page.completed", async (event: any) => {
     try {
       const supabase = await createSupabaseServerClient();
       await supabase.rpc("refresh_recommendation_signals", {
@@ -22,7 +22,7 @@ export function registerRecommendationSignalHandlers() {
     }
   });
 
-  eventBus.subscribe("book:liked", async (event: any) => {
+  eventBus.subscribe("book.liked", async (event: any) => {
     try {
       const supabase = await createSupabaseServerClient();
       await supabase.rpc("refresh_recommendation_signals", {
@@ -33,7 +33,7 @@ export function registerRecommendationSignalHandlers() {
     }
   });
 
-  eventBus.subscribe("book:rated", async (event: any) => {
+  eventBus.subscribe("book.rated", async (event: any) => {
     try {
       const supabase = await createSupabaseServerClient();
       await supabase.rpc("refresh_recommendation_signals", {

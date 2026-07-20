@@ -6,16 +6,14 @@ import { Highlight } from "../../../domain/Highlight";
 export class LogHighlightHandler {
   constructor(private readonly readerRepository: ReaderRepository) {}
 
-  async execute(
-    command: LogHighlightCommand,
-  ): Promise<LogHighlightOutput> {
+  async execute(command: LogHighlightCommand): Promise<LogHighlightOutput> {
     try {
       const { sessionId, highlightId, text, location, chapter, color } =
         command.input;
 
       const session = await this.readerRepository.findById(sessionId);
       if (!session) {
-        throw new Error("Session not found" );
+        throw new Error("Session not found");
       }
 
       const highlight = Highlight.create({
@@ -34,9 +32,10 @@ export class LogHighlightHandler {
 
       return { highlightId };
     } catch (error) {
-      throw new Error(error instanceof Error
-            ? error.message
-            : "Unknown error adding highlight",
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Unknown error adding highlight",
       );
     }
   }

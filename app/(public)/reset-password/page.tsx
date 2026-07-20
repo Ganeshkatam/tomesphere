@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
 import { showError, showSuccess } from "@/lib/toast";
+
+import { updatePasswordServer } from "@/modules/authentication/presentation/actions/auth";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
@@ -27,15 +28,11 @@ export default function ResetPasswordPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/v1/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
-      const data = await res.json();
-      const error = !res.ok ? new Error(data.error?.message || "Failed to reset password") : null;
+      const res = await updatePasswordServer(password);
 
-      if (error) throw error;
+      if (!res.success) {
+        throw new Error(res.error?.message || "Failed to reset password");
+      }
 
       showSuccess("Password updated successfully!");
 

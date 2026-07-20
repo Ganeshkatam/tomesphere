@@ -1,4 +1,12 @@
-import { LucideIcon, BookOpen, Compass, Flame, CheckCircle, Target, ArrowRight } from "lucide-react";
+import {
+  LucideIcon,
+  BookOpen,
+  Compass,
+  Flame,
+  CheckCircle,
+  Target,
+  ArrowRight,
+} from "lucide-react";
 import Link from "next/link";
 
 interface WelcomeWidgetProps {

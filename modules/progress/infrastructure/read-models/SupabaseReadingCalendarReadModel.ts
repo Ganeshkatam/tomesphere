@@ -14,24 +14,14 @@ export class SupabaseReadingCalendarReadModel implements ReadingCalendarReadMode
       return d.toISOString().split("T")[0];
     });
 
-    const { data: analytics, error } = await this.supabase
-      .from("analytics_user_daily")
-      .select("date, streak_active")
-      .eq("user_id", userId)
-      .gte("date", days[0])
-      .lte("date", days[6]);
-
-    if (error) {
-      return { days: days.map(d => ({ date: d, active: false })) };
-    }
-
-    const activeMap = new Set(analytics?.filter(a => a.streak_active).map(a => a.date) || []);
+    // Daily analytics is deferred to V2. Stubbing for now.
+    const activeMap = new Set<string>();
 
     return {
-      days: days.map(d => ({
+      days: days.map((d) => ({
         date: d,
         active: activeMap.has(d),
-      }))
+      })),
     };
   }
 }

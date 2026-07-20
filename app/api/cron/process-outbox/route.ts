@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { processOutbox } from "@/shared/core/jobs/outbox-relay";
 import { eventBus } from "@/shared/core/events/EventBus";
 import { AnalyticsModule } from "@/modules/analytics/AnalyticsModule";
+import { NotificationsModule } from "@/modules/notifications/NotificationsModule";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export async function GET(request: Request) {
 
   // Register handlers before processing
   await AnalyticsModule.registerEventHandlers(eventBus);
+  await NotificationsModule.registerEventHandlers(eventBus);
 
   const result = await processOutbox(eventBus);
 

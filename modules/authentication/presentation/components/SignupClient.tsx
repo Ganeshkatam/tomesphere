@@ -67,7 +67,11 @@ export default function SignupClient() {
     setLoading(true);
 
     try {
-      const res = await signUpWithPassword(email.trim().toLowerCase(), password, name.trim());
+      const res = await signUpWithPassword(
+        email.trim().toLowerCase(),
+        password,
+        name.trim(),
+      );
 
       if (!res.success) {
         showError(res.error.message);

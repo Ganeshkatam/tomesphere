@@ -3,24 +3,23 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { BookDetailDto } from "@/modules/library/application/dto/response/BookDetailDto";
 import { ArrowLeft, BookOpen, Heart, Download } from "lucide-react";
 import { generateSimpleDescription } from "@/modules/storage/services/pdf-description-generator";
 import { showError, showSuccess } from "@/lib/toast";
+import { BookPageDto } from "@/modules/books/application/facades/BookPageFacade";
+import { AuthGuard } from "@/shared/ui/components/AuthGuard";
 
 interface BookDetailClientProps {
-  user: any;
-  book: BookDetailDto;
+  bookPage: BookPageDto;
 }
 
-export default function BookDetailClient({
-  user,
-  book,
-}: BookDetailClientProps) {
+export default function BookDetailClient({ bookPage }: BookDetailClientProps) {
   const router = useRouter();
-
+  const { book, viewer } = bookPage;
 
   const [activeTab, setActiveTab] = useState<"overview" | "quotes">("overview");
+
+  if (!book) return null;
 
   return (
     <div className="min-h-screen bg-gradient-page">
@@ -68,55 +67,112 @@ export default function BookDetailClient({
             {/* Quick Actions */}
             <div className="space-y-3">
               <div className="flex gap-4 flex-wrap">
-                <button
-                  onClick={() => router.push(`/read/${book.id}`)}
-                  className="flex-1 btn btn-primary py-3 rounded-lg flex items-center justify-center gap-2 font-bold min-w-[140px]"
+                <AuthGuard
+                  authenticated={viewer.authenticated}
+                  fallbackRedirect={`/read/${book.id}`}
+                  className="flex-1 min-w-[140px]"
                 >
-                  <BookOpen size={20} />
-                  Read
-                </button>
+                  <button
+                    onClick={() => {
+                      if (viewer.permissions.read) {
+                        router.push(`/read/${book.id}`);
+                      }
+                    }}
+                    className="w-full btn btn-primary py-3 rounded-lg flex items-center justify-center gap-2 font-bold"
+                  >
+                    <BookOpen size={20} />
+                    Read
+                  </button>
+                </AuthGuard>
 
-                <button
-                  onClick={async () => {
-                    try {
-                      const res = await fetch(`/api/v1/discovery/books/${book.id}/download`);
-                      if (!res.ok) throw new Error("Failed to get download link");
-                      const { data } = await res.json();
+                <AuthGuard
+                  authenticated={viewer.authenticated}
+                  fallbackRedirect={`/read/${book.id}`}
+                  className="flex-1 min-w-[140px]"
+                >
+                  <button
+                    onClick={async () => {
+                      if (!viewer.permissions.download) return;
+                      try {
+                        const res = await fetch(
+                          `/api/v1/discovery/books/${book.id}/download`,
+                        );
+                        if (!res.ok)
+                          throw new Error("Failed to get download link");
+                        const { data } = await res.json();
 
-                      const downloadUrl = data.formats.find((f: any) => f.format === 'pdf')?.url || data.formats[0]?.url;
-                      if (!downloadUrl) throw new Error("No download format available");
+                        const downloadUrl =
+                          data.formats.find((f: any) => f.format === "pdf")
+                            ?.url || data.formats[0]?.url;
+                        if (!downloadUrl)
+                          throw new Error("No download format available");
 
-                      // Trigger download
-                      const link = document.createElement('a');
-                      link.href = downloadUrl;
-                      link.target = '_blank';
-                      link.download = `${book.title}.pdf`;
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                      showSuccess('Download started!');
-                    } catch (error) {
-                      showError('Download not available');
-                    }
-                  }}
-                  disabled={!book.pdfUrl && !book.epubUrl}
-                  className={`flex-1 py-3 rounded-lg flex items-center justify-center gap-2 font-bold min-w-[140px] ${(book.pdfUrl || book.epubUrl)
-                      ? "bg-white/10 hover:bg-white/20 text-white"
-                      : "bg-white/5 text-white/30 cursor-not-allowed"
+                        // Trigger download
+                        const link = document.createElement("a");
+                        link.href = downloadUrl;
+                        link.target = "_blank";
+                        link.download = `${book.title}.pdf`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        showSuccess("Download started!");
+                      } catch (error) {
+                        showError("Download not available");
+                      }
+                    }}
+                    disabled={!book.files || book.files.length === 0}
+                    className={`w-full py-3 rounded-lg flex items-center justify-center gap-2 font-bold ${
+                      book.files && book.files.length > 0
+                        ? "bg-white/10 hover:bg-white/20 text-white"
+                        : "bg-white/5 text-white/30 cursor-not-allowed"
                     } transition-all`}
-                  title={!(book.pdfUrl || book.epubUrl) ? "Download not available" : "Download book"}
-                >
-                  <Download size={20} />
-                  Download
-                </button>
+                    title={
+                      !book.files || book.files.length === 0
+                        ? "Download not available"
+                        : "Download book"
+                    }
+                  >
+                    <Download size={20} />
+                    Download
+                  </button>
+                </AuthGuard>
 
-                <button className="p-3 rounded-lg border border-white/10 hover:bg-white/5 transition-all">
-                  <Heart size={24} fill="none" />
-                </button>
+                <AuthGuard
+                  authenticated={viewer.authenticated}
+                  fallbackRedirect={`/books/${book.id}`}
+                >
+                  <button
+                    disabled={!viewer.permissions.addToLibrary}
+                    className="p-3 rounded-lg border border-white/10 hover:bg-white/5 transition-all h-full"
+                  >
+                    <Heart
+                      size={24}
+                      fill={
+                        viewer.libraryStatus === "in_library"
+                          ? "currentColor"
+                          : "none"
+                      }
+                      className={
+                        viewer.libraryStatus === "in_library"
+                          ? "text-primary"
+                          : ""
+                      }
+                    />
+                  </button>
+                </AuthGuard>
               </div>
-              <button className="btn btn-ghost w-full">
-                ➕ Add to Collection
-              </button>
+              <AuthGuard
+                authenticated={viewer.authenticated}
+                fallbackRedirect={`/books/${book.id}`}
+                className="w-full"
+              >
+                <button
+                  disabled={!viewer.permissions.addToCollection}
+                  className="btn btn-ghost w-full"
+                >
+                  ➕ Add to Collection
+                </button>
+              </AuthGuard>
             </div>
           </div>
 
@@ -127,7 +183,7 @@ export default function BookDetailClient({
                 {book.title}
               </h1>
               <p className="text-2xl text-slate-400 mb-4">
-                by {book.authors?.map(a => a.name).join(", ") || "Unknown"}
+                by {book.authors?.map((a) => a.name).join(", ") || "Unknown"}
               </p>
 
               {/* Metadata */}
@@ -155,7 +211,10 @@ export default function BookDetailClient({
               </h3>
               <p className="text-slate-300 leading-relaxed">
                 {book.description ||
-                  generateSimpleDescription(book.title, book.authors?.map(a => a.name).join(", ") || "Unknown")}
+                  generateSimpleDescription(
+                    book.title,
+                    book.authors?.map((a) => a.name).join(", ") || "Unknown",
+                  )}
               </p>
             </div>
           </div>

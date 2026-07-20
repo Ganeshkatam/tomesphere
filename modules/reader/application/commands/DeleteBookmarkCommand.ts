@@ -1,5 +1,3 @@
-
-
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 
 export interface DeleteBookmarkRequest {
@@ -13,7 +11,7 @@ export async function executeDeleteBookmark(
   const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase
-    .from("reader_bookmarks")
+    .from("bookmarks")
     .delete()
     .match({ id: request.bookmarkId, user_id: request.userId });
 

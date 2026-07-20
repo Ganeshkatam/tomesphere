@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { getSafeRedirectUrl } from "@/shared/core/utils/redirect";
 import {
   loginWithPassword,
   sendMagicLinkServer,
@@ -90,6 +91,8 @@ export default function EnhancedLoginPage() {
   const [countryCode, setCountryCode] = useState("+91");
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = getSafeRedirectUrl(searchParams.get("redirectTo"));
 
   /* ── helpers ── */
   const detectInputType = (value: string): "email" | "phone" | "unknown" => {
@@ -141,12 +144,12 @@ export default function EnhancedLoginPage() {
         id = c.startsWith("+") ? c : `${countryCode}${c}`;
       }
       const res = await sendMagicLinkServer(id, isPhone);
-      
+
       if (!res.success) {
         showError(res.error.message);
         return;
       }
-      
+
       showSuccess(
         isPhone ? "SMS code sent!" : "Magic code sent to your email!",
       );
@@ -168,20 +171,20 @@ export default function EnhancedLoginPage() {
         id = c.startsWith("+") ? c : `${countryCode}${c}`;
       }
       const res = await loginWithPassword(id, password, isPhone);
-      
+
       if (!res.success) {
         showError(res.error.message);
         setLoading(false);
         return;
       }
-      
+
       const mfaRequired = await checkMFA();
       if (mfaRequired) {
         setLoading(false);
         return;
       }
       showSuccess("Logged in successfully!");
-      router.push("/home");
+      router.push(redirectTo);
     } catch (err: any) {
       showError(err.message || "Invalid password");
       setLoading(false);
@@ -196,7 +199,7 @@ export default function EnhancedLoginPage() {
         "MFA is currently being migrated to Server Actions. Please contact support.",
       );
       showSuccess("MFA Verified! Logging in...");
-      router.push("/home");
+      router.push(redirectTo);
     } catch (err: any) {
       showError(err.message || "Invalid code");
     } finally {
@@ -210,15 +213,15 @@ export default function EnhancedLoginPage() {
     try {
       const id = isPhone ? `${countryCode}${input}` : input;
       const res = await verifyMagicLinkServer(id, otp, isPhone);
-      
+
       if (!res.success) {
         showError(res.error.message);
         setLoading(false);
         return;
       }
-      
+
       showSuccess("Verified! Logging in...");
-      router.push("/home");
+      router.push(redirectTo);
     } catch (err: any) {
       showError(err.message || "Invalid code");
       setLoading(false);

@@ -7,7 +7,7 @@ export interface DeleteCollectionRequest {
 
 export async function deleteCollection(
   repository: CollectionRepository,
-  request: DeleteCollectionRequest
+  request: DeleteCollectionRequest,
 ): Promise<boolean> {
   return repository.deleteCollection(request.id, request.userId);
 }

@@ -1,28 +1,19 @@
-import { executeGetDiscoveryOverviewQuery } from "@/modules/discovery/application/queries/GetDiscoveryOverview";
-import BookCard from "@/modules/books/components/BookCard";
+import { getDiscoveryFacade } from "@/modules/discovery/application/facades";
+import { BookGrid } from "@/modules/discovery/presentation/components/BookGrid";
+import { DiscoveryPage, DiscoveryConfiguration } from "../_components/DiscoveryPage";
+
+export const dynamic = "force-dynamic";
 
 export default async function FeaturedPage() {
-  const overview = await executeGetDiscoveryOverviewQuery();
-  const featuredBooks = overview.featuredBooks || [];
+  const facade = await getDiscoveryFacade();
+  const data = await facade.getFeatured({ limit: 24, page: 1 });
 
-  return (
-    <div className="w-full pb-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-display font-bold text-[var(--text-primary)]">Featured Books</h1>
-        <p className="text-[var(--text-secondary)] mt-2">Editor-picked selections for you.</p>
-      </div>
-      
-      {featuredBooks.length === 0 ? (
-        <div className="p-12 text-center bg-[var(--surface-raised)] rounded-2xl border border-[var(--border-default)]">
-          <p className="text-[var(--text-secondary)]">No featured books available at the moment.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-          {featuredBooks.map(book => (
-            <BookCard key={book.id} book={book} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  const config: DiscoveryConfiguration = {
+    mode: "featured",
+    title: "Editor's Picks",
+    description: `Explore ${data.total} items in this category.`,
+    gridContent: <BookGrid items={data.items} />,
+  };
+
+  return <DiscoveryPage config={config} />;
 }

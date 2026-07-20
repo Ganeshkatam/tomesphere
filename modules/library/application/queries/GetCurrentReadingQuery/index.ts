@@ -12,7 +12,7 @@ export class GetCurrentReadingQuery {
       const data = await this.repository.getCurrentReading(userId);
       return data;
     } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch current reading data." );
+      throw new Error(error.message || "Failed to fetch current reading data.");
     }
   }
 }

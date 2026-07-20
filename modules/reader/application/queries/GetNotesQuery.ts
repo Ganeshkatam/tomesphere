@@ -1,10 +1,5 @@
-
-
 import { createSupabaseServerClient } from "@/shared/core/database/server";
-import {
-  ReaderNote,
-  AnnotationTarget,
-} from "@/shared/core/events/types";
+import { ReaderNote, AnnotationTarget } from "@/shared/core/events/types";
 
 export interface GetNotesRequest {
   userId: string;
@@ -17,7 +12,7 @@ export async function executeGetNotes(
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
-    .from("reader_notes")
+    .from("annotations")
     .select("*")
     .match({ user_id: request.userId, book_id: request.bookId })
     .order("created_at", { ascending: true });

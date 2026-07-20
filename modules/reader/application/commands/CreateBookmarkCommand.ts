@@ -15,14 +15,14 @@ export async function executeCreateBookmark(
   request: CreateBookmarkRequest,
 ): Promise<{ id: string }> {
   const bookmark = await repository.createBookmark(
-    request.userId, 
-    request.bookId, 
-    request.anchor.value, 
-    request.label
+    request.userId,
+    request.bookId,
+    request.anchor.value,
+    request.label,
   );
 
   const supabase = await createSupabaseServerClient();
-  await emitOutboxEvent(supabase, "reader:bookmark_created", {
+  await emitOutboxEvent(supabase, "reader.bookmark.created", {
     userId: request.userId,
     bookId: request.bookId,
     bookmarkId: bookmark.id,

@@ -12,7 +12,9 @@ export class GetContinueReadingQuery {
       const data = await this.repository.getContinueReading(userId);
       return data;
     } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch continue reading data." );
+      throw new Error(
+        error.message || "Failed to fetch continue reading data.",
+      );
     }
   }
 }

@@ -12,7 +12,7 @@ export class GetSuggestedReadsQuery {
       const data = await this.repository.getSuggestedReads(userId);
       return data;
     } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch suggested reads." );
+      throw new Error(error.message || "Failed to fetch suggested reads.");
     }
   }
 }

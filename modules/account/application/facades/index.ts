@@ -7,7 +7,7 @@ export async function executeAccountDashboardFacade(userId: string) {
   const supabase = await createSupabaseServerClient();
   const profileRepo = new SupabaseProfileRepository(supabase);
   const dashboardRepo = new SupabaseDashboardReadModel(supabase);
-  
+
   const facade = new AccountDashboardFacade(profileRepo, dashboardRepo);
   return facade.get(userId);
 }

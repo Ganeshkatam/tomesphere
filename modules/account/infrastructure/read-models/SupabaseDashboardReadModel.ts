@@ -10,7 +10,8 @@ export class SupabaseDashboardReadModel implements DashboardReadModel {
     // 1. Current Reading & Recent Books (from library_items and books)
     const libraryQuery = this.supabase
       .from("library_items")
-      .select(`
+      .select(
+        `
         id,
         status,
         progress_percentage,
@@ -22,7 +23,8 @@ export class SupabaseDashboardReadModel implements DashboardReadModel {
           author,
           cover_url
         )
-      `)
+      `,
+      )
       .eq("user_id", userId)
       .order("updated_at", { ascending: false });
 
@@ -48,32 +50,35 @@ export class SupabaseDashboardReadModel implements DashboardReadModel {
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId);
 
-    const [libraryRes, goalsRes, streakRes, collectionsRes] = await Promise.all([
-      libraryQuery,
-      goalsQuery,
-      streakQuery,
-      collectionsQuery,
-    ]);
+    const [libraryRes, goalsRes, streakRes, collectionsRes] = await Promise.all(
+      [libraryQuery, goalsQuery, streakQuery, collectionsQuery],
+    );
 
     const libraryItems = libraryRes.data || [];
-    
+
     const currentlyReading = libraryItems
       .filter((item: any) => item.status === "reading")
       .slice(0, 3);
-      
+
     const recentBooks = libraryItems
       .filter((item: any) => item.status === "finished")
       .slice(0, 5);
-      
+
     const totalBooks = libraryItems.length;
-    const readingCount = libraryItems.filter((i: any) => i.status === "reading").length;
-    const wantCount = libraryItems.filter((i: any) => i.status === "want_to_read").length;
-    const finishedCount = libraryItems.filter((i: any) => i.status === "finished").length;
+    const readingCount = libraryItems.filter(
+      (i: any) => i.status === "reading",
+    ).length;
+    const wantCount = libraryItems.filter(
+      (i: any) => i.status === "want_to_read",
+    ).length;
+    const finishedCount = libraryItems.filter(
+      (i: any) => i.status === "finished",
+    ).length;
 
     return {
       currentReading: currentlyReading.map((item: any) => ({
         ...item.books,
-        progress: item.progress_percentage
+        progress: item.progress_percentage,
       })),
       recentBooks: recentBooks.map((item: any) => item.books),
       progress: {

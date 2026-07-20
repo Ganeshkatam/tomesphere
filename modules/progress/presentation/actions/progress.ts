@@ -31,7 +31,7 @@ export async function applyReadingActivity(
     const user = await identityProvider.currentUser();
 
     if (!user) {
-      throw new Error("Unauthorized" );
+      throw new Error("Unauthorized");
     }
 
     const repository = new SupabaseProgressRepository(supabase);
@@ -46,14 +46,19 @@ export async function applyReadingActivity(
     };
 
     await useCase.execute(request);
-    
+
     return { success: true, data: undefined };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "Unknown error" } };
+    return {
+      success: false,
+      error: { message: error.message || "Unknown error" },
+    };
   }
 }
 
-export async function getProgressDashboard(): Promise<ServerActionResult<GetProgressDashboardOutput | null>> {
+export async function getProgressDashboard(): Promise<
+  ServerActionResult<GetProgressDashboardOutput | null>
+> {
   try {
     const supabase = await createSupabaseServerClient();
     const identityProvider = new SupabaseIdentityProvider(supabase);
@@ -70,6 +75,9 @@ export async function getProgressDashboard(): Promise<ServerActionResult<GetProg
     return { success: true, data };
   } catch (error: any) {
     console.error("Failed to get progress dashboard:", error);
-    return { success: false, error: { message: error.message || "Failed to fetch progress dashboard" } };
+    return {
+      success: false,
+      error: { message: error.message || "Failed to fetch progress dashboard" },
+    };
   }
 }

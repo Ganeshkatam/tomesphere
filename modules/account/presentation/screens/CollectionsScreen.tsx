@@ -60,7 +60,7 @@ export default function CollectionsScreen({
                       {book.title}
                     </h4>
                     <p className="text-[10px] text-slate-400 font-semibold truncate">
-                      {book.authors?.map(a => a.name).join(", ") || "Unknown"}
+                      {book.authors?.map((a) => a.name).join(", ") || "Unknown"}
                     </p>
                   </div>
                 </div>

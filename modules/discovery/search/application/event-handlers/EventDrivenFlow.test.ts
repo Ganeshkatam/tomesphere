@@ -7,13 +7,13 @@ import { RecommendationContextStore } from "../../../recommendations/application
 import { ProgressRepository } from "@/modules/progress/domain/repositories/ProgressRepository";
 import { BookPublishedEvent } from "@/modules/books/domain/events/BookEvents";
 import { ReadingCompletedEvent } from "../../../../reader/domain/events/ReaderEvents";
-import {  AggregateRoot  } from "@/shared/kernel/AggregateRoot";
+import { AggregateRoot } from "@/shared/kernel/AggregateRoot";
 import { UserProgress } from "@/modules/progress/domain/entities/UserProgress";
 import { ReadingGoal } from "@/modules/progress/domain/value-objects/ReadingGoal";
 import { ReadingStreak } from "@/modules/progress/domain/value-objects/ReadingStreak";
 import { ExperiencePoints } from "@/modules/progress/domain/value-objects/ExperiencePoints";
 import { AchievementCollection } from "@/modules/progress/domain/collections/AchievementCollection";
-import {  UserId  } from "@/shared/kernel/UserId";
+import { UserId } from "@/shared/kernel/UserId";
 
 // Simple Mocks
 class MockSearchRepository implements SearchRepository {

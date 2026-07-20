@@ -6,6 +6,7 @@ import {
   ReaderNote,
   ReaderBookmark,
 } from "@/shared/core/events/types";
+import { ReaderPreferencesDto } from "../application/dto/ReaderPageDto";
 
 // 🚨 STRICT ARCHITECTURAL RULE:
 // This store ONLY holds presentation and session state.
@@ -48,7 +49,10 @@ interface ReaderSessionState {
 
   // Sidebar state
   sidebarOpen: boolean;
-  sidebarTab: "annotations" | "bookmarks";
+  sidebarTab: "annotations" | "bookmarks" | "toc" | "search";
+
+  // Preferences
+  preferences: ReaderPreferencesDto;
 
   // Actions
   setBook: (id: string) => void;
@@ -62,7 +66,12 @@ interface ReaderSessionState {
   setNotes: (notes: ReaderNote[]) => void;
   setBookmarks: (bookmarks: ReaderBookmark[]) => void;
   setSidebarOpen: (open: boolean) => void;
-  setSidebarTab: (tab: "annotations" | "bookmarks") => void;
+  setSidebarTab: (tab: "annotations" | "bookmarks" | "toc" | "search") => void;
+  setPreferences: (prefs: ReaderPreferencesDto) => void;
+  updatePreference: <K extends keyof ReaderPreferencesDto>(
+    key: K,
+    value: ReaderPreferencesDto[K],
+  ) => void;
 }
 
 export const useReaderStore = create<ReaderSessionState>((set) => ({
@@ -79,6 +88,16 @@ export const useReaderStore = create<ReaderSessionState>((set) => ({
   bookmarks: [],
   sidebarOpen: false,
   sidebarTab: "annotations",
+  preferences: {
+    theme: "light",
+    fontFamily: "Inter",
+    fontSize: 16,
+    lineHeight: 1.5,
+    margin: 20,
+    zoom: 100,
+    scrollMode: "vertical",
+    pageMode: "single",
+  },
 
   setBook: (id) => set({ currentBookId: id }),
   setAnchor: (anchor) => set({ currentAnchor: anchor }),
@@ -93,4 +112,9 @@ export const useReaderStore = create<ReaderSessionState>((set) => ({
   setBookmarks: (bookmarks) => set({ bookmarks }),
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
   setSidebarTab: (tab) => set({ sidebarTab: tab }),
+  setPreferences: (prefs) => set({ preferences: prefs }),
+  updatePreference: (key, value) =>
+    set((state) => ({
+      preferences: { ...state.preferences, [key]: value },
+    })),
 }));

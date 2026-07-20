@@ -10,7 +10,7 @@ export interface CreateCollectionRequest {
 
 export async function createCollection(
   repository: CollectionRepository,
-  request: CreateCollectionRequest
+  request: CreateCollectionRequest,
 ): Promise<CollectionDto> {
   return repository.createCollection(request.userId, {
     name: request.name,

@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { markNotificationAsRead, markAllNotificationsAsRead, deleteNotificationAction } from "@/modules/user/profile/presentation/actions/notifications";
+import {
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  deleteNotificationAction,
+} from "@/modules/user/profile/presentation/actions/notifications";
 import { Bell, Check, Trash2, MailOpen } from "lucide-react";
 import { showSuccess, showError } from "@/lib/toast";
 
@@ -95,16 +99,18 @@ export default function InboxScreen({
           notifications.map((n) => (
             <div
               key={n.id}
-              className={`p-4 rounded-xl border flex items-start gap-4 transition-all ${n.read
+              className={`p-4 rounded-xl border flex items-start gap-4 transition-all ${
+                n.read
                   ? "bg-[var(--surface-default)]/60 border-[var(--border-default)]"
                   : "bg-[var(--surface-default)] border-indigo-500/25 shadow-sm"
-                }`}
+              }`}
             >
               <div
-                className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${n.read
+                className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                  n.read
                     ? "bg-slate-500/10 text-slate-400"
                     : "bg-indigo-600/10 text-indigo-400"
-                  }`}
+                }`}
               >
                 <Bell size={16} />
               </div>

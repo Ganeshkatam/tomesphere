@@ -26,9 +26,14 @@ export class SupabaseBookmarkRepository implements BookmarkRepository {
     }));
   }
 
-  async createBookmark(userId: string, bookId: string, location: string, name?: string): Promise<BookmarkDto> {
+  async createBookmark(
+    userId: string,
+    bookId: string,
+    location: string,
+    name?: string,
+  ): Promise<BookmarkDto> {
     const pageNumber = parseInt(location, 10) || 0;
-    
+
     const { data, error } = await this.supabase
       .from("bookmarks")
       .insert({

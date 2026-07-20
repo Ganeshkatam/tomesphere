@@ -1,5 +1,3 @@
-
-
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 
 export interface DeleteHighlightRequest {
@@ -14,7 +12,7 @@ export async function executeDeleteHighlight(
 
   // 1. Delete the highlight (Notes attached will have their highlight_id SET NULL automatically by Postgres)
   const { error } = await supabase
-    .from("reader_highlights")
+    .from("highlights")
     .delete()
     .match({ id: request.highlightId, user_id: request.userId });
 

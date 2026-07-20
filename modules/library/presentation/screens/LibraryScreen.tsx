@@ -13,13 +13,15 @@ export default async function LibraryPage() {
     redirect("/login");
   }
 
-  const data = await executeLibraryPageFacade(user.id);
+  // Initial fetch for the overview view
+  const pageData = await executeLibraryPageFacade(user.id, {
+    viewType: "overview",
+    viewId: "overview",
+    sortBy: "date_added",
+    sortDirection: "desc",
+    page: 1,
+    pageSize: 24,
+  });
 
-  const initialLibrary = [
-    ...data.reading,
-    ...data.finished,
-    ...data.wantToRead,
-  ];
-
-  return <LibraryClient user={user} initialLibrary={initialLibrary} />;
+  return <LibraryClient initialData={pageData} />;
 }

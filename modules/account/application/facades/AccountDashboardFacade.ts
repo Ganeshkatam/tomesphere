@@ -13,7 +13,7 @@ export interface AccountDashboardDto {
 export class AccountDashboardFacade {
   constructor(
     private readonly profileRepo: ProfileRepository,
-    private readonly dashboardRepo: DashboardReadModel
+    private readonly dashboardRepo: DashboardReadModel,
   ) {}
 
   async get(userId: string): Promise<AccountDashboardDto> {
@@ -24,8 +24,12 @@ export class AccountDashboardFacade {
         recentBooks: [],
         progress: { booksRead: 0, totalBooksGoal: null },
         streak: { current: 0, best: 0 },
-        librarySummary: { totalBooks: 0, currentlyReadingCount: 0, wantToReadCount: 0 },
-        collectionsSummary: { totalCollections: 0 }
+        librarySummary: {
+          totalBooks: 0,
+          currentlyReadingCount: 0,
+          wantToReadCount: 0,
+        },
+        collectionsSummary: { totalCollections: 0 },
       })),
     ]);
 

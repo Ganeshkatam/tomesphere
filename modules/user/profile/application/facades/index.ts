@@ -11,7 +11,11 @@ export async function executeProfilePageFacade(userId: string) {
   const progressRepo = new SupabaseProgressRepository(supabase);
   const progressQuery = new GetProgressDashboard(progressRepo);
   const achievementsReadModel = new SupabaseUserAchievementsReadModel(supabase);
-  
-  const facade = new ProfilePageFacade(profileRepo, progressQuery, achievementsReadModel);
+
+  const facade = new ProfilePageFacade(
+    profileRepo,
+    progressQuery,
+    achievementsReadModel,
+  );
   return facade.get(userId);
 }

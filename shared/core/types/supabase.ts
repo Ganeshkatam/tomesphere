@@ -9,5 +9,5 @@ export type Enums<T extends keyof Database["public"]["Enums"]> =
 export type Profile = Tables<"profiles">;
 export type Book = Tables<"books">;
 export type Bookmark = Tables<"bookmarks">;
-export type Note = Tables<"notes">;
-export type ActivityLog = Tables<"activity_log">;
+export type Annotation = Tables<"annotations">;
+export type Highlight = Tables<"highlights">;

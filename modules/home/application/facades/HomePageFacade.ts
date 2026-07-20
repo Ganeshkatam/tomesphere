@@ -26,15 +26,15 @@ import { SuggestedReadsDto } from "@/modules/discovery/application/queries/GetSu
 
 export interface HomePageDto {
   user: AuthenticatedUser;
-  continueReading: ContinueReadingDto | null;
-  currentReading: CurrentReadingDto | null;
-  librarySnapshot: LibrarySnapshotDto | null;
-  readingGoal: GoalProgressDto | null;
-  readingStreak: ReadingStreakDto | null;
-  readingStats: ReadingStatisticsDto | null;
-  readingCalendar: ReadingCalendarDto | null;
-  suggestedReads: SuggestedReadsDto | null;
-  recentActivity: RecentActivityDto | null;
+  continueReading: Promise<ContinueReadingDto | null>;
+  currentReading: Promise<CurrentReadingDto | null>;
+  librarySnapshot: Promise<LibrarySnapshotDto | null>;
+  readingGoal: Promise<GoalProgressDto | null>;
+  readingStreak: Promise<ReadingStreakDto | null>;
+  readingStats: Promise<ReadingStatisticsDto | null>;
+  readingCalendar: Promise<ReadingCalendarDto | null>;
+  suggestedReads: Promise<SuggestedReadsDto | null>;
+  recentActivity: Promise<RecentActivityDto | null>;
 }
 
 export class HomePageFacade {
@@ -48,7 +48,7 @@ export class HomePageFacade {
     private readonly getReadingStats: GetReadingStatisticsQuery,
     private readonly getReadingCalendar: GetReadingCalendarQuery,
     private readonly getSuggestedReads: GetSuggestedReadsQuery,
-    private readonly getRecentActivity: GetRecentActivityQuery
+    private readonly getRecentActivity: GetRecentActivityQuery,
   ) {}
 
   async get(): Promise<HomePageDto> {
@@ -56,39 +56,17 @@ export class HomePageFacade {
     if (!user) throw new Error("Unauthorized");
     const userId = user.id;
 
-    const [
-      continueReading,
-      currentReading,
-      librarySnapshot,
-      readingGoal,
-      readingStreak,
-      readingStats,
-      readingCalendar,
-      suggestedReads,
-      recentActivity,
-    ] = await Promise.all([
-      this.getContinueReading.execute(userId),
-      this.getCurrentReading.execute(userId),
-      this.getLibrarySnapshot.execute(userId),
-      this.getReadingGoal.execute(userId),
-      this.getReadingStreak.execute(userId),
-      this.getReadingStats.execute(userId),
-      this.getReadingCalendar.execute(userId),
-      this.getSuggestedReads.execute(userId),
-      this.getRecentActivity.execute(userId),
-    ]);
-
     return {
       user,
-      continueReading,
-      currentReading,
-      librarySnapshot,
-      readingGoal,
-      readingStreak,
-      readingStats,
-      readingCalendar,
-      suggestedReads,
-      recentActivity,
+      continueReading: this.getContinueReading.execute(userId),
+      currentReading: this.getCurrentReading.execute(userId),
+      librarySnapshot: this.getLibrarySnapshot.execute(userId),
+      readingGoal: this.getReadingGoal.execute(userId),
+      readingStreak: this.getReadingStreak.execute(userId),
+      readingStats: this.getReadingStats.execute(userId),
+      readingCalendar: this.getReadingCalendar.execute(userId),
+      suggestedReads: this.getSuggestedReads.execute(userId),
+      recentActivity: this.getRecentActivity.execute(userId),
     };
   }
 }

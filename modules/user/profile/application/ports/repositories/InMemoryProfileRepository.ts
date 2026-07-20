@@ -18,7 +18,7 @@ export class InMemoryProfileRepository implements ProfileRepository {
     userId: UserId,
     name: string,
     favoriteGenres: string[],
-    readingGoal: any
+    readingGoal: any,
   ): Promise<void> {
     // In-memory implementation of the setup RPC
     const profile = this.profiles.get(userId.value);

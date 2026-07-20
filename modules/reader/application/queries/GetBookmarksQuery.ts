@@ -11,10 +11,13 @@ export async function executeGetBookmarks(
   request: GetBookmarksRequest,
 ): Promise<BookmarkDto[]> {
   try {
-    const bookmarks = await repository.getBookmarks(request.userId, request.bookId);
-    return bookmarks ;
+    const bookmarks = await repository.getBookmarks(
+      request.userId,
+      request.bookId,
+    );
+    return bookmarks;
   } catch (error: any) {
     console.error("Failed to fetch bookmarks:", error);
-    throw new Error("Failed to fetch bookmarks" );
+    throw new Error("Failed to fetch bookmarks");
   }
 }

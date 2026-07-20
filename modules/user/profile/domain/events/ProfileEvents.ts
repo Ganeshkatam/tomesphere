@@ -1,4 +1,4 @@
-import {  DomainEvent  } from "@/shared/domain/events/DomainEvent";
+import { DomainEvent } from "@/shared/domain/events/DomainEvent";
 
 export class AvatarChangedEvent extends DomainEvent<string> {
   public static readonly EVENT_NAME = "AvatarChanged";

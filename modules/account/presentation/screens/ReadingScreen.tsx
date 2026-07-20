@@ -4,10 +4,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { BookOpen } from "lucide-react";
-import { LibraryCollectionItemDto } from "@/modules/library/application/dto/response/LibraryEntryDto";
+import { LibraryBookDto } from "@/modules/library/application/dto/response/LibraryBookDto";
 
 interface ReadingScreenProps {
-  readingList: LibraryCollectionItemDto[];
+  readingList: LibraryBookDto[];
 }
 
 export default function ReadingScreen({ readingList }: ReadingScreenProps) {
@@ -25,7 +25,7 @@ export default function ReadingScreen({ readingList }: ReadingScreenProps) {
 
   const filteredItems = readingList.filter((item) => {
     if (activeStatus === "all") return true;
-    return item.library.state === activeStatus;
+    return item.status === activeStatus;
   });
 
   const tabs = [
@@ -50,10 +50,11 @@ export default function ReadingScreen({ readingList }: ReadingScreenProps) {
           <button
             key={tab.key}
             onClick={() => setFilterStatus(tab.key)}
-            className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg whitespace-nowrap transition-all ${activeStatus === tab.key
+            className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg whitespace-nowrap transition-all ${
+              activeStatus === tab.key
                 ? "bg-indigo-600 text-white shadow-sm"
                 : "text-slate-400 hover:text-slate-200 hover:bg-[var(--surface-overlay)]"
-              }`}
+            }`}
           >
             {tab.label}
           </button>
@@ -65,17 +66,17 @@ export default function ReadingScreen({ readingList }: ReadingScreenProps) {
         {filteredItems.length > 0 ? (
           filteredItems.map((item) => (
             <div
-              key={item.book.id}
+              key={item.bookId}
               className="bg-[var(--surface-default)] border border-[var(--border-default)] rounded-xl p-4 flex items-center justify-between gap-4 hover:border-[var(--border-strong)] transition-all duration-200"
             >
               <div className="flex items-center gap-4 min-w-0">
                 <div className="relative w-12 h-16 shrink-0 border border-[var(--border-subtle)] rounded shadow-sm overflow-hidden">
                   <Image
                     src={
-                      item.book.coverUrl ||
+                      item.coverUrl ||
                       "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=100"
                     }
-                    alt={item.book.title}
+                    alt={item.title}
                     fill
                     className="object-cover"
                     sizes="48px"
@@ -83,34 +84,35 @@ export default function ReadingScreen({ readingList }: ReadingScreenProps) {
                 </div>
                 <div className="min-w-0">
                   <h3 className="text-sm sm:text-base font-bold text-slate-50 truncate">
-                    {item.book.title}
+                    {item.title}
                   </h3>
                   <p className="text-xs text-slate-400 font-semibold truncate mt-0.5">
-                    {item.book.authors?.map(a => a.name).join(", ") || "Unknown"}
+                    {item.authors?.map((a) => a.name).join(", ") || "Unknown"}
                   </p>
                   <span className="inline-block mt-2 px-2 py-0.5 bg-indigo-600/10 text-indigo-400 rounded text-[10px] font-bold">
-                    {item.book.genres?.[0]?.name || "Uncategorized"}
+                    {item.format || "Uncategorized"}
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center gap-3 shrink-0">
                 <span
-                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${item.library.state === "finished"
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    item.status === "finished"
                       ? "bg-emerald-600/10 text-emerald-400 border border-emerald-500/20"
-                      : item.library.state === "currently_reading"
+                      : item.status === "reading"
                         ? "bg-blue-600/10 text-blue-400 border border-blue-500/20"
                         : "bg-yellow-600/10 text-yellow-400 border border-yellow-500/20"
-                    }`}
+                  }`}
                 >
-                  {item.library.state === "finished" && "Finished"}
-                  {item.library.state === "currently_reading" && "Reading"}
-                  {item.library.state === "want_to_read" && "Want to Read"}
+                  {item.status === "finished" && "Finished"}
+                  {item.status === "reading" && "Reading"}
+                  {item.status === "want_to_read" && "Want to Read"}
                 </span>
 
-                {item.library.state === "currently_reading" && (
+                {item.status === "reading" && (
                   <Link
-                    href={`/read/${item.book.id}`}
+                    href={`/read/${item.bookId}`}
                     className="p-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
                   >
                     <BookOpen size={14} />

@@ -1,4 +1,4 @@
-import {  DomainEvent  } from "@/shared/domain/events/DomainEvent";
+import { DomainEvent } from "@/shared/domain/events/DomainEvent";
 
 export class BookPublishedEvent extends DomainEvent<string> {
   public static readonly EVENT_NAME = "BookPublished";
@@ -35,6 +35,26 @@ export class BookUpdatedEvent extends DomainEvent<string> {
 export class BookDeletedEvent extends DomainEvent<string> {
   public static readonly EVENT_NAME = "BookDeleted";
   public readonly eventName = BookDeletedEvent.EVENT_NAME;
+
+  constructor(aggregateId: string, aggregateVersion: number) {
+    super(aggregateId, aggregateVersion, 1);
+    Object.freeze(this);
+  }
+}
+
+export class BookUnpublishedEvent extends DomainEvent<string> {
+  public static readonly EVENT_NAME = "BookUnpublished";
+  public readonly eventName = BookUnpublishedEvent.EVENT_NAME;
+
+  constructor(aggregateId: string, aggregateVersion: number) {
+    super(aggregateId, aggregateVersion, 1);
+    Object.freeze(this);
+  }
+}
+
+export class BookArchivedEvent extends DomainEvent<string> {
+  public static readonly EVENT_NAME = "BookArchived";
+  public readonly eventName = BookArchivedEvent.EVENT_NAME;
 
   constructor(aggregateId: string, aggregateVersion: number) {
     super(aggregateId, aggregateVersion, 1);

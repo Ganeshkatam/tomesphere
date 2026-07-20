@@ -12,7 +12,7 @@ export class GetRecentActivityQuery {
       const data = await this.repository.getRecentActivity(userId);
       return data;
     } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch recent activity." );
+      throw new Error(error.message || "Failed to fetch recent activity.");
     }
   }
 }

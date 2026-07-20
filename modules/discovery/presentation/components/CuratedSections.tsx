@@ -53,8 +53,8 @@ export default function HomeCuratedSections({
   const subjects = useMemo(() => {
     const raw = allBooks
       .flatMap((b) => [
-        ...(b.subjects?.map(s => s.name) || []),
-        ...(b.genres?.map(g => g.name) || [])
+        ...(b.subjects?.map((s) => s.name) || []),
+        ...(b.genres?.map((g) => g.name) || []),
       ])
       .filter(Boolean) as string[];
     const unique = Array.from(new Set(raw)).slice(0, 10);
@@ -66,8 +66,10 @@ export default function HomeCuratedSections({
       ? allBooks.length
       : allBooks.filter(
           (b) =>
-            b.subjects?.some(s => s.name.toLowerCase() === sub.toLowerCase()) ||
-            b.genres?.some(g => g.name.toLowerCase() === sub.toLowerCase())
+            b.subjects?.some(
+              (s) => s.name.toLowerCase() === sub.toLowerCase(),
+            ) ||
+            b.genres?.some((g) => g.name.toLowerCase() === sub.toLowerCase()),
         ).length;
 
   const subjectBooks = useMemo(() => {
@@ -75,8 +77,12 @@ export default function HomeCuratedSections({
     return allBooks
       .filter(
         (b) =>
-          b.subjects?.some(s => s.name.toLowerCase() === activeSubject.toLowerCase()) ||
-          b.genres?.some(g => g.name.toLowerCase() === activeSubject.toLowerCase())
+          b.subjects?.some(
+            (s) => s.name.toLowerCase() === activeSubject.toLowerCase(),
+          ) ||
+          b.genres?.some(
+            (g) => g.name.toLowerCase() === activeSubject.toLowerCase(),
+          ),
       )
       .slice(0, 6);
   }, [activeSubject, allBooks]);

@@ -26,7 +26,9 @@ function VerifyPasswordForm() {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
-      const authError = !res.ok ? new Error(data.error?.message || "Failed to sign in") : null;
+      const authError = !res.ok
+        ? new Error(data.error?.message || "Failed to sign in")
+        : null;
       const authData = data;
 
       if (authError) throw authError;

@@ -30,9 +30,9 @@ export class SupabaseProfileRepository implements ProfileRepository {
     const { error } = await this.supabase
       .from("profiles")
       .update({
-        name: row.name,
+        display_name: row.display_name,
         avatar_url: row.avatar_url,
-        biography: row.biography,
+        bio: row.bio,
         location: row.location,
         updated_at: row.updated_at,
       })
@@ -47,7 +47,7 @@ export class SupabaseProfileRepository implements ProfileRepository {
     for (const event of events) {
       if (event.eventName === "ProfileIdentityUpdated") {
         const e = event as any;
-        eventBus.emit("profile:identity_updated", {
+        eventBus.emit("profile.identity.updated", {
           userId: e.aggregateId,
           displayName: e.displayName,
           biography: e.biography,
@@ -55,7 +55,7 @@ export class SupabaseProfileRepository implements ProfileRepository {
         });
       } else if (event.eventName === "AvatarChanged") {
         const e = event as any;
-        eventBus.emit("profile:avatar_changed", {
+        eventBus.emit("profile.avatar.changed", {
           userId: e.aggregateId,
           avatarUrl: e.avatarUrl,
         });
@@ -67,7 +67,7 @@ export class SupabaseProfileRepository implements ProfileRepository {
     userId: UserId,
     name: string,
     favoriteGenres: string[],
-    readingGoal: any
+    readingGoal: any,
   ): Promise<void> {
     const { error } = await (this.supabase.rpc as any)("setup_profile", {
       user_id: userId.value,

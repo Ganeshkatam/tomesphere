@@ -8,14 +8,11 @@ import { useState } from "react";
 
 const COMPANY_LINKS = [
   { label: "About", href: "/about" },
-  { label: "Mission", href: "/mission" },
-  { label: "Careers", href: "/careers" },
   { label: "Contact", href: "/contact" },
 ];
 
 const SUPPORT_LINKS = [
   { label: "Help Center", href: "/support" },
-  { label: "Guidelines", href: "/guidelines" },
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms of Service", href: "/terms" },
   { label: "Cookies", href: "/cookies" },
@@ -43,7 +40,7 @@ export default function Footer() {
     "/profile-setup",
     "/read",
     "/books",
-    "/discover/search",
+    "/search",
     "/discover",
     "/me",
   ].some((route) => pathname === route || pathname?.startsWith(route + "/"));

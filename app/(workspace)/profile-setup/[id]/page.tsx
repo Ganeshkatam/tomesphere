@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { showError, showSuccess } from "@/lib/toast";
+import { getProfile, setupProfile } from "@/modules/account/presentation/actions/profile";
 
 export default function ProfileSetupPage({
   params,
@@ -32,30 +33,15 @@ export default function ProfileSetupPage({
   ];
 
   const checkUser = useCallback(async () => {
-    const res = await fetch("/api/v1/auth/session");
-    const { data } = await res.json();
-    const session = data?.session;
+    // We already know they are authenticated because the proxy middleware lets them reach here.
+    // However, if we wanted to enforce strict ID match on the client side:
     
-    if (!session) {
-      router.push("/login");
-      return;
-    }
-    if (session.user.id !== params.id) {
-      router.push(`/profile-setup/${session.user.id}`);
-      return;
-    }
-
-    setUser(session.user);
-
     // Fetch profile data
-    const profileRes = await fetch("/api/v1/profile");
-    if (profileRes.ok) {
-      const profileData = await profileRes.json();
-      if (profileData?.data?.displayName) {
-        setFormData((prev) => ({ ...prev, name: profileData.displayName }));
-      }
+    const profileRes = await getProfile(params.id);
+    if (profileRes.success && profileRes.data?.displayName) {
+      setFormData((prev) => ({ ...prev, name: profileRes.data.displayName }));
     }
-  }, [router, params.id]);
+  }, [params.id]);
 
   useEffect(() => {
     checkUser();
@@ -86,17 +72,11 @@ export default function ProfileSetupPage({
     setLoading(true);
 
     try {
-      // Create a setup endpoint payload
-      const res = await fetch("/api/v1/profile/setup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await setupProfile(params.id, formData);
 
-      const data = await res.json();
-      const error = !res.ok ? new Error(data.error?.message || "Failed to setup profile") : null;
-
-      if (error) throw error;
+      if (!res.success) {
+        throw new Error(res.error?.message || "Failed to setup profile");
+      }
 
       showSuccess("Profile setup complete!");
 

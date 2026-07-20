@@ -1,48 +1,52 @@
-import ePub, { Book, Rendition } from "epubjs";
+import ePub, { Book, Rendition, Location } from "epubjs";
 import { ReaderRenderer } from "../../../application/ports/ReaderRenderer";
 import {
   LocationAnchor,
   SelectionAnchor,
   ReaderHighlight,
 } from "@/shared/core/events/types";
+import { ReaderPreferencesDto } from "../../../application/dto/ReaderPageDto";
 
 export class EpubJsRenderer implements ReaderRenderer {
   private book: Book | null = null;
   private rendition: Rendition | null = null;
 
-  private locationListeners: Set<(anchor: LocationAnchor) => void> = new Set();
+  private locationListeners: Set<
+    (anchor: LocationAnchor, percentage: number) => void
+  > = new Set();
   private selectionListeners: Set<
     (anchor: SelectionAnchor, text: string) => void
   > = new Set();
   private highlightClickListeners: Set<(id: string) => void> = new Set();
 
-  private handleRelocated = (location: any) => {
+  private handleRelocated = (location: Location) => {
     const anchor: LocationAnchor = {
       type: "epubcfi",
       value: location.start.cfi,
     };
-    this.locationListeners.forEach((listener) => listener(anchor));
+
+    // epubjs location has a percentage property if locations are generated
+    const percentage = this.book?.locations
+      ? this.book.locations.percentageFromCfi(location.start.cfi)
+      : 0;
+
+    this.locationListeners.forEach((listener) =>
+      listener(anchor, percentage * 100),
+    );
   };
 
   private handleSelected = (cfiRange: string, contents: any) => {
-    // Extract the selected text
     const text = contents.window.getSelection().toString();
-
     const anchor: SelectionAnchor = {
       version: 1,
-      // For EPUB CFI, the range string encodes both start and end relative to a base node.
-      // We store the full range string in both to preserve standard epubjs compatibility.
       start: { type: "epubcfi", value: cfiRange },
       end: { type: "epubcfi", value: cfiRange },
     };
-
     this.selectionListeners.forEach((listener) => listener(anchor, text));
-
-    // Clear the native DOM selection so our custom highlight logic takes over cleanly
     contents.window.getSelection().removeAllRanges();
   };
 
-  async open(bookUrl: string, container: HTMLElement): Promise<void> {
+  async initialize(bookUrl: string, container: HTMLElement): Promise<void> {
     this.book = ePub(bookUrl);
 
     this.rendition = this.book.renderTo(container, {
@@ -50,38 +54,61 @@ export class EpubJsRenderer implements ReaderRenderer {
       height: "100%",
       spread: "none",
       manager: "continuous",
-      flow: "scrolled",
+      flow: "scrolled", // Can be overridden by preferences
     });
 
     this.rendition.on("relocated", this.handleRelocated);
     this.rendition.on("selected", this.handleSelected);
 
+    // Generate locations for progress tracking
+    await this.book.ready;
+    await this.book.locations.generate(1600);
+  }
+
+  async display(): Promise<void> {
+    if (!this.rendition) return;
     await this.rendition.display();
   }
 
-  async goTo(anchor: LocationAnchor): Promise<void> {
-    if (!this.rendition || anchor.type !== "epubcfi") return;
-    await this.rendition.display(anchor.value);
+  async goTo(anchor: LocationAnchor | string): Promise<void> {
+    if (!this.rendition) return;
+    const value = typeof anchor === "string" ? anchor : anchor.value;
+    await this.rendition.display(value);
   }
 
-  async currentLocation(): Promise<LocationAnchor> {
-    if (!this.rendition) throw new Error("Renderer not initialized");
+  async next(): Promise<void> {
+    if (!this.rendition) return;
+    await this.rendition.next();
+  }
+
+  async previous(): Promise<void> {
+    if (!this.rendition) return;
+    await this.rendition.prev();
+  }
+
+  async getProgress(): Promise<{ percentage: number; anchor: LocationAnchor }> {
+    if (!this.rendition || !this.book)
+      throw new Error("Renderer not initialized");
     const location = this.rendition.currentLocation() as any;
+    const cfi = location.start.cfi;
+    const percentage = this.book.locations
+      ? this.book.locations.percentageFromCfi(cfi)
+      : 0;
     return {
-      type: "epubcfi",
-      value: location.start.cfi,
+      percentage: percentage * 100,
+      anchor: { type: "epubcfi", value: cfi },
     };
   }
 
-  onLocationChanged(callback: (anchor: LocationAnchor) => void): () => void {
+  onLocationChanged(
+    callback: (anchor: LocationAnchor, percentage: number) => void,
+  ): () => void {
     this.locationListeners.add(callback);
     return () => this.locationListeners.delete(callback);
   }
 
-  async addHighlight(highlight: ReaderHighlight): Promise<void> {
+  async highlight(highlight: ReaderHighlight): Promise<void> {
     if (!this.rendition) return;
-
-    // The CFI range string is safely stored in start.value
     const cfiRange = highlight.selectionAnchor.start.value;
     this.highlightIdToCfi.set(highlight.id, cfiRange);
 
@@ -89,7 +116,6 @@ export class EpubJsRenderer implements ReaderRenderer {
       cfiRange,
       { fill: highlight.color },
       (e: Event) => {
-        // Prevent event from propagating and triggering other clicks (e.g. page turns)
         e.preventDefault();
         e.stopPropagation();
         this.highlightClickListeners.forEach((listener) =>
@@ -103,7 +129,6 @@ export class EpubJsRenderer implements ReaderRenderer {
 
   async removeHighlight(id: string): Promise<void> {
     if (!this.rendition) return;
-
     const cfiRange = this.highlightIdToCfi.get(id);
     if (cfiRange) {
       this.rendition.annotations.remove(cfiRange, "highlight");
@@ -111,7 +136,6 @@ export class EpubJsRenderer implements ReaderRenderer {
     }
   }
 
-  // Internal mapping for deletions
   private highlightIdToCfi: Map<string, string> = new Map();
 
   onTextSelected(
@@ -124,6 +148,56 @@ export class EpubJsRenderer implements ReaderRenderer {
   onHighlightClicked(callback: (id: string) => void): () => void {
     this.highlightClickListeners.add(callback);
     return () => this.highlightClickListeners.delete(callback);
+  }
+
+  async bookmark(anchor: LocationAnchor): Promise<void> {
+    // Optional visual rendering of bookmark
+    if (!this.rendition) return;
+    // epubjs doesn't have a native "bookmark" annotation out of the box like highlight,
+    // so we could render a custom mark if needed.
+  }
+
+  async annotation(id: string, action: "show" | "hide"): Promise<void> {
+    // Show/hide note icon or popup next to highlight
+  }
+
+  async search(query: string): Promise<any[]> {
+    if (!this.book) return [];
+
+    return Promise.all(
+      (this.book.spine as any).spineItems.map((item: any) =>
+        item
+          .load(this.book!.load.bind(this.book))
+          .then(item.find.bind(item, query))
+          .finally(item.unload.bind(item)),
+      ),
+    ).then((results) => Promise.resolve([].concat.apply([], results as any)));
+  }
+
+  theme(themeName: "light" | "dark" | "sepia"): void {
+    if (!this.rendition) return;
+    const themes = this.rendition.themes;
+    themes.register("light", {
+      body: { background: "#ffffff", color: "#000000" },
+    });
+    themes.register("dark", {
+      body: { background: "#0f172a", color: "#e2e8f0" },
+    });
+    themes.register("sepia", {
+      body: { background: "#f4ecd8", color: "#5b4636" },
+    });
+    themes.select(themeName);
+  }
+
+  preferences(prefs: ReaderPreferencesDto): void {
+    if (!this.rendition) return;
+    const themes = this.rendition.themes;
+    themes.fontSize(`${prefs.fontSize}px`);
+    themes.font(prefs.fontFamily);
+
+    // Convert line height and margin
+    themes.override("line-height", `${prefs.lineHeight}`);
+    themes.override("padding", `0 ${prefs.margin}px`);
   }
 
   async destroy(): Promise<void> {

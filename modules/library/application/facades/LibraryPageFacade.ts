@@ -1,33 +1,36 @@
-import { LibraryRepository } from "../../domain/repositories/LibraryRepository";
-import { BookRepository } from "../../../books/domain/repositories/BookRepository";
-import { LibraryCollectionItemDto } from "../dto/response/LibraryEntryDto";
-import { getCurrentlyReading } from "../queries/GetCurrentlyReading/handler";
-import { getFinishedBooks } from "../queries/GetFinishedBooks/handler";
-import { getWantToReadBooks } from "../queries/GetWantToRead/handler";
-
-export interface LibraryPageDto {
-  reading: LibraryCollectionItemDto[];
-  finished: LibraryCollectionItemDto[];
-  wantToRead: LibraryCollectionItemDto[];
-}
+import { LibraryPageDto } from "../dto/response/LibraryPageDto";
+import { getLibrarySummary } from "../queries/GetLibrarySummary/handler";
+import { getLibraryNavigation } from "../queries/GetLibraryNavigation/handler";
+import { getLibraryBooks } from "../queries/GetLibraryBooks/handler";
+import { getLibraryFilters } from "../queries/GetLibraryFilters/handler";
+import {
+  LibraryReadModel,
+  LibraryQueryParams,
+} from "../ports/read-models/LibraryReadModel";
+import { CollectionRepository } from "../../domain/repositories/CollectionRepository";
 
 export class LibraryPageFacade {
   constructor(
-    private readonly libraryRepo: LibraryRepository,
-    private readonly bookRepo: BookRepository
+    private readonly libraryReadModel: LibraryReadModel,
+    private readonly collectionRepository: CollectionRepository,
   ) {}
 
-  async get(userId: string): Promise<LibraryPageDto> {
-    const [reading, finished, wantToRead] = await Promise.all([
-      getCurrentlyReading(this.libraryRepo, this.bookRepo, userId),
-      getFinishedBooks(this.libraryRepo, this.bookRepo, userId),
-      getWantToReadBooks(this.libraryRepo, this.bookRepo, userId),
+  async get(
+    userId: string,
+    params: LibraryQueryParams,
+  ): Promise<LibraryPageDto> {
+    const [summary, navigation, books, filters] = await Promise.all([
+      getLibrarySummary(this.libraryReadModel, userId),
+      getLibraryNavigation(this.collectionRepository, userId),
+      getLibraryBooks(this.libraryReadModel, userId, params),
+      getLibraryFilters(userId),
     ]);
 
     return {
-      reading,
-      finished,
-      wantToRead,
+      summary,
+      navigation,
+      books,
+      filters,
     };
   }
 }

@@ -13,10 +13,10 @@ export class GetReadingGoalsQuery {
         throw new Error(`No reading goal found for year ${year}`);
       }
 
-      return ProgressMapper.toGoalDto(goal) ;
+      return ProgressMapper.toGoalDto(goal);
     } catch (error) {
       console.error("[GetReadingGoalsQuery] Error:", error);
-      throw new Error("Failed to fetch reading goals" );
+      throw new Error("Failed to fetch reading goals");
     }
   }
 }

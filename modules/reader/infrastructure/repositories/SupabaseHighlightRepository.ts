@@ -8,7 +8,7 @@ export class SupabaseHighlightRepository implements HighlightRepository {
 
   async getHighlights(userId: string, bookId: string): Promise<HighlightDto[]> {
     const { data, error } = await this.supabase
-      .from("reader_highlights")
+      .from("highlights")
       .select("*")
       .match({ user_id: userId, book_id: bookId });
 
@@ -27,9 +27,15 @@ export class SupabaseHighlightRepository implements HighlightRepository {
     }));
   }
 
-  async createHighlight(userId: string, bookId: string, location: string, selectedText: string, color?: string): Promise<HighlightDto> {
+  async createHighlight(
+    userId: string,
+    bookId: string,
+    location: string,
+    selectedText: string,
+    color?: string,
+  ): Promise<HighlightDto> {
     const { data, error } = await this.supabase
-      .from("reader_highlights")
+      .from("highlights")
       .insert({
         user_id: userId,
         book_id: bookId,
@@ -59,7 +65,7 @@ export class SupabaseHighlightRepository implements HighlightRepository {
 
   async deleteHighlight(id: string, userId: string): Promise<boolean> {
     const { error } = await this.supabase
-      .from("reader_highlights")
+      .from("highlights")
       .delete()
       .match({ id, user_id: userId });
 

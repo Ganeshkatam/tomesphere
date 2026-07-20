@@ -1,7 +1,8 @@
 import { BookDto } from "@/modules/library/application/dto/response/BookDto";
 
 const MAX_HISTORY = parseInt(process.env.NEXT_PUBLIC_MAX_HISTORY || "20", 10);
-const STORAGE_KEY = process.env.NEXT_PUBLIC_RECENT_VIEWS_KEY || "tomesphere_recent_views";
+const STORAGE_KEY =
+  process.env.NEXT_PUBLIC_RECENT_VIEWS_KEY || "tomesphere_recent_views";
 
 export interface ViewHistoryItem {
   book: BookDto;

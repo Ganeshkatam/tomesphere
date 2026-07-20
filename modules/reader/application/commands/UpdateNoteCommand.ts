@@ -1,5 +1,3 @@
-
-
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 
 export interface UpdateNoteRequest {
@@ -14,7 +12,7 @@ export async function executeUpdateNote(
   const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase
-    .from("reader_notes")
+    .from("annotations")
     .update({
       body_markdown: request.bodyMarkdown,
       // updated_at is handled by Postgres trigger

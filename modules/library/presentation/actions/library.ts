@@ -21,7 +21,10 @@ import { SupabaseLibraryRepository } from "../../infrastructure/SupabaseLibraryR
 import { SupabaseBookRepository } from "../../../books/infrastructure/SupabaseBookRepository";
 
 // Outputs
-import { LibraryEntryDto, LibraryCollectionItemDto } from "@/modules/library/application/dto/response/LibraryEntryDto";
+import {
+  LibraryEntryDto,
+  LibraryCollectionItemDto,
+} from "@/modules/library/application/dto/response/LibraryEntryDto";
 
 // Input Schemas
 const AddBookInputSchema = z.object({
@@ -57,7 +60,7 @@ export async function addBookToLibraryAction(
     const supabase = await createSupabaseServerClient();
     const identityProvider = new SupabaseIdentityProvider(supabase);
     const user = await identityProvider.currentUser();
-    if (!user) throw new Error("Unauthorized" );
+    if (!user) throw new Error("Unauthorized");
 
     const libraryRepo = new SupabaseLibraryRepository(supabase);
 
@@ -84,7 +87,10 @@ export async function addBookToLibraryAction(
     revalidatePath("/home");
     return { success: true, data: output };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }
 
@@ -97,7 +103,7 @@ export async function changeReadingStateAction(
     const supabase = await createSupabaseServerClient();
     const identityProvider = new SupabaseIdentityProvider(supabase);
     const user = await identityProvider.currentUser();
-    if (!user) throw new Error("Unauthorized" );
+    if (!user) throw new Error("Unauthorized");
 
     const libraryRepo = new SupabaseLibraryRepository(supabase);
     const { output } = await changeReadingState(libraryRepo, {
@@ -108,7 +114,10 @@ export async function changeReadingStateAction(
     revalidatePath("/home");
     return { success: true, data: output };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }
 
@@ -121,7 +130,7 @@ export async function updateReadingProgressAction(
     const supabase = await createSupabaseServerClient();
     const identityProvider = new SupabaseIdentityProvider(supabase);
     const user = await identityProvider.currentUser();
-    if (!user) throw new Error("Unauthorized" );
+    if (!user) throw new Error("Unauthorized");
 
     const libraryRepo = new SupabaseLibraryRepository(supabase);
     const { output } = await updateReadingProgress(libraryRepo, {
@@ -132,18 +141,21 @@ export async function updateReadingProgressAction(
     revalidatePath("/home");
     return { success: true, data: output };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }
 
-export async function getCurrentlyReadingAction(): Promise<ServerActionResult<
-  LibraryCollectionItemDto[]
->> {
+export async function getCurrentlyReadingAction(): Promise<
+  ServerActionResult<LibraryCollectionItemDto[]>
+> {
   try {
     const supabase = await createSupabaseServerClient();
     const identityProvider = new SupabaseIdentityProvider(supabase);
     const user = await identityProvider.currentUser();
-    if (!user) throw new Error("Unauthorized" );
+    if (!user) throw new Error("Unauthorized");
 
     const libraryRepo = new SupabaseLibraryRepository(supabase);
     const bookRepo = new SupabaseBookRepository(supabase);
@@ -151,18 +163,21 @@ export async function getCurrentlyReadingAction(): Promise<ServerActionResult<
     const output = await getCurrentlyReading(libraryRepo, bookRepo, user.id);
     return { success: true, data: output };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }
 
-export async function getFinishedBooksAction(): Promise<ServerActionResult<
-  LibraryCollectionItemDto[]
->> {
+export async function getFinishedBooksAction(): Promise<
+  ServerActionResult<LibraryCollectionItemDto[]>
+> {
   try {
     const supabase = await createSupabaseServerClient();
     const identityProvider = new SupabaseIdentityProvider(supabase);
     const user = await identityProvider.currentUser();
-    if (!user) throw new Error("Unauthorized" );
+    if (!user) throw new Error("Unauthorized");
 
     const libraryRepo = new SupabaseLibraryRepository(supabase);
     const bookRepo = new SupabaseBookRepository(supabase);
@@ -170,18 +185,21 @@ export async function getFinishedBooksAction(): Promise<ServerActionResult<
     const output = await getFinishedBooks(libraryRepo, bookRepo, user.id);
     return { success: true, data: output };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }
 
-export async function getWantToReadAction(): Promise<ServerActionResult<
-  LibraryCollectionItemDto[]
->> {
+export async function getWantToReadAction(): Promise<
+  ServerActionResult<LibraryCollectionItemDto[]>
+> {
   try {
     const supabase = await createSupabaseServerClient();
     const identityProvider = new SupabaseIdentityProvider(supabase);
     const user = await identityProvider.currentUser();
-    if (!user) throw new Error("Unauthorized" );
+    if (!user) throw new Error("Unauthorized");
 
     const libraryRepo = new SupabaseLibraryRepository(supabase);
     const bookRepo = new SupabaseBookRepository(supabase);
@@ -189,7 +207,10 @@ export async function getWantToReadAction(): Promise<ServerActionResult<
     const output = await getWantToReadBooks(libraryRepo, bookRepo, user.id);
     return { success: true, data: output };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }
 
@@ -204,18 +225,21 @@ export async function getPublicFinishedBooksAction(
     const output = await getFinishedBooks(libraryRepo, bookRepo, profileId);
     return { success: true, data: output };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }
 
-export async function getAllLibraryBooksAction(): Promise<ServerActionResult<
-  LibraryCollectionItemDto[]
->> {
+export async function getAllLibraryBooksAction(): Promise<
+  ServerActionResult<LibraryCollectionItemDto[]>
+> {
   try {
     const supabase = await createSupabaseServerClient();
     const identityProvider = new SupabaseIdentityProvider(supabase);
     const user = await identityProvider.currentUser();
-    if (!user) throw new Error("Unauthorized" );
+    if (!user) throw new Error("Unauthorized");
 
     const libraryRepo = new SupabaseLibraryRepository(supabase);
     const bookRepo = new SupabaseBookRepository(supabase);
@@ -223,6 +247,9 @@ export async function getAllLibraryBooksAction(): Promise<ServerActionResult<
     const output = await getAllLibraryBooks(libraryRepo, bookRepo, user.id);
     return { success: true, data: output };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }

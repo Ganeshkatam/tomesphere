@@ -23,7 +23,10 @@ export class ActivityLog extends Entity<ActivityLogProps> {
     super(id, props);
   }
 
-  static create(id: string, props: Omit<ActivityLogProps, "createdAt"> & { createdAt?: Date }): ActivityLog {
+  static create(
+    id: string,
+    props: Omit<ActivityLogProps, "createdAt"> & { createdAt?: Date },
+  ): ActivityLog {
     return new ActivityLog(id, {
       ...props,
       createdAt: props.createdAt || new Date(),

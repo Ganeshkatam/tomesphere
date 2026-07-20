@@ -11,7 +11,7 @@ export interface SearchBooksQuery {
 
 export async function searchBooks(
   repository: DiscoveryReadModel,
-  query: SearchBooksQuery
+  query: SearchBooksQuery,
 ): Promise<SearchResultDto> {
   const term = query.term || "";
   const genre = query.genre || "all";

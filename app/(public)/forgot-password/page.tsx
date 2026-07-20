@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
 import { showError, showSuccess } from "@/lib/toast";
+import { sendPasswordResetServer } from "@/modules/authentication/presentation/actions/auth";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -22,17 +22,13 @@ export default function ForgotPasswordPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/v1/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      const error = !res.ok ? new Error(data.error || "Failed to send link") : null;
+      const res = await sendPasswordResetServer(email);
 
-      if (error) throw error;
+      if (!res.success) {
+        throw new Error(res.error?.message || "Failed to send reset link");
+      }
 
-      showSuccess("Password reset link sent to your email!");
+      showSuccess("If an account exists for that email, we've sent password reset instructions.");
       setSent(true);
     } catch (error: any) {
       console.error("Error:", error);

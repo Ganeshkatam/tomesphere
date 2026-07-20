@@ -39,7 +39,7 @@ export default function MFASetup() {
     setLoading(true);
     try {
       const res = await enrollMFA();
-      
+
       if (!res) throw new Error("No data returned");
 
       setFactorId(res.factorId);
@@ -63,7 +63,6 @@ export default function MFASetup() {
 
     try {
       const res = await verifyMFA(factorId, verifyCode);
-      
 
       showSuccess("MFA Enabled Successfully!");
       setIsEnabled(true);
@@ -85,7 +84,6 @@ export default function MFASetup() {
     setLoading(true);
     try {
       const res = await disableMFA();
-      
 
       showSuccess("App Authenticator disabled!");
       setIsEnabled(false);

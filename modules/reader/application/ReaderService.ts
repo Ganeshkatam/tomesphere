@@ -20,10 +20,9 @@ import {
   deleteNoteAction,
   createBookmarkAction,
   deleteBookmarkAction,
-  updateReaderPositionAction,
-  completeReadingSessionAction,
 } from "../presentation/actions/reader";
 import { useReaderStore } from "../state/reader-store";
+import { ReaderSessionFacade } from "./facades/ReaderSessionFacade";
 
 export class ReaderService {
   private renderer: ReaderRenderer | null = null;
@@ -31,12 +30,14 @@ export class ReaderService {
   private bookId: string;
 
   // Session state
+  private sessionFacade: ReaderSessionFacade;
   private sessionStartTime: number | null = null;
   private accumulatedDurationSeconds: number = 0;
 
   // Auto-save debounce
   private autoSaveTimer: NodeJS.Timeout | null = null;
-  private readonly AUTO_SAVE_DELAY_MS = 2500;
+  private readonly AUTO_SAVE_DELAY_MS = 30000;
+  private pendingSaveAnchor: LocationAnchor | null = null;
 
   // In-memory highlight list for hasNote computation and target promotion
   private highlights: ReaderHighlight[] = [];
@@ -46,6 +47,7 @@ export class ReaderService {
   constructor(userId: string, bookId: string) {
     this.userId = userId;
     this.bookId = bookId;
+    this.sessionFacade = new ReaderSessionFacade(bookId);
   }
 
   // ─── Initialization ──────────────────────────────────────────────
@@ -80,15 +82,51 @@ export class ReaderService {
     });
 
     // Open the document
-    await this.renderer.open(bookUrl, container);
+    await this.renderer.initialize(bookUrl, container);
 
     // Load annotations in order: highlights first, then notes, then bookmarks
     await this.loadHighlights();
     await this.loadNotes();
     await this.loadBookmarks();
 
+    // Apply initial preferences
+    this.applyPreferences(store.preferences);
+
+    // Setup auto-save safety nets
+    this.setupAutoSaveListeners();
+
     store.setRendererReady(true);
     this.startSession();
+  }
+
+  private setupAutoSaveListeners() {
+    if (typeof window !== "undefined") {
+      window.addEventListener("beforeunload", this.handleUnload);
+      window.addEventListener("pagehide", this.handleUnload);
+    }
+  }
+
+  private handleUnload = () => {
+    // Synchronous flush on unload (navigator.sendBeacon is better, but we rely on the facade)
+    if (this.pendingSaveAnchor) {
+      this.sessionFacade.saveProgress(this.pendingSaveAnchor);
+      this.pendingSaveAnchor = null;
+    }
+    if (this.sessionStartTime) {
+      const duration = Math.floor((Date.now() - this.sessionStartTime) / 1000);
+      this.accumulatedDurationSeconds += duration;
+      this.sessionStartTime = null;
+      if (this.accumulatedDurationSeconds > 0) {
+        this.sessionFacade.completeSession(this.accumulatedDurationSeconds);
+      }
+    }
+  };
+
+  public applyPreferences(prefs: any) {
+    if (this.renderer) {
+      this.renderer.theme(prefs.theme);
+      this.renderer.preferences(prefs);
+    }
   }
 
   // ─── Highlights ──────────────────────────────────────────────────
@@ -97,7 +135,7 @@ export class ReaderService {
     try {
       const res = await getHighlightsAction(this.bookId);
       if (res.success) {
-        this.highlights = res.data.map(dto => ({
+        this.highlights = res.data.map((dto) => ({
           id: dto.id,
           userId: this.userId,
           bookId: dto.bookId,
@@ -108,7 +146,7 @@ export class ReaderService {
         }));
         if (this.renderer) {
           for (const h of this.highlights) {
-            await this.renderer.addHighlight(h);
+            await this.renderer.highlight(h);
           }
         }
       } else {
@@ -144,7 +182,7 @@ export class ReaderService {
         };
 
         this.highlights.push(highlight);
-        await this.renderer.addHighlight(highlight);
+        await this.renderer.highlight(highlight);
         store.setActiveSelection(null);
       }
     } catch (error) {
@@ -367,7 +405,7 @@ export class ReaderService {
     try {
       const res = await getBookmarksAction(this.bookId);
       if (res.success) {
-        this.bookmarks = res.data.map(dto => ({
+        this.bookmarks = res.data.map((dto) => ({
           id: dto.id,
           userId: this.userId,
           bookId: dto.bookId,
@@ -448,6 +486,16 @@ export class ReaderService {
     await this.renderer.goTo(anchor);
   }
 
+  public async next(): Promise<void> {
+    if (!this.renderer) return;
+    await this.renderer.next();
+  }
+
+  public async previous(): Promise<void> {
+    if (!this.renderer) return;
+    await this.renderer.previous();
+  }
+
   public startSession(): void {
     const store = useReaderStore.getState();
     if (store.sessionState === "active") return;
@@ -470,24 +518,21 @@ export class ReaderService {
   }
 
   private scheduleAutoSave(anchor: LocationAnchor): void {
+    this.pendingSaveAnchor = anchor;
     if (this.autoSaveTimer) {
       clearTimeout(this.autoSaveTimer);
     }
 
     this.autoSaveTimer = setTimeout(async () => {
-      await this.savePosition(anchor);
+      if (this.pendingSaveAnchor) {
+        await this.savePosition(this.pendingSaveAnchor);
+        this.pendingSaveAnchor = null;
+      }
     }, this.AUTO_SAVE_DELAY_MS);
   }
 
   private async savePosition(anchor: LocationAnchor): Promise<void> {
-    try {
-      await updateReaderPositionAction({
-        bookId: this.bookId,
-        locationAnchor: anchor,
-      });
-    } catch (error) {
-      console.error("Failed to auto-save position", error);
-    }
+    await this.sessionFacade.saveProgress(anchor);
   }
 
   public async completeSession(): Promise<void> {
@@ -501,18 +546,22 @@ export class ReaderService {
     }
 
     if (this.accumulatedDurationSeconds > 0) {
-      try {
-        await completeReadingSessionAction({
-          bookId: this.bookId,
-          durationSeconds: this.accumulatedDurationSeconds,
-        });
-      } catch (error) {
-        console.error("Failed to record completed session", error);
-      }
+      await this.sessionFacade.completeSession(this.accumulatedDurationSeconds);
     }
   }
 
   public async destroy(): Promise<void> {
+    if (typeof window !== "undefined") {
+      window.removeEventListener("beforeunload", this.handleUnload);
+      window.removeEventListener("pagehide", this.handleUnload);
+    }
+
+    // Force pending save
+    if (this.pendingSaveAnchor) {
+      await this.savePosition(this.pendingSaveAnchor);
+      this.pendingSaveAnchor = null;
+    }
+
     await this.completeSession();
     if (this.renderer) {
       await this.renderer.destroy();

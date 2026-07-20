@@ -1,13 +1,18 @@
 import { createSupabaseServerClient } from "@/shared/core/database/server";
-import { SupabaseLibraryRepository } from "../../infrastructure/SupabaseLibraryRepository";
-import { SupabaseBookRepository } from "../../../books/infrastructure/SupabaseBookRepository";
+import { SupabaseLibraryReadModel } from "../../infrastructure/read-models/SupabaseLibraryReadModel";
+import { SupabaseCollectionRepository } from "../../infrastructure/repositories/SupabaseCollectionRepository";
 import { LibraryPageFacade } from "./LibraryPageFacade";
+import { LibraryQueryParams } from "../ports/read-models/LibraryReadModel";
+import { LibraryPageDto } from "../dto/response/LibraryPageDto";
 
-export async function executeLibraryPageFacade(userId: string) {
+export async function executeLibraryPageFacade(
+  userId: string,
+  params: LibraryQueryParams = { viewType: "overview", viewId: "overview" },
+): Promise<LibraryPageDto> {
   const supabase = await createSupabaseServerClient();
-  const libraryRepo = new SupabaseLibraryRepository(supabase);
-  const bookRepo = new SupabaseBookRepository(supabase);
-  
-  const facade = new LibraryPageFacade(libraryRepo, bookRepo);
-  return facade.get(userId);
+  const readModel = new SupabaseLibraryReadModel(supabase);
+  const collectionRepo = new SupabaseCollectionRepository(supabase);
+
+  const facade = new LibraryPageFacade(readModel, collectionRepo);
+  return facade.get(userId, params);
 }

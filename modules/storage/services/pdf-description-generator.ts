@@ -1,5 +1,3 @@
-
-
 /**
  * Generate a book description from PDF content using AI
  * This extracts text from the first few pages and generates a description

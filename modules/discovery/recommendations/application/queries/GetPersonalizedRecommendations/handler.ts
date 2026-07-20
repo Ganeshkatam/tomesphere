@@ -76,9 +76,10 @@ export class GetPersonalizedRecommendationsHandler {
 
       return results;
     } catch (error) {
-      throw new Error(error instanceof Error
-            ? error.message
-            : "Unknown error getting recommendations",
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Unknown error getting recommendations",
       );
     }
   }

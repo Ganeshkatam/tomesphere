@@ -3,7 +3,7 @@ import { BookDto } from "@/modules/library/application/dto/response/BookDto";
 
 export async function getSearchSuggestions(
   repository: DiscoveryReadModel,
-  query: string
+  query: string,
 ): Promise<Partial<BookDto>[]> {
   return await repository.getSearchSuggestions(query);
 }

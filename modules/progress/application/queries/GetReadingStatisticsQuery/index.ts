@@ -12,7 +12,7 @@ export class GetReadingStatisticsQuery {
       const data = await this.repository.getReadingStatistics(userId);
       return data;
     } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch reading statistics." );
+      throw new Error(error.message || "Failed to fetch reading statistics.");
     }
   }
 }

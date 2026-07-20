@@ -7,7 +7,7 @@ import ExploreClient from "@/modules/books/components/ExploreClient";
 export default async function ExplorePage() {
   const supabase = await createSupabaseServerClient();
   const identityProvider = new SupabaseIdentityProvider(supabase);
-    const user = await identityProvider.currentUser();
+  const user = await identityProvider.currentUser();
 
   const repository = new SupabaseDiscoveryReadModel(supabase);
   const exploreData = await getDiscoveryOverview(repository);

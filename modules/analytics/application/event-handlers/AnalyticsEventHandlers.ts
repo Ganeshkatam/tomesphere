@@ -1,14 +1,11 @@
-import {
-  EventPayloads,
-  PlatformEventName,
-} from "@/shared/core/events/types";
+import { EventPayloads, PlatformEventName } from "@/shared/core/events/types";
 import { AnalyticsProjectionStore } from "../../infrastructure/SupabaseAnalyticsProjectionStore";
 
 export class AnalyticsEventHandlers {
   constructor(private readonly store: AnalyticsProjectionStore) {}
 
   async handleReaderProgressUpdated(
-    payload: EventPayloads["reader:progress_updated"],
+    payload: EventPayloads["reader.progress.updated"],
   ): Promise<void> {
     const { userId, bookId, pagesReadDelta, occurredAt } = payload;
     const dateStr = (occurredAt || new Date().toISOString()).split("T")[0];
@@ -19,7 +16,7 @@ export class AnalyticsEventHandlers {
   }
 
   async handleReaderBookCompleted(
-    payload: EventPayloads["reader:book_completed"],
+    payload: EventPayloads["reader.book.completed"],
   ): Promise<void> {
     const { userId, bookId } = payload;
     const dateStr = new Date().toISOString().split("T")[0];
@@ -27,7 +24,7 @@ export class AnalyticsEventHandlers {
   }
 
   async handleLibraryBookAdded(
-    payload: EventPayloads["library:book_added"],
+    payload: EventPayloads["library.book.added"],
   ): Promise<void> {
     const { userId, bookId, status } = payload;
     const dateStr = new Date().toISOString().split("T")[0];
@@ -37,12 +34,12 @@ export class AnalyticsEventHandlers {
     }
   }
 
-  async handleBookRated(payload: EventPayloads["book:rated"]): Promise<void> {
+  async handleBookRated(payload: EventPayloads["book.rated"]): Promise<void> {
     const { userId, bookId, rating } = payload;
     await this.store.updateBookRating(userId, bookId, rating || 0);
   }
 
-  async handleBookLiked(payload: EventPayloads["book:liked"]): Promise<void> {
+  async handleBookLiked(payload: EventPayloads["book.liked"]): Promise<void> {
     const { userId, bookId } = payload;
     await this.store.recordBookLiked(userId, bookId);
   }

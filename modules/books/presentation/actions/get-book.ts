@@ -7,7 +7,9 @@ import { BookId } from "@/modules/books/domain/value-objects";
 import { ServerActionResult } from "@/lib/actions/action-result";
 import { BookDto } from "@/modules/library/application/dto/response/BookDto";
 
-export async function getBookById(bookId: string): Promise<ServerActionResult<BookDto>> {
+export async function getBookById(
+  bookId: string,
+): Promise<ServerActionResult<BookDto>> {
   try {
     const supabase = await createSupabaseServerClient();
     const repo = new SupabaseBookRepository(supabase);
@@ -15,6 +17,9 @@ export async function getBookById(bookId: string): Promise<ServerActionResult<Bo
     if (!data) return { success: false, error: { message: "Not found" } };
     return { success: true, data };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }

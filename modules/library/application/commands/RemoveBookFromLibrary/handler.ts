@@ -7,7 +7,7 @@ export interface RemoveBookFromLibraryRequest {
 
 export async function removeBookFromLibrary(
   repository: LibraryWriteRepository,
-  request: RemoveBookFromLibraryRequest
+  request: RemoveBookFromLibraryRequest,
 ): Promise<void> {
   await repository.removeBookFromLibrary(request.userId, request.bookId);
 }

@@ -12,7 +12,7 @@ export class GetLibrarySnapshotQuery {
       const data = await this.repository.getLibrarySnapshot(userId);
       return data;
     } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch library snapshot." );
+      throw new Error(error.message || "Failed to fetch library snapshot.");
     }
   }
 }

@@ -40,7 +40,7 @@ export default function VerificationStatus() {
   const resendEmail = async () => {
     const { resendVerificationEmail } =
       await import("@/modules/authentication/presentation/actions/auth");
-    
+
     try {
       await resendVerificationEmail();
       showSuccess("Verification email sent!");

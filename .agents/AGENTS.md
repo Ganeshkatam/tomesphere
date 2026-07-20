@@ -40,3 +40,17 @@ The only places that may interact with Supabase are:
 - Authentication infrastructure
 - Proxy/middleware for session management
 - Database migration and administrative tooling
+
+## ADR-004: Architectural Freeze
+**No new bounded contexts, architectural layers, naming conventions, or dependency directions may be introduced during V1 unless required to fix a correctness or production issue. New work must integrate into the existing architecture.**
+
+## ADR-005: Public Route Topology Freeze
+**The public route topology for V1 is frozen. No new top-level routes may be introduced without architectural justification.**
+
+**Consequences:**
+- Discovery routes are canonical destinations.
+- Filters belong in query parameters.
+- Authentication routes are fixed.
+- Workspace routes map to bounded contexts.
+- Reader remains a standalone application shell.
+- Admin evolves independently from the public app.

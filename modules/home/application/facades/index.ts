@@ -35,10 +35,12 @@ export async function executeHomePageFacade() {
     new GetLibrarySnapshotQuery(new SupabaseLibrarySnapshotReadModel(supabase)),
     new GetReadingGoalQuery(new SupabaseReadingGoalReadModel(supabase)),
     new GetReadingStreakQuery(new SupabaseReadingStreakReadModel(supabase)),
-    new GetReadingStatisticsQuery(new SupabaseReadingStatisticsReadModel(supabase)),
+    new GetReadingStatisticsQuery(
+      new SupabaseReadingStatisticsReadModel(supabase),
+    ),
     new GetReadingCalendarQuery(new SupabaseReadingCalendarReadModel(supabase)),
     new GetSuggestedReadsQuery(new SupabaseSuggestedReadsReadModel(supabase)),
-    new GetRecentActivityQuery(new SupabaseRecentActivityReadModel(supabase))
+    new GetRecentActivityQuery(new SupabaseRecentActivityReadModel(supabase)),
   );
 
   return facade.get();

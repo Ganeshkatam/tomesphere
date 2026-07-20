@@ -89,7 +89,7 @@ export class AnnotationSyncService {
             color: annotation.color,
             note_text: annotation.noteText,
             updated_at: new Date().toISOString(),
-          }
+          },
         });
       } else if (annotation.syncState === "pending_delete") {
         deletes.push(annotation.id);

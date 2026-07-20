@@ -11,7 +11,7 @@ export interface UpdateCollectionRequest {
 
 export async function updateCollection(
   repository: CollectionRepository,
-  request: UpdateCollectionRequest
+  request: UpdateCollectionRequest,
 ): Promise<CollectionDto | null> {
   return repository.updateCollection(request.id, request.userId, {
     name: request.name,

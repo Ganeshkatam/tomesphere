@@ -39,6 +39,16 @@ Every module (e.g., `/modules/books`) MUST strictly own its:
 - **`✅ ALL COLLECTION QUERIES MUST PAGINATE`**: Do not use unbounded `.select('*')` queries. Feeds, messages, and searches must enforce a `.limit()`.
 - **`✅ USE GRANULAR SUSPENSE`**: Wrap heavy data-fetching components in `<Suspense>` rather than relying exclusively on global `loading.tsx` files.
 
+## 6. Route Topology Freeze (V1)
+
+**The public route topology for V1 is explicitly frozen. No new top-level routes may be introduced without architectural justification.**
+
+- **Discovery:** Canonical destinations only (`/discover`, `/discover/authors`, etc.). Filters strictly belong in query parameters.
+- **Authentication:** Flows are fixed (`/login`, `/signup`, `/forgot-password`, `/reset-password`).
+- **Workspace:** Maps directly to bounded contexts (`/home`, `/library`, `/account`).
+- **Reader:** Remains a standalone application shell (`/read/[id]`).
+- **Admin:** Evolves independently from the public app as a separate bounded context.
+
 ---
 
 _These rules are designed to prevent architectural entropy. If a pattern doesn't fit within these rules, the pattern is likely wrong._

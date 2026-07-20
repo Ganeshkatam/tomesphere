@@ -73,22 +73,6 @@ export default function SitemapPage() {
                 </li>
                 <li>
                   <Link
-                    href="/mission"
-                    className="text-slate-300 hover:text-white"
-                  >
-                    Our Mission
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/careers"
-                    className="text-slate-300 hover:text-white"
-                  >
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link
                     href="/contact"
                     className="text-slate-300 hover:text-white"
                   >

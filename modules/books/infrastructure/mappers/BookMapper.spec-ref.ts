@@ -18,6 +18,7 @@ function mockBookRow(): BookRow {
     download_count: 0,
     edition: null,
     embedding: null,
+    language_id: null,
     epub_url: null,
     file_size: null,
     file_size_mb: null,
@@ -26,13 +27,15 @@ function mockBookRow(): BookRow {
     hash: null,
     is_featured: false,
     isbn: null,
-    language: "en",
     pdf_url: null,
     publisher: "Scribner",
     series: null,
     series_order: null,
     total_pages: 208,
     view_count: 0,
+    is_published: true,
+    is_archived: false,
+    version: 1,
   };
 }
 

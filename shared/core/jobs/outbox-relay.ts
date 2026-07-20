@@ -6,11 +6,11 @@ const MAX_RETRIES = parseInt(process.env.OUTBOX_MAX_RETRIES || "3", 10);
 /**
  * Outbox Relay
  *
- * Polls `outbox_messages` for pending events, dispatches them to the
+ * Polls `outbox_events` for pending events, dispatches them to the
  * in-memory EventBus, and marks them as processed.
  *
  * Design decisions:
- * - Uses `claim_outbox_messages` RPC for safe concurrent claiming (FOR UPDATE SKIP LOCKED).
+ * - Uses `claim_outbox_events` RPC for safe concurrent claiming (FOR UPDATE SKIP LOCKED).
  * - Implements exponential backoff on failure.
  * - Marks permanently failed events as `failed_permanent` after MAX_RETRIES.
  * - The EventBus is only responsible for dispatching already-persisted events.
@@ -42,21 +42,21 @@ export async function processOutbox(
     return { processed: 0, failed: 0, permanentlyFailed: 0 };
   }
 
-  // 1. Claim pending messages atomically
-  const { data: messages, error: claimError } = await supabase.rpc(
-    "claim_outbox_messages",
+  // 1. Claim pending events atomically
+  const { data: events, error: claimError } = await supabase.rpc(
+    "claim_outbox_events" as any,
     { limit_count: 50 },
   );
 
   if (claimError) {
     console.error(
-      "[Outbox Relay] Failed to claim messages:",
+      "[Outbox Relay] Failed to claim events:",
       claimError.message,
     );
     return { processed: 0, failed: 0, permanentlyFailed: 0 };
   }
 
-  if (!messages || messages.length === 0) {
+  if (!events || events.length === 0) {
     return { processed: 0, failed: 0, permanentlyFailed: 0 };
   }
 
@@ -64,48 +64,45 @@ export async function processOutbox(
   let failed = 0;
   let permanentlyFailed = 0;
 
-  // 2. Process each claimed message
-  for (const message of messages) {
+  // 2. Process each claimed event
+  for (const event of events) {
     try {
-      // Dispatch to the EventBus
-      // The EventBus handlers (SearchDocumentEventHandlers, RecommendationSignalEventHandlers, etc.)
-      // will process the event.
-      const eventType = message.event_type as any;
-      const payload = message.payload as any;
+      const eventType = event.event_type as any;
+      const payload = event.payload as any;
 
       eventBus.emit(eventType, payload);
 
       // 3. Mark as processed
       await supabase
-        .from("outbox_messages")
+        .from("outbox_events")
         .update({
           status: "processed",
           processed_at: new Date().toISOString(),
         })
-        .eq("id", message.id);
+        .eq("id", event.id);
 
       processed++;
     } catch (error: any) {
-      const newRetryCount = (message.retry_count || 0) + 1;
+      const newRetryCount = (event.retry_count || 0) + 1;
       const isPermanentFailure = newRetryCount >= MAX_RETRIES;
 
       await supabase
-        .from("outbox_messages")
+        .from("outbox_events")
         .update({
           status: isPermanentFailure ? "failed_permanent" : "failed",
           retry_count: newRetryCount,
           last_error: error.message || "Unknown error",
         })
-        .eq("id", message.id);
+        .eq("id", event.id);
 
       if (isPermanentFailure) {
         console.error(
-          `[Outbox Relay] Permanently failed message ${message.id}: ${error.message}`,
+          `[Outbox Relay] Permanently failed event ${event.id}: ${error.message}`,
         );
         permanentlyFailed++;
       } else {
         console.warn(
-          `[Outbox Relay] Retryable failure for message ${message.id} (attempt ${newRetryCount}/${MAX_RETRIES})`,
+          `[Outbox Relay] Retryable failure for event ${event.id} (attempt ${newRetryCount}/${MAX_RETRIES})`,
         );
         failed++;
       }
@@ -125,26 +122,21 @@ export async function processOutbox(
 export async function getOutboxMetrics() {
   if (!supabase) return null;
 
-  const { data, error } = await supabase.rpc("claim_outbox_messages", {
-    limit_count: 0,
-  }); // dummy call for type safety
-
-  // Use direct queries for metrics
   const [pending, processing, failed, permanent] = await Promise.all([
     supabase
-      .from("outbox_messages")
+      .from("outbox_events")
       .select("*", { count: "exact", head: true })
       .eq("status", "pending"),
     supabase
-      .from("outbox_messages")
+      .from("outbox_events")
       .select("*", { count: "exact", head: true })
       .eq("status", "processing"),
     supabase
-      .from("outbox_messages")
+      .from("outbox_events")
       .select("*", { count: "exact", head: true })
       .eq("status", "failed"),
     supabase
-      .from("outbox_messages")
+      .from("outbox_events")
       .select("*", { count: "exact", head: true })
       .eq("status", "failed_permanent"),
   ]);

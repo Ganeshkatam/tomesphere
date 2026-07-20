@@ -42,7 +42,7 @@ export class SupabaseReadingActivityRepository implements ReadingActivityReposit
       .map((d: any) => new Date(d.created_at).toISOString().split("T")[0])
       .sort()
       .reverse();
-    
+
     // Remove duplicates
     const uniqueDates = [...new Set(dates)];
 
@@ -53,7 +53,9 @@ export class SupabaseReadingActivityRepository implements ReadingActivityReposit
     for (let i = 0; i < uniqueDates.length - 1; i++) {
       const current = new Date(uniqueDates[i]);
       const next = new Date(uniqueDates[i + 1]);
-      const diffDays = Math.floor((current.getTime() - next.getTime()) / 86400000);
+      const diffDays = Math.floor(
+        (current.getTime() - next.getTime()) / 86400000,
+      );
 
       if (diffDays === 1) {
         tempStreak++;
@@ -67,7 +69,9 @@ export class SupabaseReadingActivityRepository implements ReadingActivityReposit
 
     // Check if streak is current
     const today = new Date().toISOString().split("T")[0];
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
+    const yesterday = new Date(Date.now() - 86400000)
+      .toISOString()
+      .split("T")[0];
 
     if (uniqueDates[0] === today || uniqueDates[0] === yesterday) {
       currentStreak = tempStreak;

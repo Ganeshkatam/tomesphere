@@ -9,10 +9,12 @@ export class SupabaseCollectionRepository implements CollectionRepository {
   async getCollections(userId: string): Promise<CollectionDto[]> {
     const { data, error } = await this.supabase
       .from("shelves")
-      .select(`
+      .select(
+        `
         *,
         shelf_items (count)
-      `)
+      `,
+      )
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
@@ -21,13 +23,18 @@ export class SupabaseCollectionRepository implements CollectionRepository {
     return data.map((row: any) => this.mapToDto(row));
   }
 
-  async getCollection(id: string, userId: string): Promise<CollectionDto | null> {
+  async getCollection(
+    id: string,
+    userId: string,
+  ): Promise<CollectionDto | null> {
     const { data, error } = await this.supabase
       .from("shelves")
-      .select(`
+      .select(
+        `
         *,
         shelf_items (count)
-      `)
+      `,
+      )
       .match({ id, user_id: userId })
       .single();
 
@@ -36,7 +43,10 @@ export class SupabaseCollectionRepository implements CollectionRepository {
     return this.mapToDto(data);
   }
 
-  async createCollection(userId: string, data: { name: string; description?: string; isPublic?: boolean }): Promise<CollectionDto> {
+  async createCollection(
+    userId: string,
+    data: { name: string; description?: string; isPublic?: boolean },
+  ): Promise<CollectionDto> {
     const { data: result, error } = await this.supabase
       .from("shelves")
       .insert({
@@ -45,10 +55,12 @@ export class SupabaseCollectionRepository implements CollectionRepository {
         description: data.description,
         is_public: data.isPublic ?? false,
       })
-      .select(`
+      .select(
+        `
         *,
         shelf_items (count)
-      `)
+      `,
+      )
       .single();
 
     if (error || !result) {
@@ -58,7 +70,11 @@ export class SupabaseCollectionRepository implements CollectionRepository {
     return this.mapToDto(result);
   }
 
-  async updateCollection(id: string, userId: string, data: { name?: string; description?: string; isPublic?: boolean }): Promise<CollectionDto | null> {
+  async updateCollection(
+    id: string,
+    userId: string,
+    data: { name?: string; description?: string; isPublic?: boolean },
+  ): Promise<CollectionDto | null> {
     const updates: any = {};
     if (data.name !== undefined) updates.name = data.name;
     if (data.description !== undefined) updates.description = data.description;
@@ -68,10 +84,12 @@ export class SupabaseCollectionRepository implements CollectionRepository {
       .from("shelves")
       .update(updates)
       .match({ id, user_id: userId })
-      .select(`
+      .select(
+        `
         *,
         shelf_items (count)
-      `)
+      `,
+      )
       .single();
 
     if (error || !result) return null;
@@ -86,6 +104,54 @@ export class SupabaseCollectionRepository implements CollectionRepository {
       .match({ id, user_id: userId });
 
     return !error;
+  }
+
+  async addBook(
+    collectionId: string,
+    bookId: string,
+    userId: string,
+  ): Promise<void> {
+    // Verify ownership
+    const { data: shelf } = await this.supabase
+      .from("shelves")
+      .select("id")
+      .match({ id: collectionId, user_id: userId })
+      .single();
+    if (!shelf) throw new Error("Collection not found or unauthorized");
+
+    const { error } = await this.supabase.from("shelf_items").insert({
+      shelf_id: collectionId,
+      book_id: bookId,
+    });
+
+    if (error && error.code !== "23505") {
+      // ignore unique violation if already added
+      throw new Error(`Failed to add book to collection: ${error.message}`);
+    }
+  }
+
+  async removeBook(
+    collectionId: string,
+    bookId: string,
+    userId: string,
+  ): Promise<void> {
+    const { data: shelf } = await this.supabase
+      .from("shelves")
+      .select("id")
+      .match({ id: collectionId, user_id: userId })
+      .single();
+    if (!shelf) throw new Error("Collection not found or unauthorized");
+
+    const { error } = await this.supabase.from("shelf_items").delete().match({
+      shelf_id: collectionId,
+      book_id: bookId,
+    });
+
+    if (error) {
+      throw new Error(
+        `Failed to remove book from collection: ${error.message}`,
+      );
+    }
   }
 
   private mapToDto(row: any): CollectionDto {

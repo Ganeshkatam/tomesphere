@@ -1,5 +1,3 @@
-
-
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { emitOutboxEvent } from "@/shared/core/infrastructure/outbox/outbox";
 
@@ -16,7 +14,7 @@ export async function executeCompleteReadingSession(
 
   // We emit the session ended event. The Analytics projections (built in Phase 10C)
   // will pick this up and aggregate it into progress_daily and analytics_user_daily.
-  await emitOutboxEvent(supabase, "reader:session_ended", {
+  await emitOutboxEvent(supabase, "reader.session.ended", {
     userId: request.userId,
     bookId: request.bookId,
     durationSeconds: request.durationSeconds,

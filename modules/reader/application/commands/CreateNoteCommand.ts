@@ -1,10 +1,5 @@
-
-
 import { createSupabaseServerClient } from "@/shared/core/database/server";
-import {
-  AnnotationTarget,
-  LocationAnchor,
-} from "@/shared/core/events/types";
+import { AnnotationTarget, LocationAnchor } from "@/shared/core/events/types";
 import { emitOutboxEvent } from "@/shared/core/infrastructure/outbox/outbox";
 
 export interface CreateNoteRequest {
@@ -28,7 +23,7 @@ export async function executeCreateNote(
 
     // Fetch the highlight's anchor to store alongside the note
     const { data: highlight } = await supabase
-      .from("reader_highlights")
+      .from("highlights")
       .select("location_anchor")
       .eq("id", highlightId)
       .single();
@@ -44,7 +39,7 @@ export async function executeCreateNote(
 
   // 1. Insert the note
   const { data, error } = await supabase
-    .from("reader_notes")
+    .from("annotations")
     .insert({
       user_id: request.userId,
       book_id: request.bookId,
@@ -63,7 +58,7 @@ export async function executeCreateNote(
   const noteId = data.id;
 
   // 2. Emit note_created event
-  await emitOutboxEvent(supabase, "reader:note_created", {
+  await emitOutboxEvent(supabase, "reader.note.created", {
     userId: request.userId,
     bookId: request.bookId,
     noteId: noteId,

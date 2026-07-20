@@ -7,9 +7,12 @@ import { LocationAnchor } from "@/shared/core/events/types";
 export class SupabaseReaderPositionRepository implements ReaderPositionRepository {
   constructor(private supabase: SupabaseClient<Database>) {}
 
-  async getPosition(userId: string, bookId: string): Promise<ReaderPositionDto | null> {
+  async getPosition(
+    userId: string,
+    bookId: string,
+  ): Promise<ReaderPositionDto | null> {
     const { data, error } = await this.supabase
-      .from("reader_positions")
+      .from("reading_progress")
       .select("*")
       .match({ user_id: userId, book_id: bookId })
       .maybeSingle();
@@ -23,20 +26,22 @@ export class SupabaseReaderPositionRepository implements ReaderPositionRepositor
     };
   }
 
-  async upsertPosition(userId: string, bookId: string, locationAnchor: LocationAnchor): Promise<void> {
-    const { error } = await this.supabase
-      .from("reader_positions")
-      .upsert(
-        {
-          user_id: userId,
-          book_id: bookId,
-          location_anchor: locationAnchor as any,
-          last_read_at: new Date().toISOString(),
-        },
-        {
-          onConflict: "user_id,book_id",
-        }
-      );
+  async upsertPosition(
+    userId: string,
+    bookId: string,
+    locationAnchor: LocationAnchor,
+  ): Promise<void> {
+    const { error } = await this.supabase.from("reading_progress").upsert(
+      {
+        user_id: userId,
+        book_id: bookId,
+        location_anchor: locationAnchor as any,
+        last_read_at: new Date().toISOString(),
+      },
+      {
+        onConflict: "user_id,book_id",
+      },
+    );
 
     if (error) {
       throw new Error(`Failed to upsert reader position: ${error.message}`);

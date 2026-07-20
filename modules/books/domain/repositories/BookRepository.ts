@@ -23,4 +23,5 @@ export interface BookRepository {
   findById(id: BookId): Promise<Book | null>;
   search(query: BookSearchQuery): Promise<PaginatedResult<Book>>;
   getTrending(query: TrendingQuery): Promise<Book[]>;
+  save(book: Book): Promise<void>;
 }

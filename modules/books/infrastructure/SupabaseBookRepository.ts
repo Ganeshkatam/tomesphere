@@ -17,7 +17,9 @@ export class SupabaseBookRepository implements BookRepository {
   async findById(id: BookId): Promise<Book | null> {
     const { data, error } = await this.client
       .from("books")
-      .select("*")
+      .select(
+        "*, book_authors(authors(name)), book_genres(genres(name)), book_subjects(subjects(name)), book_files(*)",
+      )
       .eq("id", id.value)
       .single();
 
@@ -31,7 +33,12 @@ export class SupabaseBookRepository implements BookRepository {
   }
 
   async search(query: BookSearchQuery): Promise<PaginatedResult<Book>> {
-    let dbQuery = this.client.from("books").select("*", { count: "exact" });
+    let dbQuery = this.client
+      .from("books")
+      .select(
+        "*, book_authors(authors(name)), book_genres(genres(name)), book_subjects(subjects(name)), book_files(*)",
+        { count: "exact" },
+      );
 
     if (query.term) {
       // Because full-text search requires exact matches or lexemes,
@@ -70,10 +77,48 @@ export class SupabaseBookRepository implements BookRepository {
   async getTrending(query: TrendingQuery): Promise<Book[]> {
     const { data: books } = await this.client
       .from("books")
-      .select("*")
+      .select(
+        "*, book_authors(authors(name)), book_genres(genres(name)), book_subjects(subjects(name)), book_files(*)",
+      )
       .limit(query.limit)
       .order("view_count", { ascending: false, nullsFirst: false });
 
     return ((books as BookRow[]) || []).map(BookMapper.toDomain);
+  }
+
+  async save(book: Book): Promise<void> {
+    const events = book.pullDomainEvents().map((e) => ({
+      aggregate_type: "book",
+      aggregate_id: e.aggregateId,
+      event_type: e.eventName,
+      event_version: e.aggregateVersion,
+      payload: JSON.parse(JSON.stringify(e)),
+      occurred_at: e.occurredAt.toISOString(),
+    }));
+
+    const bookProps = book.toJSON();
+    const serializedBook = {
+      id: bookProps.id.value,
+      title: bookProps.title,
+      description: bookProps.description || null,
+      is_textbook: bookProps.isTextbook,
+      is_published: bookProps.isPublished,
+      is_archived: bookProps.isArchived,
+      created_at: bookProps.createdAt.toISOString(),
+      updated_at: bookProps.updatedAt.toISOString(),
+    };
+
+    const { error } = await this.client.rpc("save_book_aggregate_with_events", {
+      p_book: serializedBook as any,
+      p_events: events.length > 0 ? events : null,
+    });
+
+    if (error) {
+      console.error(
+        "[SupabaseBookRepository] Failed to save book aggregate:",
+        error,
+      );
+      throw new Error(`Failed to save book: ${error.message}`);
+    }
   }
 }

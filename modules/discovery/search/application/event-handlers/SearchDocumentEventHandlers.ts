@@ -1,5 +1,6 @@
 import { IEventBus } from "@/shared/core/events/types";
-import { SearchRepository } from "../../domain/repositories/SearchRepository";
+import { SearchIndexer } from "../../infrastructure/projections/SearchIndexer";
+import { IdempotencyGuard } from "@/shared/infrastructure/events/IdempotencyGuard";
 
 /**
  * Handles domain events that affect the search indexing projection.
@@ -8,32 +9,44 @@ import { SearchRepository } from "../../domain/repositories/SearchRepository";
 export class SearchDocumentEventHandlers {
   constructor(
     private readonly eventBus: IEventBus,
-    private readonly searchRepository: SearchRepository,
+    private readonly indexer: SearchIndexer,
+    private readonly guard: IdempotencyGuard,
   ) {
     this.registerHandlers();
   }
 
   private registerHandlers() {
-    this.eventBus.subscribe("catalog:book_published", async (payload) => {
-      console.log(
-        `[Search Indexer] Book published, triggering index refresh for book: ${payload.bookId}`,
+    this.eventBus.subscribe("catalog.book.published", async (payload: any) => {
+      await this.guard.execute(
+        payload.eventId,
+        "SearchDocumentEventHandlers.bookPublished",
+        async () => {
+          console.log(`[Search Indexer] Book published: ${payload.bookId}`);
+          await this.indexer.buildAndUpsert(payload.bookId);
+        },
       );
-      // The repository implementation handles calling the RPC
-      await this.searchRepository.index({ bookId: payload.bookId } as any);
     });
 
-    this.eventBus.subscribe("catalog:book_updated", async (payload) => {
-      console.log(
-        `[Search Indexer] Book updated, triggering index refresh for book: ${payload.bookId}`,
+    this.eventBus.subscribe("catalog.book.updated", async (payload: any) => {
+      await this.guard.execute(
+        payload.eventId,
+        "SearchDocumentEventHandlers.bookUpdated",
+        async () => {
+          console.log(`[Search Indexer] Book updated: ${payload.bookId}`);
+          await this.indexer.buildAndUpsert(payload.bookId);
+        },
       );
-      await this.searchRepository.updateIndex(payload.bookId, {});
     });
 
-    this.eventBus.subscribe("catalog:book_deleted", async (payload) => {
-      console.log(
-        `[Search Indexer] Book deleted, removing from index: ${payload.bookId}`,
+    this.eventBus.subscribe("catalog.book.deleted", async (payload: any) => {
+      await this.guard.execute(
+        payload.eventId,
+        "SearchDocumentEventHandlers.bookDeleted",
+        async () => {
+          console.log(`[Search Indexer] Book deleted: ${payload.bookId}`);
+          await this.indexer.remove(payload.bookId);
+        },
       );
-      await this.searchRepository.removeIndex(payload.bookId);
     });
   }
 }

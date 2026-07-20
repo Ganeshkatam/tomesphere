@@ -15,9 +15,8 @@ export class RemoveIndexedBookHandler {
         success: true,
       };
     } catch (error) {
-      throw new Error(error instanceof Error
-            ? error.message
-            : "Unknown error removing index",
+      throw new Error(
+        error instanceof Error ? error.message : "Unknown error removing index",
       );
     }
   }

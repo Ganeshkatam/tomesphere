@@ -76,7 +76,8 @@ export default function SearchSuggestions({
       for (const result of results) {
         const book = result.item;
         // Always add book title
-        const authorString = book.authors?.map((a: any) => a.name).join(", ") || "Unknown";
+        const authorString =
+          book.authors?.map((a: any) => a.name).join(", ") || "Unknown";
         newSuggestions.push({
           type: "book",
           text: book.title,
@@ -123,7 +124,8 @@ export default function SearchSuggestions({
         const seenAuthors = new Set<string>();
 
         res.data.books.forEach((book: any) => {
-          const authorString = book.authors?.map((a: any) => a.name).join(", ") || "Unknown";
+          const authorString =
+            book.authors?.map((a: any) => a.name).join(", ") || "Unknown";
           if (book.title?.toLowerCase().includes(query.toLowerCase())) {
             newSuggestions.push({
               type: "book",

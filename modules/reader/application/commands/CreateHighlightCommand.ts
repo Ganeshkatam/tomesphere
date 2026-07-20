@@ -21,13 +21,13 @@ export async function executeCreateHighlight(
     request.bookId,
     JSON.stringify(request.selectionAnchor),
     request.selectedText,
-    request.color || "yellow"
+    request.color || "yellow",
   );
 
   const supabase = await createSupabaseServerClient();
-  
+
   // 2. Emit highlight_created event
-  await emitOutboxEvent(supabase, "reader:highlight_created", {
+  await emitOutboxEvent(supabase, "reader.highlight.created", {
     userId: request.userId,
     bookId: request.bookId,
     highlightId: highlight.id,

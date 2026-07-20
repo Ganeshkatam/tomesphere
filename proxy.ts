@@ -24,7 +24,6 @@ const PROTECTED_PREFIXES = [
 const AUTH_ROUTES = [
   "/login",
   "/signup",
-  "/login-phone",
   "/forgot-password",
   "/reset-password",
 ];
@@ -115,6 +114,21 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Check profile completion for authenticated users on protected routes (excluding profile-setup itself)
+  if (user && isProtectedRoute(pathname) && !pathname.startsWith("/profile-setup")) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", user.id)
+      .single();
+
+    if (!isProfileComplete(profile)) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/profile-setup/${user.id}`;
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Redirect authenticated users away from auth pages
   if (user && isAuthRoute(pathname)) {
     const url = request.nextUrl.clone();
@@ -123,6 +137,15 @@ export async function proxy(request: NextRequest) {
   }
 
   return response;
+}
+
+function isProfileComplete(profile: any): boolean {
+  if (!profile) return false;
+  // Currently checking display_name as the primary completeness indicator
+  if (!profile.display_name || profile.display_name.trim() === "") return false;
+  
+  // Future checks can be added here (e.g. preferences, terms acceptance)
+  return true;
 }
 
 export const config = {

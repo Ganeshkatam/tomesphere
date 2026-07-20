@@ -9,7 +9,9 @@ export class SupabaseCurrentReadingReadModel implements CurrentReadingReadModel 
   async getCurrentReading(userId: string): Promise<CurrentReadingDto | null> {
     const { data, error } = await this.supabase
       .from("library_books")
-      .select("book_id, updated_at, books(title, cover_url, book_authors(authors(name)))")
+      .select(
+        "book_id, updated_at, books(title, cover_url, book_authors(authors(name)))",
+      )
       .eq("user_id", userId)
       .eq("status", "currently_reading")
       .order("updated_at", { ascending: false })
@@ -24,7 +26,11 @@ export class SupabaseCurrentReadingReadModel implements CurrentReadingReadModel 
       return {
         bookId: item.book_id,
         title: bookData?.title || "Unknown Title",
-        author: (bookData as any)?.book_authors?.map((ba: any) => ba.authors?.name).filter(Boolean).join(", ") || "Unknown Author",
+        author:
+          (bookData as any)?.book_authors
+            ?.map((ba: any) => ba.authors?.name)
+            .filter(Boolean)
+            .join(", ") || "Unknown Author",
         coverUrl: bookData?.cover_url || undefined,
         progressPercentage: 0,
       };

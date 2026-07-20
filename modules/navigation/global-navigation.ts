@@ -1,4 +1,14 @@
-import { Home, Compass, Book, User, Sparkles, HelpCircle, Info, LucideIcon, Flame } from "lucide-react";
+import {
+  Home,
+  Compass,
+  Book,
+  User,
+  Sparkles,
+  HelpCircle,
+  Info,
+  LucideIcon,
+  Flame,
+} from "lucide-react";
 import { AppRoutes } from "@/shared/kernel/navigation/AppRoutes";
 
 export interface NavigationItem {
@@ -16,8 +26,18 @@ export const GLOBAL_NAVIGATION: NavigationItem[] = [
     icon: Compass,
     color: "text-purple-400",
   },
-  { href: "/discover/trending", label: "Trending", icon: Flame, color: "text-orange-500" },
-  { href: "/support", label: "Support", icon: HelpCircle, color: "text-emerald-400" },
+  {
+    href: "/discover/trending",
+    label: "Trending",
+    icon: Flame,
+    color: "text-orange-500",
+  },
+  {
+    href: "/support",
+    label: "Support",
+    icon: HelpCircle,
+    color: "text-emerald-400",
+  },
   { href: "/about", label: "About", icon: Info, color: "text-cyan-400" },
   {
     href: AppRoutes.library,

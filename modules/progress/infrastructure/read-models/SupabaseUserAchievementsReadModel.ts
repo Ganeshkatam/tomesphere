@@ -1,5 +1,8 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { UserAchievementsReadModel, UserAchievementDto } from "../../application/ports/read-models/UserAchievementsReadModel";
+import {
+  UserAchievementsReadModel,
+  UserAchievementDto,
+} from "../../application/ports/read-models/UserAchievementsReadModel";
 
 export class SupabaseUserAchievementsReadModel implements UserAchievementsReadModel {
   constructor(private readonly supabase: SupabaseClient) {}
@@ -7,7 +10,9 @@ export class SupabaseUserAchievementsReadModel implements UserAchievementsReadMo
   async getUserAchievements(userId: string): Promise<UserAchievementDto[]> {
     const { data, error } = await this.supabase
       .from("user_achievements")
-      .select("earned_at, achievements(id, name, description, badge_icon, points)")
+      .select(
+        "earned_at, achievements(id, name, description, badge_icon, points)",
+      )
       .eq("user_id", userId);
 
     if (error || !data) return [];

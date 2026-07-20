@@ -12,6 +12,13 @@ export interface LocationAnchor {
   value: string;
 }
 
+export interface SearchFilters {
+  genres?: string[];
+  subjects?: string[];
+  language?: string[];
+  publicationYear?: number[];
+}
+
 // Format-agnostic value object for ranges/highlights
 export interface SelectionAnchor {
   version: 1;
@@ -70,30 +77,11 @@ export interface ReaderBookmarkView {
 }
 
 // 1. Define standard event names as a strict union to prevent typos
-export type PlatformEventName =
-  | "reader:progress_updated"
-  | "reader:position_updated"
-  | "reader:highlight_created"
-  | "reader:note_created"
-  | "reader:page_completed"
-  | "reader:session_ended"
-  | "reader:bookmark_created"
-  | "auth:user_logged_in"
-  | "library:book_added"
-  | "profile:identity_updated"
-  | "profile:avatar_changed"
-  | "progress:level_up"
-  | "progress:achievement_unlocked"
-  | "book:liked"
-  | "book:rated"
-  | "reader:book_completed"
-  | "catalog:book_published"
-  | "catalog:book_updated"
-  | "catalog:book_deleted";
+export type PlatformEventName = keyof EventPayloads;
 
 // 2. Define the payload structure for every single event
 export interface EventPayloads {
-  "reader:progress_updated": {
+  "reader.progress.updated": {
     userId: string;
     bookId: string;
     readerSessionId: string;
@@ -102,13 +90,13 @@ export interface EventPayloads {
     pagesReadDelta: number;
     occurredAt: string;
   };
-  "reader:position_updated": {
+  "reader.position.updated": {
     userId: string;
     bookId: string;
     locationAnchor: LocationAnchor;
     occurredAt: string;
   };
-  "reader:highlight_created": {
+  "reader.highlight.created": {
     userId: string;
     bookId: string;
     highlightId: string;
@@ -116,46 +104,99 @@ export interface EventPayloads {
     selectedText: string;
     color: string;
   };
-  "reader:note_created": {
+  "reader.note.created": {
     userId: string;
     bookId: string;
     noteId: string;
     target: AnnotationTarget;
   };
-  "reader:bookmark_created": {
+  "reader.bookmark.created": {
     userId: string;
     bookId: string;
     bookmarkId: string;
     anchor: LocationAnchor;
   };
-  "reader:page_completed": {
+  "reader.page.completed": {
     userId: string;
     bookId: string;
     pageNumber: number;
     timestamp: number;
   };
-  "reader:session_ended": {
+  "reader.session.ended": {
     userId: string;
     bookId: string;
     durationSeconds: number;
   };
-  "auth:user_logged_in": { userId: string; timestamp: number };
-  "library:book_added": { userId: string; bookId: string; status?: string };
-  "profile:identity_updated": {
+  "auth.user.logged.in": { userId: string; timestamp: number };
+  "library.book.added": { userId: string; bookId: string; status?: string };
+  "profile.identity.updated": {
     userId: string;
     displayName: string;
     biography: string;
     location: string;
   };
-  "profile:avatar_changed": { userId: string; avatarUrl: string };
-  "progress:level_up": { userId: string; level: number; title: string };
-  "progress:achievement_unlocked": { userId: string; achievementId: string };
-  "book:liked": { userId: string; bookId: string };
-  "book:rated": { userId: string; bookId: string; rating: number };
-  "reader:book_completed": { userId: string; bookId: string };
-  "catalog:book_published": { bookId: string };
-  "catalog:book_updated": { bookId: string };
-  "catalog:book_deleted": { bookId: string };
+  "profile.avatar.changed": { userId: string; avatarUrl: string };
+  "progress.level.up": { userId: string; level: number; title: string };
+  "progress.achievement.unlocked": { userId: string; achievementId: string };
+  "book.liked": { userId: string; bookId: string };
+  "book.rated": { userId: string; bookId: string; rating: number };
+  "reader.book.completed": { userId: string; bookId: string };
+  "catalog.book.published": { bookId: string };
+  "catalog.book.updated": { bookId: string };
+  "catalog.book.deleted": { bookId: string };
+  "account.export.requested": {
+    userId: string;
+    exportRequestId: string;
+  };
+  "account.export.completed": {
+    userId: string;
+    exportRequestId: string;
+    downloadUrl: string;
+  };
+  "account.deleted": {
+    userId: string;
+    occurredAt: string;
+  };
+  "job.created": {
+    jobId: string;
+    jobType: string;
+  };
+  "job.started": {
+    jobId: string;
+    jobType: string;
+    worker: string;
+  };
+  "job.completed": {
+    jobId: string;
+    jobType: string;
+  };
+  "job.failed": {
+    jobId: string;
+    jobType: string;
+    error: string;
+  };
+  "job.retrying": {
+    jobId: string;
+    jobType: string;
+    attempt: number;
+  };
+
+  // Search Analytics (Sprint 3 & 4)
+  "discovery.search.executed": { 
+    searchId: string;
+    userId?: string; 
+    query: string; 
+    executionTimeMs: number; 
+    resultCount: number; 
+    filters: SearchFilters;
+    sort: string; 
+    timestamp: string;
+  };
+  "discovery.search.zero_results": { searchId: string; query: string };
+  "discovery.search.result_clicked": { searchId: string; bookId: string; rank: number };
+  "discovery.search.autocomplete_used": { query: string; selectedSuggestion: string };
+  "discovery.search.filters_changed": { searchId: string; addedFilters: Partial<SearchFilters>; removedFilters: Partial<SearchFilters> };
+  "discovery.search.trending_updated": { timestamp: string };
 }
 
 // 3. The Contract for the Event Bus

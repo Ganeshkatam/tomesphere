@@ -34,9 +34,8 @@ export class UpdateIndexedBookHandler {
         success: true,
       };
     } catch (error) {
-      throw new Error(error instanceof Error
-            ? error.message
-            : "Unknown error updating index",
+      throw new Error(
+        error instanceof Error ? error.message : "Unknown error updating index",
       );
     }
   }

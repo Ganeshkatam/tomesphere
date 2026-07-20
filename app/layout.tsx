@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
-import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
+import { Atkinson_Hyperlegible, Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Footer from "@/shared/navigation/components/Footer";
 import { Providers } from "./providers";
 import { themeInitScript } from "./theme-init";
 import Script from "next/script";
 
-const inter = Inter({
+const atkinson = Atkinson_Hyperlegible({
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
+  weight: ["400", "700"],
+  variable: "--font-atkinson",
 });
 
-const outfit = Outfit({
+const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-outfit",
+  weight: ["400", "600", "700"],
+  variable: "--font-source-serif",
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -60,7 +60,7 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}
+      className={`${atkinson.variable} ${sourceSerif.variable} ${jetbrainsMono.variable}`}
     >
       <head>
         <Script
@@ -70,6 +70,7 @@ export default function RootLayout({
             __html: themeInitScript,
           }}
         />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
       </head>
       <body className="antialiased font-sans" suppressHydrationWarning>
         <Providers>

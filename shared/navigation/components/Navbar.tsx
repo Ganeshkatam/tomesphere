@@ -10,30 +10,31 @@ import { showError, showSuccess } from "@/lib/toast";
 import { useEffect, useState } from "react";
 
 import ThemeToggle from "@/shared/ui/ThemeToggle";
-
+import { NavigationDto } from "@/modules/navigation/application/facades/NavigationFacade";
+import NotificationBell from "@/modules/notifications/presentation/components/NotificationBell";
 
 interface NavbarProps {
   role?: string;
   currentPage?: string;
-  user?: any;
+  navigation?: NavigationDto;
   minimal?: boolean;
 }
 
 export default function Navbar({
-  user: propUser,
+  navigation,
   minimal = false,
 }: NavbarProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = useState<any>(propUser || null);
+  const [nav, setNav] = useState<NavigationDto | null>(navigation || null);
   const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
   const [searchVal, setSearchVal] = useState("");
 
   useEffect(() => {
-    if (propUser) {
-      setUser(propUser);
+    if (navigation) {
+      setNav(navigation);
     }
-  }, [propUser]);
+  }, [navigation]);
 
   const handleLogout = async () => {
     try {
@@ -51,7 +52,7 @@ export default function Navbar({
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchVal.trim()) {
-      router.push(`/discover/search?q=${encodeURIComponent(searchVal.trim())}`);
+      router.push(`/search?q=${encodeURIComponent(searchVal.trim())}`);
     }
   };
 
@@ -63,22 +64,15 @@ export default function Navbar({
   };
 
   const getInitials = () => {
-    const name = user?.user_metadata?.name || "";
-    if (name.trim()) {
+    const name = nav?.displayName || "Reader";
+    if (name !== "Reader") {
       const parts = name.trim().split(/\s+/);
       if (parts.length >= 2) {
         return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
       }
       return name.slice(0, 2).toUpperCase();
     }
-
-    const email = user?.email || "Reader";
-    const emailName = email.split("@")[0];
-    const emailParts = emailName.split(/[\._\-]+/);
-    if (emailParts.length >= 2) {
-      return (emailParts[0][0] + emailParts[1][0]).toUpperCase();
-    }
-    return emailName.slice(0, 2).toUpperCase();
+    return "RE";
   };
 
   const navLinks = GLOBAL_NAVIGATION;
@@ -93,7 +87,7 @@ export default function Navbar({
             <div className="flex items-center gap-8">
               {/* Logo + Tagline block */}
               <a
-                href={user ? "/home" : "/"}
+                href={nav?.authenticated ? "/home" : "/"}
                 className="flex items-center gap-3 group"
               >
                 <div className="w-10 h-10 group-hover:scale-110 transition-transform">
@@ -115,8 +109,8 @@ export default function Navbar({
                   {navLinks
                     .filter((link) => {
                       if (link.label === "Profile") return false;
-                      if (!user && (link.href === "/library" || link.href === "/me" || link.href === "/home")) return false;
-                      if (user && (link.href === "/support" || link.href === "/about")) return false;
+                      if (!nav?.authenticated && (link.href === "/library" || link.href === "/me" || link.href === "/home")) return false;
+                      if (nav?.authenticated && (link.href === "/support" || link.href === "/about")) return false;
                       return true;
                     })
                     .map((link) => {
@@ -172,8 +166,9 @@ export default function Navbar({
 
             {/* Right Side: Notifications, Avatar (Floating Dropdown) */}
             <div className="flex items-center gap-4">
-              {user ? (
+              {nav?.authenticated ? (
                 <>
+                  <NotificationBell />
                   {/* Avatar Photo + Floating Dropdown Panel Container */}
                   <div className="relative">
                     <button
@@ -182,9 +177,9 @@ export default function Navbar({
                       }
                       className="relative w-9 h-9 rounded-xl overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 border border-white/20 hover:border-indigo-400 flex items-center justify-center text-white font-extrabold text-xs shadow-md transition-all hover:scale-105 shrink-0"
                     >
-                      {user?.user_metadata?.avatar_url ? (
+                      {nav?.avatar ? (
                         <Image
-                          src={user.user_metadata.avatar_url}
+                          src={nav.avatar}
                           alt="Avatar"
                           fill
                           className="object-cover"
@@ -207,9 +202,9 @@ export default function Navbar({
                           {/* User info header block */}
                           <div className="flex items-center gap-3 pb-3 border-b border-[var(--border-subtle)]">
                             <div className="w-10 h-10 rounded-xl overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 border border-[var(--border-default)] flex items-center justify-center text-white font-extrabold text-xs shadow-md shrink-0">
-                              {user?.user_metadata?.avatar_url ? (
+                              {nav?.avatar ? (
                                 <Image
-                                  src={user.user_metadata.avatar_url}
+                                  src={nav.avatar}
                                   alt="Avatar"
                                   fill
                                   className="object-cover"
@@ -221,13 +216,8 @@ export default function Navbar({
                             </div>
                             <div className="min-w-0">
                               <h4 className="text-sm font-bold text-[var(--text-primary)] leading-tight truncate">
-                                {user?.user_metadata?.name ||
-                                  user?.email?.split("@")[0] ||
-                                  "Reader"}
+                                {nav?.displayName || "Reader"}
                               </h4>
-                              <p className="text-[10px] text-[var(--text-tertiary)] font-medium truncate">
-                                {user?.email}
-                              </p>
                             </div>
                           </div>
 

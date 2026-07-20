@@ -5,17 +5,20 @@ import { SupabaseAnnouncementReadModel } from "@/modules/announcements/infrastru
 import { GetPlatformStatisticsQueryHandler } from "@/modules/statistics/application/queries/GetPlatformStatistics/handler";
 import { GetActiveAnnouncementsQueryHandler } from "@/modules/announcements/application/queries/GetActiveAnnouncements/handler";
 import { LandingPageFacade } from "./LandingPageFacade";
+import { getNavigationFacade } from "@/modules/navigation/application/facades";
 
 export async function executeLandingPageFacade() {
   const supabase = await createSupabaseServerClient();
   const repo = new SupabaseDiscoveryReadModel(supabase);
   const statsRepo = new SupabasePlatformStatisticsReadModel(supabase);
   const announcementsRepo = new SupabaseAnnouncementReadModel(supabase);
-  
+  const navigationFacade = getNavigationFacade();
+
   const facade = new LandingPageFacade(
     repo,
     new GetPlatformStatisticsQueryHandler(statsRepo),
-    new GetActiveAnnouncementsQueryHandler(announcementsRepo)
+    new GetActiveAnnouncementsQueryHandler(announcementsRepo),
+    navigationFacade,
   );
   return facade.get();
 }

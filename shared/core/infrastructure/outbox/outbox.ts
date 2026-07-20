@@ -12,7 +12,7 @@ export async function emitOutboxEvent<T extends PlatformEventName>(
   aggregateType: string = "reader",
   aggregateId: string = (payload as any).userId || "system",
 ): Promise<void> {
-  const { error } = await supabase.from("outbox_messages").insert({
+  const { error } = await supabase.from("outbox_events").insert({
     event_type: eventName,
     payload: payload as any,
     aggregate_type: aggregateType,

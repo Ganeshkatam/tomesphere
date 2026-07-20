@@ -10,7 +10,10 @@ export function getRandomBook(
 
   // Filter by genres if specified
   if (selectedGenres.length > 0) {
-    filteredBooks = books.filter((book) => book.genres?.some(g => selectedGenres.includes(g.name)) ?? false);
+    filteredBooks = books.filter(
+      (book) =>
+        book.genres?.some((g) => selectedGenres.includes(g.name)) ?? false,
+    );
   }
 
   if (filteredBooks.length === 0) return null;
@@ -30,7 +33,10 @@ export function getRandomBooks(
   let filteredBooks = books;
 
   if (selectedGenres.length > 0) {
-    filteredBooks = books.filter((book) => book.genres?.some(g => selectedGenres.includes(g.name)) ?? false);
+    filteredBooks = books.filter(
+      (book) =>
+        book.genres?.some((g) => selectedGenres.includes(g.name)) ?? false,
+    );
   }
 
   // Shuffle array

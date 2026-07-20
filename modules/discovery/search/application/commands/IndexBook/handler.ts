@@ -6,9 +6,7 @@ import { BookSearchDocument } from "../../../infrastructure/models/BookSearchDoc
 export class IndexBookHandler {
   constructor(private readonly searchRepository: SearchRepository) {}
 
-  async execute(
-    command: IndexBookCommand,
-  ): Promise<IndexBookOutput> {
+  async execute(command: IndexBookCommand): Promise<IndexBookOutput> {
     try {
       const { input } = command;
 
@@ -43,9 +41,8 @@ export class IndexBookHandler {
         success: true,
       };
     } catch (error) {
-      throw new Error(error instanceof Error
-            ? error.message
-            : "Unknown error indexing book",
+      throw new Error(
+        error instanceof Error ? error.message : "Unknown error indexing book",
       );
     }
   }

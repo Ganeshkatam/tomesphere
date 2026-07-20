@@ -22,7 +22,8 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
 
   // Auto-generate description if missing (using title and author since description is not in BookDto)
   const displayDescription = useMemo(() => {
-    const authorNames = book.authors?.map(a => a.name).join(", ") || "Unknown Author";
+    const authorNames =
+      book.authors?.map((a) => a.name).join(", ") || "Unknown Author";
     return generateSimpleDescription(book.title, authorNames);
   }, [book.title, book.authors]);
 
@@ -81,7 +82,12 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 z-0">
           {/* Book Icon */}
           <div className="mb-4 w-16 h-16 relative opacity-50">
-            <Image src="/book-placeholder.svg" alt="" fill className="object-contain" />
+            <Image
+              src="/book-placeholder.svg"
+              alt=""
+              fill
+              className="object-contain"
+            />
           </div>
           {/* Book Title on Cover */}
           <div className="text-center space-y-2">
@@ -89,7 +95,7 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
               {book.title}
             </h4>
             <p className="text-white/60 text-xs font-medium line-clamp-2">
-              {book.authors?.map(a => a.name).join(", ") || "Unknown"}
+              {book.authors?.map((a) => a.name).join(", ") || "Unknown"}
             </p>
           </div>
           {/* Decorative Elements */}
@@ -120,7 +126,7 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
             {book.title}
           </h3>
           <p className="text-[13px] text-slate-500 mb-1 font-medium truncate">
-            by {book.authors?.map(a => a.name).join(", ") || "Unknown"}
+            by {book.authors?.map((a) => a.name).join(", ") || "Unknown"}
           </p>
 
           <p className="text-[12px] text-slate-400 font-medium truncate">
@@ -147,13 +153,17 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
           </button>
 
           {/* Download Button */}
-          {book.pdfUrl && (
+          {book.files?.find((f) => f.format === "pdf" || f.isPrimary)
+            ?.storagePath && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                if (book.pdfUrl) {
+                const file = book.files?.find(
+                  (f) => f.format === "pdf" || f.isPrimary,
+                );
+                if (file?.storagePath) {
                   const link = document.createElement("a");
-                  link.href = book.pdfUrl;
+                  link.href = file.storagePath;
                   link.download = `${book.title}.pdf`;
                   link.click();
                 }

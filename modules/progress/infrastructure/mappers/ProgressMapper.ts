@@ -6,9 +6,8 @@ import { AchievementCollection } from "../../domain/collections/AchievementColle
 import { Achievement } from "../../domain/entities/Achievement";
 import { Database } from "@/shared/core/types/database";
 
-type UserProgressRow = Database["public"]["Tables"]["user_progress"]["Row"];
-type UserAchievementRow =
-  Database["public"]["Tables"]["user_achievements"]["Row"];
+type UserProgressRow = any;
+type UserAchievementRow = any;
 
 export class ProgressMapper {
   static toDomain(

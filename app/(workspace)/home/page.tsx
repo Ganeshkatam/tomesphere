@@ -1,12 +1,12 @@
-import HomeScreen from "@/modules/home/presentation/screens/HomeScreen";
+import { HomeClient } from "@/modules/home/presentation/components/HomeClient";
 import { executeHomePageFacade } from "@/modules/home/application/facades";
 
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
+  let data;
   try {
-    const data = await executeHomePageFacade();
-    return <HomeScreen data={data} />;
+    data = await executeHomePageFacade();
   } catch (error: any) {
     if (error.message === "Unauthorized") {
       // Typically we'd use next/navigation redirect, but we can't catch redirect() inside try/catch easily in next 13+
@@ -17,4 +17,6 @@ export default async function Page() {
     }
     throw error;
   }
+  
+  return <HomeClient data={data} />;
 }

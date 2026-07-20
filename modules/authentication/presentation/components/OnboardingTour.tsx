@@ -22,7 +22,8 @@ const TOUR_STEPS = [
   },
 ];
 
-const TOUR_COMPLETED_KEY = process.env.NEXT_PUBLIC_TOUR_COMPLETED_KEY || "tomesphere_tour_completed";
+const TOUR_COMPLETED_KEY =
+  process.env.NEXT_PUBLIC_TOUR_COMPLETED_KEY || "tomesphere_tour_completed";
 
 export default function OnboardingTour() {
   const [isVisible, setIsVisible] = useState(false);

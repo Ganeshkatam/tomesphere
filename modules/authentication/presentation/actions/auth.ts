@@ -10,8 +10,14 @@ import { User } from "@supabase/supabase-js";
 // ─── Security Constants ─────────────────────────────────────
 
 const MAX_LOGIN_ATTEMPTS = parseInt(process.env.MAX_LOGIN_ATTEMPTS || "5", 10);
-const RATE_LIMIT_WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS || "900000", 10); // 15 minutes
-const LOCKOUT_DURATION_MS = parseInt(process.env.LOCKOUT_DURATION_MS || "3600000", 10); // 1 hour
+const RATE_LIMIT_WINDOW_MS = parseInt(
+  process.env.RATE_LIMIT_WINDOW_MS || "900000",
+  10,
+); // 15 minutes
+const LOCKOUT_DURATION_MS = parseInt(
+  process.env.LOCKOUT_DURATION_MS || "3600000",
+  10,
+); // 1 hour
 
 /**
  * Extract audit context from the incoming request headers.
@@ -89,64 +95,111 @@ export async function loginWithPassword(
     );
 
     if (!rateCheck.allowed) {
-      const retryMinutes = Math.ceil((rateCheck.retryAfterMs || LOCKOUT_DURATION_MS) / 60000);
-      await auditLogger.logAction(SecurityAction.AccountLocked, context, { email: emailOrPhone, reason: "rate_limit_exceeded" });
-      return { success: false, error: { message: `Too many login attempts. Please try again in ${retryMinutes} minutes.` } };
+      const retryMinutes = Math.ceil(
+        (rateCheck.retryAfterMs || LOCKOUT_DURATION_MS) / 60000,
+      );
+      await auditLogger.logAction(SecurityAction.AccountLocked, context, {
+        email: emailOrPhone,
+        reason: "rate_limit_exceeded",
+      });
+      return {
+        success: false,
+        error: {
+          message: `Too many login attempts. Please try again in ${retryMinutes} minutes.`,
+        },
+      };
     }
 
     const signInResult = isPhone
-      ? await supabase.auth.signInWithPassword({ phone: emailOrPhone, password })
-      : await supabase.auth.signInWithPassword({ email: emailOrPhone, password });
+      ? await supabase.auth.signInWithPassword({
+          phone: emailOrPhone,
+          password,
+        })
+      : await supabase.auth.signInWithPassword({
+          email: emailOrPhone,
+          password,
+        });
 
     if (signInResult.error) {
       await rateLimiter.increment(rateLimitKey, RATE_LIMIT_WINDOW_MS);
-      const postCheck = await rateLimiter.check(rateLimitKey, MAX_LOGIN_ATTEMPTS, RATE_LIMIT_WINDOW_MS);
+      const postCheck = await rateLimiter.check(
+        rateLimitKey,
+        MAX_LOGIN_ATTEMPTS,
+        RATE_LIMIT_WINDOW_MS,
+      );
       if (!postCheck.allowed) {
         await rateLimiter.lockout(rateLimitKey, LOCKOUT_DURATION_MS);
-        await auditLogger.logAction(SecurityAction.AccountLocked, context, { email: emailOrPhone, reason: "max_attempts_reached" });
+        await auditLogger.logAction(SecurityAction.AccountLocked, context, {
+          email: emailOrPhone,
+          reason: "max_attempts_reached",
+        });
       }
-      await auditLogger.logAction(SecurityAction.LoginFailed, context, { email: emailOrPhone, remaining: postCheck.remaining });
-      return { success: false, error: { message: "Invalid credentials. Please check your email and password." } };
+      await auditLogger.logAction(SecurityAction.LoginFailed, context, {
+        email: emailOrPhone,
+        remaining: postCheck.remaining,
+      });
+      return {
+        success: false,
+        error: {
+          message: "Invalid credentials. Please check your email and password.",
+        },
+      };
     }
 
     const userId = signInResult.data.user?.id;
     await rateLimiter.reset(rateLimitKey);
-    await auditLogger.logAction(SecurityAction.LoginSuccess, { ...context, actorId: userId || context.actorId }, { email: emailOrPhone });
+    await auditLogger.logAction(
+      SecurityAction.LoginSuccess,
+      { ...context, actorId: userId || context.actorId },
+      { email: emailOrPhone },
+    );
 
     return { success: true, data: undefined };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }
 
 export async function signUpWithPassword(
   email: string,
   password: string,
-  displayName: string
+  displayName: string,
 ): Promise<ServerActionResult<{ user: any }>> {
   try {
     const supabase = await createSupabaseServerClient();
-    
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           display_name: displayName,
-        }
-      }
+        },
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+      },
     });
 
     if (error) {
       if (error.message.includes("already registered")) {
-        return { success: false, error: { message: "This email is already registered. Try signing in." } };
+        return {
+          success: false,
+          error: {
+            message: "This email is already registered. Try signing in.",
+          },
+        };
       }
       return { success: false, error: { message: error.message } };
     }
 
     return { success: true, data: { user: data.user } };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }
 
@@ -158,13 +211,25 @@ export async function sendMagicLinkServer(
     const supabase = await createSupabaseServerClient();
     const result = isPhone
       ? await supabase.auth.signInWithOtp({ phone: emailOrPhone })
-      : await supabase.auth.signInWithOtp({ email: emailOrPhone, options: { shouldCreateUser: false } });
+      : await supabase.auth.signInWithOtp({
+          email: emailOrPhone,
+          options: { shouldCreateUser: false },
+        });
 
-    if (result.error) return { success: false, error: { message: "Failed to send verification code. Please try again." } };
-    
+    if (result.error)
+      return {
+        success: false,
+        error: {
+          message: "Failed to send verification code. Please try again.",
+        },
+      };
+
     return { success: true, data: undefined };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }
 
@@ -177,18 +242,71 @@ export async function verifyMagicLinkServer(
     const supabase = await createSupabaseServerClient();
 
     const result = isPhone
-      ? await supabase.auth.verifyOtp({ phone: emailOrPhone, token, type: "sms" })
+      ? await supabase.auth.verifyOtp({
+          phone: emailOrPhone,
+          token,
+          type: "sms",
+        })
       : await supabase.auth.verifyOtp({
-        email: emailOrPhone,
-        token,
-        type: "email",
-      });
+          email: emailOrPhone,
+          token,
+          type: "email",
+        });
 
-    if (result.error) return { success: false, error: { message: "Invalid or expired verification code." } };
+    if (result.error)
+      return {
+        success: false,
+        error: { message: "Invalid or expired verification code." },
+      };
+
+    return { success: true, data: undefined };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
+  }
+}
+
+export async function sendPasswordResetServer(email: string): Promise<ServerActionResult<void>> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?type=recovery`,
+    });
+
+    // Anti-enumeration: We always return success even if the email doesn't exist.
+    // Supabase might return an error if it's disabled, but otherwise it obfuscates existence depending on settings.
+    // We swallow errors to ensure consistent response.
+    if (error) {
+      console.error("[Auth] Password reset email failed:", error.message);
+    }
     
     return { success: true, data: undefined };
   } catch (error: any) {
-    return { success: false, error: { message: error.message || "An unexpected error occurred" } };
+    // Still return success to prevent enumeration on unexpected errors
+    console.error("[Auth] Password reset unexpected error:", error.message);
+    return { success: true, data: undefined };
+  }
+}
+
+export async function updatePasswordServer(password: string): Promise<ServerActionResult<void>> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase.auth.updateUser({
+      password,
+    });
+
+    if (error) {
+      return { success: false, error: { message: error.message } };
+    }
+
+    return { success: true, data: undefined };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
   }
 }
 
@@ -257,9 +375,7 @@ export async function getMFAStatus(): Promise<{ isEnabled: boolean }> {
     }
     return { isEnabled: false };
   } catch (err: unknown) {
-    throw new Error(
-      err instanceof Error ? err.message : "Operation failed",
-    );
+    throw new Error(err instanceof Error ? err.message : "Operation failed");
   }
 }
 
@@ -300,10 +416,7 @@ export async function enrollMFA(): Promise<{
   }
 }
 
-export async function verifyMFA(
-  factorId: string,
-  code: string,
-): Promise<void> {
+export async function verifyMFA(factorId: string, code: string): Promise<void> {
   const supabase = await createSupabaseServerClient();
 
   try {
@@ -380,9 +493,7 @@ export async function sendPhoneOTP(phone: string): Promise<void> {
 
     if (error) throw new Error(error.message);
   } catch (err: unknown) {
-    throw new Error(
-      err instanceof Error ? err.message : "Failed to send OTP",
-    );
+    throw new Error(err instanceof Error ? err.message : "Failed to send OTP");
   }
 }
 
@@ -401,8 +512,6 @@ export async function verifyPhoneOTP(
 
     if (error) throw new Error(error.message);
   } catch (err: unknown) {
-    throw new Error(
-      err instanceof Error ? err.message : "Invalid OTP",
-    );
+    throw new Error(err instanceof Error ? err.message : "Invalid OTP");
   }
 }

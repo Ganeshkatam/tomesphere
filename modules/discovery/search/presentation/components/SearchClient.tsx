@@ -4,11 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { BookDto } from "@/modules/library/application/dto/response/BookDto";
 import BookCard from "@/modules/books/components/BookCard";
-import {
-  FadeIn,
-  StaggerContainer,
-  StaggerItem,
-} from "@/shared/ui/animations";
+import { FadeIn, StaggerContainer, StaggerItem } from "@/shared/ui/animations";
 import {
   Search as SearchIcon,
   X,
@@ -20,8 +16,12 @@ import VoiceInput from "@/modules/discovery/search/presentation/components/Voice
 import { searchBooks } from "@/modules/discovery/search/presentation/actions/search";
 
 // ─── Constants ───────────────────────────────────────────────
-const RECENT_SEARCHES_KEY = process.env.NEXT_PUBLIC_RECENT_SEARCHES_KEY || "tomesphere_recent_searches";
-const MAX_RECENT = parseInt(process.env.NEXT_PUBLIC_MAX_RECENT_SEARCHES || "5", 10);
+const RECENT_SEARCHES_KEY =
+  process.env.NEXT_PUBLIC_RECENT_SEARCHES_KEY || "tomesphere_recent_searches";
+const MAX_RECENT = parseInt(
+  process.env.NEXT_PUBLIC_MAX_RECENT_SEARCHES || "5",
+  10,
+);
 
 // ─── Helpers ─────────────────────────────────────────────────
 function getRecentSearches(): string[] {
@@ -332,7 +332,7 @@ export default function SearchClient({
             <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
               {books.map((book) => (
                 <StaggerItem key={book.id}>
-                  <BookCard book={book} onAddToList={() => { }} />
+                  <BookCard book={book} onAddToList={() => {}} />
                 </StaggerItem>
               ))}
             </StaggerContainer>

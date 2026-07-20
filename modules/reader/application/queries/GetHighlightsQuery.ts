@@ -11,10 +11,13 @@ export async function executeGetHighlights(
   request: GetHighlightsRequest,
 ): Promise<HighlightDto[]> {
   try {
-    const highlights = await repository.getHighlights(request.userId, request.bookId);
-    return highlights ;
+    const highlights = await repository.getHighlights(
+      request.userId,
+      request.bookId,
+    );
+    return highlights;
   } catch (error: any) {
     console.error("Failed to fetch highlights:", error);
-    throw new Error("Failed to fetch highlights" );
+    throw new Error("Failed to fetch highlights");
   }
 }

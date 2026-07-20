@@ -15,7 +15,7 @@ export class FinishReadingSessionHandler {
 
       const session = await this.readerRepository.findById(sessionId);
       if (!session) {
-        throw new Error("Session not found" );
+        throw new Error("Session not found");
       }
 
       const endPosition = ReadingPosition.create({
@@ -46,9 +46,10 @@ export class FinishReadingSessionHandler {
         durationSeconds: finishEvent?.durationSeconds || 0,
       };
     } catch (error) {
-      throw new Error(error instanceof Error
-            ? error.message
-            : "Unknown error finishing session",
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Unknown error finishing session",
       );
     }
   }

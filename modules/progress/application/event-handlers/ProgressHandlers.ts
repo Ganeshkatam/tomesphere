@@ -4,7 +4,7 @@ import { ReadingCompletedEvent } from "../../../reader/domain/events/ReaderEvent
 import { ProgressRepository } from "../../domain/repositories/ProgressRepository";
 import { DomainEventPublisher } from "@/shared/application/events/DomainEventPublisher";
 import { ReadingActivity } from "../../domain/value-objects/ReadingActivity";
-import {  UserId  } from "@/shared/kernel/UserId";
+import { UserId } from "@/shared/kernel/UserId";
 
 export class ProgressReadingCompletedHandler implements EventHandler<ReadingCompletedEvent> {
   constructor(

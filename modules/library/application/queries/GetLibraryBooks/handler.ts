@@ -1,17 +1,13 @@
-import { LibraryReadModel } from "../../../application/ports/read-models/LibraryReadModel";
-import { LibraryCollectionItemDto } from "../../dto/response/LibraryEntryDto";
+import {
+  LibraryReadModel,
+  LibraryQueryParams,
+} from "../../ports/read-models/LibraryReadModel";
+import { LibraryBooksPageDto } from "../../dto/response/LibraryPageDto";
 
 export async function getLibraryBooks(
-  repository: LibraryReadModel,
-  userId: string
-): Promise<LibraryCollectionItemDto[]> {
-  return repository.getLibraryBooks(userId);
-}
-
-export async function getLibraryBook(
-  repository: LibraryReadModel,
+  readModel: LibraryReadModel,
   userId: string,
-  bookId: string
-): Promise<LibraryCollectionItemDto | null> {
-  return repository.getLibraryBook(userId, bookId);
+  params: LibraryQueryParams,
+): Promise<LibraryBooksPageDto> {
+  return readModel.getLibraryBooks(userId, params);
 }

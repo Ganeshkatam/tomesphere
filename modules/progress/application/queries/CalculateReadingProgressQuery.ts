@@ -6,7 +6,7 @@ import { ProgressMapper } from "../mappers/ProgressMapper";
 export class CalculateReadingProgressQuery {
   constructor(
     private readonly goalRepo: ReadingGoalRepository,
-    private readonly activityRepo: ReadingActivityRepository
+    private readonly activityRepo: ReadingActivityRepository,
   ) {}
 
   async execute(userId: string, year: number): Promise<ReadingProgressDto> {
@@ -21,10 +21,10 @@ export class CalculateReadingProgressQuery {
         streak: ProgressMapper.toStreakDto(streak),
       };
 
-      return dto ;
+      return dto;
     } catch (error) {
       console.error("[CalculateReadingProgressQuery] Error:", error);
-      throw new Error("Failed to calculate reading progress" );
+      throw new Error("Failed to calculate reading progress");
     }
   }
 }

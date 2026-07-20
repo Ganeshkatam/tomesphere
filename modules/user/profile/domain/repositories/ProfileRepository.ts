@@ -8,6 +8,6 @@ export interface ProfileRepository {
     userId: UserId,
     name: string,
     favoriteGenres: string[],
-    readingGoal: any
+    readingGoal: any,
   ): Promise<void>;
 }

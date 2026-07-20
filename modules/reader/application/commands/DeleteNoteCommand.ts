@@ -1,5 +1,3 @@
-
-
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 
 export interface DeleteNoteRequest {
@@ -13,7 +11,7 @@ export async function executeDeleteNote(
   const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase
-    .from("reader_notes")
+    .from("annotations")
     .delete()
     .match({ id: request.noteId, user_id: request.userId });
 

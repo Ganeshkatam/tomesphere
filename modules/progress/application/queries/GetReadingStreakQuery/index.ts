@@ -12,7 +12,7 @@ export class GetReadingStreakQuery {
       const data = await this.repository.getReadingStreak(userId);
       return data;
     } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch reading streak." );
+      throw new Error(error.message || "Failed to fetch reading streak.");
     }
   }
 }

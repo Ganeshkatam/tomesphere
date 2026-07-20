@@ -8,12 +8,34 @@ export class SupabaseLibrarySnapshotReadModel implements LibrarySnapshotReadMode
 
   async getLibrarySnapshot(userId: string): Promise<LibrarySnapshotDto | null> {
     // 1. Get counts using count aggregations
-    const [wantToReadCountRes, currentlyReadingCountRes, finishedCountRes, recentBooksRes] = await Promise.all([
-      this.supabase.from("library_books").select("*", { count: "exact", head: true }).eq("user_id", userId).eq("status", "want_to_read"),
-      this.supabase.from("library_books").select("*", { count: "exact", head: true }).eq("user_id", userId).eq("status", "currently_reading"),
-      this.supabase.from("library_books").select("*", { count: "exact", head: true }).eq("user_id", userId).eq("status", "finished"),
+    const [
+      wantToReadCountRes,
+      currentlyReadingCountRes,
+      finishedCountRes,
+      recentBooksRes,
+    ] = await Promise.all([
+      this.supabase
+        .from("library_books")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .eq("status", "want_to_read"),
+      this.supabase
+        .from("library_books")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .eq("status", "currently_reading"),
+      this.supabase
+        .from("library_books")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .eq("status", "finished"),
       // 2. Get recent covers
-      this.supabase.from("library_books").select("books(cover_url)").eq("user_id", userId).order("updated_at", { ascending: false }).limit(4)
+      this.supabase
+        .from("library_books")
+        .select("books(cover_url)")
+        .eq("user_id", userId)
+        .order("updated_at", { ascending: false })
+        .limit(4),
     ]);
 
     const recentCovers: string[] = [];
@@ -30,7 +52,7 @@ export class SupabaseLibrarySnapshotReadModel implements LibrarySnapshotReadMode
       wantToReadCount: wantToReadCountRes.count || 0,
       currentlyReadingCount: currentlyReadingCountRes.count || 0,
       finishedCount: finishedCountRes.count || 0,
-      recentCovers
+      recentCovers,
     };
   }
 }

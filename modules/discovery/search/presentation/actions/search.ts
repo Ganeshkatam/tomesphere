@@ -12,13 +12,15 @@ export async function searchBooks(
   query: string,
   genre: string,
   page: number = 1,
-): Promise<ServerActionResult<{
-  books: BookDto[];
-  count: number;
-  page: number;
-  pageSize: number;
-  hasMore: boolean;
-}>> {
+): Promise<
+  ServerActionResult<{
+    books: BookDto[];
+    count: number;
+    page: number;
+    pageSize: number;
+    hasMore: boolean;
+  }>
+> {
   try {
     const supabase = await createSupabaseServerClient();
 
@@ -38,10 +40,15 @@ export async function searchBooks(
       return { success: false, error: { message: error.message } };
     }
 
-    const books: BookDto[] = (data || []).map((row: Record<string, unknown>) => {
-      const { rank, total_count, ...bookData } = row as Record<string, unknown>;
-      return BookMapper.toDto(bookData);
-    });
+    const books: BookDto[] = (data || []).map(
+      (row: Record<string, unknown>) => {
+        const { rank, total_count, ...bookData } = row as Record<
+          string,
+          unknown
+        >;
+        return BookMapper.toDto(bookData);
+      },
+    );
 
     const totalCount = data?.[0]?.total_count || 0;
 
@@ -53,12 +60,14 @@ export async function searchBooks(
         page,
         pageSize: PAGE_SIZE,
         hasMore: page * PAGE_SIZE < Number(totalCount),
-      }
+      },
     };
   } catch (error: unknown) {
     return {
       success: false,
-      error: { message: error instanceof Error ? error.message : "Search failed" }
+      error: {
+        message: error instanceof Error ? error.message : "Search failed",
+      },
     };
   }
 }

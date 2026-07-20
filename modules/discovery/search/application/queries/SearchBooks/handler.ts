@@ -14,9 +14,7 @@ export class SearchBooksHandler {
     private readonly rankingPolicy: RankingPolicy,
   ) {}
 
-  async execute(
-    query: SearchBooksQuery,
-  ): Promise<SearchResponseReadModel> {
+  async execute(query: SearchBooksQuery): Promise<SearchResponseReadModel> {
     try {
       const searchQuery = SearchQuery.create(query.request);
 
@@ -73,9 +71,10 @@ export class SearchBooksHandler {
           searchQuery.pagination.offset + searchQuery.pagination.limit,
       };
     } catch (error) {
-      throw new Error(error instanceof Error
-            ? error.message
-            : "Unknown error performing search",
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Unknown error performing search",
       );
     }
   }

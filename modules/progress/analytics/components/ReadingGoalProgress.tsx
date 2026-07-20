@@ -24,24 +24,26 @@ function calculateProgress(read: number, target: number): number {
 function getProjectedFinish(read: number, target: number): string {
   if (read === 0) return "Not enough data";
   if (read >= target) return "Goal completed!";
-  
+
   const now = new Date();
   const startOfYear = new Date(now.getFullYear(), 0, 1);
-  const daysPassed = Math.floor((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-  
+  const daysPassed = Math.floor(
+    (now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24),
+  );
+
   if (daysPassed === 0) return "Too early to project";
-  
+
   const booksPerDay = read / daysPassed;
   const remainingBooks = target - read;
   const daysNeeded = remainingBooks / booksPerDay;
-  
+
   const finishDate = new Date(now.getTime() + daysNeeded * 24 * 60 * 60 * 1000);
-  
+
   if (finishDate.getFullYear() > now.getFullYear()) {
     return "Projected to miss goal";
   }
-  
-  return `On track for ${finishDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`;
+
+  return `On track for ${finishDate.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
 }
 
 export default function ReadingGoalProgress({
@@ -84,7 +86,7 @@ export default function ReadingGoalProgress({
       const res = await fetch("/api/v1/progress/goals", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetBooks: target })
+        body: JSON.stringify({ targetBooks: target }),
       });
       if (res.ok) {
         setIsEditing(false);

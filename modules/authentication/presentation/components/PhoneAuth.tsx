@@ -19,8 +19,6 @@ export default function PhoneAuth() {
         await import("@/modules/authentication/presentation/actions/auth");
       const res = await sendPhoneOTP(phone);
 
-      
-
       setStep("otp");
       showSuccess("OTP sent successfully!");
     } catch (error: any) {
@@ -38,8 +36,6 @@ export default function PhoneAuth() {
       const { verifyPhoneOTP } =
         await import("@/modules/authentication/presentation/actions/auth");
       const res = await verifyPhoneOTP(phone, otp);
-
-      
 
       showSuccess("Phone verified successfully!");
       // Redirect handled by auth state listener or parent component

@@ -12,7 +12,7 @@ export class GetReadingGoalQuery {
       const data = await this.repository.getGoalProgress(userId);
       return data;
     } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch reading goal." );
+      throw new Error(error.message || "Failed to fetch reading goal.");
     }
   }
 }
