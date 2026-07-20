@@ -11,7 +11,7 @@ This document establishes the canonical routing architecture for TomeSphere, org
 | `/search`      | Search         | App       | Global + Page | No   |
 | `/book/[slug]` | Book details   | App       | Global        | No   |
 | `/library`     | Personal books | App       | Global + Page | Yes  |
-| `/read/[id]`   | Reader         | Reader    | No            | Yes  |
+| `/read/[id]`   | Reader         | Reader    | No            | No   |
 | `/account`     | Settings       | App       | Global        | Yes  |
 
 ## Principles
