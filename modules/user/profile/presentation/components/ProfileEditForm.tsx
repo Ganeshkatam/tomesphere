@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { uploadFileToStorage } from "@/modules/storage/presentation/actions/storage";
 import { showError, showSuccess } from "@/lib/toast";
 import Image from "next/image";
-import { updateProfileAction } from "@/app/(workspace)/account/profile/actions";
+import { updateProfileAction } from "../actions/profile";
 
 interface ProfileEditFormProps {
   profile: any;

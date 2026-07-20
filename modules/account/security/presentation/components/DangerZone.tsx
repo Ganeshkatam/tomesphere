@@ -3,7 +3,7 @@
 import { Trash2, AlertTriangle, Loader2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { showError } from "@/lib/toast";
-import { deleteAccountAction } from "../../../../../app/(workspace)/account/security/actions";
+import { deleteAccountAction } from "../actions/security";
 
 const DELETION_CONFIRMATION = "DELETE MY ACCOUNT";
 

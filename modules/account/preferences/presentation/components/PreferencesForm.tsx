@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { showError, showSuccess } from "@/lib/toast";
-import { updatePreferencesAction } from "@/app/(workspace)/account/preferences/actions";
+import { updatePreferencesAction } from "../actions/preferences";
 import { PreferencesDto } from "../../application/dto/PreferencesPageDto";
 
 export function PreferencesForm({

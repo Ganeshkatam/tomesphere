@@ -3,7 +3,7 @@
 import { KeyRound, Save, Loader2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { showError, showSuccess } from "@/lib/toast";
-import { changePasswordAction } from "../../../../../app/(workspace)/account/security/actions";
+import { updatePasswordAction } from "../actions/security";
 
 export function PasswordSection() {
   const [formData, setFormData] = useState({
@@ -19,7 +19,7 @@ export function PasswordSection() {
     }
 
     startTransition(async () => {
-      const res = await changePasswordAction(formData);
+      const res = await updatePasswordAction(formData);
       if (res.success) {
         showSuccess("Password updated successfully");
         setFormData({ newPassword: "", confirmPassword: "" });

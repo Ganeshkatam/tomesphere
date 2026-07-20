@@ -3,18 +3,18 @@
 import { Download, Loader2, Clock, CheckCircle } from "lucide-react";
 import { useTransition } from "react";
 import { showError, showSuccess } from "@/lib/toast";
-import { requestExportAction } from "../../../../../app/(workspace)/account/security/actions";
+import { requestDataExportAction } from "../actions/security";
 
 interface ExportDataProps {
   userId: string;
   exportData?: {
     status:
-      | "requested"
-      | "queued"
-      | "processing"
-      | "completed"
-      | "failed"
-      | "expired";
+    | "requested"
+    | "queued"
+    | "processing"
+    | "completed"
+    | "failed"
+    | "expired";
     downloadUrl: string | null;
     requestedAt: Date | string | null;
   } | null;
@@ -30,7 +30,7 @@ export function ExportSection({ userId, exportData }: ExportDataProps) {
 
   const handleRequest = () => {
     startTransition(async () => {
-      const res = await requestExportAction({ userId });
+      const res = await requestDataExportAction({ userId });
       if (res.success) {
         showSuccess(
           "Export requested successfully. You will be notified when it's ready.",

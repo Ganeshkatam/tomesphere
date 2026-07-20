@@ -3,14 +3,14 @@
 import { ShieldAlert, LogOut, Loader2 } from "lucide-react";
 import { useTransition } from "react";
 import { showError, showSuccess } from "@/lib/toast";
-import { signOutEverywhereAction } from "../../../../../app/(workspace)/account/security/actions";
+import { signOutAllDevicesAction } from "../actions/security";
 
 export function SignOutSection() {
   const [isPending, startTransition] = useTransition();
 
   const handleSignOutAll = () => {
     startTransition(async () => {
-      const res = await signOutEverywhereAction();
+      const res = await signOutAllDevicesAction({});
       if (res.success) {
         showSuccess("Signed out of all other sessions");
       } else {
