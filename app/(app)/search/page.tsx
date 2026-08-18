@@ -34,7 +34,7 @@ export default async function SearchPage({
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
-          Search Results for "{query}"
+          Search Results for &quot;{query}&quot;
         </h1>
         <p className="text-sm text-slate-500 mt-2">
           {results.totalCount} result{results.totalCount !== 1 && "s"} found in {results.executionTimeMs}ms

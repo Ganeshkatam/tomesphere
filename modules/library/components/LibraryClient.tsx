@@ -70,7 +70,7 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
     } finally {
       setLoadingView(false);
     }
-  }, [activeViewId, searchQuery, sortBy, sortDirection, page, setLoadingView]);
+  }, [activeViewId, sortBy, sortDirection, page, setLoadingView]);
 
   useEffect(() => {
     // Reset page when view changes

@@ -16,7 +16,6 @@ import { Pool, QueryResultRow } from "pg";
 
 declare global {
   // Prevent multiple pool instances during Next.js hot reloading in dev
-  // eslint-disable-next-line no-var
   var __tomesphereWorkerPool: Pool | undefined;
 }
 

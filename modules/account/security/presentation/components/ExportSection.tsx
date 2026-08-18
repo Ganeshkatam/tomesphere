@@ -57,7 +57,7 @@ export function ExportSection({ userId, exportData }: ExportDataProps) {
           </h4>
           <p className="text-xs text-slate-400 mt-1 max-w-md">
             Request a copy of your library, reading progress, highlights, and
-            notes. This process may take a few minutes. We'll email you when
+            notes. This process may take a few minutes. We&apos;ll email you when
             your download is ready.
           </p>
 
