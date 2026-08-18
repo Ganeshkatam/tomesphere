@@ -1,5 +1,9 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { BookOpen, Search, Bell, User, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/shared/providers/theme-context";
 
 export type HeaderVariant = "marketing" | "application" | "reader";
 
@@ -9,78 +13,141 @@ export interface AppHeaderProps {
 }
 
 export function AppHeader({ className = "", variant = "application" }: AppHeaderProps) {
-  return (
-    <header className={`fixed top-0 z-50 w-full bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline flex flex-col transition-transform duration-300 ${className}`} id="top-nav">
-      {/* Upper Tier */}
-      <div className="h-[72px] flex items-center w-full px-margin-desktop mx-auto">
-        <div className="flex justify-between items-center w-full gap-8">
-          {/* Logo */}
-          <Link href="/" className="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed flex items-center gap-2 flex-shrink-0">
-            <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>auto_stories</span>
-            <span>TomeSphere</span>
-          </Link>
-          
-          {/* Middle Section (Search for Application, Empty for Marketing) */}
-          <div className="flex-1 flex justify-center max-w-2xl mx-auto">
-            {variant === "application" && (
-              <div className="w-full relative flex items-center bg-surface-container-low dark:bg-tertiary-container border border-outline-variant rounded-full px-5 py-2.5 transition-all duration-300 focus-within:border-primary">
-                <span className="material-symbols-outlined text-on-surface-variant mr-3">search</span>
-                <input className="bg-transparent border-none focus:outline-none w-full text-body-md font-body-md placeholder:text-on-tertiary-container" placeholder="Search digital archives..." type="text" />
-              </div>
-            )}
-            {variant === "marketing" && (
-              <nav className="hidden md:flex items-center gap-8">
-                <Link href="/about" className="font-label-md text-on-surface-variant hover:text-primary transition-colors">About</Link>
-                <Link href="/pricing" className="font-label-md text-on-surface-variant hover:text-primary transition-colors">Pricing</Link>
-              </nav>
-            )}
-            {variant === "reader" && (
-              <div className="flex items-center text-on-surface-variant text-label-md font-label-md">
-                <span>Reading Progress: 42%</span>
-              </div>
-            )}
-          </div>
+  const { resolvedTheme, setTheme } = useTheme();
 
-          {/* Right Utilities */}
-          <div className="flex items-center gap-4 flex-shrink-0">
-            {variant === "application" ? (
-              <>
-                <button className="p-2 rounded-full hover:bg-surface-container-low dark:hover:bg-tertiary-container transition-all duration-200 text-on-surface-variant">
-                  <span className="material-symbols-outlined">notifications</span>
-                </button>
-                <div className="h-8 w-px bg-outline-variant mx-2 hidden sm:block"></div>
-                <Link href="/account" className="flex items-center gap-3 p-1 pl-1 pr-3 rounded-full border border-outline-variant hover:border-primary transition-all group">
-                  <div className="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[18px]">person</span>
-                  </div>
-                  <span className="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors hidden sm:block">Account</span>
-                </Link>
-              </>
-            ) : variant === "reader" ? (
-              <>
-                <button className="p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant"><span className="material-symbols-outlined">format_size</span></button>
-                <button className="p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant"><span className="material-symbols-outlined">dark_mode</span></button>
-                <button className="p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant"><span className="material-symbols-outlined">bookmark_add</span></button>
-              </>
-            ) : (
-              <div className="flex items-center gap-6 pl-4">
-                <Link href="/login" className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Sign In</Link>
-                <Link href="/register" className="bg-primary text-on-primary px-5 py-2.5 rounded-md font-label-md text-label-md hover:bg-primary-container hover:text-primary-fixed transition-colors shadow-sm">
-                  Join TomeSphere
-                </Link>
-              </div>
-            )}
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
+
+  return (
+    <header
+      className={`sticky top-0 z-50 w-full bg-[var(--surface-default)]/90 backdrop-blur-md border-b border-[var(--border-default)] transition-colors duration-200 ${className}`}
+      id="top-nav"
+    >
+      {/* Upper Tier */}
+      <div className="h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 text-xl font-bold text-[var(--text-primary)] hover:opacity-90 transition-opacity flex-shrink-0"
+        >
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+            <BookOpen size={20} />
           </div>
+          <span className="tracking-tight font-display">TomeSphere</span>
+        </Link>
+
+        {/* Middle Section (Search for Application, Navigation for Marketing) */}
+        <div className="flex-1 flex justify-center max-w-xl mx-auto">
+          {variant === "application" && (
+            <div className="w-full relative flex items-center bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-xl px-4 py-2 transition-all focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
+              <Search size={18} className="text-[var(--text-tertiary)] mr-3 flex-shrink-0" />
+              <input
+                className="bg-transparent border-none focus:outline-none w-full text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                placeholder="Search digital archives..."
+                type="text"
+              />
+            </div>
+          )}
+          {variant === "marketing" && (
+            <nav className="hidden md:flex items-center gap-8">
+              <Link
+                href="/about"
+                className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              >
+                About
+              </Link>
+              <Link
+                href="/discover"
+                className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              >
+                Browse Books
+              </Link>
+              <Link
+                href="/support"
+                className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              >
+                Support
+              </Link>
+            </nav>
+          )}
+          {variant === "reader" && (
+            <div className="flex items-center text-[var(--text-secondary)] text-sm font-medium">
+              <span>Reader Mode</span>
+            </div>
+          )}
+        </div>
+
+        {/* Right Utilities */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] border border-[var(--border-subtle)] transition-colors"
+          >
+            {resolvedTheme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+
+          {variant === "application" ? (
+            <>
+              <button
+                aria-label="Notifications"
+                className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] border border-[var(--border-subtle)] transition-colors"
+              >
+                <Bell size={18} />
+              </button>
+              <div className="h-6 w-px bg-[var(--border-default)] mx-1 hidden sm:block" />
+              <Link
+                href="/account"
+                className="flex items-center gap-2 p-1.5 pl-2 pr-3 rounded-xl border border-[var(--border-default)] hover:border-indigo-500 bg-[var(--surface-raised)] transition-all group"
+              >
+                <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                  <User size={16} />
+                </div>
+                <span className="text-sm font-medium text-[var(--text-primary)] hidden sm:block">
+                  Account
+                </span>
+              </Link>
+            </>
+          ) : variant === "reader" ? null : (
+            <div className="flex items-center gap-3">
+              <Link
+                href="/login"
+                className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-3 py-2 transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/signup"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-sm transition-all"
+              >
+                Join TomeSphere
+              </Link>
+            </div>
+          )}
         </div>
       </div>
-      
-      {/* Lower Tier (Only for Application variant) */}
+
+      {/* Lower Tier (Application navigation) */}
       {variant === "application" && (
-        <div className="h-[48px] border-t border-outline-variant/50 flex items-center w-full px-margin-desktop mx-auto">
-          <nav className="flex items-center gap-10 h-full">
-            <Link href="/discover" className="font-label-md text-label-md h-full flex items-center text-primary border-b-2 border-primary">Discover</Link>
-            <Link href="/library" className="font-label-md text-label-md h-full flex items-center text-on-surface-variant hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary">Library</Link>
-          </nav>
+        <div className="border-t border-[var(--border-subtle)]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-11 flex items-center">
+            <nav className="flex items-center gap-8 h-full">
+              <Link
+                href="/discover"
+                className="text-sm font-medium h-full flex items-center text-indigo-500 border-b-2 border-indigo-500"
+              >
+                Discover
+              </Link>
+              <Link
+                href="/library"
+                className="text-sm font-medium h-full flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors border-b-2 border-transparent hover:border-[var(--border-default)]"
+              >
+                Library
+              </Link>
+            </nav>
+          </div>
         </div>
       )}
     </header>

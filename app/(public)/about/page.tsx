@@ -44,7 +44,7 @@ export default function AboutPage() {
           {/* Stats Grid */}
           <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-32 max-w-4xl mx-auto">
             <StaggerItem>
-              <div className="flex flex-col items-center justify-center p-8 rounded-3xl glass-strong border border-white/10 hover:border-indigo-500/30 transition-colors group">
+              <div className="flex flex-col items-center justify-center p-8 rounded-3xl glass-strong border border-[var(--border-default)] hover:border-indigo-500/30 transition-colors group">
                 <div className="text-4xl sm:text-5xl font-bold text-indigo-400 mb-2 group-hover:scale-110 transition-transform">
                   AI
                 </div>
@@ -54,7 +54,7 @@ export default function AboutPage() {
               </div>
             </StaggerItem>
             <StaggerItem>
-              <div className="flex flex-col items-center justify-center p-8 rounded-3xl glass-strong border border-white/10 hover:border-purple-500/30 transition-colors group">
+              <div className="flex flex-col items-center justify-center p-8 rounded-3xl glass-strong border border-[var(--border-default)] hover:border-purple-500/30 transition-colors group">
                 <div className="text-4xl sm:text-5xl font-bold text-purple-400 mb-2 group-hover:scale-110 transition-transform">
                   ∞
                 </div>
@@ -64,7 +64,7 @@ export default function AboutPage() {
               </div>
             </StaggerItem>
             <StaggerItem>
-              <div className="flex flex-col items-center justify-center p-8 rounded-3xl glass-strong border border-white/10 hover:border-pink-500/30 transition-colors group">
+              <div className="flex flex-col items-center justify-center p-8 rounded-3xl glass-strong border border-[var(--border-default)] hover:border-pink-500/30 transition-colors group">
                 <div className="text-4xl sm:text-5xl font-bold text-pink-400 mb-2 group-hover:scale-110 transition-transform">
                   100%
                 </div>
@@ -74,7 +74,7 @@ export default function AboutPage() {
               </div>
             </StaggerItem>
             <StaggerItem>
-              <div className="flex flex-col items-center justify-center p-8 rounded-3xl glass-strong border border-white/10 hover:border-sky-500/30 transition-colors group">
+              <div className="flex flex-col items-center justify-center p-8 rounded-3xl glass-strong border border-[var(--border-default)] hover:border-sky-500/30 transition-colors group">
                 <div className="text-4xl sm:text-5xl font-bold text-sky-400 mb-2 group-hover:scale-110 transition-transform">
                   24/7
                 </div>
@@ -88,7 +88,7 @@ export default function AboutPage() {
           {/* Story Section */}
           <div className="grid md:grid-cols-2 gap-16 items-center mb-32">
             <SlideUp>
-              <div className="relative aspect-square rounded-3xl overflow-hidden glass-strong border border-white/10 p-2">
+              <div className="relative aspect-square rounded-3xl overflow-hidden glass-strong border border-[var(--border-default)] p-2">
                 <div className="w-full h-full rounded-2xl bg-gradient-to-br from-indigo-900/50 via-slate-900 to-purple-900/50 flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
                   <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay" />
                   <div className="w-24 h-24 rounded-full bg-indigo-500/20 flex items-center justify-center mb-8 border border-indigo-500/30">
@@ -152,7 +152,7 @@ export default function AboutPage() {
               What Makes Us Different
             </h2>
             <div className="grid sm:grid-cols-3 gap-8">
-              <div className="glass p-8 rounded-3xl border border-white/5 hover:border-indigo-500/30 transition-all hover:-translate-y-1">
+              <div className="glass p-8 rounded-3xl border border-[var(--border-subtle)] hover:border-indigo-500/30 transition-all hover:-translate-y-1">
                 <div className="w-12 h-12 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-6 text-2xl">
                   🤖
                 </div>
@@ -165,7 +165,7 @@ export default function AboutPage() {
                   popular.
                 </p>
               </div>
-              <div className="glass p-8 rounded-3xl border border-white/5 hover:border-purple-500/30 transition-all hover:-translate-y-1">
+              <div className="glass p-8 rounded-3xl border border-[var(--border-subtle)] hover:border-purple-500/30 transition-all hover:-translate-y-1">
                 <div className="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6 text-2xl">
                   🌍
                 </div>
@@ -177,7 +177,7 @@ export default function AboutPage() {
                   with readers from around the globe.
                 </p>
               </div>
-              <div className="glass p-8 rounded-3xl border border-white/5 hover:border-pink-500/30 transition-all hover:-translate-y-1">
+              <div className="glass p-8 rounded-3xl border border-[var(--border-subtle)] hover:border-pink-500/30 transition-all hover:-translate-y-1">
                 <div className="w-12 h-12 bg-pink-500/20 rounded-2xl flex items-center justify-center mb-6 text-2xl">
                   ✨
                 </div>
@@ -194,7 +194,7 @@ export default function AboutPage() {
           </div>
 
           {/* CTA Section */}
-          <div className="relative rounded-3xl overflow-hidden glass-strong border border-white/10 p-12 sm:p-20 text-center">
+          <div className="relative rounded-3xl overflow-hidden glass-strong border border-[var(--border-default)] p-12 sm:p-20 text-center">
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-purple-600/20 to-pink-600/20" />
             <div className="relative z-10">
               <h2 className="text-3xl sm:text-5xl font-display font-bold mb-6 text-white">

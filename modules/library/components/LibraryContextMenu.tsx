@@ -19,10 +19,10 @@ export default function LibraryContextMenu({
   // Real implementation would have actions to move collections, update status, delete etc.
   return (
     <div
-      className="fixed z-50 w-48 bg-[#1a1b26] border border-white/10 rounded-lg shadow-2xl overflow-hidden py-1"
+      className="fixed z-50 w-48 bg-[#1a1b26] border border-[var(--border-default)] rounded-lg shadow-2xl overflow-hidden py-1"
       style={{ top: y, left: x }}
     >
-      <div className="px-3 py-2 border-b border-white/5 mb-1">
+      <div className="px-3 py-2 border-b border-[var(--border-subtle)] mb-1">
         <div className="text-sm font-semibold truncate text-white">
           {book.title}
         </div>

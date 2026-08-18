@@ -46,7 +46,7 @@ export default function ExploreClient({
           </p>
         </FadeIn>
 
-        <SlideUp className="glass-strong rounded-3xl p-6 mb-12 border border-white/10 shadow-2xl max-w-2xl mx-auto">
+        <SlideUp className="glass-strong rounded-3xl p-6 mb-12 border border-[var(--border-default)] shadow-2xl max-w-2xl mx-auto">
           <form onSubmit={handleSearch} className="relative group">
             <Search
               className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-400 transition-colors"
@@ -57,7 +57,7 @@ export default function ExploreClient({
               placeholder="Search by title, author, or subject..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-indigo-500/50 focus:bg-white/10 transition-all placeholder:text-slate-500"
+              className="w-full bg-white/5 border border-[var(--border-default)] rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-indigo-500/50 focus:bg-white/10 transition-all placeholder:text-slate-500"
             />
           </form>
         </SlideUp>

@@ -28,7 +28,7 @@ export default function LibraryList({ books }: LibraryListProps) {
             className={`flex items-center gap-4 p-3 rounded-lg border transition-colors cursor-pointer ${
               isSelected
                 ? "bg-primary/10 border-primary"
-                : "bg-white/5 border-white/10 hover:bg-white/10"
+                : "bg-white/5 border-[var(--border-default)] hover:bg-white/10"
             }`}
             onClick={() => router.push(`/read/${item.bookId}`)}
           >
@@ -44,7 +44,7 @@ export default function LibraryList({ books }: LibraryListProps) {
                   className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                <div className="w-full h-full bg-[var(--surface-raised)] flex items-center justify-center">
                   <span className="text-xs text-slate-500">No cover</span>
                 </div>
               )}

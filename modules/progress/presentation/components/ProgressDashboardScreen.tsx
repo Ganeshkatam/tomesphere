@@ -24,7 +24,7 @@ export default function ProgressDashboardScreen({
 }: ProgressDashboardScreenProps) {
   if (!progress) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-slate-700">
+      <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-[var(--border-default)]">
         <span className="text-sm font-medium text-slate-400">
           No progress data available.
         </span>

@@ -147,7 +147,7 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
               <button
                 disabled={!data.books.hasPrevious}
                 onClick={() => setPage((p) => p - 1)}
-                className="px-4 py-2 bg-white/5 hover:bg-white/10 disabled:opacity-50 border border-white/10 rounded-lg text-sm"
+                className="px-4 py-2 bg-white/5 hover:bg-white/10 disabled:opacity-50 border border-[var(--border-default)] rounded-lg text-sm"
               >
                 Previous
               </button>
@@ -157,7 +157,7 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
               <button
                 disabled={!data.books.hasNext}
                 onClick={() => setPage((p) => p + 1)}
-                className="px-4 py-2 bg-white/5 hover:bg-white/10 disabled:opacity-50 border border-white/10 rounded-lg text-sm"
+                className="px-4 py-2 bg-white/5 hover:bg-white/10 disabled:opacity-50 border border-[var(--border-default)] rounded-lg text-sm"
               >
                 Next
               </button>

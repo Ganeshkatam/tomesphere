@@ -95,7 +95,7 @@ export function GlobalSearchInput() {
       </form>
 
       {isOpen && query.trim().length >= 2 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-lg shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[var(--surface-default)] rounded-lg shadow-xl border border-slate-200 dark:border-[var(--border-default)] overflow-hidden z-50">
           {suggestions.length > 0 ? (
             <div className="max-h-[60vh] overflow-y-auto">
               {suggestions.map((suggestion, idx) => (
@@ -103,9 +103,9 @@ export function GlobalSearchInput() {
                   key={`${suggestion.url}-${idx}`}
                   href={suggestion.url}
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50 last:border-0"
+                  className="flex items-center px-4 py-3 hover:bg-slate-50 dark:hover:bg-[var(--surface-raised)] transition-colors border-b border-slate-100 dark:border-[var(--border-default)]/50 last:border-0"
                 >
-                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 mr-3 shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-[var(--surface-raised)] flex items-center justify-center text-slate-500 mr-3 shrink-0">
                     {getIcon(suggestion.type)}
                   </div>
                   <div className="flex flex-col min-w-0">
@@ -129,7 +129,7 @@ export function GlobalSearchInput() {
             )
           )}
 
-          <div className="p-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+          <div className="p-2 border-t border-slate-100 dark:border-[var(--border-default)] bg-slate-50 dark:bg-[var(--surface-raised)]">
             <button
               onClick={handleSearch}
               className="w-full text-center text-sm text-primary font-medium hover:underline py-1"

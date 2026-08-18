@@ -2,14 +2,14 @@ import { cn } from "@/lib/utils";
 
 // Shimmer effect utility
 const Shimmer = ({ className }: { className?: string }) => (
-  <div className={cn("animate-pulse bg-slate-800/50 rounded-lg", className)} />
+  <div className={cn("animate-pulse bg-[var(--surface-raised)] rounded-lg", className)} />
 );
 
 export function BookCardSkeleton() {
   return (
-    <div className="flex flex-col h-full bg-slate-900/40 border border-white/5 rounded-xl overflow-hidden">
+    <div className="flex flex-col h-full bg-[var(--surface-default)] border border-[var(--border-subtle)] rounded-xl overflow-hidden">
       {/* Cover Image Skeleton */}
-      <div className="aspect-[2/3] w-full relative bg-slate-800/20">
+      <div className="aspect-[2/3] w-full relative bg-[var(--surface-raised)]/20">
         <Shimmer className="absolute inset-0 w-full h-full" />
       </div>
 

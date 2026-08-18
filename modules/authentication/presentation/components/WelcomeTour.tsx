@@ -149,7 +149,7 @@ export default function WelcomeTour({ isOpen, onClose }: WelcomeTourProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-2xl bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl shadow-2xl border border-white/10 overflow-hidden animate-slideIn">
+      <div className="relative w-full max-w-2xl bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl shadow-2xl border border-[var(--border-default)] overflow-hidden animate-slideIn">
         {/* Progress Bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-white/10">
           <div
@@ -197,7 +197,7 @@ export default function WelcomeTour({ isOpen, onClose }: WelcomeTourProps) {
 
           {/* Tips */}
           {step.tips && (
-            <div className="bg-white/5 rounded-2xl p-6 mb-8 border border-white/10">
+            <div className="bg-white/5 rounded-2xl p-6 mb-8 border border-[var(--border-default)]">
               <h3 className="text-sm font-semibold text-indigo-400 mb-3 uppercase tracking-wider">
                 {currentStep === 0
                   ? "What to Expect:"

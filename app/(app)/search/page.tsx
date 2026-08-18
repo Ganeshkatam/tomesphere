@@ -71,7 +71,7 @@ export default async function SearchPage({
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-slate-100 dark:bg-[var(--surface-raised)] rounded-full flex items-center justify-center mb-4">
                 <Frown className="w-8 h-8 text-slate-400" />
               </div>
               <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
@@ -102,7 +102,7 @@ export default async function SearchPage({
                     className={`w-10 h-10 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${
                       pageNum === request.page
                         ? "bg-primary text-white"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                        : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-[var(--surface-raised)] dark:text-slate-300 dark:hover:bg-[var(--surface-overlay)]"
                     }`}
                   >
                     {pageNum}

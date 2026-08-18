@@ -17,7 +17,7 @@ export function HighlightContextMenu({
   if (!clickedHighlightId) return null;
 
   return (
-    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-slate-800 text-white shadow-2xl rounded-xl overflow-hidden z-50 animate-in fade-in slide-in-from-bottom-4 min-w-[160px]">
+    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-[var(--surface-raised)] text-white shadow-2xl rounded-xl overflow-hidden z-50 animate-in fade-in slide-in-from-bottom-4 min-w-[160px]">
       <button
         onClick={() => onAddNote(clickedHighlightId)}
         className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm hover:bg-white/5 transition-colors text-left"

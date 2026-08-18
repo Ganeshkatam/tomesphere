@@ -237,11 +237,11 @@ export default function EnhancedLoginPage() {
     ══════════════════════════════════════════ */
   if (step === "mfa") {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[var(--surface-canvas)] flex items-center justify-center p-4">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-600/8 rounded-full blur-[120px]" />
         </div>
-        <div className="relative w-full max-w-sm bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+        <div className="relative w-full max-w-sm bg-[var(--surface-default)] backdrop-blur-xl border border-[var(--border-default)] rounded-2xl p-8 shadow-2xl">
           <div className="text-center mb-8">
             <div className="w-14 h-14 bg-indigo-500/15 border border-indigo-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Lock className="text-indigo-400" size={28} />
@@ -261,7 +261,7 @@ export default function EnhancedLoginPage() {
               onChange={(e) =>
                 setMfaCode(e.target.value.replace(/[^0-9]/g, ""))
               }
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white text-center text-xl tracking-[0.5em] font-mono focus:outline-none focus:border-indigo-500/60 transition-all"
+              className="w-full bg-white/5 border border-[var(--border-default)] rounded-xl px-4 py-3.5 text-white text-center text-xl tracking-[0.5em] font-mono focus:outline-none focus:border-indigo-500/60 transition-all"
               placeholder="000000"
               autoFocus
             />
@@ -288,7 +288,7 @@ export default function EnhancedLoginPage() {
        Centralized Workspace Card
     ══════════════════════════════════════════ */
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 sm:p-8 relative">
+    <div className="min-h-screen bg-[var(--surface-canvas)] flex items-center justify-center p-4 sm:p-8 relative">
       {/* ── Ambient background ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Noise texture overlay */}
@@ -432,14 +432,14 @@ export default function EnhancedLoginPage() {
               <div className="flex p-1 bg-white/5 rounded-xl relative">
                 <button
                   onClick={() => setAuthMode("password")}
-                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${authMode === "password" ? "bg-white/10 text-white shadow-sm border border-white/5" : "text-slate-400/60 hover:text-white"}`}
+                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${authMode === "password" ? "bg-white/10 text-white shadow-sm border border-[var(--border-subtle)]" : "text-slate-400/60 hover:text-white"}`}
                   type="button"
                 >
                   Password
                 </button>
                 <button
                   onClick={() => setAuthMode("magic")}
-                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${authMode === "magic" ? "bg-white/10 text-white shadow-sm border border-white/5" : "text-slate-400/60 hover:text-white"}`}
+                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${authMode === "magic" ? "bg-white/10 text-white shadow-sm border border-[var(--border-subtle)]" : "text-slate-400/60 hover:text-white"}`}
                   type="button"
                 >
                   <Sparkles size={11} /> Magic Link
@@ -472,7 +472,7 @@ export default function EnhancedLoginPage() {
                           onClick={() =>
                             setShowCountryDropdown(!showCountryDropdown)
                           }
-                          className="h-full px-3 bg-white/5 border-y border-l border-white/10 rounded-l-xl text-slate-300 hover:text-white flex items-center gap-1 text-sm transition-colors"
+                          className="h-full px-3 bg-white/5 border-y border-l border-[var(--border-default)] rounded-l-xl text-slate-300 hover:text-white flex items-center gap-1 text-sm transition-colors"
                         >
                           <span>
                             {
@@ -484,7 +484,7 @@ export default function EnhancedLoginPage() {
                           <ChevronDown size={12} />
                         </button>
                         {showCountryDropdown && (
-                          <div className="absolute top-full left-0 mt-1 w-60 bg-slate-900 border border-white/10 rounded-xl shadow-xl z-50 max-h-56 overflow-y-auto">
+                          <div className="absolute top-full left-0 mt-1 w-60 bg-[var(--surface-default)] border border-[var(--border-default)] rounded-xl shadow-xl z-50 max-h-56 overflow-y-auto">
                             {COUNTRY_CODES.map((c) => (
                               <button
                                 key={c.code}
@@ -658,7 +658,7 @@ export default function EnhancedLoginPage() {
             {step === "otp" && (
               <form onSubmit={handleVerifyOtp} className="space-y-5">
                 <div className="text-center">
-                  <div className="w-14 h-14 bg-gradient-to-br from-blue-500/15 to-purple-500/15 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-500/15 to-purple-500/15 border border-[var(--border-default)] rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <Mail className="text-indigo-400" size={26} />
                   </div>
                   <h3 className="text-lg font-bold text-slate-50 mb-1">
@@ -673,7 +673,7 @@ export default function EnhancedLoginPage() {
                   type="text"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 text-white text-center text-2xl tracking-widest px-4 py-3.5 rounded-xl focus:outline-none focus:border-blue-500/60 focus:ring-1 focus:ring-blue-500/40 transition-all font-mono"
+                  className="w-full bg-white/5 border border-[var(--border-default)] text-white text-center text-2xl tracking-widest px-4 py-3.5 rounded-xl focus:outline-none focus:border-blue-500/60 focus:ring-1 focus:ring-blue-500/40 transition-all font-mono"
                   placeholder="000000"
                   maxLength={6}
                   required
@@ -700,7 +700,7 @@ export default function EnhancedLoginPage() {
           </div>
 
           {/* Footer sign up & legal links */}
-          <div className="space-y-5 mt-8 border-t border-white/5 pt-6 text-center">
+          <div className="space-y-5 mt-8 border-t border-[var(--border-subtle)] pt-6 text-center">
             <div className="text-slate-500 text-xs">
               New to TomeSphere?{" "}
               <button

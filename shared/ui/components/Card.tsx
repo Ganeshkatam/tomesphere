@@ -27,7 +27,7 @@ export function CardImage({
   aspectRatio?: string;
 }) {
   return (
-    <div className={`relative w-full ${aspectRatio} overflow-hidden bg-slate-800 ${className}`}>
+    <div className={`relative w-full ${aspectRatio} overflow-hidden bg-[var(--surface-raised)] ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}

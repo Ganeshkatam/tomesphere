@@ -175,7 +175,7 @@ export function ReaderShell({ data }: ReaderShellProps) {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen w-full bg-slate-950 overflow-hidden text-slate-200">
+    <div className="flex flex-col h-screen w-full bg-[var(--surface-canvas)] overflow-hidden text-slate-200">
       <Toolbar service={service} />
       <div className="flex flex-1 overflow-hidden relative">
         <main className="flex-1 relative">

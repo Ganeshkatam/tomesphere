@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="flex-1 flex items-center justify-center min-h-[100dvh] bg-slate-950">
+    <div className="flex-1 flex items-center justify-center min-h-[100dvh] bg-[var(--surface-canvas)]">
       {/* Inject a global style to hide the footer while this loading component is mounted */}
       <style>{`
                 footer { display: none !important; }

@@ -1,4 +1,5 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Layers } from "lucide-react";
+import Link from "next/link";
 
 interface FeaturedCollectionsSectionProps {
   collections: any[];
@@ -20,23 +21,37 @@ export default function FeaturedCollectionsSection({
             Curated reading lists to explore.
           </p>
         </div>
-        <a
+        <Link
           href="/discover/collections"
-          className="text-sm font-semibold text-primary hover:text-primary-light transition-colors flex items-center gap-1"
+          className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline transition-colors flex items-center gap-1"
         >
           View all <ArrowRight size={16} />
-        </a>
+        </Link>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {collections.slice(0, 3).map((collection, i) => (
-          <div
-            key={i}
-            className="h-40 bg-[var(--surface-raised)] rounded-2xl border border-[var(--border-default)] flex items-center justify-center"
+          <Link
+            key={collection.id || i}
+            href="/discover/collections"
+            className="group relative p-6 bg-[var(--surface-raised)] hover:bg-[var(--surface-overlay)] rounded-2xl border border-[var(--border-default)] hover:border-indigo-500/50 transition-all shadow-sm hover:shadow-md flex flex-col justify-between"
           >
-            <span className="text-[var(--text-secondary)]">
-              Collection Preview
-            </span>
-          </div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                <Layers size={20} />
+              </div>
+              <span className="text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
+                {collection.bookCount ? `${collection.bookCount} Books` : "Curated List"}
+              </span>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-[var(--text-primary)] group-hover:text-indigo-500 transition-colors mb-1">
+                {collection.title || collection.name || "Curated Collection"}
+              </h3>
+              <p className="text-sm text-[var(--text-secondary)] line-clamp-2">
+                {collection.description || "A curated collection of selected books for your library."}
+              </p>
+            </div>
+          </Link>
         ))}
       </div>
     </section>

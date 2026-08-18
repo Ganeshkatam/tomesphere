@@ -79,7 +79,7 @@ export default function Footer() {
               </Link>
 
               {/* Mission statement */}
-              <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
+              <p className="text-[var(--text-secondary)] text-sm leading-relaxed max-w-xs">
                 Discover, read, organize, and understand books through a focused reading experience designed for students and lifelong learners.
               </p>
 
@@ -89,7 +89,7 @@ export default function Footer() {
                   (item) => (
                     <li
                       key={item}
-                      className="flex items-center gap-2.5 text-slate-400 text-sm"
+                      className="flex items-center gap-2.5 text-[var(--text-secondary)] text-sm"
                     >
                       <span className="w-4 h-4 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
                         <Check
@@ -104,9 +104,9 @@ export default function Footer() {
                 )}
               </ul>
 
-              {/* Tagline badge and Features Button */}
+              {/* Tagline badge */}
               <div className="flex items-center gap-4 mt-2">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/8 text-xs text-slate-500 w-fit">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--surface-raised)] border border-[var(--border-default)] text-xs text-[var(--text-tertiary)] w-fit">
                   <BookOpen size={11} className="text-indigo-400" />
                   Read • Learn • Remember
                 </div>
@@ -115,7 +115,7 @@ export default function Footer() {
 
             {/* Company Column */}
             <div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.18em] mb-5">
+              <p className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-[0.18em] mb-5">
                 Company
               </p>
               <ul className="space-y-3">
@@ -123,7 +123,7 @@ export default function Footer() {
                   <li key={href}>
                     <Link
                       href={href}
-                      className="text-slate-400 hover:text-[var(--text-primary)] text-sm transition-colors duration-200 hover:translate-x-0.5 inline-block"
+                      className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-sm transition-colors duration-200 hover:translate-x-0.5 inline-block"
                     >
                       {label}
                     </Link>
@@ -134,7 +134,7 @@ export default function Footer() {
 
             {/* Support Column */}
             <div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.18em] mb-5">
+              <p className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-[0.18em] mb-5">
                 Support
               </p>
               <ul className="space-y-3">
@@ -142,7 +142,7 @@ export default function Footer() {
                   <li key={href}>
                     <Link
                       href={href}
-                      className="text-slate-400 hover:text-[var(--text-primary)] text-sm transition-colors duration-200 hover:translate-x-0.5 inline-block"
+                      className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-sm transition-colors duration-200 hover:translate-x-0.5 inline-block"
                     >
                       {label}
                     </Link>
@@ -152,44 +152,43 @@ export default function Footer() {
             </div>
           </div>
 
-
           {/* ── Bottom Bar ── */}
-          <div className="py-6 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <div className="py-6 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-tertiary)]">
             <span>© {currentYear} TomeSphere</span>
             <div className="flex items-center gap-5">
               <Link
                 href="/privacy"
-                className="hover:text-slate-50 transition-colors"
+                className="hover:text-[var(--text-primary)] transition-colors"
               >
                 Privacy
               </Link>
               <Link
                 href="/terms"
-                className="hover:text-slate-50 transition-colors"
+                className="hover:text-[var(--text-primary)] transition-colors"
               >
                 Terms
               </Link>
               <Link
                 href="/cookies"
-                className="hover:text-slate-50 transition-colors"
+                className="hover:text-[var(--text-primary)] transition-colors"
               >
                 Cookies
               </Link>
               <Link
                 href="/sitemap"
-                className="hover:text-slate-50 transition-colors"
+                className="hover:text-[var(--text-primary)] transition-colors"
               >
                 Sitemap
               </Link>
             </div>
-            <span className="text-slate-600">Read • Learn • Remember</span>
+            <span className="text-[var(--text-tertiary)]">Read • Learn • Remember</span>
           </div>
         </div>
 
         {/* Scroll to top */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 right-6 z-50 w-10 h-10 bg-indigo-600/80 hover:bg-indigo-600 backdrop-blur-xl text-white rounded-full shadow-lg transition-all hover:scale-110 border border-white/10 flex items-center justify-center"
+          className="fixed bottom-6 right-6 z-50 w-10 h-10 bg-indigo-600/80 hover:bg-indigo-600 backdrop-blur-xl text-white rounded-full shadow-lg transition-all hover:scale-110 border border-[var(--border-default)] flex items-center justify-center"
           aria-label="Scroll to top"
         >
           <svg

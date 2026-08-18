@@ -140,7 +140,7 @@ export default function ReadingGoalProgress({
             type="number"
             value={targetInput}
             onChange={(e) => setTargetInput(e.target.value)}
-            className="flex-1 px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-primary focus:outline-none"
+            className="flex-1 px-4 py-3 rounded-lg bg-white/5 border border-[var(--border-default)] focus:border-primary focus:outline-none"
             placeholder="50"
             min="1"
           />

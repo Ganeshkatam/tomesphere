@@ -17,25 +17,25 @@ export default function LibraryOverview({ summary }: LibraryOverviewProps) {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+        <div className="bg-white/5 border border-[var(--border-default)] p-4 rounded-xl">
           <div className="text-slate-400 text-sm mb-1">Total Books</div>
           <div className="text-3xl font-bold text-white">
             {summary.totalBooks}
           </div>
         </div>
-        <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+        <div className="bg-white/5 border border-[var(--border-default)] p-4 rounded-xl">
           <div className="text-slate-400 text-sm mb-1">Currently Reading</div>
           <div className="text-3xl font-bold text-primary-light">
             {summary.currentlyReading}
           </div>
         </div>
-        <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+        <div className="bg-white/5 border border-[var(--border-default)] p-4 rounded-xl">
           <div className="text-slate-400 text-sm mb-1">Finished</div>
           <div className="text-3xl font-bold text-green-400">
             {summary.finished}
           </div>
         </div>
-        <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+        <div className="bg-white/5 border border-[var(--border-default)] p-4 rounded-xl">
           <div className="text-slate-400 text-sm mb-1">Collections</div>
           <div className="text-3xl font-bold text-purple-400">
             {summary.totalCollections}

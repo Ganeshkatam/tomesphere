@@ -60,7 +60,7 @@ export default function PhoneInput({
             type="button"
             onClick={() => setShowDropdown(!showDropdown)}
             disabled={disabled}
-            className="h-full px-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all flex items-center gap-2 min-w-[100px]"
+            className="h-full px-3 bg-white/5 border border-[var(--border-default)] rounded-xl text-white hover:bg-white/10 transition-all flex items-center gap-2 min-w-[100px]"
           >
             <span className="text-xl">
               {countryCodes.find((c) => c.code === selectedCode)?.flag}
@@ -83,7 +83,7 @@ export default function PhoneInput({
 
           {/* Dropdown Menu */}
           {showDropdown && (
-            <div className="absolute top-full left-0 mt-2 w-64 bg-slate-900 border border-white/10 rounded-xl shadow-2xl z-50 max-h-60 overflow-y-auto">
+            <div className="absolute top-full left-0 mt-2 w-64 bg-[var(--surface-default)] border border-[var(--border-default)] rounded-xl shadow-2xl z-50 max-h-60 overflow-y-auto">
               {countryCodes.map((country) => (
                 <button
                   key={country.code}
@@ -125,7 +125,7 @@ export default function PhoneInput({
           value={displayPhone}
           onChange={(e) => handlePhoneChange(e.target.value)}
           placeholder={placeholder || "Enter phone number"}
-          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 focus:bg-white/10 transition-all placeholder:text-slate-600"
+          className="flex-1 bg-white/5 border border-[var(--border-default)] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 focus:bg-white/10 transition-all placeholder:text-slate-600"
           disabled={disabled}
           autoFocus={autoFocus}
         />

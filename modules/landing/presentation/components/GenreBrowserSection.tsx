@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface GenreBrowserSectionProps {
   genres: string[];
@@ -20,22 +21,22 @@ export default function GenreBrowserSection({
             Explore specific subjects.
           </p>
         </div>
-        <a
-          href="/discover/genres"
-          className="text-sm font-semibold text-primary hover:text-primary-light transition-colors flex items-center gap-1"
+        <Link
+          href="/discover"
+          className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline transition-colors flex items-center gap-1"
         >
           View all <ArrowRight size={16} />
-        </a>
+        </Link>
       </div>
       <div className="flex flex-wrap gap-3">
         {genres.map((genre) => (
-          <a
+          <Link
             key={genre}
-            href={`/discover/genres/${genre.toLowerCase().replace(/\s+/g, "-")}`}
-            className="px-6 py-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-default)] hover:border-primary transition-colors text-[var(--text-primary)] font-medium"
+            href={`/discover/search?genre=${encodeURIComponent(genre)}`}
+            className="px-5 py-2.5 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-default)] hover:border-indigo-500 hover:text-indigo-500 transition-colors text-[var(--text-primary)] text-sm font-medium shadow-xs"
           >
             {genre}
-          </a>
+          </Link>
         ))}
       </div>
     </section>

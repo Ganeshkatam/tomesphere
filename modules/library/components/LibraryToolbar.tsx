@@ -23,7 +23,7 @@ export default function LibraryToolbar() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search this view..."
-          className="w-full px-4 py-2 pr-10 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50 text-sm"
+          className="w-full px-4 py-2 pr-10 bg-white/5 border border-[var(--border-default)] rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-primary/50 text-sm"
         />
         <div className="absolute right-2 top-1/2 -translate-y-1/2">
           <VoiceInput onTranscript={(text) => setSearchQuery(text)} />
@@ -36,7 +36,7 @@ export default function LibraryToolbar() {
         <select
           value={sortBy}
           onChange={(e) => setSort(e.target.value as any, sortDirection)}
-          className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-primary/50"
+          className="bg-white/5 border border-[var(--border-default)] rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-primary/50"
         >
           <option value="date_added">Recently Added</option>
           <option value="title">Title (A-Z)</option>
@@ -45,7 +45,7 @@ export default function LibraryToolbar() {
         </select>
 
         {/* View Mode */}
-        <div className="flex bg-white/5 rounded-lg border border-white/10 p-1">
+        <div className="flex bg-white/5 rounded-lg border border-[var(--border-default)] p-1">
           <button
             onClick={() => setViewMode("grid")}
             className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white/10 text-white" : "text-slate-500 hover:text-slate-300"}`}

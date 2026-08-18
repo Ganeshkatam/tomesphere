@@ -153,7 +153,7 @@ export default function SearchClient({
           <div className="max-w-4xl mx-auto">
             <div className="relative group z-30">
               <div className="absolute -inset-1 bg-gradient-to-r from-primary/50 to-secondary/50 rounded-2xl opacity-20 group-hover:opacity-40 blur transition duration-500" />
-              <div className="relative flex items-center bg-slate-900 border border-white/10 rounded-xl shadow-2xl">
+              <div className="relative flex items-center bg-[var(--surface-default)] border border-[var(--border-default)] rounded-xl shadow-2xl">
                 <div className="pl-4 text-slate-400">
                   <SearchIcon size={20} />
                 </div>
@@ -199,7 +199,7 @@ export default function SearchClient({
 
               {/* Recent Searches Dropdown */}
               {showRecent && !query && recentSearches.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface-default)] backdrop-blur-xl border border-[var(--border-default)] rounded-xl shadow-2xl z-50 overflow-hidden">
                   <div className="flex items-center justify-between px-4 pt-3 pb-2">
                     <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">
                       Recent Searches
@@ -236,7 +236,7 @@ export default function SearchClient({
         </FadeIn>
 
         {/* Results Header */}
-        <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+        <div className="flex items-center justify-between mb-8 border-b border-[var(--border-subtle)] pb-4">
           <h1 className="text-2xl font-bold text-white flex items-center gap-3">
             <span>
               {books.length > 0 ? (
@@ -269,7 +269,7 @@ export default function SearchClient({
         {/* Results Grid */}
         {books.length === 0 ? (
           <FadeIn>
-            <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/5">
+            <div className="text-center py-20 bg-white/5 rounded-3xl border border-[var(--border-subtle)]">
               <div className="text-6xl mb-6">🔍</div>
               <h3 className="text-2xl font-bold text-white mb-3">
                 {initialQuery ? (
@@ -307,7 +307,7 @@ export default function SearchClient({
                             <button
                               key={idx}
                               onClick={() => handleSearch(term)}
-                              className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
+                              className="px-4 py-2 rounded-full bg-white/5 border border-[var(--border-default)] text-sm text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
                             >
                               {term}
                             </button>
@@ -343,7 +343,7 @@ export default function SearchClient({
                 <button
                   onClick={handleLoadMore}
                   disabled={loadingMore}
-                  className="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                  className="px-8 py-3 bg-white/5 hover:bg-white/10 border border-[var(--border-default)] hover:border-[var(--border-strong)] rounded-xl text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
                 >
                   {loadingMore ? (
                     <>

@@ -64,7 +64,7 @@ export default function VerifyEmailPage() {
     <div className="min-h-screen bg-gradient-page flex items-start justify-center p-4 sm:p-6 md:py-12">
       {/* <Toaster position="top-right" /> */}
 
-      <div className="max-w-md w-full backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl">
+      <div className="max-w-md w-full backdrop-blur-xl bg-white/5 border border-[var(--border-default)] rounded-2xl p-8 shadow-2xl">
         {/* Icon */}
         <div className="text-center mb-6">
           <div className="w-20 h-20 mx-auto mb-4 bg-amber-500/20 rounded-full flex items-center justify-center">
@@ -79,7 +79,7 @@ export default function VerifyEmailPage() {
 
         {/* Instructions */}
         <div className="space-y-4 mb-6">
-          <div className="backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-white/10">
+          <div className="backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-[var(--border-default)]">
             <h3 className="text-white font-semibold mb-2 flex items-center gap-2">
               <span>📝</span> Next Steps:
             </h3>
@@ -112,7 +112,7 @@ export default function VerifyEmailPage() {
 
           <button
             onClick={checkUser}
-            className="w-full bg-white/5 hover:bg-white/10 text-white py-3 rounded-xl font-medium transition-colors border border-white/10"
+            className="w-full bg-white/5 hover:bg-white/10 text-white py-3 rounded-xl font-medium transition-colors border border-[var(--border-default)]"
           >
             I&apos;ve Verified - Continue
           </button>
@@ -126,7 +126,7 @@ export default function VerifyEmailPage() {
         </div>
 
         {/* Help Text */}
-        <div className="mt-6 pt-6 border-t border-white/10 text-center">
+        <div className="mt-6 pt-6 border-t border-[var(--border-default)] text-center">
           <p className="text-sm text-slate-400">
             Need help?{" "}
             <a

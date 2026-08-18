@@ -42,7 +42,7 @@ export default function HeroSection({
       <div className="w-full max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <FadeIn className="text-center" delay={0.2}>
           {/* Welcome badge with user info */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-6 hover:bg-white/10 transition-colors cursor-default">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--border-default)] bg-white/5 backdrop-blur-md mb-6 hover:bg-white/10 transition-colors cursor-default">
             <span className="flex h-2 w-2 rounded-full bg-pink-500 animate-pulse" />
             <span className="text-sm font-medium text-slate-300">
               {user
@@ -72,7 +72,7 @@ export default function HeroSection({
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-3xl opacity-25 group-hover:opacity-50 blur transition duration-1000 group-hover:duration-200" />
 
-              <div className="relative flex flex-col md:flex-row gap-4 p-3 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-white/10 shadow-2xl">
+              <div className="relative flex flex-col md:flex-row gap-4 p-3 rounded-2xl bg-[var(--surface-default)] backdrop-blur-xl border border-[var(--border-default)] shadow-2xl">
                 <div className="relative flex-1 group/input">
                   <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                     <span className="text-2xl opacity-50 text-slate-400 group-focus-within/input:text-indigo-400 transition-colors">
@@ -119,34 +119,34 @@ export default function HeroSection({
                     }}
                     className="w-full h-full bg-transparent border-none py-4 px-4 pr-10 text-slate-300 focus:outline-none focus:ring-0 text-base font-medium appearance-none cursor-pointer"
                   >
-                    <option value="" className="bg-slate-900">
+                    <option value="" className="bg-[var(--surface-default)]">
                       All Genres
                     </option>
-                    <optgroup label="📚 Popular" className="bg-slate-900">
-                      <option value="Fiction" className="bg-slate-900">
+                    <optgroup label="📚 Popular" className="bg-[var(--surface-default)]">
+                      <option value="Fiction" className="bg-[var(--surface-default)]">
                         Fiction
                       </option>
-                      <option value="Non-Fiction" className="bg-slate-900">
+                      <option value="Non-Fiction" className="bg-[var(--surface-default)]">
                         Non-Fiction
                       </option>
-                      <option value="Romance" className="bg-slate-900">
+                      <option value="Romance" className="bg-[var(--surface-default)]">
                         Romance
                       </option>
-                      <option value="Mystery" className="bg-slate-900">
+                      <option value="Mystery" className="bg-[var(--surface-default)]">
                         Mystery
                       </option>
-                      <option value="Fantasy" className="bg-slate-900">
+                      <option value="Fantasy" className="bg-[var(--surface-default)]">
                         Fantasy
                       </option>
                     </optgroup>
-                    <optgroup label="🎓 Academic" className="bg-slate-900">
-                      <option value="Computer Science" className="bg-slate-900">
+                    <optgroup label="🎓 Academic" className="bg-[var(--surface-default)]">
+                      <option value="Computer Science" className="bg-[var(--surface-default)]">
                         Computer Science
                       </option>
-                      <option value="Mathematics" className="bg-slate-900">
+                      <option value="Mathematics" className="bg-[var(--surface-default)]">
                         Mathematics
                       </option>
-                      <option value="Science" className="bg-slate-900">
+                      <option value="Science" className="bg-[var(--surface-default)]">
                         Science
                       </option>
                     </optgroup>

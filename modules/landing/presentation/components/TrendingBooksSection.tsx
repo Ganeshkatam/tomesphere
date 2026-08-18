@@ -23,7 +23,7 @@ export default function TrendingBooksSection({
         </div>
         <a
           href="/discover/trending"
-          className="text-sm font-semibold text-primary hover:text-primary-light transition-colors flex items-center gap-1"
+          className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline transition-colors flex items-center gap-1"
         >
           View all <ArrowRight size={16} />
         </a>

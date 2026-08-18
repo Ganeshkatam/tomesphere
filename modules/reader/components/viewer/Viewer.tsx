@@ -8,10 +8,10 @@ export const Viewer = forwardRef<HTMLDivElement>((_, ref) => {
   const { rendererReady } = useReaderStore();
 
   return (
-    <div className="w-full h-full overflow-hidden bg-slate-900 relative flex items-center justify-center">
+    <div className="w-full h-full overflow-hidden bg-[var(--surface-default)] relative flex items-center justify-center">
       {/* Loading Overlay */}
       {!rendererReady && (
-        <div className="absolute inset-0 z-10 bg-slate-900 flex items-center justify-center">
+        <div className="absolute inset-0 z-10 bg-[var(--surface-default)] flex items-center justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <span className="ml-3 text-slate-300">Loading book...</span>
         </div>

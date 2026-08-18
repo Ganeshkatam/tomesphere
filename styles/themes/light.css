@@ -55,8 +55,8 @@ html.light {
   --body-overlay-opacity: 0.8;
   --hero-overlay: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(241, 245, 249, 0.75) 50%,
+    rgba(248, 250, 252, 0.8) 0%,
+    rgba(241, 245, 249, 0.92) 50%,
     var(--slate-50) 100%
   );
 

@@ -41,7 +41,7 @@ export default function LibrarySidebar({ navigation }: LibrarySidebarProps) {
   };
 
   return (
-    <aside className="w-64 flex-shrink-0 flex flex-col h-[calc(100vh-4rem)] sticky top-16 border-r border-white/5 p-4 overflow-y-auto hidden md:flex">
+    <aside className="w-64 flex-shrink-0 flex flex-col h-[calc(100vh-4rem)] sticky top-16 border-r border-[var(--border-subtle)] p-4 overflow-y-auto hidden md:flex">
       {/* Overview */}
       <div className="mb-6">
         <h3 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-2 px-3">

@@ -51,7 +51,7 @@ export function TrendingClient({ initialBooks, initialPeriod }: TrendingClientPr
   return (
     <div className="space-y-8">
       {/* Tabs */}
-      <div className="border-b border-white/10">
+      <div className="border-b border-[var(--border-default)]">
         <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           {periods.map((tab) => (
             <button
@@ -81,7 +81,7 @@ export function TrendingClient({ initialBooks, initialPeriod }: TrendingClientPr
         )}
 
         {books.length === 0 && !loading ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 p-12 text-center">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--border-default)] p-12 text-center">
             <h3 className="mt-2 text-sm font-semibold text-white">No trending books</h3>
             <p className="mt-1 text-sm text-gray-400">Check back later for new trending titles.</p>
           </div>

@@ -75,7 +75,7 @@ export default function OnboardingTour() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.9 }}
           transition={{ type: "spring", bounce: 0.4 }}
-          className="relative w-full max-w-md bg-slate-900 border border-white/10 rounded-3xl p-8 shadow-2xl pointer-events-auto mx-4"
+          className="relative w-full max-w-md bg-[var(--surface-default)] border border-[var(--border-default)] rounded-3xl p-8 shadow-2xl pointer-events-auto mx-4"
         >
           <button
             onClick={handleComplete}
@@ -85,7 +85,7 @@ export default function OnboardingTour() {
           </button>
 
           <div className="flex flex-col items-center text-center space-y-6">
-            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center border border-white/10 shadow-inner">
+            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center border border-[var(--border-default)] shadow-inner">
               {step.icon}
             </div>
 

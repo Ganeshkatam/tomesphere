@@ -139,7 +139,7 @@ export default function ProfileSetupPage({
                   className={`px-4 py-2 rounded-lg border transition-all ${
                     formData.favoriteGenres.includes(genre)
                       ? "bg-primary border-primary text-white"
-                      : "border-white/10 hover:border-white/20"
+                      : "border-[var(--border-default)] hover:border-[var(--border-strong)]"
                   }`}
                 >
                   {genre}

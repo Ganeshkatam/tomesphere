@@ -44,7 +44,7 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
 
   return (
     <div
-      className="group relative glass rounded-2xl overflow-hidden border border-white/5 hover:border-indigo-500/30 hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-500 cursor-pointer h-full flex flex-col"
+      className="group relative glass rounded-2xl overflow-hidden border border-[var(--border-subtle)] hover:border-indigo-500/30 hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-500 cursor-pointer h-full flex flex-col"
       onClick={handleCardClick}
       style={{
         transform: "perspective(1000px) rotateX(0deg) rotateY(0deg)",
@@ -133,14 +133,14 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
       {/* Book Info */}
       <div className="p-2.5 sm:p-3 flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="text-base font-semibold text-white line-clamp-1 mb-0.5 group-hover:text-primary-light transition-colors leading-tight">
+          <h3 className="text-base font-semibold text-[var(--text-primary)] line-clamp-1 mb-0.5 group-hover:text-indigo-500 transition-colors leading-tight">
             {book.title}
           </h3>
-          <p className="text-[13px] text-slate-500 mb-1 font-medium truncate">
+          <p className="text-[13px] text-[var(--text-tertiary)] mb-1 font-medium truncate">
             by {book.authors?.map((a) => a.name).join(", ") || "Unknown"}
           </p>
 
-          <p className="text-[12px] text-slate-400 font-medium truncate">
+          <p className="text-[12px] text-[var(--text-secondary)] font-medium truncate">
             {book.genres?.[0]?.name || "Uncategorized"}
             {book.language ? ` • ${book.language}` : ""} •{" "}
             {book.publicationYear || (book.publishedDate
@@ -163,8 +163,6 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
             <span className="text-[10px]">→</span>
           </button>
 
-
-
           {/* Add to List */}
           {onAddToList && (
             <div className="relative ml-auto">
@@ -174,20 +172,20 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
                   setShowMenu(!showMenu);
                 }}
                 onBlur={() => setTimeout(() => setShowMenu(false), 200)}
-                className="p-1.5 rounded-lg bg-white/5 hover:bg-primary/20 hover:text-primary-light text-slate-400 transition-all transform hover:scale-110"
+                className="p-1.5 rounded-lg bg-[var(--surface-raised)] hover:bg-indigo-500/20 hover:text-indigo-500 text-[var(--text-secondary)] transition-all transform hover:scale-110"
                 title="Add to reading list"
               >
                 <Plus size={14} />
               </button>
               {showMenu && (
-                <div className="absolute right-0 bottom-full mb-2 w-48 bg-slate-800/95 backdrop-blur-xl rounded-xl shadow-2xl border border-white/10 overflow-hidden z-20 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                <div className="absolute right-0 bottom-full mb-2 w-48 bg-[var(--surface-raised)]/95 backdrop-blur-xl rounded-xl shadow-2xl border border-[var(--border-default)] overflow-hidden z-20 animate-in fade-in slide-in-from-bottom-2 duration-200">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       onAddToList("want_to_read");
                       setShowMenu(false);
                     }}
-                    className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-primary/20 hover:text-white transition-colors"
+                    className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-indigo-500/20 transition-colors"
                   >
                     <BookOpen size={16} />
                     <span>Want to Read</span>
@@ -198,7 +196,7 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
                       onAddToList("currently_reading");
                       setShowMenu(false);
                     }}
-                    className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-primary/20 hover:text-white transition-colors"
+                    className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-indigo-500/20 transition-colors"
                   >
                     <Clock size={16} />
                     <span>Currently Reading</span>
@@ -209,7 +207,7 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
                       onAddToList("finished");
                       setShowMenu(false);
                     }}
-                    className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-primary/20 hover:text-white transition-colors"
+                    className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-indigo-500/20 transition-colors"
                   >
                     <Check size={16} />
                     <span>Finished</span>

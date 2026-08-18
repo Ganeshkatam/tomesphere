@@ -1,4 +1,5 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, User } from "lucide-react";
+import Link from "next/link";
 
 interface PopularAuthorsSectionProps {
   authors: string[];
@@ -20,22 +21,25 @@ export default function PopularAuthorsSection({
             Discover prolific writers in our catalog.
           </p>
         </div>
-        <a
+        <Link
           href="/discover/authors"
-          className="text-sm font-semibold text-primary hover:text-primary-light transition-colors flex items-center gap-1"
+          className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline transition-colors flex items-center gap-1"
         >
           View all <ArrowRight size={16} />
-        </a>
+        </Link>
       </div>
       <div className="flex flex-wrap gap-3">
         {authors.map((author) => (
-          <a
+          <Link
             key={author}
-            href={`/discover/authors/${author.toLowerCase().replace(/\s+/g, "-")}`}
-            className="px-6 py-3 rounded-full bg-[var(--surface-raised)] border border-[var(--border-default)] hover:border-primary transition-colors text-[var(--text-primary)] font-medium"
+            href={`/discover/search?q=${encodeURIComponent(author)}`}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--surface-raised)] border border-[var(--border-default)] hover:border-indigo-500 hover:text-indigo-500 transition-colors text-[var(--text-primary)] text-sm font-medium shadow-xs"
           >
-            {author}
-          </a>
+            <div className="w-5 h-5 rounded-full bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+              <User size={12} />
+            </div>
+            <span>{author}</span>
+          </Link>
         ))}
       </div>
     </section>

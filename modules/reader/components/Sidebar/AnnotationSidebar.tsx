@@ -22,9 +22,9 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
   };
 
   return (
-    <div className="w-80 bg-slate-900 border-l border-white/10 flex flex-col h-full animate-in slide-in-from-right">
+    <div className="w-80 bg-[var(--surface-default)] border-l border-[var(--border-default)] flex flex-col h-full animate-in slide-in-from-right">
       {/* Tabs */}
-      <div className="flex border-b border-white/10">
+      <div className="flex border-b border-[var(--border-default)]">
         <button
           onClick={() => handleTabChange("annotations")}
           className={`flex-1 py-3 text-sm font-medium transition-colors ${
@@ -59,7 +59,7 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
           annotations.map(({ highlight, note }) => (
             <div
               key={highlight.id}
-              className="bg-slate-800/50 rounded-lg p-3 hover:bg-slate-800 transition-colors cursor-pointer group"
+              className="bg-[var(--surface-raised)] rounded-lg p-3 hover:bg-[var(--surface-raised)] transition-colors cursor-pointer group"
               onClick={() =>
                 service.goToLocation(highlight.selectionAnchor.start)
               }
@@ -118,8 +118,8 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
             return (
               <div
                 key={bookmark.id}
-                className={`bg-slate-800/50 rounded-lg p-3 transition-colors cursor-pointer group flex items-start justify-between ${
-                  isCurrent ? "ring-1 ring-indigo-500" : "hover:bg-slate-800"
+                className={`bg-[var(--surface-raised)] rounded-lg p-3 transition-colors cursor-pointer group flex items-start justify-between ${
+                  isCurrent ? "ring-1 ring-indigo-500" : "hover:bg-[var(--surface-raised)]"
                 }`}
                 onClick={() => service.goToLocation(bookmark.anchor)}
               >

@@ -37,7 +37,7 @@ export function SkeletonLoader({
 
 export function BookCardSkeleton() {
   return (
-    <div className="glass rounded-2xl overflow-hidden border border-white/5 p-4">
+    <div className="glass rounded-2xl overflow-hidden border border-[var(--border-subtle)] p-4">
       <SkeletonLoader variant="card" className="mb-4" />
       <SkeletonLoader variant="text" className="mb-2" />
       <SkeletonLoader variant="text" className="w-3/4 mb-4" />

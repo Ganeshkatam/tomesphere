@@ -32,9 +32,9 @@ export function NoteEditor({ onSave, onCancel }: NoteEditorProps) {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-white/10 shadow-2xl z-50 animate-in slide-in-from-bottom">
+    <div className="fixed bottom-0 left-0 right-0 bg-[var(--surface-raised)] border-t border-[var(--border-default)] shadow-2xl z-50 animate-in slide-in-from-bottom">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-white/5">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border-subtle)]">
         <span className="text-sm font-medium text-slate-300">
           {isEditing ? "Edit Note" : "New Note"}
         </span>

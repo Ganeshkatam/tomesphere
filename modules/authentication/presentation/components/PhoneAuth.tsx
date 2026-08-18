@@ -71,7 +71,7 @@ export default function PhoneAuth() {
               placeholder="+1234567890"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-800 transition-all placeholder:text-slate-600"
+              className="w-full bg-[var(--surface-default)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:bg-[var(--surface-raised)] transition-all placeholder:text-slate-600"
               required
             />
           </div>
@@ -100,7 +100,7 @@ export default function PhoneAuth() {
               placeholder="123456"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-800 transition-all placeholder:text-slate-600 text-center tracking-widest text-lg"
+              className="w-full bg-[var(--surface-default)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:bg-[var(--surface-raised)] transition-all placeholder:text-slate-600 text-center tracking-widest text-lg"
               required
             />
           </div>

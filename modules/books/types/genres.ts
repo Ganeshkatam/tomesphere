@@ -1,53 +1,39 @@
-// Comprehensive list of all book genres curated for TomeSphere
+// Canonical list of all normalized book genres for TomeSphere
 export const ALL_GENRES = [
-  "Fiction",
-  "Non-Fiction",
-  "Science",
-  "Technology",
-  "History",
-  "Business",
-  "Philosophy",
-  "Psychology",
-  "Education",
-  "Mystery & Thriller",
-  "Science Fiction",
-  "Fantasy",
-  "Romance",
+  "Art",
   "Biography",
-  "Poetry & Art",
-];
+  "Computer Science",
+  "Cybersecurity",
+  "Drawing",
+  "Education",
+  "Fiction",
+  "General",
+  "Health",
+  "History",
+  "Mathematics",
+  "Motivation",
+  "Novels",
+  "Philosophy",
+  "Programming",
+  "Science",
+  "Spirituality",
+  "Vedic Mathematics",
+  "Yoga",
+] as const;
 
-// Genre icons mapping
-const GENRE_ICONS: Record<string, string> = {
-  Fiction: "📚",
-  "Non-Fiction": "📖",
-  Science: "🔬",
-  Technology: "💻",
-  History: "🏛️",
-  Business: "💼",
-  Philosophy: "🤔",
-  Psychology: "🧠",
-  Education: "🎓",
-  "Mystery & Thriller": "🔍",
-  "Science Fiction": "🚀",
-  Fantasy: "🐉",
-  Romance: "💕",
-  Biography: "👤",
-  "Poetry & Art": "🎨",
-};
+export type GenreName = (typeof ALL_GENRES)[number];
 
-// Get genre config with icon and label
-export function getGenreConfig(genre: string): { icon: string; label: string } {
+// Get genre config with label
+export function getGenreConfig(genre: string): { label: string } {
   return {
-    icon: GENRE_ICONS[genre] || "📕",
     label: genre,
   };
 }
 
 // Get all genres
 export function getAllGenres(): string[] {
-  return ALL_GENRES;
+  return [...ALL_GENRES];
 }
 
-// Export deduplicated array to prevent React duplicate key warnings
+// Export deduplicated array
 export default [...new Set(ALL_GENRES)] as string[];

@@ -85,7 +85,7 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
       </button>
 
       {menuOpen && (
-        <div className="absolute top-12 right-0 w-64 bg-slate-800 border border-slate-700 rounded-lg shadow-xl p-4 flex flex-col gap-4 z-50">
+        <div className="absolute top-12 right-0 w-64 bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-lg shadow-xl p-4 flex flex-col gap-4 z-50">
           <div>
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">
               Theme

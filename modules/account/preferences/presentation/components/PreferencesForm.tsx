@@ -161,7 +161,7 @@ export function PreferencesForm({
                   {
                     id: "dark",
                     label: "Dark",
-                    color: "bg-slate-900 text-slate-100 border-slate-700",
+                    color: "bg-[var(--surface-default)] text-slate-100 border-[var(--border-default)]",
                   },
                 ].map((theme) => (
                   <button

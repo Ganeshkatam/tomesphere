@@ -114,7 +114,7 @@ export function CommandPalette() {
     <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center pt-[20vh]">
       <div className="glass-card w-full max-w-2xl rounded-2xl overflow-hidden">
         {/* Search Input */}
-        <div className="flex items-center gap-3 p-4 border-b border-white/10">
+        <div className="flex items-center gap-3 p-4 border-b border-[var(--border-default)]">
           <Command size={20} className="text-primary" />
           <input
             type="text"
@@ -155,7 +155,7 @@ export function CommandPalette() {
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-white/10 text-xs text-slate-400 flex items-center justify-between">
+        <div className="p-3 border-t border-[var(--border-default)] text-xs text-slate-400 flex items-center justify-between">
           <span>Use ↑↓ to navigate</span>
           <span>⏎ to select</span>
         </div>

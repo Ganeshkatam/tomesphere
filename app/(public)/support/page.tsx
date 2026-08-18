@@ -53,7 +53,7 @@ export default async function SupportPage() {
                     {items.map((faq: any) => (
                       <details
                         key={faq.id}
-                        className="group glass-card rounded-2xl border border-white/5 overflow-hidden transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_20px_rgba(99,102,241,0.1)] open:border-indigo-500/30 open:shadow-[0_0_20px_rgba(99,102,241,0.1)]"
+                        className="group glass-card rounded-2xl border border-[var(--border-subtle)] overflow-hidden transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_20px_rgba(99,102,241,0.1)] open:border-indigo-500/30 open:shadow-[0_0_20px_rgba(99,102,241,0.1)]"
                       >
                         <summary className="flex items-center justify-between p-6 cursor-pointer select-none">
                           <h3 className="text-lg font-medium text-slate-200 group-hover:text-white transition-colors pr-6">
@@ -75,7 +75,7 @@ export default async function SupportPage() {
             )}
 
             {(!faqs || faqs.length === 0) && (
-              <div className="text-center py-12 glass-strong rounded-3xl border border-white/5">
+              <div className="text-center py-12 glass-strong rounded-3xl border border-[var(--border-subtle)]">
                 <p className="text-slate-400">
                   No FAQs available at the moment.
                 </p>
@@ -85,7 +85,7 @@ export default async function SupportPage() {
 
           {/* Contact Sidebar */}
           <div className="space-y-6">
-            <div className="glass-strong rounded-3xl p-8 border border-white/5 relative overflow-hidden">
+            <div className="glass-strong rounded-3xl p-8 border border-[var(--border-subtle)] relative overflow-hidden">
               <div className="absolute top-0 right-0 p-32 bg-indigo-500/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
               <h3 className="text-xl font-bold text-white mb-4">
@@ -99,7 +99,7 @@ export default async function SupportPage() {
               <div className="space-y-4">
                 <a
                   href="mailto:support@tomesphere.app"
-                  className="flex items-center justify-center gap-3 w-full py-4 px-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white font-medium transition-all group"
+                  className="flex items-center justify-center gap-3 w-full py-4 px-6 bg-white/5 hover:bg-white/10 border border-[var(--border-default)] rounded-xl text-white font-medium transition-all group"
                 >
                   <Mail className="w-5 h-5 text-indigo-400 group-hover:scale-110 transition-transform" />
                   Email Support
@@ -111,7 +111,7 @@ export default async function SupportPage() {
               </div>
             </div>
 
-            <div className="glass-card rounded-3xl p-8 border border-white/5">
+            <div className="glass-card rounded-3xl p-8 border border-[var(--border-subtle)]">
               <h3 className="text-lg font-medium text-white mb-2">
                 Response Time
               </h3>

@@ -68,7 +68,7 @@ export default function PWAUpdatePrompt() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 max-w-sm">
-      <div className="glass-strong rounded-xl p-4 shadow-2xl border border-white/20 animate-slide-up">
+      <div className="glass-strong rounded-xl p-4 shadow-2xl border border-[var(--border-strong)] animate-slide-up">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
             <Sparkles className="text-white" size={20} />

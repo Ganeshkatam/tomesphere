@@ -53,7 +53,7 @@ export default function VerificationStatus() {
     return <div className="h-20 animate-pulse bg-white/5 rounded-xl" />;
 
   return (
-    <div className="glass rounded-xl p-6 border border-white/10 space-y-4">
+    <div className="glass rounded-xl p-6 border border-[var(--border-default)] space-y-4">
       <h3 className="text-lg font-bold flex items-center gap-2">
         <RefreshCw size={18} className="text-primary" />
         Verification Status

@@ -121,7 +121,7 @@ export default function MFASetup() {
   }
 
   return (
-    <div className="p-6 bg-slate-900/50 border border-white/10 rounded-xl space-y-6">
+    <div className="p-6 bg-[var(--surface-default)] border border-[var(--border-default)] rounded-xl space-y-6">
       <div className="flex items-start gap-4">
         <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 shrink-0">
           <Shield size={24} />
@@ -192,7 +192,7 @@ export default function MFASetup() {
                   setVerifyCode(e.target.value.replace(/[^0-9]/g, ""))
                 }
                 placeholder="000 000"
-                className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white text-center font-mono text-xl tracking-widest focus:outline-none focus:border-primary"
+                className="flex-1 bg-white/5 border border-[var(--border-default)] rounded-lg px-4 py-2 text-white text-center font-mono text-xl tracking-widest focus:outline-none focus:border-primary"
               />
               <button
                 onClick={handleVerify}

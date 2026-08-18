@@ -96,7 +96,7 @@ export default function SignupClient() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 sm:p-8 relative">
+    <div className="min-h-screen bg-[var(--surface-canvas)] flex items-center justify-center p-4 sm:p-8 relative">
       {/* ── Ambient background ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Noise texture overlay */}
@@ -327,7 +327,7 @@ export default function SignupClient() {
                 type="button"
                 onClick={handleGoogleSignUp}
                 disabled={loading}
-                className="w-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white h-[54px] rounded-xl font-medium text-sm flex items-center justify-center gap-3 transition-all"
+                className="w-full bg-white/5 hover:bg-white/10 border border-[var(--border-default)] hover:border-[var(--border-strong)] text-white h-[54px] rounded-xl font-medium text-sm flex items-center justify-center gap-3 transition-all"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -353,7 +353,7 @@ export default function SignupClient() {
           </div>
 
           {/* Footer sign up & legal links */}
-          <div className="space-y-5 mt-8 border-t border-white/5 pt-6 text-center">
+          <div className="space-y-5 mt-8 border-t border-[var(--border-subtle)] pt-6 text-center">
             <div className="text-slate-500 text-xs">
               Already have an account?{" "}
               <Link

@@ -185,12 +185,12 @@ export default function SearchSuggestions({
 
   return (
     <div
-      className={`absolute top-full left-0 right-0 mt-2 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden ${className}`}
+      className={`absolute top-full left-0 right-0 mt-2 bg-[var(--surface-default)] backdrop-blur-xl border border-[var(--border-default)] rounded-xl shadow-2xl z-50 overflow-hidden ${className}`}
       onKeyDown={handleKeyDown}
     >
       {loading ? (
         <div className="p-4 text-center text-slate-400 text-sm">
-          <div className="inline-block w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
+          <div className="inline-block w-4 h-4 border-2 border-[var(--border-strong)] border-t-white rounded-full animate-spin mr-2" />
           Searching...
         </div>
       ) : (
@@ -240,7 +240,7 @@ export default function SearchSuggestions({
             </li>
           ))}
           {suggestions.length > 0 && (
-            <li className="border-t border-white/5 mt-1 pt-1">
+            <li className="border-t border-[var(--border-subtle)] mt-1 pt-1">
               <button
                 onClick={() => onSelect && onSelect(query, "genre")}
                 className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-white/10 text-left transition-colors text-xs text-slate-400 hover:text-white"

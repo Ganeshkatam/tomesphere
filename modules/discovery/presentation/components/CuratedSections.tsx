@@ -160,7 +160,7 @@ export default function HomeCuratedSections({
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all duration-300 flex items-center gap-1.5 ${
                     active
                       ? "bg-indigo-600 border-indigo-500 text-white shadow-[0_0_16px_rgba(99,102,241,0.45)]"
-                      : "bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20"
+                      : "bg-white/5 border-[var(--border-default)] text-slate-400 hover:text-white hover:bg-white/10 hover:border-[var(--border-strong)]"
                   }`}
                 >
                   <span>{icon}</span>
@@ -219,7 +219,7 @@ export default function HomeCuratedSections({
         <div className="flex justify-center mt-10">
           <a
             href="/discover"
-            className="group flex items-center gap-2 px-8 py-3.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 hover:border-indigo-500/40 text-white font-semibold text-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+            className="group flex items-center gap-2 px-8 py-3.5 rounded-full border border-[var(--border-default)] bg-white/5 hover:bg-white/10 hover:border-indigo-500/40 text-white font-semibold text-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)]"
           >
             <span>Browse all {getCount(activeSubject)} books</span>
             <ArrowRight

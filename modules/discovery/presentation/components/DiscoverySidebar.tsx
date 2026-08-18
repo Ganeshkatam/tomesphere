@@ -39,7 +39,7 @@ export default function HomeSidebar({ userStats }: HomeSidebarProps) {
       <RecentlyViewed />
 
       {/* Today's Progress */}
-      <div className="bg-slate-900/50 rounded-xl p-6 border border-white/5">
+      <div className="bg-[var(--surface-default)] rounded-xl p-6 border border-[var(--border-subtle)]">
         <h3 className="font-bold text-white mb-4 flex items-center gap-2">
           <Trophy className="text-amber-400" size={18} />
           Today&apos;s Progress
@@ -85,7 +85,7 @@ export default function HomeSidebar({ userStats }: HomeSidebarProps) {
       </div>
 
       {/* Quick Stats */}
-      <div className="bg-slate-900/50 rounded-xl p-6 border border-white/5">
+      <div className="bg-[var(--surface-default)] rounded-xl p-6 border border-[var(--border-subtle)]">
         <h3 className="font-bold text-white mb-4">Quick Stats</h3>
         <div className="space-y-4">
           <div className="flex justify-between items-center">

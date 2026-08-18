@@ -166,7 +166,7 @@ export default function UniversalFileUpload({
             value={urlInput}
             onChange={(e) => setUrlInput(e.target.value)}
             placeholder="https://example.com/file.pdf"
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+            className="w-full bg-white/5 border border-[var(--border-default)] rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
           />
           <button
             type="button"
@@ -196,7 +196,7 @@ export default function UniversalFileUpload({
           className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
             error
               ? "border-red-500/50 bg-red-500/5"
-              : "border-white/20 bg-white/5 hover:border-indigo-500/50 hover:bg-white/10"
+              : "border-[var(--border-strong)] bg-white/5 hover:border-indigo-500/50 hover:bg-white/10"
           }`}
         >
           <input
@@ -240,7 +240,7 @@ export default function UniversalFileUpload({
 
       {/* File Upload Mode - Uploaded State */}
       {uploadMode === "file" && uploadedFile && (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+        <div className="bg-white/5 border border-[var(--border-default)] rounded-xl p-4">
           <div className="flex items-center gap-4">
             {/* File Icon */}
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-600 to-emerald-600 flex items-center justify-center text-2xl flex-shrink-0">
