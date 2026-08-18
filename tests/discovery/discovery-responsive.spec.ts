@@ -12,7 +12,7 @@ test.describe('Discovery Responsive Stability', () => {
     test(`No horizontal overflow at ${vp.width}x${vp.height} on Torture Test`, async ({ page }) => {
       await page.setViewportSize(vp);
       // We run against the torture test to ensure missing data doesn't break layout
-      await page.goto('/exp/discovery');
+      await page.goto('/discover');
       
       const isOverflowing = await page.evaluate(() => {
         return document.documentElement.scrollWidth > document.documentElement.clientWidth;
