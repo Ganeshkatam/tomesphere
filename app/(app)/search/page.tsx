@@ -71,14 +71,14 @@ export default async function SearchPage({
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-16 h-16 bg-slate-100 dark:bg-[var(--surface-raised)] rounded-full flex items-center justify-center mb-4">
-                <Frown className="w-8 h-8 text-slate-400" />
+              <div className="w-16 h-16 bg-[var(--surface-raised)] rounded-full flex items-center justify-center mb-4">
+                <Frown className="w-8 h-8 text-[var(--text-tertiary)]" />
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="text-xl font-semibold text-[var(--text-primary)]">
                 No results found
               </h3>
-              <p className="text-slate-500 mt-2 max-w-md">
-                We couldn't find any books matching "{query}". Try checking your spelling or using more general terms.
+              <p className="text-[var(--text-secondary)] mt-2 max-w-md">
+                We couldn&apos;t find any books matching &quot;{query}&quot;. Try checking your spelling or using more general terms.
               </p>
             </div>
           )}
@@ -99,10 +99,10 @@ export default async function SearchPage({
                   <a
                     key={pageNum}
                     href={`/search?${params.toString()}`}
-                    className={`w-10 h-10 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${
+                    className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-semibold transition-colors ${
                       pageNum === request.page
-                        ? "bg-primary text-white"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-[var(--surface-raised)] dark:text-slate-300 dark:hover:bg-[var(--surface-overlay)]"
+                        ? "bg-indigo-600 text-white"
+                        : "bg-[var(--surface-raised)] text-[var(--text-primary)] hover:bg-[var(--surface-overlay)] border border-[var(--border-subtle)]"
                     }`}
                   >
                     {pageNum}

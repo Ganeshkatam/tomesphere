@@ -9,7 +9,6 @@ import {
   sendMagicLinkServer,
   verifyMagicLinkServer,
   getMFAStatus,
-  verifyMFA,
 } from "@/modules/authentication/presentation/actions/auth";
 import { showError, showSuccess } from "@/lib/toast";
 import {
@@ -17,52 +16,33 @@ import {
   Mail,
   Smartphone,
   ArrowRight,
-  Globe,
   ChevronDown,
   Sparkles,
   BookOpen,
-  Check,
-  Shield,
-  RefreshCw,
   Eye,
   EyeOff,
-  PenTool,
-  CheckSquare,
-  FileText,
 } from "lucide-react";
 
 const COUNTRY_CODES = [
-  { code: "+91", country: "India", flag: "🇮🇳" },
-  { code: "+1", country: "USA", flag: "🇺🇸" },
-  { code: "+44", country: "UK", flag: "🇬🇧" },
-  { code: "+86", country: "China", flag: "🇨🇳" },
-  { code: "+81", country: "Japan", flag: "🇯🇵" },
-  { code: "+49", country: "Germany", flag: "🇩🇪" },
-  { code: "+33", country: "France", flag: "🇫🇷" },
-  { code: "+61", country: "Australia", flag: "🇦🇺" },
-  { code: "+971", country: "UAE", flag: "🇦🇪" },
-  { code: "+65", country: "Singapore", flag: "🇸🇬" },
+  { code: "+91", country: "India" },
+  { code: "+1", country: "USA" },
+  { code: "+44", country: "UK" },
+  { code: "+86", country: "China" },
+  { code: "+81", country: "Japan" },
+  { code: "+49", country: "Germany" },
+  { code: "+33", country: "France" },
+  { code: "+61", country: "Australia" },
+  { code: "+971", country: "UAE" },
+  { code: "+65", country: "Singapore" },
 ];
 
-const LEFT_FEATURES = [
-  { icon: BookOpen, label: "Your books, always accessible" },
-  { icon: Sparkles, label: "Highlights saved across sessions" },
-  { icon: PenTool, label: "Notes connected to your reading" },
-  { icon: CheckSquare, label: "Flashcards built from your annotations" },
-  { icon: FileText, label: "Citations generated automatically" },
-];
 
-const TRUST_SIGNALS = [
-  { icon: Shield, label: "Secure authentication" },
-  { icon: RefreshCw, label: "Sync across all devices" },
-  { icon: Lock, label: "Your reading data stays private" },
-];
 
 /* ──────────────────────────────────────────
    Shared input class
 ────────────────────────────────────────── */
 const inputCls =
-  "w-full bg-[var(--surface-raised)] border border-[var(--border-default)] text-slate-50 placeholder-slate-500 rounded-xl px-4 py-3.5 pl-12 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/40 transition-all text-sm";
+  "w-full bg-[var(--surface-raised)] border border-[var(--border-default)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] rounded-xl px-4 py-3.5 pl-12 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/40 transition-all text-sm";
 const btnCls =
   "w-full h-[54px] rounded-xl font-semibold text-sm flex items-center justify-center gap-2 group transition-all duration-200 disabled:opacity-50 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-[0_4px_20px_rgba(99,102,241,0.25)] active:scale-[0.99]";
 
@@ -316,14 +296,14 @@ export default function EnhancedLoginPage() {
             href="/"
             className="flex items-center gap-3 group w-fit relative z-10"
           >
-            <span className="text-3xl group-hover:scale-105 transition-transform">
-              📚
-            </span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+              <BookOpen size={22} />
+            </div>
             <div>
-              <span className="text-lg font-display font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              <span className="text-lg font-display font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
                 TomeSphere
               </span>
-              <p className="text-[9px] font-semibold text-slate-500 uppercase tracking-[0.2em] mt-2">
+              <p className="text-[9px] font-semibold text-[var(--text-tertiary)] uppercase tracking-[0.2em] mt-0.5">
                 READ • LEARN • REMEMBER
               </p>
             </div>
@@ -332,14 +312,14 @@ export default function EnhancedLoginPage() {
           {/* Features & Copy */}
           <div className="space-y-6 relative z-10">
             <div className="space-y-3">
-              <h1 className="text-3xl sm:text-4xl font-display font-bold leading-tight text-slate-50">
+              <h1 className="text-3xl sm:text-4xl font-display font-bold leading-tight text-[var(--text-primary)]">
                 Read Smarter.
                 <br />
                 <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent dark:from-slate-100 dark:via-slate-200 dark:to-indigo-300">
                   Remember More.
                 </span>
               </h1>
-              <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
+              <p className="text-[var(--text-secondary)] text-sm leading-relaxed max-w-sm">
                 Access your library, notes, highlights, and study plans in one
                 unified space.
               </p>
@@ -419,27 +399,27 @@ export default function EnhancedLoginPage() {
           <div className="space-y-6 w-full mx-auto my-auto">
             {/* Header */}
             <div>
-              <h2 className="text-2xl font-bold text-slate-50 mb-1">
+              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-1">
                 Welcome Back
               </h2>
-              <p className="text-slate-400 text-xs leading-relaxed">
+              <p className="text-[var(--text-secondary)] text-xs leading-relaxed">
                 Continue where you left off.
               </p>
             </div>
 
             {/* Auth mode segmented control */}
             {step === "input" && (
-              <div className="flex p-1 bg-white/5 rounded-xl relative">
+              <div className="flex p-1 bg-[var(--surface-raised)] rounded-xl relative border border-[var(--border-subtle)]">
                 <button
                   onClick={() => setAuthMode("password")}
-                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${authMode === "password" ? "bg-white/10 text-white shadow-sm border border-[var(--border-subtle)]" : "text-slate-400/60 hover:text-white"}`}
+                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${authMode === "password" ? "bg-[var(--surface-default)] text-[var(--text-primary)] shadow-xs border border-[var(--border-subtle)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`}
                   type="button"
                 >
                   Password
                 </button>
                 <button
                   onClick={() => setAuthMode("magic")}
-                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${authMode === "magic" ? "bg-white/10 text-white shadow-sm border border-[var(--border-subtle)]" : "text-slate-400/60 hover:text-white"}`}
+                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${authMode === "magic" ? "bg-[var(--surface-default)] text-[var(--text-primary)] shadow-xs border border-[var(--border-subtle)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`}
                   type="button"
                 >
                   <Sparkles size={11} /> Magic Link
@@ -454,12 +434,12 @@ export default function EnhancedLoginPage() {
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                     {isPhone ? (
                       <Smartphone
-                        className="text-slate-500 group-focus-within:text-indigo-400 transition-colors"
+                        className="text-[var(--text-tertiary)] group-focus-within:text-indigo-500 transition-colors"
                         size={16}
                       />
                     ) : (
                       <Mail
-                        className="text-slate-500 group-focus-within:text-indigo-400 transition-colors"
+                        className="text-[var(--text-tertiary)] group-focus-within:text-indigo-500 transition-colors"
                         size={16}
                       />
                     )}
@@ -472,14 +452,8 @@ export default function EnhancedLoginPage() {
                           onClick={() =>
                             setShowCountryDropdown(!showCountryDropdown)
                           }
-                          className="h-full px-3 bg-white/5 border-y border-l border-[var(--border-default)] rounded-l-xl text-slate-300 hover:text-white flex items-center gap-1 text-sm transition-colors"
+                          className="h-full px-3 bg-[var(--surface-raised)] border-y border-l border-[var(--border-default)] rounded-l-xl text-[var(--text-primary)] hover:bg-[var(--surface-overlay)] flex items-center gap-1 text-sm transition-colors"
                         >
-                          <span>
-                            {
-                              COUNTRY_CODES.find((c) => c.code === countryCode)
-                                ?.flag
-                            }
-                          </span>
                           <span>{countryCode}</span>
                           <ChevronDown size={12} />
                         </button>
@@ -493,10 +467,10 @@ export default function EnhancedLoginPage() {
                                   setCountryCode(c.code);
                                   setShowCountryDropdown(false);
                                 }}
-                                className="w-full px-4 py-2.5 text-left hover:bg-white/10 flex items-center gap-3 transition-colors text-sm"
+                                className="w-full px-4 py-2.5 text-left hover:bg-[var(--surface-raised)] flex items-center gap-3 transition-colors text-sm"
                               >
-                                <span className="text-lg">{c.flag}</span>
-                                <span className="text-slate-300">
+                                <span className="font-semibold text-[var(--text-primary)]">{c.code}</span>
+                                <span className="text-[var(--text-secondary)]">
                                   {c.country}
                                 </span>
                                 <span className="ml-auto text-slate-500 text-xs">

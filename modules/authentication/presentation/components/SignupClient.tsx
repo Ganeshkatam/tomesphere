@@ -33,7 +33,7 @@ const TRUST_SIGNALS = [
 ];
 
 const inputCls =
-  "w-full bg-[var(--surface-raised)] border border-[var(--border-default)] text-slate-50 placeholder-slate-500 rounded-xl px-4 py-3.5 pl-12 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/40 transition-all text-sm";
+  "w-full bg-[var(--surface-raised)] border border-[var(--border-default)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] rounded-xl px-4 py-3.5 pl-12 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/40 transition-all text-sm";
 const btnCls =
   "w-full h-[54px] rounded-xl font-semibold text-sm flex items-center justify-center gap-2 group transition-all duration-200 disabled:opacity-50 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-[0_4px_20px_rgba(99,102,241,0.25)] active:scale-[0.99]";
 
@@ -226,10 +226,10 @@ export default function SignupClient() {
           <div className="space-y-6 w-full mx-auto my-auto">
             {/* Header */}
             <div>
-              <h2 className="text-2xl font-bold text-slate-50 mb-1">
+              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-1">
                 Create Account
               </h2>
-              <p className="text-slate-400 text-xs leading-relaxed">
+              <p className="text-[var(--text-secondary)] text-xs leading-relaxed">
                 Start your learning journey.
               </p>
             </div>

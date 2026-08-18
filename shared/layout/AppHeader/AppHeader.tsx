@@ -21,7 +21,7 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full bg-[var(--surface-default)]/90 backdrop-blur-md border-b border-[var(--border-default)] transition-colors duration-200 ${className}`}
+      className={`sticky top-0 z-50 w-full bg-[var(--surface-default)]/98 backdrop-blur-md border-b border-[var(--border-default)] shadow-2xs transition-colors duration-200 ${className}`}
       id="top-nav"
     >
       {/* Upper Tier */}
@@ -29,12 +29,12 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 text-xl font-bold text-[var(--text-primary)] hover:opacity-90 transition-opacity flex-shrink-0"
+          className="flex items-center gap-2.5 text-xl font-extrabold text-[var(--text-primary)] hover:opacity-90 transition-opacity flex-shrink-0"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 font-bold">
             <BookOpen size={20} />
           </div>
-          <span className="tracking-tight font-display">TomeSphere</span>
+          <span className="tracking-tight font-display font-extrabold">TomeSphere</span>
         </Link>
 
         {/* Middle Section (Search for Application, Navigation for Marketing) */}
@@ -43,7 +43,7 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
             <div className="w-full relative flex items-center bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-xl px-4 py-2 transition-all focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
               <Search size={18} className="text-[var(--text-tertiary)] mr-3 flex-shrink-0" />
               <input
-                className="bg-transparent border-none focus:outline-none w-full text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                className="bg-transparent border-none focus:outline-none w-full text-sm font-medium text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                 placeholder="Search digital archives..."
                 type="text"
               />
@@ -53,26 +53,26 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
             <nav className="hidden md:flex items-center gap-8">
               <Link
                 href="/about"
-                className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                className="text-sm font-semibold text-[var(--text-primary)] hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
                 About
               </Link>
               <Link
                 href="/discover"
-                className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                className="text-sm font-semibold text-[var(--text-primary)] hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
                 Browse Books
               </Link>
               <Link
                 href="/support"
-                className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                className="text-sm font-semibold text-[var(--text-primary)] hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
                 Support
               </Link>
             </nav>
           )}
           {variant === "reader" && (
-            <div className="flex items-center text-[var(--text-secondary)] text-sm font-medium">
+            <div className="flex items-center text-[var(--text-primary)] text-sm font-semibold">
               <span>Reader Mode</span>
             </div>
           )}
@@ -84,7 +84,7 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] border border-[var(--border-subtle)] transition-colors"
+            className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
           >
             {resolvedTheme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
           </button>
@@ -93,7 +93,7 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
             <>
               <button
                 aria-label="Notifications"
-                className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] border border-[var(--border-subtle)] transition-colors"
+                className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
               >
                 <Bell size={18} />
               </button>
@@ -105,7 +105,7 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
                 <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
                   <User size={16} />
                 </div>
-                <span className="text-sm font-medium text-[var(--text-primary)] hidden sm:block">
+                <span className="text-sm font-semibold text-[var(--text-primary)] hidden sm:block">
                   Account
                 </span>
               </Link>
@@ -114,13 +114,13 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
             <div className="flex items-center gap-3">
               <Link
                 href="/login"
-                className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-3 py-2 transition-colors"
+                className="text-sm font-semibold text-[var(--text-primary)] hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-2 transition-colors"
               >
                 Sign In
               </Link>
               <Link
                 href="/signup"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-sm transition-all"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-sm transition-all"
               >
                 Join TomeSphere
               </Link>
@@ -136,13 +136,13 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
             <nav className="flex items-center gap-8 h-full">
               <Link
                 href="/discover"
-                className="text-sm font-medium h-full flex items-center text-indigo-500 border-b-2 border-indigo-500"
+                className="text-sm font-bold h-full flex items-center text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
               >
                 Discover
               </Link>
               <Link
                 href="/library"
-                className="text-sm font-medium h-full flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors border-b-2 border-transparent hover:border-[var(--border-default)]"
+                className="text-sm font-semibold h-full flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors border-b-2 border-transparent hover:border-[var(--border-default)]"
               >
                 Library
               </Link>

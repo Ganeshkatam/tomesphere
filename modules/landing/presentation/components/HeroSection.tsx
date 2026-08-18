@@ -31,7 +31,7 @@ export default function HeroSection({
       className="relative pt-16 pb-16 sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-24 overflow-hidden min-h-[70vh] flex items-center justify-center z-10"
     >
       {/* Full-screen library background illustration */}
-      <div className="absolute inset-0 w-full h-full opacity-35 z-0 pointer-events-none">
+      <div className="absolute inset-0 w-full h-full opacity-80 z-0 pointer-events-none">
         <Image
           src="/library_bg.png"
           alt="Digital library backdrop"
@@ -39,32 +39,19 @@ export default function HeroSection({
           className="object-cover object-center"
           priority
         />
-        {/* Theme-aware overlay gradient to ensure text readability */}
+        {/* Smooth natural bottom fade into page canvas without harsh top shadow band */}
         <div
-          className="absolute inset-0"
-          style={{ backgroundImage: "var(--hero-overlay)" }}
-        />
-      </div>
-
-      {/* Background Gradients */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-[2000px] pointer-events-none z-10">
-        <div
-          className="absolute top-20 left-10 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[100px] animate-pulse"
-          style={{ animationDuration: "4s" }}
-        />
-        <div
-          className="absolute top-40 right-10 w-[400px] h-[400px] bg-purple-500/10 rounded-full blur-[100px] animate-pulse"
-          style={{ animationDuration: "6s", animationDelay: "1s" }}
+          className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--surface-canvas)]"
         />
       </div>
 
       <div className="w-full max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
         <FadeIn className="text-center w-full mx-auto relative" delay={0.2}>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-5 leading-[1.1] tracking-tight text-[var(--text-primary)]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-5 leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
             Search 250,000+ Books
           </h1>
 
-          <p className="text-base sm:text-lg mb-10 text-balance max-w-2xl mx-auto leading-relaxed text-[var(--text-secondary)]">
+          <p className="text-base sm:text-lg mb-10 text-balance max-w-2xl mx-auto leading-relaxed text-slate-100 font-medium drop-shadow-[0_1px_8px_rgba(0,0,0,0.85)]">
             Explore our massive catalog of fiction, history, science, and more.
           </p>
 
@@ -73,11 +60,11 @@ export default function HeroSection({
             <SlideUp className="w-full" delay={0.4}>
               <div className="relative group">
                 <div
-                  className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-3xl opacity-20 group-hover:opacity-40 blur transition duration-500"
+                  className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-3xl opacity-30 group-hover:opacity-60 blur transition duration-500"
                 />
 
                 <div
-                  className="relative flex flex-row items-center gap-2 sm:gap-4 p-2 sm:p-2.5 rounded-2xl bg-[var(--surface-default)] border border-[var(--border-default)] shadow-2xl focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500"
+                  className="relative flex flex-row items-center gap-2 sm:gap-4 p-2 sm:p-2.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-white/40 dark:border-slate-700/80 shadow-2xl shadow-black/40 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/40"
                 >
                   {/* Search Input Container */}
                   <div
@@ -85,7 +72,7 @@ export default function HeroSection({
                     className="relative flex-1 group/input flex items-center h-12 sm:h-14"
                   >
                     <div className="absolute inset-y-0 left-3 sm:left-4 flex items-center pointer-events-none">
-                      <Search size={20} className="text-[var(--text-tertiary)] group-focus-within/input:text-indigo-500 transition-colors" />
+                      <Search size={20} className="text-slate-500 dark:text-slate-400 group-focus-within/input:text-indigo-600 dark:group-focus-within/input:text-indigo-400 transition-colors" />
                     </div>
                     <input
                       type="text"
@@ -95,7 +82,7 @@ export default function HeroSection({
                         if (e.key === "Enter") handleSearch();
                       }}
                       placeholder="Search titles, authors, or topics..."
-                      className="w-full h-full pl-10 sm:pl-12 pr-10 sm:pr-14 bg-transparent border-none text-base sm:text-lg text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-0 transition-all font-sans"
+                      className="w-full h-full pl-10 sm:pl-12 pr-10 sm:pr-14 bg-transparent border-none text-base sm:text-lg text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-0 transition-all font-sans"
                     />
 
                     {/* Voice Input */}
@@ -104,7 +91,7 @@ export default function HeroSection({
                         onTranscript={(text) => {
                           setSearchQuery(text);
                         }}
-                        className="p-1 sm:p-2 hover:bg-[var(--surface-overlay)] rounded-full transition-colors text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+                        className="p-1 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                       />
                     </div>
 
@@ -126,7 +113,7 @@ export default function HeroSection({
                   {/* Search Button */}
                   <button
                     onClick={handleSearch}
-                    className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-md shadow-indigo-500/20 active:scale-95 whitespace-nowrap shrink-0 transition-all duration-200 h-11 sm:h-12 px-5 sm:px-7 text-sm sm:text-base"
+                    className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-md shadow-indigo-500/20 active:scale-95 whitespace-nowrap shrink-0 transition-all duration-200 h-11 sm:h-12 px-5 sm:px-7 text-sm sm:text-base cursor-pointer"
                   >
                     <span className="hidden sm:inline">Explore</span>
                     <span className="sm:hidden">Go</span>
@@ -138,10 +125,10 @@ export default function HeroSection({
 
           {/* Quick Command Filters */}
           <SlideUp
-            className="w-full max-w-3xl mx-auto mt-6 px-4 sm:px-0 flex flex-wrap items-center gap-2 justify-center text-xs"
+            className="w-full max-w-3xl mx-auto mt-6 px-4 sm:px-0 flex flex-wrap items-center gap-2.5 justify-center text-xs"
             delay={0.5}
           >
-            <span className="font-semibold text-[var(--text-tertiary)] mr-1">Browse:</span>
+            <span className="font-semibold text-white/95 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)] mr-1">Browse:</span>
             {["Fiction", "Science", "History", "Technology", "Biography", "Fantasy"].map(
               (topic) => (
                 <button
@@ -152,7 +139,7 @@ export default function HeroSection({
                       `/discover/search?q=${encodeURIComponent(topic)}`,
                     );
                   }}
-                  className="px-3 py-1 rounded-full bg-[var(--surface-default)] hover:bg-[var(--surface-raised)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:text-indigo-500 transition-all shadow-xs"
+                  className="px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 border border-white/50 dark:border-slate-600 text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-all shadow-md backdrop-blur-xs cursor-pointer active:scale-95"
                 >
                   {topic}
                 </button>

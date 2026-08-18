@@ -95,7 +95,7 @@ export function GlobalSearchInput() {
       </form>
 
       {isOpen && query.trim().length >= 2 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[var(--surface-default)] rounded-lg shadow-xl border border-slate-200 dark:border-[var(--border-default)] overflow-hidden z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface-default)] rounded-xl shadow-xl border border-[var(--border-default)] overflow-hidden z-50">
           {suggestions.length > 0 ? (
             <div className="max-h-[60vh] overflow-y-auto">
               {suggestions.map((suggestion, idx) => (
@@ -103,17 +103,17 @@ export function GlobalSearchInput() {
                   key={`${suggestion.url}-${idx}`}
                   href={suggestion.url}
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center px-4 py-3 hover:bg-slate-50 dark:hover:bg-[var(--surface-raised)] transition-colors border-b border-slate-100 dark:border-[var(--border-default)]/50 last:border-0"
+                  className="flex items-center px-4 py-3 hover:bg-[var(--surface-raised)] transition-colors border-b border-[var(--border-subtle)] last:border-0"
                 >
-                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-[var(--surface-raised)] flex items-center justify-center text-slate-500 mr-3 shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[var(--surface-raised)] flex items-center justify-center text-[var(--text-tertiary)] mr-3 shrink-0">
                     {getIcon(suggestion.type)}
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+                    <span className="text-sm font-medium text-[var(--text-primary)] truncate">
                       {suggestion.title}
                     </span>
                     {suggestion.subtitle && (
-                      <span className="text-xs text-slate-500 truncate">
+                      <span className="text-xs text-[var(--text-tertiary)] truncate">
                         {suggestion.type} • {suggestion.subtitle}
                       </span>
                     )}
@@ -123,18 +123,18 @@ export function GlobalSearchInput() {
             </div>
           ) : (
             !isLoading && (
-              <div className="p-4 text-center text-sm text-slate-500">
-                No results found for "{query}"
+              <div className="p-4 text-center text-sm text-[var(--text-tertiary)]">
+                No results found for &quot;{query}&quot;
               </div>
             )
           )}
 
-          <div className="p-2 border-t border-slate-100 dark:border-[var(--border-default)] bg-slate-50 dark:bg-[var(--surface-raised)]">
+          <div className="p-2 border-t border-[var(--border-default)] bg-[var(--surface-raised)]">
             <button
               onClick={handleSearch}
-              className="w-full text-center text-sm text-primary font-medium hover:underline py-1"
+              className="w-full text-center text-sm text-indigo-600 dark:text-indigo-400 font-semibold hover:underline py-1 cursor-pointer"
             >
-              See all results for "{query}"
+              See all results for &quot;{query}&quot;
             </button>
           </div>
         </div>

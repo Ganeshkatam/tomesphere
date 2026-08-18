@@ -16,7 +16,7 @@ export function AccountSidebar({
   ] as const;
 
   return (
-    <aside className="w-64 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-6 px-4">
+    <aside className="w-64 border-r border-[var(--border-default)] bg-[var(--surface-default)] py-6 px-4">
       <nav className="space-y-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -25,17 +25,17 @@ export function AccountSidebar({
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`w-full flex items-center px-3 py-2 text-sm font-semibold rounded-xl transition-colors cursor-pointer ${
                 isActive
-                  ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300"
-                  : "text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800"
+                  ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
               }`}
             >
               <Icon
                 className={`flex-shrink-0 -ml-1 mr-3 h-5 w-5 ${
                   isActive
-                    ? "text-indigo-700 dark:text-indigo-300"
-                    : "text-gray-400 dark:text-gray-500"
+                    ? "text-indigo-600 dark:text-indigo-400"
+                    : "text-[var(--text-tertiary)]"
                 }`}
               />
               <span className="truncate">{tab.label}</span>

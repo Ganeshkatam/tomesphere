@@ -1,211 +1,204 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { BookOpen, Check, LayoutGrid } from "lucide-react";
-import { useState } from "react";
+import { BookOpen, Check, ArrowUp } from "lucide-react";
+import { useState, useEffect } from "react";
+
+const DISCOVER_LINKS = [
+  { label: "Browse Catalog", href: "/discover" },
+  { label: "Featured Books", href: "/discover/featured" },
+  { label: "Trending Titles", href: "/discover/trending" },
+  { label: "New Arrivals", href: "/discover/new" },
+];
 
 const COMPANY_LINKS = [
-  { label: "About", href: "/about" },
+  { label: "About Us", href: "/about" },
   { label: "Contact", href: "/contact" },
+  { label: "Sitemap", href: "/sitemap" },
 ];
 
 const SUPPORT_LINKS = [
-  { label: "Help Center", href: "/support" },
+  { label: "Help & Support", href: "/support" },
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms of Service", href: "/terms" },
-  { label: "Cookies", href: "/cookies" },
+  { label: "Cookie Policy", href: "/cookies" },
+];
+
+const HIDE_FOOTER_ROUTES = [
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email",
+  "/read",
+  "/account",
+  "/dashboard",
+  "/onboarding",
 ];
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const pathname = usePathname();
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const shouldHideFooter = [
-    "/login",
-    "/signup",
-    "/forgot-password",
-    "/reset-password",
-    "/verify-email",
-    "/verify-password",
-    "/login-phone",
-    "/home",
-    "/library",
-    "/notes",
-    "/citations",
-    "/exam-prep",
-    "/academic",
-    "/profile",
-    "/profile-setup",
-    "/read",
-    "/books",
-    "/search",
-    "/discover",
-    "/me",
-  ].some((route) => pathname === route || pathname?.startsWith(route + "/"));
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const shouldHideFooter = HIDE_FOOTER_ROUTES.some(
+    (route) => pathname === route || pathname?.startsWith(route + "/"),
+  );
 
   if (shouldHideFooter) return null;
 
   return (
-    <>
-      <footer className="relative overflow-hidden">
-        {/* Top glow border */}
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
-
-        {/* Background */}
-        <div className="absolute inset-0 bg-[var(--surface-canvas)] pointer-events-none" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-indigo-600/5 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-purple-600/4 rounded-full blur-[100px] pointer-events-none" />
-
-        <div className="relative w-full max-w-[1400px] mx-auto px-8 sm:px-12 lg:px-16">
-          {/* ── Zone 1: Brand + Columns ── */}
-          <div className="pt-20 pb-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Brand Column */}
-            <div className="flex flex-col gap-6 lg:col-span-2">
-              {/* Logo */}
-              <Link href="/" className="flex items-center gap-3 group w-fit">
-                <span className="group-hover:scale-105 transition-transform">
-                  <Image src="/logo.png" alt="TomeSphere" width={48} height={48} priority />
-                </span>
-                <div>
-                  <span className="text-xl font-display font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
-                    TomeSphere
-                  </span>
-                  <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mt-0.5">
-                    Built for Learners
-                  </p>
-                </div>
-              </Link>
-
-              {/* Mission statement */}
-              <p className="text-[var(--text-secondary)] text-sm leading-relaxed max-w-xs">
-                Discover, read, organize, and understand books through a focused reading experience designed for students and lifelong learners.
-              </p>
-
-              {/* Brand promises */}
-              <ul className="space-y-2">
-                {["Distraction-free reading", "Personal library", "Reading insights"].map(
-                  (item) => (
-                    <li
-                      key={item}
-                      className="flex items-center gap-2.5 text-[var(--text-secondary)] text-sm"
-                    >
-                      <span className="w-4 h-4 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
-                        <Check
-                          size={9}
-                          className="text-indigo-400"
-                          strokeWidth={3}
-                        />
-                      </span>
-                      {item}
-                    </li>
-                  ),
-                )}
-              </ul>
-
-              {/* Tagline badge */}
-              <div className="flex items-center gap-4 mt-2">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--surface-raised)] border border-[var(--border-default)] text-xs text-[var(--text-tertiary)] w-fit">
-                  <BookOpen size={11} className="text-indigo-400" />
-                  Read • Learn • Remember
-                </div>
+    <footer className="relative overflow-hidden bg-[var(--surface-default)] border-t border-[var(--border-default)] transition-colors duration-200">
+      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* ── Main Columns ── */}
+        <div className="pt-16 pb-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+          {/* Brand Column (2 cols on lg) */}
+          <div className="flex flex-col gap-5 lg:col-span-2">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2.5 group w-fit">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+                <BookOpen size={20} />
               </div>
-            </div>
+              <span className="text-xl font-display font-extrabold text-[var(--text-primary)] tracking-tight">
+                TomeSphere
+              </span>
+            </Link>
 
-            {/* Company Column */}
-            <div>
-              <p className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-[0.18em] mb-5">
-                Company
-              </p>
-              <ul className="space-y-3">
-                {COMPANY_LINKS.map(({ label, href }) => (
-                  <li key={href}>
-                    <Link
-                      href={href}
-                      className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-sm transition-colors duration-200 hover:translate-x-0.5 inline-block"
-                    >
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {/* Mission statement */}
+            <p className="text-[var(--text-secondary)] text-sm leading-relaxed max-w-sm">
+              Discover, read, and organize knowledge with a clean, focused digital library experience designed for readers everywhere.
+            </p>
 
-            {/* Support Column */}
-            <div>
-              <p className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-[0.18em] mb-5">
-                Support
-              </p>
-              <ul className="space-y-3">
-                {SUPPORT_LINKS.map(({ label, href }) => (
-                  <li key={href}>
-                    <Link
-                      href={href}
-                      className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-sm transition-colors duration-200 hover:translate-x-0.5 inline-block"
-                    >
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {/* Brand benefits */}
+            <ul className="space-y-2.5">
+              {[
+                "Distraction-free reading environment",
+                "Curated taxonomy & verified authors",
+                "Synchronized across your devices",
+              ].map((item) => (
+                <li
+                  key={item}
+                  className="flex items-center gap-2.5 text-[var(--text-secondary)] text-xs"
+                >
+                  <span className="w-4 h-4 rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center flex-shrink-0 text-indigo-600 dark:text-indigo-400">
+                    <Check size={10} strokeWidth={3} />
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* ── Bottom Bar ── */}
-          <div className="py-6 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-tertiary)]">
-            <span>© {currentYear} TomeSphere</span>
-            <div className="flex items-center gap-5">
-              <Link
-                href="/privacy"
-                className="hover:text-[var(--text-primary)] transition-colors"
-              >
-                Privacy
-              </Link>
-              <Link
-                href="/terms"
-                className="hover:text-[var(--text-primary)] transition-colors"
-              >
-                Terms
-              </Link>
-              <Link
-                href="/cookies"
-                className="hover:text-[var(--text-primary)] transition-colors"
-              >
-                Cookies
-              </Link>
-              <Link
-                href="/sitemap"
-                className="hover:text-[var(--text-primary)] transition-colors"
-              >
-                Sitemap
-              </Link>
-            </div>
-            <span className="text-[var(--text-tertiary)]">Read • Learn • Remember</span>
+          {/* Discover Column */}
+          <div>
+            <p className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider mb-4">
+              Discover
+            </p>
+            <ul className="space-y-3">
+              {DISCOVER_LINKS.map(({ label, href }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className="text-[var(--text-secondary)] hover:text-indigo-600 dark:hover:text-indigo-400 text-sm font-medium transition-colors duration-150 inline-block"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company Column */}
+          <div>
+            <p className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider mb-4">
+              Company
+            </p>
+            <ul className="space-y-3">
+              {COMPANY_LINKS.map(({ label, href }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className="text-[var(--text-secondary)] hover:text-indigo-600 dark:hover:text-indigo-400 text-sm font-medium transition-colors duration-150 inline-block"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Support Column */}
+          <div>
+            <p className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider mb-4">
+              Support & Legal
+            </p>
+            <ul className="space-y-3">
+              {SUPPORT_LINKS.map(({ label, href }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className="text-[var(--text-secondary)] hover:text-indigo-600 dark:hover:text-indigo-400 text-sm font-medium transition-colors duration-150 inline-block"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        {/* Scroll to top */}
+        {/* ── Bottom Bar ── */}
+        <div className="py-6 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-tertiary)]">
+          <span>&copy; {currentYear} TomeSphere. All rights reserved.</span>
+          <div className="flex items-center gap-6">
+            <Link
+              href="/privacy"
+              className="hover:text-[var(--text-primary)] transition-colors"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/terms"
+              className="hover:text-[var(--text-primary)] transition-colors"
+            >
+              Terms
+            </Link>
+            <Link
+              href="/cookies"
+              className="hover:text-[var(--text-primary)] transition-colors"
+            >
+              Cookies
+            </Link>
+            <Link
+              href="/sitemap"
+              className="hover:text-[var(--text-primary)] transition-colors"
+            >
+              Sitemap
+            </Link>
+          </div>
+          <span className="text-[var(--text-tertiary)] font-medium">Read • Learn • Remember</span>
+        </div>
+      </div>
+
+      {/* Scroll to top button */}
+      {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 right-6 z-50 w-10 h-10 bg-indigo-600/80 hover:bg-indigo-600 backdrop-blur-xl text-white rounded-full shadow-lg transition-all hover:scale-110 border border-[var(--border-default)] flex items-center justify-center"
+          className="fixed bottom-6 right-6 z-50 w-11 h-11 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer"
           aria-label="Scroll to top"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 10l7-7m0 0l7 7m-7-7v18"
-            />
-          </svg>
+          <ArrowUp size={18} />
         </button>
-      </footer>
-    </>
+      )}
+    </footer>
   );
 }

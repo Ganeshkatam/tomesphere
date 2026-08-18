@@ -60,12 +60,12 @@ html.dark {
 
   /* Page background configuration */
   --body-bg-gradient: var(--gradient-dark-bg);
-  --body-overlay-opacity: 0.3;
+  --body-overlay-opacity: 0.1;
   --hero-overlay: linear-gradient(
     to bottom,
-    rgba(2, 6, 23, 0.75) 0%,
-    rgba(15, 23, 42, 0.88) 50%,
-    var(--slate-950) 100%
+    transparent 0%,
+    transparent 70%,
+    rgba(2, 6, 23, 0.45) 100%
   );
   --study-tools-bg: linear-gradient(
     to bottom right,

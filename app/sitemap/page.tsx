@@ -2,20 +2,21 @@ import Link from "next/link";
 
 export default function SitemapPage() {
   return (
-    <div className="min-h-screen bg-gradient-page overflow-x-hidden">      <main className="pt-32 pb-20 max-w-4xl mx-auto px-4 sm:px-6">
-        <div className="glass-strong p-8 sm:p-12 rounded-3xl border border-[var(--border-default)]">
-          <h1 className="text-4xl font-display font-bold mb-8 text-white">
+    <div className="min-h-screen bg-[var(--surface-canvas)] overflow-x-hidden">
+      <main className="pt-8 pb-16 sm:pt-10 sm:pb-20 max-w-4xl mx-auto px-4 sm:px-6">
+        <div className="bg-[var(--surface-default)] p-8 sm:p-12 rounded-3xl border border-[var(--border-default)] shadow-sm">
+          <h1 className="text-4xl font-display font-bold mb-8 text-[var(--text-primary)]">
             Sitemap
           </h1>
 
           <div className="grid sm:grid-cols-2 gap-12">
             <div>
-              <h2 className="text-2xl font-bold text-white mb-4">Core Pages</h2>
+              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4">Core Pages</h2>
               <ul className="space-y-3">
                 <li>
                   <Link
                     href="/"
-                    className="text-indigo-400 hover:text-indigo-300"
+                    className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                   >
                     Home / Landing
                   </Link>
@@ -23,7 +24,7 @@ export default function SitemapPage() {
                 <li>
                   <Link
                     href="/discover"
-                    className="text-indigo-400 hover:text-indigo-300"
+                    className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                   >
                     Explore Books
                   </Link>
@@ -31,39 +32,39 @@ export default function SitemapPage() {
                 <li>
                   <Link
                     href="/library"
-                    className="text-indigo-400 hover:text-indigo-300"
+                    className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                   >
                     My Library
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/community"
-                    className="text-indigo-400 hover:text-indigo-300"
+                    href="/discover/featured"
+                    className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                   >
-                    Community Hub
+                    Featured Books
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/academic"
-                    className="text-indigo-400 hover:text-indigo-300"
+                    href="/discover/trending"
+                    className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                   >
-                    Student Resources
+                    Trending Books
                   </Link>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold text-white mb-4">
+              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4">
                 Company & Legal
               </h2>
               <ul className="space-y-3">
                 <li>
                   <Link
                     href="/about"
-                    className="text-slate-300 hover:text-white"
+                    className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:underline"
                   >
                     About Us
                   </Link>
@@ -71,7 +72,7 @@ export default function SitemapPage() {
                 <li>
                   <Link
                     href="/contact"
-                    className="text-slate-300 hover:text-white"
+                    className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:underline"
                   >
                     Contact
                   </Link>
@@ -79,7 +80,7 @@ export default function SitemapPage() {
                 <li>
                   <Link
                     href="/privacy"
-                    className="text-slate-300 hover:text-white"
+                    className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:underline"
                   >
                     Privacy Policy
                   </Link>
@@ -87,9 +88,17 @@ export default function SitemapPage() {
                 <li>
                   <Link
                     href="/terms"
-                    className="text-slate-300 hover:text-white"
+                    className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:underline"
                   >
                     Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/cookies"
+                    className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:underline"
+                  >
+                    Cookie Policy
                   </Link>
                 </li>
               </ul>
@@ -100,4 +109,3 @@ export default function SitemapPage() {
     </div>
   );
 }
-

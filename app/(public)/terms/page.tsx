@@ -1,30 +1,30 @@
-
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-gradient-page overflow-x-hidden">      <main className="pt-32 pb-20 max-w-4xl mx-auto px-4 sm:px-6">
-        <div className="glass-strong p-8 sm:p-12 rounded-3xl border border-[var(--border-default)]">
-          <h1 className="text-4xl font-display font-bold mb-6 text-white">
+    <div className="min-h-screen bg-[var(--surface-canvas)] overflow-x-hidden">
+      <main className="pt-8 pb-16 sm:pt-10 sm:pb-20 max-w-4xl mx-auto px-4 sm:px-6">
+        <div className="bg-[var(--surface-default)] p-8 sm:p-12 rounded-3xl border border-[var(--border-default)] shadow-sm">
+          <h1 className="text-4xl font-display font-bold mb-6 text-[var(--text-primary)]">
             Terms of Service
           </h1>
-          <p className="text-sm text-slate-500 mb-8">
+          <p className="text-sm text-[var(--text-tertiary)] mb-8">
             Last Updated: {new Date().toLocaleDateString()}
           </p>
-          <div className="prose prose-invert prose-lg max-w-none text-slate-300 space-y-6">
+          <div className="prose prose-lg max-w-none text-[var(--text-secondary)] space-y-6">
             <p>
               By accessing the TomeSphere application, you agree to be bound by
               these terms of service and all applicable laws and regulations.
             </p>
 
-            <h2 className="text-2xl font-bold text-white mt-8">
+            <h2 className="text-2xl font-bold text-[var(--text-primary)] mt-8">
               1. User License
             </h2>
             <p>
-              Permission is granted to temporarily download one copy of the
-              materials (information or software) on TomeSphere for personal,
+              Permission is granted to temporarily view materials
+              (information or books) on TomeSphere for personal,
               non-commercial transitory viewing only.
             </p>
 
-            <h2 className="text-2xl font-bold text-white mt-8">
+            <h2 className="text-2xl font-bold text-[var(--text-primary)] mt-8">
               2. User Accounts
             </h2>
             <p>
@@ -39,4 +39,3 @@ export default function TermsPage() {
     </div>
   );
 }
-
