@@ -1,5 +1,4 @@
-import { AppHeader } from "@/shared/layout";
-
+import { AppHeader, AppPage } from "@/shared/layout";
 
 export default async function PublicLayout({
   children,
@@ -8,9 +7,11 @@ export default async function PublicLayout({
 }) {
   return (
     <div className="min-h-screen flex flex-col bg-surface text-on-surface font-sans">
-      <AppHeader isLoggedIn={false} />
-      <div className="flex-1 w-full mx-auto max-w-container-max px-margin-desktop pt-[152px] pb-32">
-        {children}
+      <AppHeader variant="marketing" />
+      <div className="pt-[var(--app-header-height)] flex-1 w-full flex flex-col">
+        <AppPage>
+          {children}
+        </AppPage>
       </div>
     </div>
   );

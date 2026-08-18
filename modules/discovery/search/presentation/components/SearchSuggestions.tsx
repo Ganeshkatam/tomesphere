@@ -202,7 +202,7 @@ export default function SearchSuggestions({
                   if (onSelect) {
                     onSelect(item.text, item.type, item.id);
                   } else if (item.type === "book" && item.id) {
-                    router.push(`/books/${item.id}`);
+                    router.push(`/book/${item.id}`);
                   }
                 }}
                 onMouseEnter={() => setActiveIndex(idx)}

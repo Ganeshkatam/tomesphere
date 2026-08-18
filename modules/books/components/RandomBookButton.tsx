@@ -26,7 +26,7 @@ export default function RandomBookButton({
 
       // Animate for 1 second then navigate
       setTimeout(() => {
-        router.push(`/books/${randomBook.id}`);
+        router.push(`/book/${randomBook.id}`);
       }, 1000);
     }
   };

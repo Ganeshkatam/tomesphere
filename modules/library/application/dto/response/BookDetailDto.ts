@@ -16,10 +16,4 @@ export interface BookDetailDto {
   pageCount: number | null;
   isTextbook: boolean;
   isPublicDomain: boolean;
-  files: {
-    id: string;
-    format: string;
-    storagePath: string;
-    isPrimary: boolean;
-  }[];
 }

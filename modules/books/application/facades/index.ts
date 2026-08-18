@@ -3,7 +3,5 @@ import { SupabaseBookRepository } from "../../infrastructure/SupabaseBookReposit
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 
 export async function getBookPageFacade() {
-  const supabase = await createSupabaseServerClient();
-  const repo = new SupabaseBookRepository(supabase);
-  return new BookPageFacade(repo);
+  return new BookPageFacade();
 }

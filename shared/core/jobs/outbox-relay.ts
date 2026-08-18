@@ -1,5 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
 import { IEventBus } from "../../core/events/types";
+import { WorkerDatabaseClient } from "@/shared/infrastructure/database/WorkerDatabaseClient";
 
 const MAX_RETRIES = parseInt(process.env.OUTBOX_MAX_RETRIES || "3", 10);
 
@@ -10,21 +10,12 @@ const MAX_RETRIES = parseInt(process.env.OUTBOX_MAX_RETRIES || "3", 10);
  * in-memory EventBus, and marks them as processed.
  *
  * Design decisions:
- * - Uses `claim_outbox_events` RPC for safe concurrent claiming (FOR UPDATE SKIP LOCKED).
+ * - Uses `WorkerDatabaseClient` via direct PostgreSQL connection using `tomesphere_worker` role.
+ * - Invokes `internal.claim_outbox_events` RPC for safe concurrent claiming (FOR UPDATE SKIP LOCKED).
  * - Implements exponential backoff on failure.
  * - Marks permanently failed events as `failed_permanent` after MAX_RETRIES.
- * - The EventBus is only responsible for dispatching already-persisted events.
+ * - Does NOT use SUPABASE_SERVICE_ROLE_KEY or PostgREST Data API.
  */
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-const supabase =
-  supabaseUrl && supabaseServiceKey
-    ? createClient(supabaseUrl, supabaseServiceKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    })
-    : null;
 
 export interface OutboxRelayResult {
   processed: number;
@@ -35,22 +26,13 @@ export interface OutboxRelayResult {
 export async function processOutbox(
   eventBus: IEventBus,
 ): Promise<OutboxRelayResult> {
-  if (!supabase) {
+  // 1. Claim pending events atomically via WorkerDatabaseClient
+  let events;
+  try {
+    events = await WorkerDatabaseClient.claimOutboxEvents(50);
+  } catch (claimError: any) {
     console.error(
-      "[Outbox Relay] Missing SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_URL",
-    );
-    return { processed: 0, failed: 0, permanentlyFailed: 0 };
-  }
-
-  // 1. Claim pending events atomically
-  const { data: events, error: claimError } = await supabase.rpc(
-    "claim_outbox_events" as any,
-    { limit_count: 50 },
-  );
-
-  if (claimError) {
-    console.error(
-      "[Outbox Relay] Failed to claim events:",
+      "[Outbox Relay] Failed to claim events via WorkerDatabaseClient:",
       claimError.message,
     );
     return { processed: 0, failed: 0, permanentlyFailed: 0 };
@@ -72,28 +54,30 @@ export async function processOutbox(
 
       eventBus.emit(eventType, payload);
 
-      // 3. Mark as processed
-      await supabase
-        .from("outbox_events")
-        .update({
-          status: "processed",
-          processed_at: new Date().toISOString(),
-        })
-        .eq("id", event.id);
+      // 3. Mark as processed via direct worker query
+      await WorkerDatabaseClient.query(
+        `UPDATE public.outbox_events 
+         SET status = 'processed', processed_at = NOW() 
+         WHERE id = $1;`,
+        [event.id]
+      );
 
       processed++;
     } catch (error: any) {
       const newRetryCount = (event.retry_count || 0) + 1;
       const isPermanentFailure = newRetryCount >= MAX_RETRIES;
 
-      await supabase
-        .from("outbox_events")
-        .update({
-          status: isPermanentFailure ? "failed_permanent" : "failed",
-          retry_count: newRetryCount,
-          last_error: error.message || "Unknown error",
-        })
-        .eq("id", event.id);
+      await WorkerDatabaseClient.query(
+        `UPDATE public.outbox_events 
+         SET status = $1, retry_count = $2, last_error = $3 
+         WHERE id = $4;`,
+        [
+          isPermanentFailure ? "failed_permanent" : "failed",
+          newRetryCount,
+          error.message || "Unknown error",
+          event.id,
+        ]
+      );
 
       if (isPermanentFailure) {
         console.error(
@@ -120,31 +104,29 @@ export async function processOutbox(
  * Returns operational metrics for monitoring.
  */
 export async function getOutboxMetrics() {
-  if (!supabase) return null;
+  try {
+    const res = await WorkerDatabaseClient.query<{
+      status: string;
+      count: string;
+    }>(
+      `SELECT status, COUNT(*)::text as count 
+       FROM public.outbox_events 
+       GROUP BY status;`
+    );
 
-  const [pending, processing, failed, permanent] = await Promise.all([
-    supabase
-      .from("outbox_events")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "pending"),
-    supabase
-      .from("outbox_events")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "processing"),
-    supabase
-      .from("outbox_events")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "failed"),
-    supabase
-      .from("outbox_events")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "failed_permanent"),
-  ]);
+    const counts: Record<string, number> = {};
+    for (const row of res.rows) {
+      counts[row.status] = parseInt(row.count, 10);
+    }
 
-  return {
-    pending: pending.count || 0,
-    processing: processing.count || 0,
-    failed: failed.count || 0,
-    permanentlyFailed: permanent.count || 0,
-  };
+    return {
+      pending: counts["pending"] || 0,
+      processing: counts["processing"] || 0,
+      failed: counts["failed"] || 0,
+      permanentlyFailed: counts["failed_permanent"] || 0,
+    };
+  } catch (error: any) {
+    console.error("[Outbox Relay] Failed to fetch outbox metrics:", error.message);
+    return null;
+  }
 }

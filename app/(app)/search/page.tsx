@@ -56,11 +56,15 @@ export default async function SearchPage({
               {results.results.map((book) => (
                 <BookCard
                   key={book.id}
-                  data={{
+                  book={{
                     id: book.id,
+                    slug: book.id,
                     title: book.title,
-                    author: book.authors?.[0] || "Unknown",
-                    coverUrl: "/placeholder-book.jpg", // Add coverUrl logic later
+                    authors: book.authors ? book.authors.map(a => ({ id: a, name: a, slug: a })) : [],
+                    genres: [],
+                    coverUrl: null,
+                    language: null,
+                    publicationYear: null,
                   }}
                 />
               ))}

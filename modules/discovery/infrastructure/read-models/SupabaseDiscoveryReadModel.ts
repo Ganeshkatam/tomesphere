@@ -2,8 +2,8 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { DiscoveryReadModel } from "../../application/ports/read-models/DiscoveryReadModel";
 import { DiscoveryOverviewDto } from "../../application/queries/GetDiscoveryOverview/read-model";
 import { SearchResultDto } from "../../application/queries/SearchBooks/read-model";
-import { BookDto } from "@/modules/library/application/dto/response/BookDto";
-import { BookMapper } from "@/modules/library/application/mappers/BookMapper";
+import { BookSummaryDto } from "../../application/dto/BookSummaryDto";
+import { BookSummaryMapper } from "../../application/mappers/BookSummaryMapper";
 import { GetTrendingBooksQuery } from "../../application/queries/GetTrendingBooks/query";
 import { TrendingBooksResponseDto } from "../../application/queries/GetTrendingBooks/response";
 
@@ -22,21 +22,21 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       this.supabase
         .from("books")
         .select(
-          "*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))",
+          "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
         .eq("is_featured", true)
         .limit(8),
       this.supabase
         .from("books")
         .select(
-          "*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))",
+          "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
         .order("created_at", { ascending: false })
         .limit(8),
       this.supabase
         .from("trending_books")
         .select(
-          "books!inner(*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*)))",
+          "books!inner(id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name)))",
         )
         .order("daily_score", { ascending: false })
         .limit(8),
@@ -56,9 +56,9 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
     );
 
     return {
-      featuredBooks: (featuredRes.data || []).map(BookMapper.toDto),
-      trendingBooks: trendingBooksData.map(BookMapper.toDto),
-      newBooks: (newBooksRes.data || []).map(BookMapper.toDto),
+      featuredBooks: (featuredRes.data || []).map(BookSummaryMapper.toDto),
+      trendingBooks: trendingBooksData.map(BookSummaryMapper.toDto),
+      newBooks: (newBooksRes.data || []).map(BookSummaryMapper.toDto),
       featuredCollections: [], // Placeholder for V1 until collections table exists
       genres,
       subjects,
@@ -74,13 +74,21 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
     pageSize: number,
     sort: string,
   ): Promise<SearchResultDto> {
+    const safePage = Math.max(1, Math.floor(page));
+    const safePageSize = Math.max(1, Math.min(pageSize, 100));
+
     const { data: searchResult, error: rpcError } = await this.supabase.rpc(
-      "search_catalog",
+      "execute_book_search_v1",
       {
-        search_query: query || "",
-        genre_filter: genre || "all",
-        page_num: page,
-        page_size: pageSize,
+        p_query: query || "",
+        p_genres: genre && genre !== "all" ? [genre] : [],
+        p_page: safePage,
+        p_page_size: safePageSize,
+        p_include_unavailable: false,
+        p_languages: [],
+        p_publication_years: [],
+        p_sort: sort || "relevance",
+        p_subjects: []
       },
     );
 
@@ -88,19 +96,19 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       return {
         books: [],
         totalCount: 0,
-        page,
-        pageSize,
+        page: safePage,
+        pageSize: safePageSize,
       };
     }
 
-    const matchingIds = searchResult.map((r: any) => r.id);
+    const matchingIds = searchResult.map((r: any) => r.book_id);
     const totalCount =
       searchResult.length > 0 ? Number(searchResult[0].total_count) : 0;
 
     let dbQuery = this.supabase
       .from("books")
       .select(
-        "*, book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))",
+        "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
       )
       .in("id", matchingIds);
 
@@ -117,20 +125,20 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
     // Here we just use the DB sort which handles it.
 
     return {
-      books: (data || []).map(BookMapper.toDto),
+      books: (data || []).map(BookSummaryMapper.toDto),
       totalCount,
-      page,
-      pageSize,
+      page: safePage,
+      pageSize: safePageSize,
     };
   }
 
-  async getSearchSuggestions(query: string): Promise<Partial<BookDto>[]> {
+  async getSearchSuggestions(query: string): Promise<Partial<BookSummaryDto>[]> {
     if (!query || query.length < 2) return [];
 
     const { data } = await this.supabase
       .from("books")
       .select(
-        "id, title, book_authors(authors(name)), book_genres(genres(name))",
+        "id, title, book_authors(position, authors(id, name, slug)), book_genres(genres(name))",
       )
       .ilike("title", `%${query}%`)
       .limit(5);
@@ -169,8 +177,8 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
         ${scoreCol},
         ${rankCol},
         books!inner (
-          id, title, cover_url, language, is_featured,
-          book_authors(authors(*)), book_genres(genres(*)), book_subjects(subjects(*))
+          id, title, cover_url, languages(name), is_featured, release_date,
+          book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))
         )
       `,
         { count: "exact" },
@@ -192,22 +200,7 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
     }
 
     const books = (data || []).map((row: any) => ({
-      id: row.books.id,
-      title: row.books.title,
-      authors: (row.books.book_authors || [])
-        .map((ba: any) => ba.authors)
-        .filter(Boolean),
-      genres: (row.books.book_genres || [])
-        .map((bg: any) => bg.genres)
-        .filter(Boolean),
-      subjects: (row.books.book_subjects || [])
-        .map((bs: any) => bs.subjects)
-        .filter(Boolean),
-      coverUrl: row.books.cover_url
-        ? row.books.cover_url.replace(/ /g, "%20")
-        : null,
-      language: row.books.language,
-      isFeatured: row.books.is_featured || false,
+      ...BookSummaryMapper.toDto(row.books),
       trendingScore: row[scoreCol],
       rank: row[rankCol],
     }));
@@ -281,15 +274,30 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
 
   async getAuthors(
     query: import("../../application/queries/GetAuthors/query").GetAuthorsQuery,
-  ): Promise<
-    import("../../application/queries/GetAuthors/response").GetAuthorsResponseDto
-  > {
-    const overview = await this.getOverview();
+  ): Promise<{ items: import("../../application/dto/AuthorCardDto").AuthorCardDto[], total: number, page: number, hasMore: boolean }> {
+    const page = query.page || 1;
+    const limit = query.limit || 24;
+    const start = (page - 1) * limit;
+    const end = start + limit - 1;
+
+    const { data, count } = await this.supabase
+      .from("authors")
+      .select("id, slug, name, avatar_url, book_authors(count)", { count: "exact" })
+      .range(start, end);
+
+    const items = (data || []).map((row: any) => ({
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      imageUrl: row.avatar_url || null,
+      bookCount: row.book_authors?.[0]?.count ?? row.book_authors?.length ?? 0,
+    }));
+
     return {
-      items: overview.authors || [],
-      total: (overview.authors || []).length,
-      page: query.page,
-      hasMore: false,
+      items,
+      total: count || 0,
+      page,
+      hasMore: (count || 0) > end + 1,
     };
   }
 

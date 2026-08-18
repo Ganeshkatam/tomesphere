@@ -54,3 +54,35 @@ The only places that may interact with Supabase are:
 - Workspace routes map to bounded contexts.
 - Reader remains a standalone application shell.
 - Admin evolves independently from the public app.
+
+## Database Architecture Invariants (Frozen)
+
+### DB-INV-01 — Discovery projection
+> Discovery/search/listing interfaces must consume projection DTOs and must never retrieve book resource/PDF payloads.
+
+### DB-INV-02 — Resource isolation
+> Book binary resources are fetched only through explicit resource/read workflows after user navigation to a book/reader experience.
+
+### DB-INV-03 — Worker authorization
+> Background infrastructure executes exclusively through narrowly scoped PostgreSQL worker capabilities. Runtime `service_role` usage is prohibited.
+
+### DB-INV-04 — Internal schema
+> `internal` must never be exposed through the Supabase Data API.
+
+### DB-INV-05 — Capability authorization
+> `tomesphere_worker` receives only the privileges required for explicit infrastructure capabilities; it must never evolve into an application-wide privileged database user.
+
+### DB-INV-06 — Recoverable claims
+> Every persistent asynchronous claim transition must provide deterministic stale-claim recovery.
+
+### DB-INV-07 — DTO boundary
+> Database rows must not be passed directly into presentation components.
+
+### DB-INV-08 — Canonical search
+> `execute_book_search_v1` is the canonical Discovery search API. Parallel search RPC implementations require an architectural decision record.
+
+### DB-INV-09 — Ordered relationships
+> User-visible ordered many-to-many relationships must persist ordering explicitly rather than relying on PostgreSQL row-return order.
+
+### DB-INV-10 — Schema naming
+> Application queries, migrations, documentation, and infrastructure code must use canonical database object names; compatibility aliases must not be introduced merely to accommodate stale application terminology.

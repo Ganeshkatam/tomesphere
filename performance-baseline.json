@@ -1,0 +1,9 @@
+{
+  "lcp": 2064,
+  "cls": 0,
+  "initialRequestCount": 34,
+  "initialTransferredBytes": 1204090,
+  "imageRequestCount": 3,
+  "imageTransferredBytes": 1098888,
+  "jsTransferredBytes": 366
+}

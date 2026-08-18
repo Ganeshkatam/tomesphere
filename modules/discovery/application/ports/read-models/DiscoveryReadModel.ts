@@ -1,4 +1,4 @@
-import { BookDto } from "@/modules/library/application/dto/response/BookDto";
+import { BookSummaryDto } from "../../dto/BookSummaryDto";
 import { DiscoveryOverviewDto } from "../../queries/GetDiscoveryOverview/read-model";
 import { SearchResultDto } from "../../queries/SearchBooks/read-model";
 import { GetTrendingBooksQuery } from "../../queries/GetTrendingBooks/query";
@@ -13,7 +13,7 @@ export interface DiscoveryReadModel {
     pageSize: number,
     sort: string,
   ): Promise<SearchResultDto>;
-  getSearchSuggestions(query: string): Promise<Partial<BookDto>[]>;
+  getSearchSuggestions(query: string): Promise<Partial<BookSummaryDto>[]>;
   getTrendingBooks(
     query: GetTrendingBooksQuery,
   ): Promise<TrendingBooksResponseDto>;

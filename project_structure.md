@@ -275,7 +275,8 @@ tomesphere-app
 │   │   ├── project_structure_20260719_110514.md
 │   │   ├── project_structure_20260719_115754.md
 │   │   ├── project_structure_20260719_124638.md
-│   │   └── project_structure_20260719_234056.md
+│   │   ├── project_structure_20260719_234056.md
+│   │   └── project_structure_20260720_224925.md
 │   ├── ACTIVE_PRODUCT.md
 │   ├── API_ARCHITECTURE.md
 │   ├── API_ERROR_CODES.md
@@ -380,6 +381,8 @@ tomesphere-app
 │   │   │   │   └── repositories
 │   │   │   │       └── SupabasePreferencesRepository.ts
 │   │   │   └── presentation
+│   │   │       ├── actions
+│   │   │       │   └── preferences.ts
 │   │   │       └── components
 │   │   │           └── PreferencesForm.tsx
 │   │   ├── presentation
@@ -423,6 +426,8 @@ tomesphere-app
 │   │       │   └── repositories
 │   │       │       └── SupabaseSecurityRepository.ts
 │   │       └── presentation
+│   │           ├── actions
+│   │           │   └── security.ts
 │   │           └── components
 │   │               ├── DangerZone.tsx
 │   │               ├── ExportSection.tsx
@@ -1380,7 +1385,8 @@ tomesphere-app
 │           │       └── SupabaseProfileRepository.ts
 │           ├── presentation
 │           │   ├── actions
-│           │   │   └── notifications.ts
+│           │   │   ├── notifications.ts
+│           │   │   └── profile.ts
 │           │   └── components
 │           │       ├── ProfileEditForm.tsx
 │           │       ├── ProfileHeader.tsx

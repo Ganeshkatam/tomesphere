@@ -1,9 +1,9 @@
 import { DiscoveryReadModel } from "../../ports/read-models/DiscoveryReadModel";
-import { BookDto } from "@/modules/library/application/dto/response/BookDto";
+import { BookSummaryDto } from "../../dto/BookSummaryDto";
 
 export async function getSearchSuggestions(
   repository: DiscoveryReadModel,
   query: string,
-): Promise<Partial<BookDto>[]> {
+): Promise<Partial<BookSummaryDto>[]> {
   return await repository.getSearchSuggestions(query);
 }

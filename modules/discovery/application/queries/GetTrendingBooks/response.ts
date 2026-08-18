@@ -1,14 +1,8 @@
-export interface TrendingBookDto {
-  readonly id: string;
-  readonly title: string;
-  readonly authors: { id: string; name: string }[];
-  readonly coverUrl: string | null;
-  readonly genres: { id: string; name: string }[];
-  readonly subjects: { id: string; name: string }[];
-  readonly language: string | null;
+import { BookSummaryDto } from "../../dto/BookSummaryDto";
+
+export interface TrendingBookDto extends BookSummaryDto {
   readonly trendingScore: number;
   readonly rank: number;
-  readonly isFeatured: boolean;
 }
 
 export interface TrendingBooksResponseDto {

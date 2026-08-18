@@ -1,6 +1,17 @@
 "use client";
 
-import { BookDto } from "@/modules/library/application/dto/response/BookDto";
+export interface BookCardModel {
+  readonly id: string;
+  readonly slug?: string;
+  readonly title: string;
+  readonly authors: readonly { readonly name: string; }[];
+  readonly genres?: readonly { readonly name: string; }[];
+  readonly coverUrl: string | null;
+  readonly language?: string | null;
+  readonly publishedDate?: string | null; // Used by legacy BookDto
+  readonly publicationYear?: number | null; // Used by BookSummaryDto
+  readonly isFeatured?: boolean;
+}
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
 import Image from "next/image";
@@ -8,7 +19,7 @@ import { Heart, Star, Plus, BookOpen, Clock, Check } from "lucide-react";
 import { generateSimpleDescription } from "@/modules/storage/services/pdf-description-generator";
 
 interface BookCardProps {
-  book: BookDto;
+  book: BookCardModel;
   onAddToList?: (
     status: "want_to_read" | "currently_reading" | "finished",
   ) => void;
@@ -28,7 +39,7 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
   }, [book.title, book.authors]);
 
   const handleCardClick = () => {
-    router.push(`/books/${book.id}`);
+    router.push(`/book/${book.id}`);
   };
 
   return (
@@ -132,9 +143,9 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
           <p className="text-[12px] text-slate-400 font-medium truncate">
             {book.genres?.[0]?.name || "Uncategorized"}
             {book.language ? ` • ${book.language}` : ""} •{" "}
-            {book.publishedDate
+            {book.publicationYear || (book.publishedDate
               ? new Date(book.publishedDate).getFullYear()
-              : "2025"}
+              : "2025")}
           </p>
         </div>
 
@@ -144,7 +155,7 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              router.push(`/books/${book.id}`);
+              router.push(`/book/${book.id}`);
             }}
             className="flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all hover:scale-[1.05]"
           >
@@ -152,40 +163,7 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
             <span className="text-[10px]">→</span>
           </button>
 
-          {/* Download Button */}
-          {book.files?.find((f) => f.format === "pdf" || f.isPrimary)
-            ?.storagePath && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                const file = book.files?.find(
-                  (f) => f.format === "pdf" || f.isPrimary,
-                );
-                if (file?.storagePath) {
-                  const link = document.createElement("a");
-                  link.href = file.storagePath;
-                  link.download = `${book.title}.pdf`;
-                  link.click();
-                }
-              }}
-              className="p-1.5 rounded-lg bg-white/5 text-slate-400 hover:bg-green-600/20 hover:text-green-400 transition-all transform hover:scale-110 ml-auto"
-              title="Download PDF"
-            >
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                />
-              </svg>
-            </button>
-          )}
+
 
           {/* Add to List */}
           {onAddToList && (

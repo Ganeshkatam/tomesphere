@@ -1,28 +1,26 @@
-import { SubjectCard } from "./SubjectCard";
+import Link from "next/link";
 
 interface SubjectGridProps {
-  items: any[];
+  items: readonly string[];
 }
 
 export function SubjectGrid({ items }: SubjectGridProps) {
   if (!items || items.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed border-[var(--border-default)] rounded-2xl">
-        <p className="text-[var(--text-secondary)]">No items found.</p>
-      </div>
-    );
+    return null; // Silently omit if empty
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-      {items.map((item, i) => (
-        <div
-          key={item.id || item.slug || item || i}
-          className="animate-fade-in-up"
-          style={{ animationDelay: i * 50 + "ms" }}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-3 min-w-0">
+      {items.map((subject) => (
+        <Link
+          key={subject}
+          href={`/search?q=${encodeURIComponent(subject)}`}
+          className="group flex items-center justify-between py-2 border-b border-outline-variant/30 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm transition-colors duration-200"
         >
-          <SubjectCard data={item} />
-        </div>
+          <span className="font-serif text-title-md text-on-surface group-hover:text-primary transition-colors duration-200 truncate">
+            {subject}
+          </span>
+        </Link>
       ))}
     </div>
   );

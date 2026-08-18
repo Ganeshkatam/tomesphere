@@ -132,7 +132,7 @@ export class SupabaseSearchReadModel {
       type: "Book",
       title: row.title,
       subtitle: row.author, // The RPC returns a single author
-      url: `/books/${row.slug || row.book_id}`,
+      url: `/book/${row.slug || row.book_id}`,
       // We pass the reason internally for debugging/telemetry
       _reason: row.reason,
     }));

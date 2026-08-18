@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -14,142 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-
-      languages: {
-        Row: {
-          id: string
-          code: string
-          name: string
-          native_name: string
-          is_active: boolean
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          code: string
-          name: string
-          native_name: string
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          code?: string
-          name?: string
-          native_name?: string
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      collections: {
-        Row: {
-          id: string
-          title: string
-          slug: string
-          description: string | null
-          cover_url: string | null
-          is_active: boolean
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          title: string
-          slug: string
-          description?: string | null
-          cover_url?: string | null
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          title?: string
-          slug?: string
-          description?: string | null
-          cover_url?: string | null
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      collection_books: {
-        Row: {
-          collection_id: string
-          book_id: string
-          position: number
-          created_at: string
-        }
-        Insert: {
-          collection_id: string
-          book_id: string
-          position?: number
-          created_at?: string
-        }
-        Update: {
-          collection_id?: string
-          book_id?: string
-          position?: number
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "collection_books_book_id_fkey"
-            columns: ["book_id"]
-            isOneToOne: false
-            referencedRelation: "books"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "collection_books_collection_id_fkey"
-            columns: ["collection_id"]
-            isOneToOne: false
-            referencedRelation: "collections"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      featured_books: {
-        Row: {
-          book_id: string
-          position: number
-          starts_at: string | null
-          ends_at: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          book_id: string
-          position?: number
-          starts_at?: string | null
-          ends_at?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          book_id?: string
-          position?: number
-          starts_at?: string | null
-          ends_at?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "featured_books_book_id_fkey"
-            columns: ["book_id"]
-            isOneToOne: true
-            referencedRelation: "books"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-
       annotations: {
         Row: {
           body_markdown: string
@@ -312,14 +176,17 @@ export type Database = {
         Row: {
           author_id: string
           book_id: string
+          position: number
         }
         Insert: {
           author_id: string
           book_id: string
+          position?: number
         }
         Update: {
           author_id?: string
           book_id?: string
+          position?: number
         }
         Relationships: [
           {
@@ -510,6 +377,7 @@ export type Database = {
           is_published: boolean
           is_textbook: boolean | null
           isbn: string | null
+          language: string | null
           language_id: string | null
           pages: number | null
           pdf_url: string | null
@@ -543,6 +411,7 @@ export type Database = {
           is_textbook?: boolean | null
           isbn?: string | null
           language?: string | null
+          language_id?: string | null
           pages?: number | null
           pdf_url?: string | null
           publisher?: string | null
@@ -575,6 +444,7 @@ export type Database = {
           is_textbook?: boolean | null
           isbn?: string | null
           language?: string | null
+          language_id?: string | null
           pages?: number | null
           pdf_url?: string | null
           publisher?: string | null
@@ -586,6 +456,83 @@ export type Database = {
           updated_at?: string | null
           version?: number
           view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "books_language_id_fkey"
+            columns: ["language_id"]
+            isOneToOne: false
+            referencedRelation: "languages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collection_books: {
+        Row: {
+          book_id: string
+          collection_id: string
+          created_at: string
+          position: number
+        }
+        Insert: {
+          book_id: string
+          collection_id: string
+          created_at?: string
+          position?: number
+        }
+        Update: {
+          book_id?: string
+          collection_id?: string
+          created_at?: string
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_books_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_books_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collections: {
+        Row: {
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          slug?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -771,6 +718,41 @@ export type Database = {
         }
         Relationships: []
       }
+      featured_books: {
+        Row: {
+          book_id: string
+          created_at: string
+          ends_at: string | null
+          position: number
+          starts_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          ends_at?: string | null
+          position?: number
+          starts_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          ends_at?: string | null
+          position?: number
+          starts_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "featured_books_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: true
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       featured_books_projection: {
         Row: {
           book_id: string
@@ -940,6 +922,36 @@ export type Database = {
         }
         Relationships: []
       }
+      languages: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          native_name: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          native_name: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          native_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       library_books: {
         Row: {
           added_at: string | null
@@ -1045,10 +1057,10 @@ export type Database = {
           created_at: string
           event_name: string
           id: string
-          metadata: Record<string, any>
+          metadata: Json | null
           read_at: string | null
           title: string
-          type: "INFO" | "SUCCESS" | "WARNING" | "ERROR"
+          type: string
           user_id: string
         }
         Insert: {
@@ -1058,10 +1070,10 @@ export type Database = {
           created_at?: string
           event_name: string
           id?: string
-          metadata?: Record<string, any>
+          metadata?: Json | null
           read_at?: string | null
           title: string
-          type: "INFO" | "SUCCESS" | "WARNING" | "ERROR"
+          type: string
           user_id: string
         }
         Update: {
@@ -1071,21 +1083,13 @@ export type Database = {
           created_at?: string
           event_name?: string
           id?: string
-          metadata?: Record<string, any>
+          metadata?: Json | null
           read_at?: string | null
           title?: string
-          type?: "INFO" | "SUCCESS" | "WARNING" | "ERROR"
+          type?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       outbox_events: {
         Row: {
@@ -1727,8 +1731,8 @@ export type Database = {
       }
     }
     Functions: {
-      claim_outbox_messages: {
-        Args: { limit_count?: number }
+      claim_outbox_events: {
+        Args: { limit_count: number }
         Returns: {
           aggregate_id: string
           aggregate_type: string
@@ -2187,3 +2191,4 @@ export const Constants = {
     },
   },
 } as const
+

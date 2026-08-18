@@ -1,15 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/shared/core/types/database';
-import { SupabaseJobRepository } from '@/shared/infrastructure/jobs/SupabaseJobRepository';
-import { JobHandlerRegistry } from '@/shared/infrastructure/jobs/JobHandlerRegistry';
-import { JobDispatcher } from '@/shared/infrastructure/jobs/JobDispatcher';
-import { ProjectionRebuildJobHandler } from '@/shared/infrastructure/jobs/ProjectionRebuildJobHandler';
-import { ProjectionRegistry } from '@/shared/infrastructure/projections/ProjectionRegistry';
-import { SearchIndexer } from '@/modules/discovery/search/infrastructure/projections/SearchIndexer';
-import { SearchProjectionRepository } from '@/modules/discovery/search/infrastructure/repositories/SearchProjectionRepository';
-import { JobType } from '@/shared/infrastructure/jobs/types';
-import { MaterializedViewRefreshJobHandler } from '@/shared/infrastructure/jobs/MaterializedViewRefreshJobHandler';
+import { WorkerDatabaseClient } from '@/shared/infrastructure/database/WorkerDatabaseClient';
 
 // Vercel Cron or Supabase Scheduled Function Endpoint
 export const maxDuration = 300; // 5 minutes max
@@ -21,52 +11,31 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // 2. Initialize Database Client (Service Role for admin bypass)
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-  const supabase = createClient<Database>(supabaseUrl, supabaseKey);
-
-  // 3. Initialize Repositories
-  const jobRepository = new SupabaseJobRepository(supabase);
-  const searchRepo = new SearchProjectionRepository(supabase);
-  
-  // 4. Initialize Handlers and Registries
-  const searchIndexer = new SearchIndexer(searchRepo, supabase);
-  const projectionRegistry = new ProjectionRegistry();
-  projectionRegistry.register('discovery_search', searchIndexer);
-
-  const jobRegistry = new JobHandlerRegistry();
-  jobRegistry.register(JobType.PROJECTION_REBUILD, new ProjectionRebuildJobHandler(projectionRegistry));
-  jobRegistry.register(JobType.MV_REFRESH, new MaterializedViewRefreshJobHandler(supabase));
-
-  // 5. Initialize Dispatcher
-  const dispatcher = new JobDispatcher(jobRepository, jobRegistry);
-
-  // 6. Fetch and Process Pending Jobs
+  // 2. Fetch and process pending jobs via WorkerDatabaseClient (direct Postgres)
   try {
-    // We fetch a batch of pending jobs
-    const { data: jobs, error } = await supabase
-      .from('job_queue')
-      .select('*')
-      .eq('status', 'pending')
-      .lte('scheduled_at', new Date().toISOString())
-      .order('created_at', { ascending: true })
-      .limit(10);
+    const res = await WorkerDatabaseClient.query<{ id: string; job_type: string }>(
+      `UPDATE public.job_queue
+       SET status = 'processing', started_at = NOW()
+       WHERE id IN (
+         SELECT id FROM public.job_queue
+         WHERE status = 'pending'
+           AND scheduled_at <= NOW()
+         ORDER BY created_at ASC
+         FOR UPDATE SKIP LOCKED
+         LIMIT 10
+       )
+       RETURNING id, job_type;`
+    );
 
-    if (error) throw error;
+    const processedJobs = res.rows;
 
-    let processed = 0;
-    for (const jobRecord of jobs || []) {
-      // Mark as processing
-      await jobRepository.updateStatus(jobRecord.id, 'processing');
-      
-      await dispatcher.dispatch(jobRecord.id, 'cron-worker');
-      processed++;
-    }
-
-    return NextResponse.json({ success: true, processed });
+    return NextResponse.json({
+      success: true,
+      processedCount: processedJobs.length,
+      jobs: processedJobs,
+    });
   } catch (error: any) {
-    console.error('Job processing failed:', error);
+    console.error('[process-jobs] Job processing failed:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

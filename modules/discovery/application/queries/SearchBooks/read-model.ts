@@ -1,7 +1,7 @@
-import { BookDto } from "@/modules/library/application/dto/response/BookDto";
+import { BookSummaryDto } from "../../dto/BookSummaryDto";
 
 export interface SearchResultDto {
-  readonly books: BookDto[];
+  readonly books: BookSummaryDto[];
   readonly totalCount: number;
   readonly page: number;
   readonly pageSize: number;

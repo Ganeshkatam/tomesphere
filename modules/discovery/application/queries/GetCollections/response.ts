@@ -1,5 +1,7 @@
+import { CollectionSummaryDto } from "../../dto/CollectionSummaryDto";
+
 export interface GetCollectionsResponseDto {
-  readonly items: any[];
+  readonly items: readonly CollectionSummaryDto[];
   readonly total: number;
   readonly page: number;
   readonly hasMore: boolean;

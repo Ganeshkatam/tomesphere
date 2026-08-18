@@ -27,12 +27,7 @@ export interface BookDto {
   language?: string | null;
   publishedDate?: string | null;
   isFeatured?: boolean;
-  files: {
-    id: string;
-    format: string;
-    storagePath: string;
-    isPrimary: boolean;
-  }[];
+
   createdAt?: string | null;
   description?: string | null;
   isbn?: string | null;

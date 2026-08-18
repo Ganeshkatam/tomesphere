@@ -1,9 +1,9 @@
-import { BookDto } from "@/modules/library/application/dto/response/BookDto";
+import { BookSummaryDto } from "../../dto/BookSummaryDto";
 
 export interface DiscoveryOverviewDto {
-  readonly featuredBooks: BookDto[];
-  readonly trendingBooks: BookDto[];
-  readonly newBooks: BookDto[];
+  readonly featuredBooks: BookSummaryDto[];
+  readonly trendingBooks: BookSummaryDto[];
+  readonly newBooks: BookSummaryDto[];
   readonly featuredCollections: any[];
   readonly genres: string[];
   readonly subjects: string[];

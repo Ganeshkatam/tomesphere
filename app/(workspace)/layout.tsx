@@ -1,7 +1,6 @@
-import { AppHeader } from "@/shared/layout";
+import { AppHeader, AppPage } from "@/shared/layout";
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { redirect } from "next/navigation";
-
 
 export default async function WorkspaceLayout({
   children,
@@ -19,9 +18,11 @@ export default async function WorkspaceLayout({
 
   return (
     <div className="min-h-screen flex flex-col bg-surface text-on-surface font-sans">
-      <AppHeader isLoggedIn={true} />
-      <div className="flex-1 w-full mx-auto max-w-container-max px-margin-desktop pt-[152px] pb-32">
-        {children}
+      <AppHeader variant="application" />
+      <div className="pt-[var(--app-header-height)] flex-1 w-full flex flex-col">
+        <AppPage>
+          {children}
+        </AppPage>
       </div>
     </div>
   );

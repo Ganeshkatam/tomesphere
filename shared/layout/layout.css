@@ -1,0 +1,6 @@
+:root {
+  --app-header-height: 128px;
+  --page-max-width: 1440px;
+  --page-padding-x: 32px;
+  --content-gap: 48px;
+}

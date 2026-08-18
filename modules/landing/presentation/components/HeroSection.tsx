@@ -132,7 +132,7 @@ export default function HeroSection({
                       localBooks={searchSuggestions}
                       onSelect={(text, type, id) => {
                         if (type === "book" && id) {
-                          router.push(`/books/${id}`);
+                          router.push(`/book/${id}`);
                         } else {
                           setSearchQuery(text);
                           router.push(`/discover/search?q=${text}`);

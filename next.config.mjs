@@ -8,17 +8,33 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**", 
+        hostname: "qusuvzwycdmnecixzsgc.supabase.co",
+        pathname: "/storage/v1/object/public/book-covers/**",
       },
       {
         protocol: "https",
-        hostname: "qusuvzwycdmnecixzsgc.supabase.co", 
-        pathname: "/**",
+        hostname: "qusuvzwycdmnecixzsgc.supabase.co",
+        pathname: "/storage/v1/object/public/author-images/**",
+      },
+      {
+        protocol: "https",
+        hostname: "qusuvzwycdmnecixzsgc.supabase.co",
+        pathname: "/storage/v1/object/public/collection-covers/**",
+      },
+      {
+        protocol: "https",
+        hostname: "qusuvzwycdmnecixzsgc.supabase.co",
+        pathname: "/storage/v1/object/public/avatars/**",
       },
     ],
   },
   async redirects() {
     return [
+      {
+        source: "/books/:slug",
+        destination: "/book/:slug",
+        permanent: true,
+      },
       {
         source: "/discover/search",
         destination: "/search",

@@ -32,14 +32,7 @@ export class BookMapper {
       language: book.language || null,
       publishedDate: book.publishedDate || book.release_date || null,
       isFeatured: book.isFeatured || book.is_featured || false,
-      files: book.files
-        ? book.files.map((f: any) => ({
-            id: f.id,
-            format: f.format,
-            storagePath: f.storagePath || f.storage_path,
-            isPrimary: f.isPrimary || f.is_primary,
-          }))
-        : [],
+
       createdAt: book.createdAt || book.created_at || null,
     };
   }
@@ -64,12 +57,7 @@ export class BookMapper {
       pageCount: book.pageCount,
       isTextbook: book.isTextbook,
       isPublicDomain: book.isPublicDomain(),
-      files: book.files.map((f) => ({
-        id: f.id,
-        format: f.format,
-        storagePath: f.storagePath,
-        isPrimary: f.isPrimary,
-      })),
+
     };
   }
 }
