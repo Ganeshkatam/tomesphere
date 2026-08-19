@@ -1290,6 +1290,7 @@ tomesphere-app
 │   ├── about_cta_banner.jpg
 │   ├── about_showcase.jpg
 │   ├── book-placeholder.svg
+│   ├── hero_library_bg.jpg
 │   ├── icon.png
 │   ├── library_bg.png
 │   ├── logo.png

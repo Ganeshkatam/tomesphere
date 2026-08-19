@@ -27,6 +27,7 @@ export default function LandingClient({ model }: LandingClientProps) {
     classicsBooks = [],
     philosophyBooks = [],
     scienceBooks = [],
+    historyBooks = [],
     curatedBooks = [],
     featuredCollections = [],
     genres = [],
@@ -37,7 +38,7 @@ export default function LandingClient({ model }: LandingClientProps) {
     <div className="min-h-screen bg-gradient-page relative w-full max-w-full mx-auto overflow-x-hidden">
       <HeroSection searchSuggestions={featuredBooks} />
 
-      <div className="w-full relative z-20 flex flex-col gap-24 py-16">
+      <div className="w-full relative z-20 flex flex-col gap-20 pt-6 pb-16">
         {/* Above-the-fold Primary Book Shelves */}
         <FeaturedBooksSection items={featuredBooks} />
         <TrendingBooksSection items={trendingBooks} />
@@ -49,14 +50,13 @@ export default function LandingClient({ model }: LandingClientProps) {
         <PopularAuthorsSection authors={authors} />
         <AnnouncementSection announcements={announcements} />
 
-        {/* Dedicated On-Demand Scroll Container: Hosts 5+ Specialized Book Shelves */}
+        {/* Dedicated On-Demand Scroll Container: 5 Guaranteed Specialized Shelves */}
         <SlowScrollBooksSection
           curatedBooks={curatedBooks.length > 0 ? curatedBooks : featuredBooks}
           classicsBooks={classicsBooks.length > 0 ? classicsBooks : featuredBooks}
           philosophyBooks={philosophyBooks.length > 0 ? philosophyBooks : trendingBooks}
           scienceBooks={scienceBooks.length > 0 ? scienceBooks : newBooks}
-        // newBooks={newBooks}
-        // trendingBooks={trendingBooks}
+          historyBooks={historyBooks.length > 0 ? historyBooks : curatedBooks}
         />
       </div>
     </div>

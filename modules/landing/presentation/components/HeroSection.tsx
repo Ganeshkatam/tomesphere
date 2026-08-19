@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Search } from "lucide-react";
@@ -28,31 +28,29 @@ export default function HeroSection({
 
   return (
     <section
-      className="relative pt-16 pb-16 sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-24 overflow-hidden min-h-[70vh] flex items-center justify-center z-10"
+      className="relative pt-12 pb-12 sm:pt-16 sm:pb-16 lg:pt-20 lg:pb-20 overflow-hidden flex items-center justify-center z-10 bg-slate-950"
     >
       {/* Full-screen library background illustration */}
-      <div className="absolute inset-0 w-full h-full opacity-80 z-0 pointer-events-none">
+      <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
         <Image
-          src="/library_bg.png"
-          alt="Digital library backdrop"
+          src="/hero_library_bg.jpg"
+          alt="Digital library sanctuary backdrop"
           fill
-          className="object-cover object-center"
+          className="object-cover object-center brightness-[0.7] dark:brightness-[0.55]"
           priority
         />
-        {/* Smooth natural bottom fade into page canvas without harsh top shadow band */}
-        <div
-          className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--surface-canvas)]"
-        />
+        {/* Dark tint scrim for text contrast - completely clean with NO white highlight/fog */}
+        <div className="absolute inset-0 bg-slate-950/45" />
       </div>
 
       <div className="w-full max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
         <FadeIn className="text-center w-full mx-auto relative" delay={0.2}>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-5 leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-4 leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
             Explore books. Discover ideas.
           </h1>
 
-          <p className="text-base sm:text-lg mb-10 text-balance max-w-2xl mx-auto leading-relaxed text-slate-100 font-medium drop-shadow-[0_1px_8px_rgba(0,0,0,0.85)]">
-            An immersive digital library and reader crafted for curious minds, deep focus, and timeless knowledge.
+          <p className="text-base sm:text-lg mb-8 text-balance max-w-2xl mx-auto leading-relaxed text-slate-100 font-medium drop-shadow-[0_1px_8px_rgba(0,0,0,0.85)]">
+            Discover, read, and explore knowledge your way.
           </p>
 
           {/* Central Search Bar */}
@@ -81,7 +79,7 @@ export default function HeroSection({
                       onKeyDown={(e) => {
                         if (e.key === "Enter") handleSearch();
                       }}
-                      placeholder="Search titles, authors, or topics..."
+                      placeholder="Search books, authors, subjects, or topics..."
                       className="w-full h-full pl-10 sm:pl-12 pr-10 sm:pr-14 bg-transparent border-none text-base sm:text-lg text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-0 transition-all font-sans"
                     />
 
@@ -125,7 +123,7 @@ export default function HeroSection({
 
           {/* Quick Command Filters */}
           <SlideUp
-            className="w-full max-w-3xl mx-auto mt-6 px-4 sm:px-0 flex flex-wrap items-center gap-2.5 justify-center text-xs"
+            className="w-full max-w-3xl mx-auto mt-5 px-4 sm:px-0 flex flex-wrap items-center gap-2.5 justify-center text-xs"
             delay={0.5}
           >
             <span className="font-semibold text-white/95 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)] mr-1">Browse:</span>
