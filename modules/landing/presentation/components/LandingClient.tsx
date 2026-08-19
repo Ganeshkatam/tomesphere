@@ -4,8 +4,10 @@ import { LandingViewModel } from "@/modules/landing/application/facades/LandingP
 import HeroSection from "./HeroSection";
 import FeaturedBooksSection from "./FeaturedBooksSection";
 import TrendingBooksSection from "./TrendingBooksSection";
-import RecentlyAddedSection from "./RecentlyAddedSection";
 import ClassicsBooksSection from "./ClassicsBooksSection";
+import PhilosophyBooksSection from "./PhilosophyBooksSection";
+import ScienceBooksSection from "./ScienceBooksSection";
+import RecentlyAddedSection from "./RecentlyAddedSection";
 import SlowScrollBooksSection from "./SlowScrollBooksSection";
 import FeaturedCollectionsSection from "./FeaturedCollectionsSection";
 import GenreBrowserSection from "./GenreBrowserSection";
@@ -27,6 +29,8 @@ export default function LandingClient({ model }: LandingClientProps) {
     trendingBooks = [],
     newBooks = [],
     classicsBooks = [],
+    philosophyBooks = [],
+    scienceBooks = [],
     curatedBooks = [],
     featuredCollections = [],
     genres = [],
@@ -38,10 +42,22 @@ export default function LandingClient({ model }: LandingClientProps) {
       <HeroSection searchSuggestions={featuredBooks} />
 
       <div className="w-full relative z-20 flex flex-col gap-24 py-16">
-        {/* Core Book Sections (10 items + View All Card) */}
+        {/* 1. Featured Selections */}
         <FeaturedBooksSection items={featuredBooks} />
+
+        {/* 2. Trending Now (On-Demand Scroll Reveal) */}
         <TrendingBooksSection items={trendingBooks} />
+
+        {/* 3. Timeless Classics (On-Demand Scroll Reveal) */}
         <ClassicsBooksSection items={classicsBooks.length > 0 ? classicsBooks : featuredBooks} />
+
+        {/* 4. Philosophy & Great Ideas (On-Demand Scroll Reveal) */}
+        <PhilosophyBooksSection items={philosophyBooks.length > 0 ? philosophyBooks : trendingBooks} />
+
+        {/* 5. Science, Tech & Mathematics (On-Demand Scroll Reveal) */}
+        <ScienceBooksSection items={scienceBooks.length > 0 ? scienceBooks : newBooks} />
+
+        {/* 6. Recently Added (On-Demand Scroll Reveal) */}
         <RecentlyAddedSection items={newBooks} />
 
         {/* Exploratory & Categorical Sections */}
@@ -50,9 +66,9 @@ export default function LandingClient({ model }: LandingClientProps) {
         <PopularAuthorsSection authors={authors} />
         <AnnouncementSection announcements={announcements} />
 
-        {/* On-Demand Slow Scroll Discovery Section Rendered on the Bottom */}
+        {/* 7. Bottom On-Demand Curator's Deep Reading Spotlight */}
         <SlowScrollBooksSection items={curatedBooks.length > 0 ? curatedBooks : featuredBooks} />
-
+        {/* <StatisticsSection statistics={statistics} /> */}
       </div>
     </div>
   );

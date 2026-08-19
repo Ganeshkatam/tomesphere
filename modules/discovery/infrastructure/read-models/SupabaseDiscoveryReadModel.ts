@@ -16,6 +16,8 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       newBooksRes,
       trendingRes,
       classicsRes,
+      philosophyRes,
+      scienceRes,
       curatedRes,
       authorsRes,
       genresRes,
@@ -54,6 +56,20 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
         .select(
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
+        .order("title", { ascending: false })
+        .limit(10),
+      this.supabase
+        .from("books")
+        .select(
+          "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
+        )
+        .order("release_date", { ascending: true, nullsFirst: false })
+        .limit(10),
+      this.supabase
+        .from("books")
+        .select(
+          "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
+        )
         .order("release_date", { ascending: false, nullsFirst: false })
         .limit(10),
       this.supabase.from("authors").select("name").limit(10),
@@ -76,6 +92,8 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       trendingBooks: trendingBooksData.map(BookSummaryMapper.toDto),
       newBooks: (newBooksRes.data || []).map(BookSummaryMapper.toDto),
       classicsBooks: (classicsRes.data || []).map(BookSummaryMapper.toDto),
+      philosophyBooks: (philosophyRes.data || []).map(BookSummaryMapper.toDto),
+      scienceBooks: (scienceRes.data || []).map(BookSummaryMapper.toDto),
       curatedBooks: (curatedRes.data || []).map(BookSummaryMapper.toDto),
       featuredCollections: [], // Placeholder for V1 until collections table exists
       genres,

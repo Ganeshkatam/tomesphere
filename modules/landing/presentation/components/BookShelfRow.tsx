@@ -13,6 +13,7 @@ interface BookShelfRowProps {
   viewAllTitle?: string;
   countLabel?: string;
   headerBadge?: React.ReactNode;
+  onDemand?: boolean;
 }
 
 export default function BookShelfRow({
@@ -23,10 +24,56 @@ export default function BookShelfRow({
   viewAllTitle = "View All",
   countLabel = "Explore Collection",
   headerBadge,
+  onDemand = true,
 }: BookShelfRowProps) {
+  const sectionRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isRevealed, setIsRevealed] = useState(!onDemand);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const lastScrollY = useRef(0);
+  const lastScrollTime = useRef(0);
+
+  // On-demand scroll detection
+  useEffect(() => {
+    if (!onDemand || isRevealed) return;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const currentTime = Date.now();
+      const deltaY = currentScrollY - lastScrollY.current;
+      const deltaTime = currentTime - lastScrollTime.current;
+
+      if (deltaTime > 0 && deltaY > 0) {
+        const velocity = deltaY / deltaTime;
+        const rect = sectionRef.current?.getBoundingClientRect();
+
+        // Reveal on demand when approaching the viewport on downward scroll
+        if (
+          rect &&
+          rect.top < window.innerHeight + 300 &&
+          velocity > 0.01 &&
+          velocity < 2.0
+        ) {
+          setIsRevealed(true);
+        }
+      }
+
+      lastScrollY.current = currentScrollY;
+      lastScrollTime.current = currentTime;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    // Also run initial check in case already near viewport
+    const rect = sectionRef.current?.getBoundingClientRect();
+    if (rect && rect.top < window.innerHeight + 100) {
+      setIsRevealed(true);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [onDemand, isRevealed]);
 
   const checkScrollability = () => {
     if (scrollContainerRef.current) {
@@ -37,6 +84,7 @@ export default function BookShelfRow({
   };
 
   useEffect(() => {
+    if (!isRevealed) return;
     checkScrollability();
     const container = scrollContainerRef.current;
     if (container) {
@@ -49,7 +97,7 @@ export default function BookShelfRow({
       }
       window.removeEventListener("resize", checkScrollability);
     };
-  }, [items]);
+  }, [items, isRevealed]);
 
   if (!items || items.length === 0) return null;
 
@@ -66,7 +114,14 @@ export default function BookShelfRow({
   };
 
   return (
-    <section className="max-w-[1400px] mx-auto px-8 sm:px-12 lg:px-16 w-full group/shelf relative">
+    <section
+      ref={sectionRef}
+      className={`max-w-[1400px] mx-auto px-8 sm:px-12 lg:px-16 w-full group/shelf relative transition-all duration-700 ease-out ${
+        isRevealed
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 translate-y-8 pointer-events-none min-h-[100px]"
+      }`}
+    >
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
         <div>
           {headerBadge && <div className="mb-2">{headerBadge}</div>}
