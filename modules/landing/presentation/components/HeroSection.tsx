@@ -27,7 +27,7 @@ export default function HeroSection({
 
   return (
     <section
-      className="relative w-full min-h-[720px] lg:min-h-[780px] pt-20 pb-24 sm:pt-24 sm:pb-28 lg:pt-28 lg:pb-32 flex items-center z-10 bg-slate-950 overflow-hidden"
+      className="relative w-full min-h-[740px] lg:min-h-[820px] pt-20 pb-24 sm:pt-24 sm:pb-28 lg:pt-28 lg:pb-32 flex items-center z-10 bg-slate-950 overflow-hidden"
     >
       {/* Full-screen library sanctuary background backdrop with art-directed lighting balance */}
       <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
@@ -44,36 +44,36 @@ export default function HeroSection({
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-transparent to-slate-950" />
       </div>
 
-      {/* Hero Content (Positioned ~8-10% inward in a 1360px container) */}
-      <div className="w-full max-w-[1360px] mx-auto px-6 sm:px-10 lg:px-14 relative z-20">
-        <div className="max-w-2xl lg:max-w-[760px] text-left">
-          {/* Typographic Identity: Bold Modern Sans + Warm Editorial Serif Italic */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[72px] mb-4 leading-[1.05] tracking-tight text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
+      {/* Hero Content (Positioned generously to the left across full-width max-w-[1760px] layout) */}
+      <div className="w-full max-w-[1760px] mx-auto px-6 sm:px-10 lg:px-14 xl:px-20 relative z-20">
+        <div className="max-w-3xl xl:max-w-4xl text-left">
+          {/* Typographic Identity: Grand Bold Modern Sans + Warm Editorial Serif Italic */}
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[80px] xl:text-[88px] mb-4 leading-[1.02] tracking-tight text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
             <span className="font-sans font-extrabold block text-white">
               Explore books.
             </span>
-            <span className="font-serif italic font-normal text-amber-100/90 block mt-1.5">
+            <span className="font-serif italic font-normal text-amber-100/90 block mt-1">
               Discover ideas.
             </span>
           </h1>
 
           {/* Subtitle Statement */}
-          <p className="text-base sm:text-lg lg:text-xl text-slate-300 font-sans leading-relaxed mb-10 max-w-lg drop-shadow-md">
+          <p className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-sans leading-relaxed mb-10 max-w-xl drop-shadow-md">
             Discover, read, and explore knowledge
             <br className="hidden sm:inline" />
             your way.
           </p>
 
-          {/* Grand Search Bar: 720-760px wide × 72px high */}
-          <div className="relative max-w-full sm:max-w-[760px] mb-6 w-full">
+          {/* Grand Expanded Search Bar: 820px wide × 76px high */}
+          <div className="relative max-w-full sm:max-w-[820px] mb-7 w-full">
             <div className="relative group">
               {/* Subtle purple aura glow */}
               <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/40 via-purple-600/40 to-indigo-500/40 rounded-full opacity-40 group-hover:opacity-70 blur-md transition duration-500" />
 
-              <div className="relative flex items-center gap-2 p-2 sm:p-2.5 rounded-full bg-slate-950/85 backdrop-blur-2xl border border-white/20 shadow-2xl shadow-black/90 focus-within:border-indigo-400 focus-within:ring-1 focus-within:ring-indigo-500/40 transition-all duration-300 min-h-[64px] sm:min-h-[72px]">
+              <div className="relative flex items-center gap-2.5 p-2 sm:p-3 rounded-full bg-slate-950/85 backdrop-blur-2xl border border-white/20 shadow-2xl shadow-black/90 focus-within:border-indigo-400 focus-within:ring-1 focus-within:ring-indigo-500/40 transition-all duration-300 min-h-[68px] sm:min-h-[76px]">
                 {/* Search Icon */}
                 <div className="pl-3 sm:pl-5 text-slate-400 group-focus-within:text-indigo-400 transition-colors pointer-events-none">
-                  <Search size={22} />
+                  <Search size={24} />
                 </div>
 
                 {/* Input */}
@@ -86,7 +86,7 @@ export default function HeroSection({
                       if (e.key === "Enter") handleSearch();
                     }}
                     placeholder="Search books, authors, subjects, or topics..."
-                    className="w-full h-full pl-2 pr-10 bg-transparent border-none text-base sm:text-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-0 font-sans font-normal"
+                    className="w-full h-full pl-2 pr-10 bg-transparent border-none text-base sm:text-lg lg:text-xl text-white placeholder:text-slate-400 focus:outline-none focus:ring-0 font-sans font-normal"
                   />
 
                   {/* Voice Input */}
@@ -95,7 +95,7 @@ export default function HeroSection({
                       onTranscript={(text) => {
                         setSearchQuery(text);
                       }}
-                      className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white cursor-pointer"
+                      className="p-2.5 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white cursor-pointer"
                     />
                   </div>
 
@@ -117,22 +117,22 @@ export default function HeroSection({
                 {/* Explore CTA Button */}
                 <button
                   onClick={handleSearch}
-                  className="rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-md shadow-indigo-600/30 active:scale-95 whitespace-nowrap shrink-0 transition-all duration-200 h-11 sm:h-13 px-6 sm:px-8 text-sm sm:text-base flex items-center gap-2 cursor-pointer"
+                  className="rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-md shadow-indigo-600/30 active:scale-95 whitespace-nowrap shrink-0 transition-all duration-200 h-12 sm:h-14 px-7 sm:px-9 text-base sm:text-lg flex items-center gap-2 cursor-pointer"
                 >
                   <span>Explore</span>
-                  <ArrowRight size={18} />
+                  <ArrowRight size={20} />
                 </button>
               </div>
             </div>
           </div>
 
           {/* Category Quick Links */}
-          <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2 text-xs sm:text-sm text-slate-400 font-normal">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 text-sm sm:text-base text-slate-400 font-normal">
             <span className="text-slate-300 font-medium">Explore</span>
             <span className="text-slate-600 select-none">·</span>
             {["Fiction", "Science", "History", "Technology", "Biography", "Fantasy"].map(
               (topic, idx, arr) => (
-                <span key={topic} className="inline-flex items-center gap-3.5">
+                <span key={topic} className="inline-flex items-center gap-4">
                   <button
                     onClick={() => {
                       setSearchQuery(topic);
