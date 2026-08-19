@@ -8,7 +8,7 @@ This board defines the macro structural "shells" of TomeSphere. Every page in th
 | :--- | :--- | :--- |
 | **Marketing** | Brand awareness and conversion. | `/`, `/about`, `/contact`, `/terms` |
 | **Discovery** | Broad exploration, persistent search, and contextual filtering. | `/discover/*`, `/search` |
-| **Workspace** | Managing personal data, reading activity, and private collections. | `/home`, `/library`, `/account` |
+| **Workspace** | Managing personal data, reading activity, and private collections. | `/me`, `/library`, `/me/account` |
 | **Reader** | Pure immersive reading. | `/read/[id]` |
 | **Admin** | Operations, content ingestion, and platform management. | Admin App |
 

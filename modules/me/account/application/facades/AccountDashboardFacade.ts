@@ -1,6 +1,6 @@
-import { ProfileRepository } from "../../../user/profile/domain/repositories/ProfileRepository";
-import { getProfile } from "../../../user/profile/application/queries/GetProfile/handler";
-import { ProfileDto } from "../../../user/profile/application/queries/GetProfile/read-model";
+import { ProfileRepository } from "../../../../user/profile/domain/repositories/ProfileRepository";
+import { getProfile } from "../../../../user/profile/application/queries/GetProfile/handler";
+import { ProfileDto } from "../../../../user/profile/application/queries/GetProfile/read-model";
 import { DashboardReadModel } from "../ports/read-models/DashboardReadModel";
 import { getDashboardOverview } from "../queries/GetDashboardOverview/handler";
 import { DashboardOverviewDto } from "../queries/GetDashboardOverview/read-model";

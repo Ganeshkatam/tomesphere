@@ -1,4 +1,4 @@
-import { RecentActivityDto } from "@/modules/account/application/queries/GetRecentActivityQuery/dto";
+import { RecentActivityDto } from "@/modules/me/account/application/queries/GetRecentActivityQuery/dto";
 import {
   Activity,
   BookOpen,

@@ -4,7 +4,7 @@ import { ReadingStreakDto } from "@/modules/progress/application/queries/GetRead
 import { ReadingStatisticsDto } from "@/modules/progress/application/queries/GetReadingStatisticsQuery/dto";
 import { ReadingCalendarDto } from "@/modules/progress/application/queries/GetReadingCalendarQuery/dto";
 import { BookDto } from "@/modules/library/application/dto/response/BookDto";
-import { RecentActivityDto } from "@/modules/account/application/queries/GetRecentActivityQuery/dto";
+import { RecentActivityDto } from "@/modules/me/account/application/queries/GetRecentActivityQuery/dto";
 
 // Queries
 import { GetContinueReadingQuery } from "@/modules/library/application/queries/GetContinueReadingQuery";
@@ -15,7 +15,7 @@ import { GetReadingStreakQuery } from "@/modules/progress/application/queries/Ge
 import { GetReadingStatisticsQuery } from "@/modules/progress/application/queries/GetReadingStatisticsQuery";
 import { GetReadingCalendarQuery } from "@/modules/progress/application/queries/GetReadingCalendarQuery";
 import { GetSuggestedReadsQuery } from "@/modules/discovery/application/queries/GetSuggestedReadsQuery";
-import { GetRecentActivityQuery } from "@/modules/account/application/queries/GetRecentActivityQuery";
+import { GetRecentActivityQuery } from "@/modules/me/account/application/queries/GetRecentActivityQuery";
 import { IdentityProvider } from "@/shared/application/ports/identity/IdentityProvider";
 import { AuthenticatedUser } from "@/shared/application/dto/AuthenticatedUser";
 

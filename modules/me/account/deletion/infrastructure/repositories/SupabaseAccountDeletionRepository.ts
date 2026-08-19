@@ -5,7 +5,7 @@ import { AccountDeletionRepository } from "../../domain/repositories/AccountDele
  * Supabase implementation of AccountDeletionRepository.
  *
  * Moved from modules/user/profile/infrastructure/repositories/
- * to modules/account/deletion/infrastructure/repositories/.
+ * to modules/me/account/deletion/infrastructure/repositories/.
  *
  * Uses the admin client for user deletion (requires service role key).
  */

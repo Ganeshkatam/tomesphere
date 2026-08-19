@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { showError, showSuccess } from "@/lib/toast";
-import { getProfile, setupProfile } from "@/modules/account/presentation/actions/profile";
+import { getProfile, setupProfile } from "@/modules/me/account/presentation/actions/profile";
 
 export default function ProfileSetupPage({
   params,

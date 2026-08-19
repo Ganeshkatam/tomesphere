@@ -45,7 +45,7 @@ Every module (e.g., `/modules/books`) MUST strictly own its:
 
 - **Discovery:** Canonical destinations only (`/discover`, `/discover/authors`, etc.). Filters strictly belong in query parameters.
 - **Authentication:** Flows are fixed (`/login`, `/signup`, `/forgot-password`, `/reset-password`).
-- **Workspace:** Maps directly to bounded contexts (`/home`, `/library`, `/account`).
+- **Workspace:** Maps directly to bounded contexts (`/me`, `/library`, `/me/account`).
 - **Reader:** Remains a standalone application shell (`/read/[id]`).
 - **Admin:** Evolves independently from the public app as a separate bounded context.
 
