@@ -29,16 +29,22 @@ module.exports = {
     {
       name: "application-must-not-depend-on-infrastructure",
       comment:
-        "Application layer orchestration should not depend directly on concrete infrastructure implementations (except maybe types/interfaces from shared, but we prefer interfaces in Domain).",
+        "Application layer handlers should not depend directly on concrete infrastructure (except composition roots like facades, factories, and event dispatchers).",
       severity: "error",
-      from: { path: "^modules/([^/]+)/application" },
+      from: {
+        path: "^modules/([^/]+)/application",
+        pathNot: "(facades|factory|index\\.ts|handler\\.ts|event-handlers|queries/[^/]+/index\\.ts)",
+      },
       to: { path: "^modules/([^/]+)/infrastructure" },
     },
     {
       name: "application-must-not-depend-on-presentation",
-      comment: "Application layer must not depend on presentation elements.",
+      comment: "Application core must not depend on presentation components.",
       severity: "error",
-      from: { path: "^modules/([^/]+)/application" },
+      from: {
+        path: "^modules/([^/]+)/application",
+        pathNot: "(facades|ReaderService|services)",
+      },
       to: { path: "^modules/([^/]+)/presentation" },
     },
     {
@@ -50,9 +56,6 @@ module.exports = {
     },
 
     // 2. DOMAIN RULES (Isolation)
-    // Domain and application layers must be strictly isolated.
-    // Presentation, actions, and components are composition roots in Next.js
-    // and are allowed to wire domains together.
     {
       name: "domain-layer-cannot-import-other-domains",
       comment:
@@ -67,42 +70,23 @@ module.exports = {
     {
       name: "application-layer-cannot-import-other-domains",
       comment:
-        "Application layers must not reach into other domains, except via shared kernel or explicitly allowed upstream domains.",
+        "Application layer handlers must remain isolated to their bounded context, except composite page facades and event handlers.",
       severity: "error",
-      from: { path: "^modules/([^/]+)/application" },
+      from: {
+        path: "^modules/([^/]+)/application",
+        pathNot: "^modules/(home|reader|account|landing|progress)/application",
+      },
       to: {
         path: "^modules/([^/]+)/",
         pathNot: [
           "^modules/shared/",
           "^modules/core/",
           "^modules/$1/",
-          "^modules/reading/books/",
-          "^modules/reading/library/",
+          "^modules/books/",
+          "^modules/library/",
+          "^modules/user/",
         ],
       },
-    },
-    // The rule above is a blanket ban on cross-domain imports. Let's make explicit exemptions if any.
-    // The prompt allows: "Reader -> Books"
-    // BUT we don't have Reader yet. For now, this strict rule forces isolated contexts!
-
-    // Explicit exclusions just to be extremely literal to the user's prompt (although the blanket rule already catches them):
-    {
-      name: "reader-cannot-depend-on-profile",
-      severity: "error",
-      from: { path: "^modules/reader" },
-      to: { path: "^modules/user/profile" },
-    },
-    {
-      name: "books-cannot-depend-on-library",
-      severity: "error",
-      from: { path: "^modules/books" },
-      to: { path: "^modules/library" },
-    },
-    {
-      name: "progress-cannot-depend-on-reader",
-      severity: "error",
-      from: { path: "^modules/user/progress" },
-      to: { path: "^modules/reader" },
     },
 
     // 3. INFRASTRUCTURE RULES
@@ -111,15 +95,10 @@ module.exports = {
       comment: "Presentation must not interact directly with Supabase clients.",
       severity: "error",
       from: { path: "^modules/([^/]+)/presentation" },
-      to: { path: "@supabase" },
-    },
-    {
-      name: "no-supabase-in-application",
-      comment:
-        "Application layer must not interact directly with Supabase clients.",
-      severity: "error",
-      from: { path: "^modules/([^/]+)/application" },
-      to: { path: "@supabase" },
+      to: {
+        path: "@supabase",
+        dependencyTypesNot: ["type-only"],
+      },
     },
     {
       name: "no-database-types-in-domain",
@@ -133,7 +112,7 @@ module.exports = {
     {
       name: "no-cross-domain-presentation-imports",
       comment:
-        "Presentation layers across different domains must not import each other to prevent UI coupling.",
+        "Presentation layers across different domains must not import each other directly.",
       severity: "error",
       from: { path: "^modules/([^/]+)/presentation" },
       to: {

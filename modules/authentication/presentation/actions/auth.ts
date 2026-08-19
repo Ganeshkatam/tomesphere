@@ -5,7 +5,7 @@ import { SupabaseRateLimiter } from "@/modules/security/infrastructure/SupabaseR
 import { PostgresAuditLogger } from "@/modules/security/infrastructure/PostgresAuditLogger";
 import { SecurityAction } from "@/shared/kernel/security/SecurityAction";
 import { headers } from "next/headers";
-import { User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 
 // ─── Security Constants ─────────────────────────────────────
 

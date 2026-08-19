@@ -139,9 +139,12 @@ export class ReaderService {
           id: dto.id,
           userId: this.userId,
           bookId: dto.bookId,
-          selectionAnchor: JSON.parse(dto.location),
-          selectedText: dto.text,
-          color: dto.color,
+          selectionAnchor:
+            typeof dto.location === "string" && dto.location.startsWith("{")
+              ? JSON.parse(dto.location)
+              : dto.location,
+          selectedText: dto.text || dto.selectedText || "",
+          color: dto.color || "#FDE047",
           hasNote: false, // Computed later
         }));
         if (this.renderer) {

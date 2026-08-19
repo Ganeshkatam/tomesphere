@@ -1,11 +1,11 @@
-import { ReaderPositionDto } from "../../application/dto/response/ReaderPositionDto";
+import { ReaderPositionRecord } from "../models/ReaderTypes";
 import { LocationAnchor } from "@/shared/core/events/types";
 
 export interface ReaderPositionRepository {
   getPosition(
     userId: string,
     bookId: string,
-  ): Promise<ReaderPositionDto | null>;
+  ): Promise<ReaderPositionRecord | null>;
   upsertPosition(
     userId: string,
     bookId: string,

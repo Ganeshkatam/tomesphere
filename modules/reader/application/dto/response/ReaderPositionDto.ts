@@ -1,7 +1,3 @@
-import { LocationAnchor } from "@/shared/core/events/types";
+import type { ReaderPositionRecord } from "../../../domain/models/ReaderTypes";
 
-export interface ReaderPositionDto {
-  bookId: string;
-  locationAnchor: LocationAnchor;
-  lastReadAt: string;
-}
+export type ReaderPositionDto = ReaderPositionRecord;
