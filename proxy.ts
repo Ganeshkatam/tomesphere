@@ -6,12 +6,12 @@ import { NextResponse, type NextRequest } from "next/server";
  *
  * 1. Refreshes Supabase auth tokens on every request (prevents stale sessions).
  * 2. Protects workspace routes — redirects unauthenticated users to /login.
- * 3. Redirects authenticated users away from auth pages to /dashboard.
+ * 3. Redirects authenticated users away from auth pages to /me.
  */
 
 // Routes that require authentication
 const PROTECTED_PREFIXES = [
-  "/dashboard",
+  "/me",
   "/library",
   "/read",
   "/account",
@@ -87,7 +87,7 @@ export async function proxy(request: NextRequest) {
   // Redirect authenticated users away from auth pages
   if (user && isAuthRoute(pathname)) {
     const url = request.nextUrl.clone();
-    url.pathname = "/discover";
+    url.pathname = "/me";
     return NextResponse.redirect(url);
   }
 

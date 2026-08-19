@@ -200,6 +200,16 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
           <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 h-11 flex items-center">
             <nav className="flex items-center gap-8 h-full">
               <Link
+                href="/me"
+                className={`text-sm font-semibold h-full flex items-center transition-colors border-b-2 ${
+                  pathname === "/me"
+                    ? "text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400 font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border-transparent hover:border-slate-300 dark:hover:border-slate-700"
+                }`}
+              >
+                Home
+              </Link>
+              <Link
                 href="/discover"
                 className={`text-sm font-semibold h-full flex items-center transition-colors border-b-2 ${
                   pathname && pathname.startsWith("/discover")
@@ -218,16 +228,6 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
                 }`}
               >
                 Library
-              </Link>
-              <Link
-                href="/dashboard"
-                className={`text-sm font-semibold h-full flex items-center transition-colors border-b-2 ${
-                  pathname && pathname.startsWith("/dashboard")
-                    ? "text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400 font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border-transparent hover:border-slate-300 dark:hover:border-slate-700"
-                }`}
-              >
-                Dashboard
               </Link>
             </nav>
           </div>

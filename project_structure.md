@@ -66,10 +66,10 @@ tomesphere-app
 │   │   ├── account
 │   │   │   ├── layout.tsx
 │   │   │   └── page.tsx
-│   │   ├── dashboard
-│   │   │   └── page.tsx
 │   │   ├── library
 │   │   │   ├── actions.ts
+│   │   │   └── page.tsx
+│   │   ├── me
 │   │   │   └── page.tsx
 │   │   ├── onboarding
 │   │   │   ├── [id]
@@ -746,6 +746,7 @@ tomesphere-app
 │   │   ├── presentation
 │   │   │   ├── components
 │   │   │   │   ├── ActivityWidget.tsx
+│   │   │   │   ├── AuthenticatedHomeClient.tsx
 │   │   │   │   ├── ContinueReadingWidget.tsx
 │   │   │   │   ├── CurrentReadingWidget.tsx
 │   │   │   │   ├── GoalWidget.tsx
@@ -923,9 +924,14 @@ tomesphere-app
 │   │   └── types
 │   ├── me
 │   │   ├── application
+│   │   │   ├── facades
+│   │   │   │   ├── index.ts
+│   │   │   │   └── MePageFacade.ts
 │   │   │   ├── queries
 │   │   │   └── repositories
 │   │   └── presentation
+│   │       └── components
+│   │           └── MeClient.tsx
 │   ├── notifications
 │   │   ├── application
 │   │   │   └── event-handlers

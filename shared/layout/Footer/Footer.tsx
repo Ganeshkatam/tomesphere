@@ -33,8 +33,7 @@ const HIDE_FOOTER_ROUTES = [
   "/verify-email",
   "/read",
   "/account",
-  "/home",
-  "/dashboard",
+  "/me",
   "/onboarding",
 ];
 
