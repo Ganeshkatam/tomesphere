@@ -36,7 +36,6 @@ export async function getLibraryNavigation(
       type: "smart-filter",
       title: "Recently Opened",
     },
-    { id: "smart:downloaded", type: "smart-filter", title: "Downloaded" },
   ];
 
   return {
