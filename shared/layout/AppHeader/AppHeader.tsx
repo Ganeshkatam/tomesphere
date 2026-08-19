@@ -25,7 +25,7 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
       id="top-nav"
     >
       {/* Upper Tier */}
-      <div className="h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+      <div className="h-16 max-w-7xl mx-auto px-2 sm:px-4 lg:px-4 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link
           href="/"
@@ -132,7 +132,7 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
       {/* Lower Tier (Application navigation) */}
       {variant === "application" && (
         <div className="border-t border-[var(--border-subtle)]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-11 flex items-center">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-4 h-11 flex items-center">
             <nav className="flex items-center gap-8 h-full">
               <Link
                 href="/discover"
