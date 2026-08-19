@@ -74,7 +74,7 @@ module.exports = {
       severity: "error",
       from: {
         path: "^modules/([^/]+)/application",
-        pathNot: "^modules/(home|reader|account|landing|progress)/application",
+        pathNot: "^modules/(home|reader|account|landing|progress|me)/application",
       },
       to: {
         path: "^modules/([^/]+)/",
