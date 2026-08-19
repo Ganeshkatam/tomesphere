@@ -746,7 +746,6 @@ tomesphere-app
 │   │   ├── presentation
 │   │   │   ├── components
 │   │   │   │   ├── ActivityWidget.tsx
-│   │   │   │   ├── AuthenticatedHomeClient.tsx
 │   │   │   │   ├── ContinueReadingWidget.tsx
 │   │   │   │   ├── CurrentReadingWidget.tsx
 │   │   │   │   ├── GoalWidget.tsx
