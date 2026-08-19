@@ -14,7 +14,7 @@ export function Toolbar({ service }: ToolbarProps) {
   return (
     <div className="h-14 bg-[var(--surface-default)] border-b border-[var(--border-default)] flex items-center justify-between px-4 sticky top-0 z-50">
       <NavigationToolbar />
-      <ProgressToolbar />
+      <ProgressToolbar service={service} />
       <div className="flex items-center gap-4">
         <AnnotationToolbar service={service} />
         <SettingsToolbar service={service} />

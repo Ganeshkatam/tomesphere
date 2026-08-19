@@ -1,5 +1,5 @@
 import { executeReaderFacade } from "@/modules/reader/application/facades";
-import { ReaderShell } from "@/modules/reader/components/ReaderShell";
+import { ClientReaderShell } from "@/modules/reader/components/ClientReaderShell";
 import Link from "next/link";
 import { BookOpen, ArrowLeft, LogIn } from "lucide-react";
 
@@ -58,6 +58,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     );
   }
 
-  return <ReaderShell data={data} />;
+  return <ClientReaderShell data={data} />;
 }
 

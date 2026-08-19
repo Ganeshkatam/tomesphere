@@ -20,7 +20,7 @@ export const Viewer = forwardRef<HTMLDivElement>((_, ref) => {
       {/* The EPUB.js renderer will mount exactly into this div */}
       <div
         ref={ref}
-        className="w-full h-full max-w-4xl mx-auto bg-white shadow-2xl relative"
+        className="w-full h-full max-w-4xl mx-auto relative"
       />
     </div>
   );

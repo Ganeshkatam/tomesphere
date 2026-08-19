@@ -83,6 +83,11 @@ export class ReaderService {
 
     // Open the document
     await this.renderer.initialize(bookUrl, container);
+    
+    // If destroy was called during async initialize (e.g. React Strict Mode), abort
+    if (!this.renderer) return;
+    
+    await this.renderer.display();
 
     // Load annotations in order: highlights first, then notes, then bookmarks
     await this.loadHighlights();
@@ -95,6 +100,7 @@ export class ReaderService {
     // Setup auto-save safety nets
     this.setupAutoSaveListeners();
 
+    if (!this.renderer) return; // one last check
     store.setRendererReady(true);
     this.startSession();
   }

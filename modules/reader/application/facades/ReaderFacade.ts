@@ -8,7 +8,6 @@ import {
 import { IdentityProvider } from "@/shared/application/ports/identity/IdentityProvider";
 import { BookRepository } from "@/modules/books/domain/repositories/BookRepository";
 import { BookId } from "@/modules/books/domain/value-objects";
-import { getBook } from "@/modules/books/application/queries/GetBook/handler";
 
 export class ReaderFacade {
   constructor(
@@ -22,22 +21,22 @@ export class ReaderFacade {
       throw new Error("Unauthorized");
     }
 
-    const bookEntityDto = await getBook(this.bookRepository, {
-      bookId: BookId.create(bookIdStr),
-    });
-    if (!bookEntityDto) {
+    const bookEntity = await this.bookRepository.findById(
+      BookId.create(bookIdStr),
+    );
+    if (!bookEntity) {
       throw new Error("Book not found");
     }
 
+    const primaryFile = bookEntity.getPrimaryFile();
+
     const book: BookReaderDto = {
-      id: bookEntityDto.id,
-      title: bookEntityDto.title,
-      author:
-        (bookEntityDto as any).authors?.map((a: any) => a.name).join(", ") ||
-        "Unknown",
-      coverUrl: (bookEntityDto as any).coverUrl || null,
-      fileUrl: (bookEntityDto as any).fileUrl || "/mock-document.pdf",
-      fileType: (bookEntityDto as any).fileType || "pdf",
+      id: bookEntity.bookId.value,
+      title: bookEntity.title,
+      author: bookEntity.authors.join(", ") || "Unknown",
+      coverUrl: bookEntity.coverUrl,
+      fileUrl: primaryFile?.storagePath || "",
+      fileType: (primaryFile?.format as "pdf" | "epub") || "pdf",
     };
 
     // For V1, session, preferences, and capabilities can be mocked or fetched from DB
@@ -75,3 +74,4 @@ export class ReaderFacade {
     };
   }
 }
+

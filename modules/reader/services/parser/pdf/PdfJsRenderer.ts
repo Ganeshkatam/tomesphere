@@ -73,6 +73,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.style.scrollBehavior = "smooth";
     container.style.overscrollBehavior = "contain";
 
+
     const loadingTask = pdfjsLib.getDocument(bookUrl);
     this.loadingTask = loadingTask;
     const pdfDocument = await loadingTask.promise;
@@ -277,8 +278,9 @@ export class PdfJsRenderer implements ReaderRenderer {
     canvas.style.display = "block";
     canvas.style.width = `${viewport.width}px`;
     canvas.style.height = `${viewport.height}px`;
-    canvas.style.maxWidth = "100%";
-    canvas.style.height = "auto";
+    // Removed maxWidth = "100%" so that zooming physically enlarges the canvas beyond screen width
+    canvas.style.backgroundColor = "white";
+    canvas.style.boxShadow = "0 25px 50px -12px rgb(0 0 0 / 0.25)";
     canvas.style.objectFit = "contain";
     canvas.style.userSelect = "text";
     canvas.setAttribute("aria-label", `Rendered PDF page ${pageNumber}`);
