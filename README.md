@@ -130,13 +130,29 @@ tomesphere-app/
 
 ## Scripts
 
-- `npm run dev`: Starts the Next.js development server with Turbopack.
-- `npm run build`: Compiles and builds the production application.
-- `npm run start`: Starts the production server.
-- `npm run lint`: Runs ESLint checks across the codebase.
-- `npm run lint:arch`: Enforces Clean Architecture boundary rules using Dependency Cruiser.
-- `npm run test`: Runs unit and domain test suites using Jest.
-- `npx tsc --noEmit`: Validates TypeScript type checking without emitting files.
+| Command | Description |
+| :--- | :--- |
+| `npm run dev` | Starts the Next.js development server with Turbopack |
+| `npm run dev:host` | Starts the development server binding to `0.0.0.0` for network testing |
+| `npm run build` | Compiles and optimizes the production build |
+| `npm run start` | Starts the Next.js production server |
+| `npm run lint` | Runs ESLint across all routes, modules, and components |
+| `npm run lint:arch` | Validates Clean Architecture domain and layer isolation via Dependency Cruiser |
+| `npm run test` | Executes domain and application test suites using Jest |
+| `npx tsc --noEmit` | Validates TypeScript strict mode type checking without emitting files |
+
+---
+
+## Continuous Integration
+
+The repository includes an automated GitHub Actions CI workflow (`.github/workflows/ci.yml`) targeting **Node.js 24 LTS**. Every push and pull request to `main` undergoes full quality gate verification:
+
+1. **Dependency Installation**: `npm ci`
+2. **TypeScript Strict Type Check**: `npx tsc --noEmit`
+3. **ESLint Static Code Analysis**: `npm run lint`
+4. **Architecture Enforcement**: `npm run lint:arch` (Dependency Cruiser boundary check)
+5. **Unit Test Verification**: `npm run test` (Jest test suite)
+6. **Next.js Production Build**: `npm run build` (Turbopack compilation & static analysis)
 
 ---
 
