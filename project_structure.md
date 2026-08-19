@@ -9,123 +9,13 @@ tomesphere-app
 │       └── ci.yml
 ├── .vscode
 │   └── settings.json
-├── admin
-│   ├── public
-│   │   ├── file.svg
-│   │   ├── globe.svg
-│   │   ├── next.svg
-│   │   ├── vercel.svg
-│   │   └── window.svg
-│   ├── src
-│   │   ├── app
-│   │   │   ├── announcements
-│   │   │   │   ├── [id]
-│   │   │   │   │   └── page.tsx
-│   │   │   │   └── page.tsx
-│   │   │   ├── authors
-│   │   │   │   ├── [id]
-│   │   │   │   │   └── page.tsx
-│   │   │   │   └── page.tsx
-│   │   │   ├── books
-│   │   │   │   └── page.tsx
-│   │   │   ├── collections
-│   │   │   │   ├── [id]
-│   │   │   │   │   └── page.tsx
-│   │   │   │   └── page.tsx
-│   │   │   ├── featured_books
-│   │   │   │   └── page.tsx
-│   │   │   ├── genres
-│   │   │   │   ├── [id]
-│   │   │   │   │   └── page.tsx
-│   │   │   │   └── page.tsx
-│   │   │   ├── languages
-│   │   │   │   ├── [id]
-│   │   │   │   │   └── page.tsx
-│   │   │   │   └── page.tsx
-│   │   │   ├── login
-│   │   │   │   ├── actions.ts
-│   │   │   │   └── page.tsx
-│   │   │   ├── ops
-│   │   │   │   ├── jobs
-│   │   │   │   │   └── page.tsx
-│   │   │   │   ├── outbox
-│   │   │   │   │   └── page.tsx
-│   │   │   │   ├── projections
-│   │   │   │   │   └── page.tsx
-│   │   │   │   ├── search
-│   │   │   │   │   └── page.tsx
-│   │   │   │   └── page.tsx
-│   │   │   ├── subjects
-│   │   │   │   ├── [id]
-│   │   │   │   │   └── page.tsx
-│   │   │   │   └── page.tsx
-│   │   │   ├── favicon.ico
-│   │   │   ├── globals.css
-│   │   │   ├── layout.tsx
-│   │   │   └── page.tsx
-│   │   ├── features
-│   │   │   ├── announcements
-│   │   │   │   └── actions.ts
-│   │   │   ├── authors
-│   │   │   │   └── actions.ts
-│   │   │   ├── books
-│   │   │   │   ├── components
-│   │   │   │   │   └── BookFileUpload.tsx
-│   │   │   │   ├── actions.ts
-│   │   │   │   └── file-actions.ts
-│   │   │   ├── collections
-│   │   │   │   └── actions.ts
-│   │   │   ├── featured_books
-│   │   │   │   └── actions.ts
-│   │   │   ├── genres
-│   │   │   │   └── actions.ts
-│   │   │   ├── languages
-│   │   │   │   └── actions.ts
-│   │   │   ├── ops
-│   │   │   │   ├── health-queries.ts
-│   │   │   │   ├── job-actions.ts
-│   │   │   │   ├── job-queries.ts
-│   │   │   │   ├── outbox-actions.ts
-│   │   │   │   ├── outbox-queries.ts
-│   │   │   │   ├── projection-actions.ts
-│   │   │   │   ├── projection-queries.ts
-│   │   │   │   └── search-queries.ts
-│   │   │   └── subjects
-│   │   │       └── actions.ts
-│   │   ├── lib
-│   │   │   ├── domain
-│   │   │   │   ├── announcements.ts
-│   │   │   │   ├── authors.ts
-│   │   │   │   ├── books.ts
-│   │   │   │   ├── collections.ts
-│   │   │   │   ├── featured_books.ts
-│   │   │   │   ├── genres.ts
-│   │   │   │   ├── infrastructure.ts
-│   │   │   │   ├── languages.ts
-│   │   │   │   └── subjects.ts
-│   │   │   └── supabase-admin.ts
-│   │   └── middleware.ts
-│   ├── .gitignore
-│   ├── AGENTS.md
-│   ├── ARCHITECTURE.md
-│   ├── CLAUDE.md
-│   ├── eslint.config.mjs
-│   ├── next-env.d.ts
-│   ├── next.config.ts
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── postcss.config.mjs
-│   ├── README.md
-│   ├── tsconfig.json
-│   └── tsconfig.tsbuildinfo
 ├── app
 │   ├── (app)
 │   │   ├── book
-│   │   │   └── [slug]
+│   │   │   └── [id]
 │   │   │       └── page.tsx
 │   │   ├── discover
 │   │   │   ├── _components
-│   │   │   │   ├── DiscoverSidebar.tsx
 │   │   │   │   └── DiscoveryPage.tsx
 │   │   │   ├── authors
 │   │   │   │   └── page.tsx
@@ -138,7 +28,7 @@ tomesphere-app
 │   │   │   ├── trending
 │   │   │   │   ├── page.tsx
 │   │   │   │   └── TrendingClient.tsx
-│   │   │   ├── layout.tsx
+│   │   │   ├── loading.tsx
 │   │   │   └── page.tsx
 │   │   ├── search
 │   │   │   └── page.tsx
@@ -186,9 +76,11 @@ tomesphere-app
 │   │   │   └── page.tsx
 │   │   └── layout.tsx
 │   ├── api
+│   │   ├── book-resources
+│   │   │   └── [bookId]
+│   │   │       └── download
+│   │   │           └── route.ts
 │   │   └── cron
-│   │       ├── process-jobs
-│   │       │   └── route.ts
 │   │       └── process-outbox
 │   │           └── route.ts
 │   ├── auth
@@ -197,7 +89,6 @@ tomesphere-app
 │   ├── sitemap
 │   │   └── page.tsx
 │   ├── error.tsx
-│   ├── globals-mobile-fix.css
 │   ├── globals.css
 │   ├── layout.tsx
 │   ├── loading.tsx
@@ -206,8 +97,9 @@ tomesphere-app
 │   ├── template.tsx
 │   └── theme-init.ts
 ├── architecture
-│   └── decisions
-│       └── ADR-0005-code-architecture-freeze.md
+│   ├── decisions
+│   │   └── ADR-0005-code-architecture-freeze.md
+│   └── deployment.txt
 ├── docs
 │   ├── architecture
 │   │   ├── audits
@@ -247,6 +139,8 @@ tomesphere-app
 │   │   ├── README.md
 │   │   ├── security.md
 │   │   └── testing.md
+│   ├── database
+│   │   └── DB_FRUGAL_AUDIT.md
 │   ├── design
 │   │   ├── design_board_0_product_vision.md
 │   │   ├── design_board_1_ia.md
@@ -256,6 +150,7 @@ tomesphere-app
 │   │   ├── design_board_3b_spacing.md
 │   │   ├── DESIGN_GOVERNANCE.md
 │   │   ├── design_system.md
+│   │   ├── DISCOVERY_RUNTIME_ACCEPTANCE.md
 │   │   ├── README.md
 │   │   ├── ROUTE_GOVERNANCE.md
 │   │   └── UI_IMPLEMENTATION_GUIDE.md
@@ -264,19 +159,6 @@ tomesphere-app
 │   │   └── DR-002-search-ranking-strategy.md
 │   ├── reader
 │   │   └── Reader_Experience.md
-│   ├── tree
-│   │   ├── project_structure_20260718_061326.md
-│   │   ├── project_structure_20260718_131858.md
-│   │   ├── project_structure_20260718_140508.md
-│   │   ├── project_structure_20260718_143731.md
-│   │   ├── project_structure_20260718_183631.md
-│   │   ├── project_structure_20260718_194214.md
-│   │   ├── project_structure_20260718_212327.md
-│   │   ├── project_structure_20260719_110514.md
-│   │   ├── project_structure_20260719_115754.md
-│   │   ├── project_structure_20260719_124638.md
-│   │   ├── project_structure_20260719_234056.md
-│   │   └── project_structure_20260720_224925.md
 │   ├── ACTIVE_PRODUCT.md
 │   ├── API_ARCHITECTURE.md
 │   ├── API_ERROR_CODES.md
@@ -294,11 +176,8 @@ tomesphere-app
 │   ├── actions
 │   │   └── action-result.ts
 │   ├── hooks
-│   │   └── useDebounce.ts
-│   ├── logger.ts
 │   ├── toast.tsx
-│   ├── utils.ts
-│   └── validators.ts
+│   └── utils.ts
 ├── modules
 │   ├── account
 │   │   ├── application
@@ -528,53 +407,46 @@ tomesphere-app
 │   │   │   │   ├── GetBook
 │   │   │   │   │   ├── handler.ts
 │   │   │   │   │   └── query.ts
+│   │   │   │   ├── GetBookDetail
+│   │   │   │   │   └── handler.ts
 │   │   │   │   ├── GetBookViewerContext
 │   │   │   │   │   └── handler.ts
 │   │   │   │   ├── GetTrendingBooks
 │   │   │   │   │   └── handler.ts
+│   │   │   │   ├── ResolveBookDownloadResource
 │   │   │   │   └── SearchBooks
 │   │   │   │       ├── handler.ts
 │   │   │   │       └── query.ts
 │   │   │   └── types.ts
 │   │   ├── components
 │   │   │   ├── BookCard.tsx
-│   │   │   ├── BookDetailClient.tsx
+│   │   │   ├── BookDetailActions.tsx
+│   │   │   ├── BookDetailHero.tsx
 │   │   │   ├── ExploreClient.tsx
 │   │   │   ├── RandomBookButton.tsx
 │   │   │   └── RecentlyViewed.tsx
 │   │   ├── domain
 │   │   │   ├── entities
-│   │   │   │   ├── Book.js
 │   │   │   │   └── Book.ts
 │   │   │   ├── events
-│   │   │   │   ├── BookEvents.js
 │   │   │   │   └── BookEvents.ts
 │   │   │   ├── repositories
 │   │   │   │   ├── ports
 │   │   │   │   │   └── BookRepositoryContract.ts
 │   │   │   │   ├── BookFileRepository.ts
-│   │   │   │   ├── BookRepository.js
 │   │   │   │   └── BookRepository.ts
 │   │   │   └── value-objects
-│   │   │       ├── BookFile.js
 │   │   │       ├── BookFile.ts
-│   │   │       ├── index.js
 │   │   │       └── index.ts
 │   │   ├── infrastructure
 │   │   │   ├── mappers
-│   │   │   │   ├── BookFileMapper.js
 │   │   │   │   ├── BookFileMapper.ts
-│   │   │   │   ├── BookMapper.js
-│   │   │   │   ├── BookMapper.spec-ref.ts
 │   │   │   │   └── BookMapper.ts
 │   │   │   ├── models
-│   │   │   │   ├── BookRow.js
 │   │   │   │   └── BookRow.ts
 │   │   │   ├── read-models
 │   │   │   │   └── BookReadModel.ts
 │   │   │   ├── SupabaseBookFileRepository.ts
-│   │   │   ├── SupabaseBookRepository.js
-│   │   │   ├── SupabaseBookRepository.spec-ref.ts
 │   │   │   └── SupabaseBookRepository.ts
 │   │   ├── presentation
 │   │   │   ├── actions
@@ -603,9 +475,16 @@ tomesphere-app
 │   │       └── SupabaseCollectionRepository.ts
 │   ├── discovery
 │   │   ├── application
+│   │   │   ├── dto
+│   │   │   │   ├── AuthorCardDto.ts
+│   │   │   │   ├── BookSummaryDto.ts
+│   │   │   │   └── CollectionSummaryDto.ts
 │   │   │   ├── facades
 │   │   │   │   ├── DiscoveryFacade.ts
 │   │   │   │   └── index.ts
+│   │   │   ├── mappers
+│   │   │   │   ├── BookSummaryMapper.test.ts
+│   │   │   │   └── BookSummaryMapper.ts
 │   │   │   ├── ports
 │   │   │   │   └── read-models
 │   │   │   │       └── DiscoveryReadModel.ts
@@ -669,7 +548,11 @@ tomesphere-app
 │   │   │       ├── CollectionCard.tsx
 │   │   │       ├── CollectionGrid.tsx
 │   │   │       ├── CuratedSections.tsx
+│   │   │       ├── DiscoveryHero.tsx
+│   │   │       ├── DiscoverySearch.tsx
+│   │   │       ├── DiscoverySection.tsx
 │   │   │       ├── DiscoverySidebar.tsx
+│   │   │       ├── FeaturedBooks.tsx
 │   │   │       ├── GenreBrowser.tsx
 │   │   │       ├── GenreCard.tsx
 │   │   │       ├── GenreGrid.tsx
@@ -1000,6 +883,8 @@ tomesphere-app
 │   │   │   ├── events
 │   │   │   │   ├── index.ts
 │   │   │   │   └── LibraryEvents.ts
+│   │   │   ├── models
+│   │   │   │   └── Collection.ts
 │   │   │   ├── repositories
 │   │   │   │   ├── ports
 │   │   │   │   │   └── LibraryRepositoryContract.ts
@@ -1225,6 +1110,8 @@ tomesphere-app
 │   │   ├── domain
 │   │   │   ├── events
 │   │   │   │   └── ReaderEvents.ts
+│   │   │   ├── models
+│   │   │   │   └── ReaderTypes.ts
 │   │   │   ├── repositories
 │   │   │   │   ├── BookmarkRepository.ts
 │   │   │   │   ├── HighlightRepository.ts
@@ -1394,24 +1281,15 @@ tomesphere-app
 │           │       └── ProfileStats.tsx
 │           └── services
 ├── public
+│   ├── about_cta_banner.jpg
+│   ├── about_showcase.jpg
 │   ├── book-placeholder.svg
-│   ├── icon-192.png
-│   ├── icon-512.png
 │   ├── icon.png
 │   ├── library_bg.png
 │   ├── logo.png
-│   ├── manifest.json
-│   ├── sw-update-handler.js
-│   ├── sw.js
-│   └── workbox-f1770938.js
+│   └── mock-document.pdf
 ├── scripts
-│   ├── dev.js
-│   ├── generate_structure.js
-│   ├── generate_tree.js
-│   ├── generate-tokens.js
-│   ├── migrate-imports.js
-│   ├── update_imports.js
-│   └── update_routes.js
+│   └── update-tree.mjs
 ├── shared
 │   ├── application
 │   │   ├── dto
@@ -1437,8 +1315,8 @@ tomesphere-app
 │   │   ├── components
 │   │   │   └── GlobalErrorBoundary.tsx
 │   │   ├── database
-│   │   │   ├── admin.ts
 │   │   │   ├── client.ts
+│   │   │   ├── database.types.ts
 │   │   │   └── server.ts
 │   │   ├── events
 │   │   │   ├── EventBus.ts
@@ -1458,12 +1336,12 @@ tomesphere-app
 │   │   └── events
 │   │       └── DomainEvent.ts
 │   ├── feedback
-│   │   ├── components
-│   │   │   └── AppToaster.tsx
-│   │   └── PWAUpdatePrompt
-│   │       └── PWAUpdatePrompt.tsx
+│   │   └── components
+│   │       └── AppToaster.tsx
 │   ├── hooks
 │   ├── infrastructure
+│   │   ├── database
+│   │   │   └── WorkerDatabaseClient.ts
 │   │   ├── events
 │   │   │   ├── DomainEventPublisher.test.ts
 │   │   │   ├── EventDispatcher.ts
@@ -1472,16 +1350,6 @@ tomesphere-app
 │   │   │   └── InProcessEventBus.ts
 │   │   ├── identity
 │   │   │   └── SupabaseIdentityProvider.ts
-│   │   ├── jobs
-│   │   │   ├── JobDispatcher.ts
-│   │   │   ├── JobHandler.ts
-│   │   │   ├── JobHandlerRegistry.ts
-│   │   │   ├── JobQueue.ts
-│   │   │   ├── JobRepository.ts
-│   │   │   ├── MaterializedViewRefreshJobHandler.ts
-│   │   │   ├── ProjectionRebuildJobHandler.ts
-│   │   │   ├── SupabaseJobRepository.ts
-│   │   │   └── types.ts
 │   │   ├── outbox
 │   │   │   └── serializeStagedEvents.ts
 │   │   └── projections
@@ -1502,9 +1370,16 @@ tomesphere-app
 │   │   ├── AppHeader
 │   │   │   ├── AppHeader.tsx
 │   │   │   └── index.ts
+│   │   ├── AppPage
+│   │   │   ├── AppPage.tsx
+│   │   │   └── index.ts
 │   │   ├── Footer
 │   │   │   └── Footer.tsx
-│   │   └── index.ts
+│   │   ├── PageContainer
+│   │   │   ├── index.ts
+│   │   │   └── PageContainer.tsx
+│   │   ├── index.ts
+│   │   └── layout.css
 │   ├── navigation
 │   │   ├── actions
 │   │   ├── pages
@@ -1512,7 +1387,6 @@ tomesphere-app
 │   │   ├── types
 │   │   └── README.md
 │   ├── providers
-│   │   ├── pwa-context.tsx
 │   │   └── theme-context.tsx
 │   ├── ui
 │   │   ├── Button
@@ -1530,6 +1404,9 @@ tomesphere-app
 │   │   │   ├── Dropdown.module.css
 │   │   │   ├── Dropdown.tsx
 │   │   │   └── index.ts
+│   │   ├── EmptyState
+│   │   │   ├── EmptyState.tsx
+│   │   │   └── index.ts
 │   │   ├── Icon
 │   │   │   ├── Icon.module.css
 │   │   │   ├── Icon.tsx
@@ -1544,7 +1421,6 @@ tomesphere-app
 │   │   │   └── Modal.tsx
 │   │   ├── animations.tsx
 │   │   ├── BackButton.tsx
-│   │   ├── EmptyState.tsx
 │   │   ├── FormError.tsx
 │   │   ├── LoadingSpinner.tsx
 │   │   ├── motion.tsx
@@ -1596,52 +1472,69 @@ tomesphere-app
 │   ├── .temp
 │   │   ├── cli-latest
 │   │   └── linked-project.json
-│   └── migrations
-│       ├── 20260716221802_domain_schema_normalization.sql
-│       ├── 20260717000000_add_biography_to_profiles.sql
-│       ├── 20260717000000_security_schema.sql
-│       ├── 20260717000001_move_reading_goals.sql
-│       ├── 20260717020054_discovery_recommendation_signals.sql
-│       ├── 20260717081000_discovery_read_models.sql
-│       ├── 20260717090000_drop_legacy_tables.sql
-│       ├── 20260717091500_outbox_pattern.sql
-│       ├── 20260717150000_analytics_projections.sql
-│       ├── 20260717150001_analytics_rpcs.sql
-│       ├── 20260717150002_analytics_backfill.sql
-│       ├── 20260717160000_performance_tuning.sql
-│       ├── 20260717170000_legacy_cleanup.sql
-│       ├── 20260718000000_clean_retired_schema.sql
-│       ├── 20260718000000_reader_m1.sql
-│       ├── 20260718100000_reader_bookmarks.sql
-│       ├── 20260718162040_sanitize_account_logs.sql
-│       ├── 20260718162100_sanitize_account_logs.sql
-│       ├── 20260718163400_increment_download_count.sql
-│       ├── 20260718200000_security_hardening.sql
-│       ├── 20260718300000_profile_setup_rpc.sql
-│       ├── 20260719022000_create_announcements.sql
-│       ├── 20260719050000_search_catalog.sql
-│       ├── 20260719053000_create_export_requests.sql
-│       ├── 20260719060000_discovery_search_infrastructure.sql
-│       ├── 20260719070000_v1_architecture_simplification.sql
-│       ├── 20260719080000_v1_database_freeze.sql
-│       ├── 20260720000000_search_projection_schema.sql
-│       ├── 20260720000001_search_projection_metadata.sql
-│       ├── 20260720000002_database_globalization.sql
-│       ├── 20260720000003_search_rpc.sql
-│       ├── 20260720000004_search_analytics_schema.sql
-│       ├── 20260720000005_search_facets_rpc.sql
-│       ├── 20260720000006_search_autocomplete_rpc.sql
-│       ├── 20260720000007_search_history_rpc.sql
-│       ├── 20260720000008_trending_searches_projection.sql
-│       ├── 20260720000009_synonym_expansion.sql
-│       ├── 20260720000010_typo_tolerance.sql
-│       ├── 20260720000011_trgm_indexes.sql
-│       ├── 20260720000012_search_rpc_fixes.sql
-│       ├── 20260720000013_book_admin_rpc.sql
-│       ├── 20260720000014_book_lifecycle_columns.sql
-│       ├── 20260720000015_book_rpc_optimistic_concurrency.sql
-│       ├── 20260720120443_sprint_4_editorial_domains.sql
-│       └── 20260720132624_notifications_read_model.sql
+│   ├── migrations
+│   │   ├── 20260716221802_domain_schema_normalization.sql
+│   │   ├── 20260717000000_add_biography_to_profiles.sql
+│   │   ├── 20260717000000_security_schema.sql
+│   │   ├── 20260717000001_move_reading_goals.sql
+│   │   ├── 20260717020054_discovery_recommendation_signals.sql
+│   │   ├── 20260717081000_discovery_read_models.sql
+│   │   ├── 20260717090000_drop_legacy_tables.sql
+│   │   ├── 20260717091500_outbox_pattern.sql
+│   │   ├── 20260717150000_analytics_projections.sql
+│   │   ├── 20260717150001_analytics_rpcs.sql
+│   │   ├── 20260717150002_analytics_backfill.sql
+│   │   ├── 20260717160000_performance_tuning.sql
+│   │   ├── 20260717170000_legacy_cleanup.sql
+│   │   ├── 20260718000000_clean_retired_schema.sql
+│   │   ├── 20260718000000_reader_m1.sql
+│   │   ├── 20260718100000_reader_bookmarks.sql
+│   │   ├── 20260718162040_sanitize_account_logs.sql
+│   │   ├── 20260718162100_sanitize_account_logs.sql
+│   │   ├── 20260718163400_increment_download_count.sql
+│   │   ├── 20260718200000_security_hardening.sql
+│   │   ├── 20260718300000_profile_setup_rpc.sql
+│   │   ├── 20260719022000_create_announcements.sql
+│   │   ├── 20260719050000_search_catalog.sql
+│   │   ├── 20260719053000_create_export_requests.sql
+│   │   ├── 20260719060000_discovery_search_infrastructure.sql
+│   │   ├── 20260719070000_v1_architecture_simplification.sql
+│   │   ├── 20260719080000_v1_database_freeze.sql
+│   │   ├── 20260720000000_search_projection_schema.sql
+│   │   ├── 20260720000001_search_projection_metadata.sql
+│   │   ├── 20260720000002_database_globalization.sql
+│   │   ├── 20260720000003_search_rpc.sql
+│   │   ├── 20260720000004_search_analytics_schema.sql
+│   │   ├── 20260720000005_search_facets_rpc.sql
+│   │   ├── 20260720000006_search_autocomplete_rpc.sql
+│   │   ├── 20260720000007_search_history_rpc.sql
+│   │   ├── 20260720000008_trending_searches_projection.sql
+│   │   ├── 20260720000009_synonym_expansion.sql
+│   │   ├── 20260720000010_typo_tolerance.sql
+│   │   ├── 20260720000011_trgm_indexes.sql
+│   │   ├── 20260720000012_search_rpc_fixes.sql
+│   │   ├── 20260720000013_book_admin_rpc.sql
+│   │   ├── 20260720000014_book_lifecycle_columns.sql
+│   │   ├── 20260720000015_book_rpc_optimistic_concurrency.sql
+│   │   ├── 20260720120443_sprint_4_editorial_domains.sql
+│   │   ├── 20260720132624_notifications_read_model.sql
+│   │   ├── 20260721142000_split_compound_authors.sql
+│   │   ├── 20260721143000_add_position_to_book_authors.sql
+│   │   ├── 20260721183500_fix_discovery_refresh.sql
+│   │   ├── 20260721200001_frugal_001_exact_redundancy_cleanup.sql
+│   │   ├── 20260721200002_frugal_002_internal_database_boundary.sql
+│   │   ├── 20260721200003_frugal_003_stale_claim_recovery.sql
+│   │   ├── 20260721200004_frugal_004_database_authorization.sql
+│   │   ├── 20260721200005_frugal_005_rls_normalization.sql
+│   │   ├── 20260721200006_frugal_006_search_consolidation.sql
+│   │   ├── 20260721200007_retire_legacy_tables.sql
+│   │   ├── 20260721200008_complete_database_sanitisation.sql
+│   │   ├── 20260721200009_database_security_and_policy_hardening.sql
+│   │   ├── 20260721200010_revoke_security_definer_from_authenticated.sql
+│   │   ├── 20260721200011_rls_policy_deduplication.sql
+│   │   ├── 20260721200012_populate_canonical_book_files.sql
+│   │   └── 20260721200013_schema_table_and_column_documentation.sql
+│   └── schema_210726183034.sql
 ├── templates
 │   └── bounded-context
 │       ├── application
@@ -1656,25 +1549,42 @@ tomesphere-app
 │       │   ├── models
 │       │   └── repositories
 │       └── presentation
+├── tests
+│   ├── book
+│   │   ├── book-actions.spec.ts
+│   │   ├── book-mapper.test.ts
+│   │   ├── book-network.spec.ts
+│   │   └── book-performance.spec.ts
+│   ├── discovery
+│   │   ├── discovery-accessibility.spec.ts
+│   │   ├── discovery-network.spec.ts
+│   │   ├── discovery-performance.spec.ts
+│   │   ├── discovery-reduced-motion.spec.ts
+│   │   ├── discovery-responsive.spec.ts
+│   │   └── discovery-search.spec.ts
+│   └── fixtures
+│       └── discovery-edge-cases.ts
 ├── .depcruise.js
 ├── .env.local
 ├── .gitignore
 ├── .unimportedrc.json
 ├── .vercelignore
 ├── ARCHITECTURE_RULES.md
+├── book-performance-baseline.json
 ├── eslint.config.mjs
 ├── instrumentation.ts
 ├── jest.config.js
+├── jest.setup.js
 ├── knip.json
 ├── next-env.d.ts
 ├── next.config.mjs
 ├── package-lock.json
 ├── package.json
+├── performance-baseline.json
+├── playwright.config.ts
 ├── postcss.config.mjs
-├── project_structure.md
 ├── proxy.ts
 ├── README.md
-├── sql.json
 ├── tailwind.config.ts
 ├── tsconfig.json
 ├── tsconfig.tsbuildinfo

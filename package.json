@@ -11,7 +11,9 @@
     "lint:arch": "depcruise --config .depcruise.js modules app",
     "lint:future": "eslint future",
     "typecheck:future": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "update:tree": "node scripts/update-tree.mjs",
+    "tree": "node scripts/update-tree.mjs"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^9.0.0",

@@ -139,6 +139,7 @@ tomesphere-app/
 | `npm run lint` | Runs ESLint across all routes, modules, and components |
 | `npm run lint:arch` | Validates Clean Architecture domain and layer isolation via Dependency Cruiser |
 | `npm run test` | Executes domain and application test suites using Jest |
+| `npm run update:tree` | Automatically regenerates the repository project tree in `project_structure.md` |
 | `npx tsc --noEmit` | Validates TypeScript strict mode type checking without emitting files |
 
 ---
