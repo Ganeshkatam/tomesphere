@@ -19,6 +19,7 @@ type PageState = {
   loadPromise: Promise<void> | null;
   generation: number;
   renderedZoom: number | null;
+  isIntersecting: boolean;
 };
 
 const PAGE_CLASS = "tomesphere-pdf-page";
@@ -69,10 +70,11 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.style.display = "block";
     container.style.width = "100%";
     container.style.height = "100%";
+    container.style.padding = "24px";
     container.style.boxSizing = "border-box";
     container.style.scrollBehavior = "smooth";
     container.style.overscrollBehavior = "contain";
-
+    container.classList.add("tomesphere-pdf-scroll-container");
 
     const loadingTask = pdfjsLib.getDocument(bookUrl);
     this.loadingTask = loadingTask;
@@ -127,11 +129,11 @@ export class PdfJsRenderer implements ReaderRenderer {
       wrapper.style.width = "100%";
       wrapper.style.minHeight = "320px";
       wrapper.style.aspectRatio = `${this.placeholderRatio}`;
-      wrapper.style.display = "flex";
-      wrapper.style.justifyContent = "center";
-      wrapper.style.alignItems = "flex-start";
+      wrapper.style.display = "block";
+      wrapper.style.textAlign = "center";
       wrapper.style.boxSizing = "border-box";
-      wrapper.style.contain = "layout paint style";
+      wrapper.style.margin = "0 auto 24px auto";
+      wrapper.style.contain = "layout style";
       wrapper.style.scrollMarginBlock = "12px";
       wrapper.classList.add(PAGE_PLACEHOLDER_CLASS);
 
@@ -143,6 +145,7 @@ export class PdfJsRenderer implements ReaderRenderer {
         loadPromise: null,
         generation: 0,
         renderedZoom: null,
+        isIntersecting: false,
       };
       this.pageStates.set(pageNumber, state);
       fragment.appendChild(wrapper);
@@ -160,6 +163,9 @@ export class PdfJsRenderer implements ReaderRenderer {
         for (const entry of entries) {
           const pageNumber = Number((entry.target as HTMLElement).dataset.pageNumber);
           if (!Number.isInteger(pageNumber)) continue;
+          
+          const state = this.pageStates.get(pageNumber);
+          if (state) state.isIntersecting = entry.isIntersecting;
 
           if (entry.isIntersecting) {
             void this.ensurePageRendered(pageNumber);
@@ -275,10 +281,11 @@ export class PdfJsRenderer implements ReaderRenderer {
     canvas.className = "tomesphere-pdf-canvas";
     canvas.width = Math.max(1, Math.floor(viewport.width * outputScale));
     canvas.height = Math.max(1, Math.floor(viewport.height * outputScale));
-    canvas.style.display = "block";
+    canvas.style.display = "inline-block";
+    canvas.style.margin = "0 auto";
     canvas.style.width = `${viewport.width}px`;
     canvas.style.height = `${viewport.height}px`;
-    // Removed maxWidth = "100%" so that zooming physically enlarges the canvas beyond screen width
+    canvas.style.maxWidth = "none";
     canvas.style.backgroundColor = "white";
     canvas.style.boxShadow = "0 25px 50px -12px rgb(0 0 0 / 0.25)";
     canvas.style.objectFit = "contain";
@@ -292,6 +299,27 @@ export class PdfJsRenderer implements ReaderRenderer {
       throw new Error("Unable to acquire a 2D canvas context");
     }
 
+    context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
+    const renderTask = page.render({
+      canvasContext: context,
+      viewport,
+    } as any);
+    state.renderTask = renderTask;
+
+    try {
+      await renderTask.promise;
+    } catch (error: unknown) {
+      if (state.renderTask === renderTask) state.renderTask = null;
+      // The canvas was never added to the DOM, so no need to remove it
+      page.cleanup();
+      throw error;
+    }
+
+    if (!this.isCurrentPageState(state, generation) || zoom !== this.currentZoom) {
+      page.cleanup();
+      return;
+    }
+
     state.wrapper.replaceChildren(canvas);
     state.wrapper.style.aspectRatio = "auto";
     state.wrapper.style.minHeight = "0";
@@ -299,34 +327,6 @@ export class PdfJsRenderer implements ReaderRenderer {
     state.canvas = canvas;
     state.page = page;
     state.renderedZoom = zoom;
-
-    context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
-    const renderTask = page.render({
-      canvasContext: context,
-      viewport,
-    });
-    state.renderTask = renderTask;
-
-    try {
-      await renderTask.promise;
-    } catch (error: unknown) {
-      if (state.renderTask === renderTask) state.renderTask = null;
-      if (state.canvas === canvas) {
-        canvas.remove();
-        state.canvas = null;
-        state.renderedZoom = null;
-      }
-      if (state.page === page) state.page = null;
-      page.cleanup();
-      this.restorePlaceholder(state);
-      throw error;
-    }
-
-    if (!this.isCurrentPageState(state, generation) || zoom !== this.currentZoom) {
-      await this.unloadPage(pageNumber, generation);
-      return;
-    }
-
     state.renderTask = null;
     this.enforceRenderBudget(this.currentPageNum);
   }
@@ -335,7 +335,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     return !this.destroyed && state.generation === generation;
   }
 
-  private async unloadPage(pageNumber: number, expectedGeneration?: number): Promise<void> {
+  private async unloadPage(pageNumber: number, expectedGeneration?: number, keepCanvas = false): Promise<void> {
     const state = this.pageStates.get(pageNumber);
     if (!state) return;
     if (expectedGeneration !== undefined && state.generation !== expectedGeneration) return;
@@ -352,13 +352,15 @@ export class PdfJsRenderer implements ReaderRenderer {
     const page = state.page;
     state.page = null;
     state.loadPromise = null;
-    state.renderedZoom = null;
-    state.canvas?.remove();
-    state.canvas = null;
+
+    if (!keepCanvas) {
+      state.renderedZoom = null;
+      state.canvas?.remove();
+      state.canvas = null;
+      this.restorePlaceholder(state);
+    }
 
     if (page) page.cleanup();
-
-    this.restorePlaceholder(state);
   }
 
   private restorePlaceholder(state: PageState): void {
@@ -478,7 +480,7 @@ export class PdfJsRenderer implements ReaderRenderer {
   }
 
   preferences(prefs: ReaderPreferencesDto): void {
-    const newZoom = Math.max(0.25, Math.min(4, prefs.zoom / 100));
+    const newZoom = Math.max(0.25, Math.min(2.7, prefs.zoom / 100));
     if (this.currentZoom === newZoom) return;
 
     this.currentZoom = newZoom;
@@ -490,11 +492,25 @@ export class PdfJsRenderer implements ReaderRenderer {
     const unloads: Promise<void>[] = [];
     for (const [pageNumber, state] of this.pageStates) {
       if (state.canvas || state.loadPromise) {
-        unloads.push(this.unloadPage(pageNumber));
+        // Keep the old canvas visible while rendering the new zoom to prevent a white flash
+        const keepCanvas = state.isIntersecting || pageNumber === targetPage;
+        unloads.push(this.unloadPage(pageNumber, undefined, keepCanvas));
       }
     }
     await Promise.all(unloads);
-    if (!this.destroyed) await this.ensurePageRendered(targetPage);
+    
+    if (!this.destroyed) {
+      const reRenders: Promise<void>[] = [];
+      for (const [pageNumber, state] of this.pageStates) {
+        if (state.isIntersecting) {
+          reRenders.push(this.ensurePageRendered(pageNumber));
+        }
+      }
+      if (reRenders.length === 0) {
+        reRenders.push(this.ensurePageRendered(targetPage));
+      }
+      await Promise.all(reRenders);
+    }
   }
 
   async destroy(): Promise<void> {
@@ -534,7 +550,11 @@ export class PdfJsRenderer implements ReaderRenderer {
 
   private isCancellationError(error: unknown): boolean {
     if (error instanceof Error) {
-      return error.name === "RenderingCancelledException" || /cancel/i.test(error.message);
+      return (
+        error.name === "RenderingCancelledException" || 
+        /cancel/i.test(error.message) ||
+        /worker was destroyed/i.test(error.message)
+      );
     }
     return false;
   }

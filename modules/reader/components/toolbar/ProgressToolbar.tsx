@@ -55,7 +55,7 @@ export function ProgressToolbar({ service }: ProgressToolbarProps) {
         </span>
         <button
           onClick={() => {
-            const newZoom = Math.min(300, preferences.zoom + 10);
+            const newZoom = Math.min(270, preferences.zoom + 10);
             updatePreference("zoom", newZoom);
             service?.applyPreferences({ ...preferences, zoom: newZoom });
           }}

@@ -54,7 +54,14 @@ export function ReaderShell({ data }: ReaderShellProps) {
           }
         }
       } catch (err) {
-        console.error("Failed to initialize Reader:", err);
+        const message = err instanceof Error ? err.message : "";
+        const isExpectedTeardown =
+          /worker was destroyed/i.test(message) ||
+          /cancel/i.test(message) ||
+          !mounted;
+        if (!isExpectedTeardown) {
+          console.error("Failed to initialize Reader:", err);
+        }
       }
     }
 

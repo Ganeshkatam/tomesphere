@@ -37,7 +37,7 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
   };
 
   const adjustZoom = (delta: number) => {
-    const newZoom = Math.max(50, Math.min(300, preferences.zoom + delta));
+    const newZoom = Math.max(50, Math.min(270, preferences.zoom + delta));
     updatePreference("zoom", newZoom);
     if (service) {
       service.applyPreferences({ ...preferences, zoom: newZoom });

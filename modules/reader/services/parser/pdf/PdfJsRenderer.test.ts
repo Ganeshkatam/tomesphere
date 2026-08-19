@@ -9,7 +9,7 @@ type MockRenderTask = {
 type MockPage = {
   cleanup: jest.Mock<void, []>;
   getViewport: jest.Mock<{ width: number; height: number }, [{ scale: number }]>;
-  render: jest.Mock<MockRenderTask, [{ canvasContext: CanvasRenderingContext2D; viewport: unknown }]>;
+  render: jest.Mock<MockRenderTask, [{ canvasContext: CanvasRenderingContext2D; viewport: unknown; canvas?: any }]>;
 };
 
 const getDocumentMock = jest.mocked(pdfjsLib.getDocument);
@@ -44,7 +44,7 @@ function createPage(): MockPage {
       width: 800 * scale,
       height: 1100 * scale,
     })),
-    render: jest.fn(() => renderTask),
+    render: jest.fn((_args: any) => renderTask),
   };
 }
 
@@ -78,8 +78,8 @@ describe("PdfJsRenderer continuous scrolling", () => {
   });
 
   it("creates one placeholder wrapper per PDF page and renders only the initial page", async () => {
-    const { document, pages } = createDocument(500);
-    getDocumentMock.mockReturnValue({ promise: Promise.resolve(document) } as pdfjsLib.PDFDocumentLoadingTask);
+    const { document: pdfDoc, pages } = createDocument(500);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc) } as pdfjsLib.PDFDocumentLoadingTask);
 
     const container = document.createElement("div");
     Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
@@ -98,8 +98,8 @@ describe("PdfJsRenderer continuous scrolling", () => {
   });
 
   it("renders an intersecting page and releases it after leaving the virtualization window", async () => {
-    const { document, pages } = createDocument(4);
-    getDocumentMock.mockReturnValue({ promise: Promise.resolve(document) } as pdfjsLib.PDFDocumentLoadingTask);
+    const { document: pdfDoc, pages } = createDocument(4);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc) } as pdfjsLib.PDFDocumentLoadingTask);
 
     const container = document.createElement("div");
     Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
@@ -128,8 +128,8 @@ describe("PdfJsRenderer continuous scrolling", () => {
   });
 
   it("goTo scrolls to the requested page and updates the persisted anchor", async () => {
-    const { document } = createDocument(3);
-    getDocumentMock.mockReturnValue({ promise: Promise.resolve(document) } as pdfjsLib.PDFDocumentLoadingTask);
+    const { document: pdfDoc } = createDocument(3);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc) } as pdfjsLib.PDFDocumentLoadingTask);
 
     const container = document.createElement("div");
     Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
@@ -158,8 +158,8 @@ describe("PdfJsRenderer continuous scrolling", () => {
   });
 
   it("cancels old renders and re-renders the active page when zoom changes", async () => {
-    const { document, pages } = createDocument(2);
-    getDocumentMock.mockReturnValue({ promise: Promise.resolve(document) } as pdfjsLib.PDFDocumentLoadingTask);
+    const { document: pdfDoc, pages } = createDocument(2);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc) } as pdfjsLib.PDFDocumentLoadingTask);
 
     const container = document.createElement("div");
     Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
