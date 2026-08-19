@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useRef, Suspense } from "react";
+import { use, useState, useRef, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -11,10 +11,13 @@ import {
   ChevronLeft,
   Flame,
   Star,
-  Sparkles,
   Layers,
   Clock,
+  Info,
+  Pause,
+  Play,
   Bookmark,
+  Sparkles,
 } from "lucide-react";
 import { MePageDto } from "../../application/facades/MePageFacade";
 import { CurrentReadingDto } from "@/modules/library/application/queries/GetCurrentReadingQuery/dto";
@@ -31,8 +34,8 @@ export function MeClient({ data }: MeClientProps) {
   return (
     <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8 flex flex-col gap-10 sm:gap-14">
       
-      {/* 1. Serene Authenticated Header */}
-      <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
+      {/* 1. Header with greeting and quick actions */}
+      <section className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-1">
             <Sparkles size={13} />
@@ -46,7 +49,6 @@ export function MeClient({ data }: MeClientProps) {
           </p>
         </div>
 
-        {/* Quick Nav Pills */}
         <div className="flex items-center gap-2.5 flex-wrap">
           <Link
             href="/library"
@@ -65,7 +67,12 @@ export function MeClient({ data }: MeClientProps) {
         </div>
       </section>
 
-      {/* 2. Continue Reading (Authenticated User In-Progress Books) */}
+      {/* 2. Netflix-Style Trending Books Showcase with Auto-Scroll */}
+      <Suspense fallback={<NetflixTrendingSkeleton />}>
+        <NetflixTrendingShowcase promise={data.discovery} />
+      </Suspense>
+
+      {/* 3. Continue Reading (Authenticated User In-Progress Books) */}
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
           <div className="flex items-center gap-2.5">
@@ -92,23 +99,10 @@ export function MeClient({ data }: MeClientProps) {
         </Suspense>
       </section>
 
-      {/* 3. Trending Books (Exact same clean shelf style as public page) */}
+      {/* 4. Featured Books (Exact same size as public page) */}
       <Suspense fallback={<BooksShelfSkeleton />}>
         <PublicSizedShelfSection
-          title="Trending in Digital Archives"
-          description="Popular titles our community is actively reading this week."
-          icon={<Flame size={16} />}
-          iconBg="bg-red-50 dark:bg-red-950/60 border-red-200/60 dark:border-red-800/60 text-red-600 dark:text-red-400"
-          viewAllHref="/discover/trending"
-          promiseKey="trending"
-          promise={data.discovery}
-        />
-      </Suspense>
-
-      {/* 4. Featured Books (Exact same clean shelf style as public page) */}
-      <Suspense fallback={<BooksShelfSkeleton />}>
-        <PublicSizedShelfSection
-          title="Featured Masterpieces"
+          title="Featured Books"
           description="Handpicked discoveries from the TomeSphere collection."
           icon={<Star size={16} />}
           iconBg="bg-amber-50 dark:bg-amber-950/60 border-amber-200/60 dark:border-amber-800/60 text-amber-600 dark:text-amber-400"
@@ -118,11 +112,11 @@ export function MeClient({ data }: MeClientProps) {
         />
       </Suspense>
 
-      {/* 5. Recently Added (Exact same clean shelf style as public page) */}
+      {/* 5. Recently Added to Public Archives */}
       <Suspense fallback={<BooksShelfSkeleton />}>
         <PublicSizedShelfSection
           title="Recently Added to Archives"
-          description="Fresh additions to our growing digital public domain catalog."
+          description="Fresh additions to our growing digital catalog."
           icon={<Clock size={16} />}
           iconBg="bg-cyan-50 dark:bg-cyan-950/60 border-cyan-200/60 dark:border-cyan-800/60 text-cyan-600 dark:text-cyan-400"
           viewAllHref="/discover/new"
@@ -131,12 +125,12 @@ export function MeClient({ data }: MeClientProps) {
         />
       </Suspense>
 
-      {/* 6. Curated Collections (Public Showcase) */}
+      {/* 6. Curated Collections */}
       <Suspense fallback={<DiscoveryTabsSkeleton />}>
         <CuratedCollectionsSection promise={data.discovery} />
       </Suspense>
 
-      {/* 7. Browse by Subject & Discipline (Public Showcase) */}
+      {/* 7. Browse by Subject & Discipline */}
       <Suspense fallback={<DiscoveryTabsSkeleton />}>
         <SubjectsExplorerSection promise={data.discovery} />
       </Suspense>
@@ -146,7 +140,271 @@ export function MeClient({ data }: MeClientProps) {
 }
 
 // ----------------------------------------------------------------------
-// Continue Reading Shelf
+// 2. Netflix-Style Trending Showcase with Auto-Scroll & Public Sized Cards
+// ----------------------------------------------------------------------
+
+function NetflixTrendingShowcase({
+  promise,
+}: {
+  promise: Promise<DiscoveryOverviewPageDto>;
+}) {
+  const result = use(promise);
+  const trendingBooks = result?.trending?.books || [];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const total = Math.min(trendingBooks.length, 10);
+
+  // Auto-scroll timer (advances every 5.5 seconds unless paused)
+  useEffect(() => {
+    if (total <= 1 || isPaused) return;
+
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % total);
+    }, 5500);
+
+    return () => clearInterval(timer);
+  }, [total, isPaused]);
+
+  // Center active card in horizontal row when activeIndex changes
+  useEffect(() => {
+    if (cardRefs.current[activeIndex] && scrollRef.current) {
+      const activeEl = cardRefs.current[activeIndex];
+      const container = scrollRef.current;
+      if (activeEl) {
+        const leftPos = activeEl.offsetLeft - container.offsetWidth / 2 + activeEl.offsetWidth / 2;
+        container.scrollTo({ left: Math.max(0, leftPos), behavior: "smooth" });
+      }
+    }
+  }, [activeIndex]);
+
+  if (trendingBooks.length === 0) {
+    return null;
+  }
+
+  const spotlightBook = trendingBooks[activeIndex] || trendingBooks[0];
+
+  const scroll = (direction: "left" | "right") => {
+    if (direction === "left") {
+      setActiveIndex((prev) => (prev - 1 + total) % total);
+    } else {
+      setActiveIndex((prev) => (prev + 1) % total);
+    }
+  };
+
+  return (
+    <section
+      className="space-y-6"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      
+      {/* Billboard Spotlight Hero */}
+      <div className="relative overflow-hidden rounded-3xl bg-slate-950 border border-slate-800 shadow-2xl text-white">
+        
+        {/* Ambient Backdrop Glow */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-transparent z-10 pointer-events-none" />
+        {spotlightBook.coverUrl && (
+          <div className="absolute right-0 top-0 w-full sm:w-3/4 h-full opacity-25 dark:opacity-35 blur-3xl pointer-events-none overflow-hidden transition-all duration-700">
+            <Image
+              src={spotlightBook.coverUrl}
+              alt=""
+              fill
+              className="object-cover"
+              sizes="70vw"
+            />
+          </div>
+        )}
+
+        <div className="relative z-20 p-6 sm:p-8 lg:p-10 flex flex-col md:flex-row items-center md:items-stretch justify-between gap-6 lg:gap-10">
+          
+          {/* Left Metadata & CTAs */}
+          <div className="flex-1 flex flex-col justify-between max-w-2xl">
+            <div>
+              {/* Badge & Auto-Play Status */}
+              <div className="flex items-center gap-2.5 mb-3 flex-wrap">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-bold uppercase tracking-wider shadow-xs">
+                  <Flame size={14} className="text-red-500 fill-red-500" />
+                  <span># {activeIndex + 1} Trending in Digital Archives</span>
+                </div>
+
+                <button
+                  onClick={() => setIsPaused(!isPaused)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-slate-400 hover:text-white text-[11px] font-medium transition-colors cursor-pointer"
+                  title={isPaused ? "Resume auto-scroll" : "Pause auto-scroll"}
+                >
+                  {isPaused ? <Play size={11} /> : <Pause size={11} />}
+                  <span>{isPaused ? "Paused" : "Auto-playing"}</span>
+                </button>
+              </div>
+
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-display font-extrabold text-white tracking-tight leading-tight mb-2 drop-shadow-md transition-all duration-300">
+                {spotlightBook.title}
+              </h2>
+
+              <p className="text-sm sm:text-base text-indigo-300 font-medium mb-3">
+                by {spotlightBook.authors?.map((a: any) => a.name).join(", ") || "Public Domain"}
+              </p>
+
+              {spotlightBook.genres && spotlightBook.genres.length > 0 && (
+                <div className="flex items-center gap-2 flex-wrap mb-4">
+                  {spotlightBook.genres.slice(0, 4).map((g: any, i: number) => (
+                    <span
+                      key={i}
+                      className="px-2.5 py-0.5 rounded-lg bg-slate-800/80 text-slate-300 text-[11px] font-semibold border border-slate-700/80 shadow-xs"
+                    >
+                      {typeof g === "string" ? g : g.name}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <p className="text-xs sm:text-sm text-slate-300 font-serif line-clamp-2 sm:line-clamp-3 leading-relaxed max-w-xl">
+                Immerse yourself in this timeless literary masterpiece from our curated global public domain archives.
+              </p>
+            </div>
+
+            {/* Action Buttons & Indicator Dots */}
+            <div className="pt-6 space-y-3">
+              <div className="flex items-center gap-3 flex-wrap">
+                <Link
+                  href={`/read/${spotlightBook.id}`}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-950 font-bold text-xs sm:text-sm transition-all shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  <BookOpen size={16} />
+                  <span>Start Reading</span>
+                </Link>
+                <Link
+                  href={`/book/${spotlightBook.id}`}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white font-bold text-xs sm:text-sm border border-slate-700 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  <Info size={16} />
+                  <span>Book Details</span>
+                </Link>
+              </div>
+
+              {/* Progress Slide Indicator Strip */}
+              <div className="flex items-center gap-1.5 pt-1">
+                {trendingBooks.slice(0, 10).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveIndex(i)}
+                    className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                      activeIndex === i
+                        ? "w-7 bg-red-500 shadow-sm"
+                        : "w-2 bg-slate-700 hover:bg-slate-500"
+                    }`}
+                    aria-label={`Go to slide ${i + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Spotlight Cover */}
+          <div className="flex-shrink-0 relative group">
+            <div className="w-[170px] sm:w-[195px] md:w-[210px] aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl relative border-2 border-slate-700/80 transform md:group-hover:scale-105 transition-transform duration-300">
+              {spotlightBook.coverUrl ? (
+                <Image
+                  src={spotlightBook.coverUrl}
+                  alt={spotlightBook.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 195px, 210px"
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full bg-slate-800 flex items-center justify-center text-slate-400">
+                  <BookOpen size={36} />
+                </div>
+              )}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Trending Books Carousel Row (Same size as public page cards) */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Flame size={18} className="text-red-500 fill-red-500" />
+            <h3 className="text-base sm:text-lg font-display font-bold text-slate-900 dark:text-white tracking-tight">
+              Top Trending in Digital Archives
+            </h3>
+          </div>
+
+          {/* Navigation Arrows */}
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => scroll("left")}
+              aria-label="Previous trending book"
+              className="w-8 h-8 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shadow-xs"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              aria-label="Next trending book"
+              className="w-8 h-8 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shadow-xs"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+
+        {/* Horizontal Carousel Row using exact Public Card Dimensions */}
+        <div
+          ref={scrollRef}
+          className="flex gap-4 sm:gap-5 overflow-x-auto pb-4 pt-1 no-scrollbar scroll-smooth snap-x snap-mandatory"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {trendingBooks.slice(0, 10).map((book: any, idx: number) => {
+            const isSelected = activeIndex === idx;
+            const rank = idx + 1;
+
+            return (
+              <div
+                key={book.id || idx}
+                ref={(el) => {
+                  cardRefs.current[idx] = el;
+                }}
+                onClick={() => setActiveIndex(idx)}
+                className={`w-[170px] sm:w-[195px] md:w-[210px] shrink-0 snap-start flex flex-col relative transition-all duration-300 cursor-pointer ${
+                  isSelected ? "scale-[1.03]" : "opacity-85 hover:opacity-100"
+                }`}
+              >
+                {/* Clean Rank Badge on top-left corner */}
+                <div
+                  className={`absolute top-2.5 left-2.5 z-30 px-2 py-0.5 rounded-lg text-xs font-black shadow-md ${
+                    isSelected
+                      ? "bg-red-500 text-white"
+                      : "bg-slate-900/90 text-slate-200 border border-slate-700/80"
+                  }`}
+                >
+                  #{rank}
+                </div>
+
+                <BookCard book={book} />
+
+                {/* Active Selection Ring */}
+                {isSelected && (
+                  <div className="absolute inset-0 ring-2 ring-red-500 rounded-2xl pointer-events-none" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+    </section>
+  );
+}
+
+// ----------------------------------------------------------------------
+// 3. Continue Reading Shelf
 // ----------------------------------------------------------------------
 
 function ContinueReadingShelf({
@@ -232,7 +490,7 @@ function ContinueReadingShelf({
 }
 
 // ----------------------------------------------------------------------
-// Public Sized Horizontal Shelf Section (Exact BookCard & scroll rows)
+// 4, 5. Public Sized Horizontal Shelf Section (Exact w-[170px] sm:w-[195px] md:w-[210px] BookCard)
 // ----------------------------------------------------------------------
 
 interface PublicSizedShelfSectionProps {
@@ -357,7 +615,7 @@ function PublicSizedShelfSection({
 }
 
 // ----------------------------------------------------------------------
-// Curated Collections Showcase
+// 6. Curated Collections Showcase
 // ----------------------------------------------------------------------
 
 function CuratedCollectionsSection({
@@ -422,7 +680,7 @@ function CuratedCollectionsSection({
 }
 
 // ----------------------------------------------------------------------
-// Subjects & Disciplines Explorer
+// 7. Subjects & Disciplines Explorer
 // ----------------------------------------------------------------------
 
 function SubjectsExplorerSection({
@@ -501,6 +759,15 @@ function SubjectsExplorerSection({
 // ----------------------------------------------------------------------
 // Skeletons
 // ----------------------------------------------------------------------
+
+function NetflixTrendingSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      <div className="h-64 sm:h-80 bg-slate-200 dark:bg-slate-900 rounded-3xl" />
+      <div className="h-36 bg-slate-200 dark:bg-slate-900 rounded-2xl" />
+    </div>
+  );
+}
 
 function BooksShelfSkeleton() {
   return (
