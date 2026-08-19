@@ -4,10 +4,12 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  // if "next" is in param, use it as the redirect URL
-  const next = searchParams.get("next") ?? "/home";
-  
+  const next = searchParams.get("next") ?? "/dashboard";
+
   if (code) {
+    const isProduction = process.env.NODE_ENV === "production";
+    const redirectResponse = NextResponse.redirect(`${origin}${next}`);
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -17,35 +19,42 @@ export async function GET(request: NextRequest) {
             return request.cookies.get(name)?.value;
           },
           set(name: string, value: string, options: CookieOptions) {
-            request.cookies.set({
+            redirectResponse.cookies.set({
               name,
               value,
               ...options,
+              httpOnly: true,
+              secure: isProduction,
+              sameSite: "lax",
             });
           },
           remove(name: string, options: CookieOptions) {
-            request.cookies.set({
+            redirectResponse.cookies.set({
               name,
               value: "",
               ...options,
             });
           },
         },
-      }
+      },
     );
-    
+
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      // If this is a password recovery, Supabase typically sets the user in the session
-      // and we might need to redirect to /reset-password
       const type = searchParams.get("type");
       if (type === "recovery") {
-        return NextResponse.redirect(`${origin}/reset-password`);
+        const recoveryResponse = NextResponse.redirect(`${origin}/reset-password`);
+        // copy any cookies set
+        redirectResponse.cookies.getAll().forEach((c) => {
+          recoveryResponse.cookies.set(c);
+        });
+        return recoveryResponse;
       }
-      return NextResponse.redirect(`${origin}${next}`);
+      return redirectResponse;
     }
+    console.error("[OAuth Callback Error]", error);
   }
 
-  // return the user to an error page with instructions
+  // Return to login with error details if exchange failed
   return NextResponse.redirect(`${origin}/login?error=Invalid_or_expired_link`);
 }
