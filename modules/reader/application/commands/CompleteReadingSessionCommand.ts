@@ -5,6 +5,7 @@ export interface CompleteReadingSessionRequest {
   userId: string;
   bookId: string;
   durationSeconds: number; // The observed reading timer tracked by the client
+  pagesRead: number; // Normalized pages counted by the session layer
 }
 
 export async function executeCompleteReadingSession(
@@ -13,10 +14,11 @@ export async function executeCompleteReadingSession(
   const supabase = await createSupabaseServerClient();
 
   // We emit the session ended event. The Analytics projections (built in Phase 10C)
-  // will pick this up and aggregate it into progress_daily and analytics_user_daily.
+  // and user statistics triggers will pick this up and aggregate it.
   await emitOutboxEvent(supabase, "reader.session.ended", {
     userId: request.userId,
     bookId: request.bookId,
     durationSeconds: request.durationSeconds,
+    pagesRead: request.pagesRead,
   });
 }

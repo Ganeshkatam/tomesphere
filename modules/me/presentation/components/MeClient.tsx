@@ -36,6 +36,7 @@ import { CurrentReadingDto } from "@/modules/library/application/queries/GetCurr
 import { DiscoveryOverviewPageDto } from "@/modules/discovery/application/facades/DiscoveryFacade";
 import BookCard from "@/modules/books/components/BookCard";
 import MeHeroSection from "./MeHeroSection";
+import UserStatisticsWidget from "./UserStatisticsWidget";
 
 interface MeClientProps {
   data: MePageDto;
@@ -149,6 +150,11 @@ export function MeClient({ data }: MeClientProps) {
           Explore curated public domain archives, resume your reading, and discover timeless literature.
         </p>
       </section>
+
+      {/* User Statistics Widget */}
+      <Suspense fallback={null}>
+        <UserStatisticsWidget promise={data.userStatistics} />
+      </Suspense>
 
       {/* 2. Billboard Spotlight Hero & Top Trending Carousel Showcase (Initial) */}
       <Suspense fallback={<NetflixTrendingSkeleton />}>

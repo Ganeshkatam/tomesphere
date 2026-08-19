@@ -22,14 +22,24 @@ export class ReaderSessionFacade {
     }
   }
 
-  async completeSession(durationSeconds: number): Promise<void> {
+  async completeSession(durationSeconds: number, pagesRead: number = 0): Promise<void> {
     try {
       await completeReadingSessionAction({
         bookId: this.bookId,
         durationSeconds,
+        pagesRead,
       });
     } catch (error) {
       console.error("Failed to complete session", error);
+    }
+  }
+
+  async markBookCompleted(): Promise<void> {
+    try {
+      const { completeBookAction } = await import("../../presentation/actions/reader");
+      await completeBookAction({ bookId: this.bookId });
+    } catch (error) {
+      console.error("Failed to mark book completed", error);
     }
   }
 }
