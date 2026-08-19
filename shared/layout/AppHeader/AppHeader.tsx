@@ -196,20 +196,38 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
 
       {/* Lower Tier (Application navigation) */}
       {variant === "application" && (
-        <div className="border-t border-[var(--border-subtle)]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-11 flex items-center">
+        <div className="border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50">
+          <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 h-11 flex items-center">
             <nav className="flex items-center gap-8 h-full">
               <Link
                 href="/discover"
-                className="text-sm font-bold h-full flex items-center text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
+                className={`text-sm font-semibold h-full flex items-center transition-colors border-b-2 ${
+                  pathname && pathname.startsWith("/discover")
+                    ? "text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400 font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border-transparent hover:border-slate-300 dark:hover:border-slate-700"
+                }`}
               >
                 Discover
               </Link>
               <Link
                 href="/library"
-                className="text-sm font-semibold h-full flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors border-b-2 border-transparent hover:border-[var(--border-default)]"
+                className={`text-sm font-semibold h-full flex items-center transition-colors border-b-2 ${
+                  pathname && pathname.startsWith("/library")
+                    ? "text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400 font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border-transparent hover:border-slate-300 dark:hover:border-slate-700"
+                }`}
               >
                 Library
+              </Link>
+              <Link
+                href="/dashboard"
+                className={`text-sm font-semibold h-full flex items-center transition-colors border-b-2 ${
+                  pathname && pathname.startsWith("/dashboard")
+                    ? "text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400 font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border-transparent hover:border-slate-300 dark:hover:border-slate-700"
+                }`}
+              >
+                Dashboard
               </Link>
             </nav>
           </div>

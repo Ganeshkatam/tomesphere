@@ -351,6 +351,7 @@ tomesphere-app
 │   │   │   ├── actions
 │   │   │   │   └── auth.ts
 │   │   │   ├── components
+│   │   │   │   ├── AuthTopBar.tsx
 │   │   │   │   ├── LoginClient.tsx
 │   │   │   │   ├── MFASetup.tsx
 │   │   │   │   ├── OnboardingTour.tsx
@@ -1289,6 +1290,8 @@ tomesphere-app
 ├── public
 │   ├── about_cta_banner.jpg
 │   ├── about_showcase.jpg
+│   ├── auth_login_bg.jpg
+│   ├── auth_signup_bg.jpg
 │   ├── book-placeholder.svg
 │   ├── hero_library_bg.jpg
 │   ├── hero_sanctuary_bg.jpg

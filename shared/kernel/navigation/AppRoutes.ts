@@ -1,5 +1,6 @@
 export const AppRoutes = {
-  home: "/home",
+  home: "/",
+  dashboard: "/dashboard",
   discover: "/discover",
   library: "/library",
   me: "/me",

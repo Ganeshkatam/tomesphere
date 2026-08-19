@@ -7,9 +7,9 @@
  * 3. Otherwise, return the fallback URL.
  * 
  * @param url - The requested redirect URL (can be relative or absolute)
- * @param fallback - The fallback URL if validation fails (default: "/home")
+ * @param fallback - The fallback URL if validation fails (default: "/discover")
  */
-export function getSafeRedirectUrl(url: string | null | undefined, fallback: string = "/home"): string {
+export function getSafeRedirectUrl(url: string | null | undefined, fallback: string = "/discover"): string {
   if (!url) return fallback;
   
   // 1. Prevent protocol-relative URLs (e.g. //attacker.com)
