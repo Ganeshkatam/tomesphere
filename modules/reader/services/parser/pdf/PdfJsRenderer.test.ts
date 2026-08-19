@@ -1,0 +1,181 @@
+import * as pdfjsLib from "pdfjs-dist";
+import { PdfJsRenderer } from "./PdfJsRenderer";
+
+type MockRenderTask = {
+  promise: Promise<void>;
+  cancel: jest.Mock<void, []>;
+};
+
+type MockPage = {
+  cleanup: jest.Mock<void, []>;
+  getViewport: jest.Mock<{ width: number; height: number }, [{ scale: number }]>;
+  render: jest.Mock<MockRenderTask, [{ canvasContext: CanvasRenderingContext2D; viewport: unknown }]>;
+};
+
+const getDocumentMock = jest.mocked(pdfjsLib.getDocument);
+
+class MockIntersectionObserver {
+  static instances: MockIntersectionObserver[] = [];
+
+  readonly observe = jest.fn<(element: Element) => void, [Element]>();
+  readonly disconnect = jest.fn<() => void, []>();
+
+  constructor(
+    private readonly callback: IntersectionObserverCallback,
+    readonly options: IntersectionObserverInit,
+  ) {
+    MockIntersectionObserver.instances.push(this);
+  }
+
+  trigger(entries: Array<Partial<IntersectionObserverEntry> & { target: Element }>): void {
+    this.callback(entries as IntersectionObserverEntry[], this as unknown as IntersectionObserver);
+  }
+}
+
+function createPage(): MockPage {
+  const renderTask: MockRenderTask = {
+    promise: Promise.resolve(),
+    cancel: jest.fn(),
+  };
+
+  return {
+    cleanup: jest.fn(),
+    getViewport: jest.fn(({ scale }: { scale: number }) => ({
+      width: 800 * scale,
+      height: 1100 * scale,
+    })),
+    render: jest.fn(() => renderTask),
+  };
+}
+
+function createDocument(pageCount: number): {
+  document: pdfjsLib.PDFDocumentProxy;
+  pages: MockPage[];
+} {
+  const pages = Array.from({ length: pageCount }, createPage);
+  const document = {
+    numPages: pageCount,
+    getPage: jest.fn(async (pageNumber: number) => pages[pageNumber - 1]),
+    destroy: jest.fn(async () => undefined),
+  } as unknown as pdfjsLib.PDFDocumentProxy;
+
+  return { document, pages };
+}
+
+describe("PdfJsRenderer continuous scrolling", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    MockIntersectionObserver.instances.length = 0;
+    getDocumentMock.mockReset();
+    Object.defineProperty(window, "devicePixelRatio", {
+      configurable: true,
+      value: 1,
+    });
+    window.requestAnimationFrame = ((callback: FrameRequestCallback) =>
+      window.setTimeout(() => callback(performance.now()), 0)) as unknown as typeof window.requestAnimationFrame;
+    window.cancelAnimationFrame = ((id: number) => window.clearTimeout(id)) as typeof window.cancelAnimationFrame;
+    globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
+  });
+
+  it("creates one placeholder wrapper per PDF page and renders only the initial page", async () => {
+    const { document, pages } = createDocument(500);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(document) } as pdfjsLib.PDFDocumentLoadingTask);
+
+    const container = document.createElement("div");
+    Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
+    document.body.appendChild(container);
+
+    const renderer = new PdfJsRenderer();
+    await renderer.initialize("book.pdf", container);
+
+    expect(container.querySelectorAll(".tomesphere-pdf-page")).toHaveLength(500);
+    expect(container.querySelectorAll("canvas")).toHaveLength(1);
+    expect(pages[0].render).toHaveBeenCalledTimes(1);
+    expect(pages[1].render).not.toHaveBeenCalled();
+    expect(pages[499].render).not.toHaveBeenCalled();
+
+    await renderer.destroy();
+  });
+
+  it("renders an intersecting page and releases it after leaving the virtualization window", async () => {
+    const { document, pages } = createDocument(4);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(document) } as pdfjsLib.PDFDocumentLoadingTask);
+
+    const container = document.createElement("div");
+    Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
+    document.body.appendChild(container);
+
+    const renderer = new PdfJsRenderer();
+    await renderer.initialize("book.pdf", container);
+
+    const observer = MockIntersectionObserver.instances[0];
+    const pageTwo = container.querySelector<HTMLElement>('[data-page-number="2"]');
+    if (!pageTwo) throw new Error("page 2 wrapper was not created");
+
+    observer.trigger([{ target: pageTwo, isIntersecting: true }]);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(pages[1].render).toHaveBeenCalledTimes(1);
+    expect(pageTwo.querySelector("canvas")).not.toBeNull();
+
+    observer.trigger([{ target: pageTwo, isIntersecting: false }]);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(pages[1].cleanup).toHaveBeenCalled();
+    expect(pageTwo.querySelector("canvas")).toBeNull();
+
+    await renderer.destroy();
+  });
+
+  it("goTo scrolls to the requested page and updates the persisted anchor", async () => {
+    const { document } = createDocument(3);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(document) } as pdfjsLib.PDFDocumentLoadingTask);
+
+    const container = document.createElement("div");
+    Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
+    document.body.appendChild(container);
+
+    const renderer = new PdfJsRenderer();
+    const locations: string[] = [];
+    renderer.onLocationChanged((anchor) => locations.push(anchor.value));
+    await renderer.initialize("book.pdf", container);
+
+    const pageThree = container.querySelector<HTMLElement>('[data-page-number="3"]');
+    if (!pageThree) throw new Error("page 3 wrapper was not created");
+    pageThree.scrollIntoView = jest.fn();
+
+    await renderer.goTo("3");
+
+    expect(pageThree.scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "start",
+      inline: "nearest",
+    });
+    expect(locations).toContain("3");
+    expect((await renderer.getProgress()).anchor.value).toBe("3");
+
+    await renderer.destroy();
+  });
+
+  it("cancels old renders and re-renders the active page when zoom changes", async () => {
+    const { document, pages } = createDocument(2);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(document) } as pdfjsLib.PDFDocumentLoadingTask);
+
+    const container = document.createElement("div");
+    Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
+    document.body.appendChild(container);
+
+    const renderer = new PdfJsRenderer();
+    await renderer.initialize("book.pdf", container);
+    const initialRenderCount = pages[0].render.mock.calls.length;
+
+    renderer.preferences({ zoom: 150 } as Parameters<typeof renderer.preferences>[0]);
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(pages[0].cleanup).toHaveBeenCalled();
+    expect(pages[0].render.mock.calls.length).toBeGreaterThan(initialRenderCount);
+
+    await renderer.destroy();
+  });
+});
