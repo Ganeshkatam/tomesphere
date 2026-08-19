@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -7,7 +7,6 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get("next") ?? "/dashboard";
 
   if (code) {
-    const isProduction = process.env.NODE_ENV === "production";
     const redirectResponse = NextResponse.redirect(`${origin}${next}`);
 
     const supabase = createServerClient(
@@ -15,25 +14,13 @@ export async function GET(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
-          get(name: string) {
-            return request.cookies.get(name)?.value;
+          getAll() {
+            return request.cookies.getAll();
           },
-          set(name: string, value: string, options: CookieOptions) {
-            redirectResponse.cookies.set({
-              name,
-              value,
-              ...options,
-              httpOnly: true,
-              secure: isProduction,
-              sameSite: "lax",
-            });
-          },
-          remove(name: string, options: CookieOptions) {
-            redirectResponse.cookies.set({
-              name,
-              value: "",
-              ...options,
-            });
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              redirectResponse.cookies.set(name, value, options),
+            );
           },
         },
       },
@@ -43,8 +30,9 @@ export async function GET(request: NextRequest) {
     if (!error) {
       const type = searchParams.get("type");
       if (type === "recovery") {
-        const recoveryResponse = NextResponse.redirect(`${origin}/reset-password`);
-        // copy any cookies set
+        const recoveryResponse = NextResponse.redirect(
+          `${origin}/reset-password`,
+        );
         redirectResponse.cookies.getAll().forEach((c) => {
           recoveryResponse.cookies.set(c);
         });

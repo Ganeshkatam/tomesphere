@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
@@ -7,7 +7,6 @@ import { NextResponse, type NextRequest } from "next/server";
  * 1. Refreshes Supabase auth tokens on every request (prevents stale sessions).
  * 2. Protects workspace routes — redirects unauthenticated users to /login.
  * 3. Redirects authenticated users away from auth pages to /dashboard.
- * 4. Enforces secure cookie defaults (HttpOnly, Secure, SameSite=Lax).
  */
 
 // Routes that require authentication
@@ -28,7 +27,9 @@ const AUTH_ROUTES = [
 ];
 
 function isProtectedRoute(pathname: string): boolean {
-  return PROTECTED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(prefix + "/"));
+  return PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(prefix + "/"),
+  );
 }
 
 function isAuthRoute(pathname: string): boolean {
@@ -44,53 +45,24 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  const isProduction = process.env.NODE_ENV === "production";
-
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
+        getAll() {
+          return request.cookies.getAll();
         },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
-          });
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          );
           response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
+            request,
           });
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-            // Enforce secure cookie defaults
-            httpOnly: true,
-            secure: isProduction,
-            sameSite: "lax",
-          });
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value: "",
-            ...options,
-          });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value: "",
-            ...options,
-          });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options),
+          );
         },
       },
     },
