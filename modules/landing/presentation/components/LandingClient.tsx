@@ -38,9 +38,6 @@ export default function LandingClient({ model }: LandingClientProps) {
       <HeroSection searchSuggestions={featuredBooks} />
 
       <div className="w-full relative z-20 flex flex-col gap-24 py-16">
-        {/* Dynamic Slow Scroll Discovery Section */}
-        <SlowScrollBooksSection items={curatedBooks.length > 0 ? curatedBooks : featuredBooks} />
-
         {/* Core Book Sections (10 items + View All Card) */}
         <FeaturedBooksSection items={featuredBooks} />
         <TrendingBooksSection items={trendingBooks} />
@@ -52,7 +49,10 @@ export default function LandingClient({ model }: LandingClientProps) {
         <GenreBrowserSection genres={genres} />
         <PopularAuthorsSection authors={authors} />
         <AnnouncementSection announcements={announcements} />
-        {/* <StatisticsSection statistics={statistics} /> */}
+
+        {/* On-Demand Slow Scroll Discovery Section Rendered on the Bottom */}
+        <SlowScrollBooksSection items={curatedBooks.length > 0 ? curatedBooks : featuredBooks} />
+
       </div>
     </div>
   );

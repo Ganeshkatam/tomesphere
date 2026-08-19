@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import Link from "next/link";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import FeaturedItemCard from "./FeaturedItemCard";
 import ViewAllCard from "./ViewAllCard";
 
@@ -29,10 +28,6 @@ export default function BookShelfRow({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  if (!items || items.length === 0) return null;
-
-  const displayBooks = items.slice(0, 10);
-
   const checkScrollability = () => {
     if (scrollContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
@@ -55,6 +50,10 @@ export default function BookShelfRow({
       window.removeEventListener("resize", checkScrollability);
     };
   }, [items]);
+
+  if (!items || items.length === 0) return null;
+
+  const displayBooks = items.slice(0, 10);
 
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
@@ -79,7 +78,7 @@ export default function BookShelfRow({
           </p>
         </div>
 
-        {/* Action Bar: Scroll Buttons + View All */}
+        {/* Action Bar: Scroll Buttons */}
         <div className="flex items-center gap-3 self-end sm:self-auto">
           {/* Previous / Next Scroll Buttons */}
           <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[var(--surface-raised)] border border-[var(--border-default)] shadow-xs">
@@ -109,15 +108,6 @@ export default function BookShelfRow({
               <ChevronRight size={18} />
             </button>
           </div>
-
-          {/* View All Link */}
-          <Link
-            href={viewAllHref}
-            className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 px-3 py-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 transition-colors flex items-center gap-1.5 shrink-0"
-          >
-            <span>View all</span>
-            <ArrowRight size={16} />
-          </Link>
         </div>
       </div>
 

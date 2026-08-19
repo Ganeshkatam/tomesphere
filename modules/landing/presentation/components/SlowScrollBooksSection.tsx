@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Sparkles, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import FeaturedItemCard from "./FeaturedItemCard";
 import ViewAllCard from "./ViewAllCard";
 
@@ -16,6 +15,7 @@ export default function SlowScrollBooksSection({
   className = "",
 }: SlowScrollBooksSectionProps) {
   const [isRevealed, setIsRevealed] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -40,8 +40,14 @@ export default function SlowScrollBooksSection({
       if (deltaTime > 0 && deltaY > 0) {
         const velocity = deltaY / deltaTime; // px per ms
 
-        // Slow scroll pace: downward, positive velocity below 1.5 px/ms after starting to browse
-        if (currentScrollY > 200 && velocity > 0.01 && velocity < 1.5) {
+        const rect = sectionRef.current?.getBoundingClientRect();
+        // Trigger on-demand rendering when section is approaching or in viewport and scrolling slowly
+        if (
+          rect &&
+          rect.top < window.innerHeight + 350 &&
+          velocity > 0.01 &&
+          velocity < 1.6
+        ) {
           setIsRevealed(true);
         }
       }
@@ -87,10 +93,11 @@ export default function SlowScrollBooksSection({
 
   return (
     <section
+      ref={sectionRef}
       className={`max-w-[1400px] mx-auto px-8 sm:px-12 lg:px-16 w-full transition-all duration-700 ease-out ${
         isRevealed
           ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-8 pointer-events-none"
+          : "opacity-0 translate-y-8 pointer-events-none min-h-[50px]"
       } ${className}`}
       aria-label="Curator's Deep Reads Spotlight"
     >
@@ -108,7 +115,7 @@ export default function SlowScrollBooksSection({
           </p>
         </div>
 
-        {/* Action Bar: Scroll Buttons + View All */}
+        {/* Action Bar: Scroll Buttons */}
         <div className="flex items-center gap-3 self-end sm:self-auto">
           {/* Previous / Next Scroll Buttons */}
           <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[var(--surface-raised)] border border-[var(--border-default)] shadow-xs">
@@ -138,15 +145,6 @@ export default function SlowScrollBooksSection({
               <ChevronRight size={18} />
             </button>
           </div>
-
-          {/* View All Link */}
-          <Link
-            href="/discover"
-            className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 px-3 py-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 transition-colors flex items-center gap-1.5 shrink-0"
-          >
-            <span>View all</span>
-            <ArrowRight size={16} />
-          </Link>
         </div>
       </div>
 
