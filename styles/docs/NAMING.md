@@ -47,7 +47,7 @@ Maintain strict naming consistency across TomeSphere styles, design tokens, prim
   - UI Primitives (domain-agnostic): `modules/shared/ui/[ComponentName]/[ComponentName].tsx`
   - Domain Components (business logic/data-dependent): `modules/[domain]/[feature]/presentation/[ComponentName].tsx`
 - **Naming Rule**: Domain components must reflect product concepts, not screen locations.
-  - ❌ `HomeHero`
-  - ✅ `FeaturedBookCard`
-  - ❌ `LibrarySidebar`
-  - ✅ `BookshelfNavigation`
+  -  `HomeHero`
+  -  `FeaturedBookCard`
+  -  `LibrarySidebar`
+  -  `BookshelfNavigation`

@@ -1,5 +1,5 @@
 /**
- * 🚨 PLATFORM EVENT SYSTEM TYPES
+ *  PLATFORM EVENT SYSTEM TYPES
  *
  * Defines the strict, typed payloads for inter-domain communication.
  * Domains must NEVER call each other directly for side effects.

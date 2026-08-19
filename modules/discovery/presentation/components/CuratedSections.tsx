@@ -14,21 +14,21 @@ interface HomeCuratedSectionsProps {
 }
 
 const SUBJECT_ICONS: Record<string, string> = {
-  All: "🌐",
-  Fiction: "📖",
-  "Non-Fiction": "📰",
-  Programming: "💻",
-  "Computer Science": "🖥️",
-  Mathematics: "📐",
-  Science: "🔬",
-  History: "🏛️",
-  Philosophy: "🧠",
-  Psychology: "🧬",
-  Business: "📊",
-  Romance: "💌",
-  Mystery: "🔎",
-  Fantasy: "🧙",
-  "Science Fiction": "🚀",
+  All: "",
+  Fiction: "",
+  "Non-Fiction": "",
+  Programming: "",
+  "Computer Science": "️",
+  Mathematics: "",
+  Science: "",
+  History: "️",
+  Philosophy: "",
+  Psychology: "",
+  Business: "",
+  Romance: "",
+  Mystery: "",
+  Fantasy: "",
+  "Science Fiction": "",
 };
 
 const cardVariants = {
@@ -150,7 +150,7 @@ export default function HomeCuratedSections({
           {/* Subject Chips */}
           <div className="flex flex-wrap gap-2 max-w-xl">
             {subjects.map((sub) => {
-              const icon = SUBJECT_ICONS[sub] ?? "📚";
+              const icon = SUBJECT_ICONS[sub] ?? "";
               const count = getCount(sub);
               const active = activeSubject === sub;
               return (

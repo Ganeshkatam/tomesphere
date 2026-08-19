@@ -97,7 +97,7 @@ export default function ProfileSetupPage({
 
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8 animate-fadeIn">
-          <span className="text-6xl mb-4 block">👋</span>
+          <span className="text-6xl mb-4 block"></span>
           <h1 className="text-4xl font-display font-bold mb-2">
             Welcome to TomeSphere!
           </h1>

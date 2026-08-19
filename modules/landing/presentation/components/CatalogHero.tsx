@@ -76,7 +76,7 @@ export default function HeroSection({
                 <div className="relative flex-1 group/input">
                   <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                     <span className="text-2xl opacity-50 text-slate-400 group-focus-within/input:text-indigo-400 transition-colors">
-                      🔍
+                      
                     </span>
                   </div>
                   <input
@@ -122,7 +122,7 @@ export default function HeroSection({
                     <option value="" className="bg-[var(--surface-default)]">
                       All Genres
                     </option>
-                    <optgroup label="📚 Popular" className="bg-[var(--surface-default)]">
+                    <optgroup label=" Popular" className="bg-[var(--surface-default)]">
                       <option value="Fiction" className="bg-[var(--surface-default)]">
                         Fiction
                       </option>
@@ -139,7 +139,7 @@ export default function HeroSection({
                         Fantasy
                       </option>
                     </optgroup>
-                    <optgroup label="🎓 Academic" className="bg-[var(--surface-default)]">
+                    <optgroup label=" Academic" className="bg-[var(--surface-default)]">
                       <option value="Computer Science" className="bg-[var(--surface-default)]">
                         Computer Science
                       </option>

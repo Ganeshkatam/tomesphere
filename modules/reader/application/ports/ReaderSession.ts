@@ -1,7 +1,7 @@
 import type { DocumentMetadata } from "./DocumentEngine";
 
 /**
- * 🚨 PLATFORM CONTRACT: ReaderSession
+ *  PLATFORM CONTRACT: ReaderSession
  *
  * Defines the strict boundaries of a single user reading session.
  * Used for syncing progress, enforcing limits, and analytics.

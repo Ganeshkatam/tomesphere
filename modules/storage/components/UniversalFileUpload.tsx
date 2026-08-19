@@ -45,17 +45,17 @@ export default function UniversalFileUpload({
   };
 
   const getFileIcon = (type: string): string => {
-    if (type.startsWith("image/")) return "🖼️";
-    if (type.startsWith("video/")) return "🎥";
-    if (type.startsWith("audio/")) return "🎵";
-    if (type.includes("pdf")) return "📄";
-    if (type.includes("word") || type.includes("doc")) return "📝";
-    if (type.includes("excel") || type.includes("sheet")) return "📊";
+    if (type.startsWith("image/")) return "️";
+    if (type.startsWith("video/")) return "";
+    if (type.startsWith("audio/")) return "";
+    if (type.includes("pdf")) return "";
+    if (type.includes("word") || type.includes("doc")) return "";
+    if (type.includes("excel") || type.includes("sheet")) return "";
     if (type.includes("powerpoint") || type.includes("presentation"))
-      return "📽️";
-    if (type.includes("zip") || type.includes("rar")) return "🗜️";
-    if (type.includes("text")) return "📃";
-    return "📎";
+      return "️";
+    if (type.includes("zip") || type.includes("rar")) return "️";
+    if (type.includes("text")) return "";
+    return "";
   };
 
   const handleFileSelect = async (
@@ -143,7 +143,7 @@ export default function UniversalFileUpload({
               : "bg-white/5 text-slate-400 hover:bg-white/10"
           }`}
         >
-          📁 Upload File
+           Upload File
         </button>
         <button
           type="button"
@@ -154,7 +154,7 @@ export default function UniversalFileUpload({
               : "bg-white/5 text-slate-400 hover:bg-white/10"
           }`}
         >
-          🔗 Use URL
+           Use URL
         </button>
       </div>
 

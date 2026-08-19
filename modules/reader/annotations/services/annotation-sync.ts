@@ -3,7 +3,7 @@ import type { Annotation } from "../types/models";
 import { useAnnotationStore } from "../state/annotation-store";
 
 /**
- * 🚨 ANNOTATION SYNC ENGINE
+ *  ANNOTATION SYNC ENGINE
  *
  * This service handles pushing pending annotations to the backend and
  * pulling remote annotations down.

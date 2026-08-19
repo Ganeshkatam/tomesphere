@@ -1,5 +1,5 @@
 /**
- * 🚨 PLATFORM CONTRACT: AnnotationAnchor
+ *  PLATFORM CONTRACT: AnnotationAnchor
  *
  * This defines how an annotation is anchored to the document regardless of:
  * - Engine (PDF, EPUB)

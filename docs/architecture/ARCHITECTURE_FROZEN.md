@@ -1,6 +1,6 @@
 # TomeSphere Core Architecture
 
-## Status: FROZEN 🧊
+## Status: FROZEN 
 
 This document captures the foundational architectural decisions for TomeSphere. These decisions have been stabilized after completing Phase 10 (Performance Tuning & Legacy Cleanup) and should be considered **frozen**.
 

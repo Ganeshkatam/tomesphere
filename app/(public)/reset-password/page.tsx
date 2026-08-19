@@ -55,7 +55,7 @@ export default function ResetPasswordPage() {
         {/* Header */}
         <div className="text-center mb-8 animate-fadeIn">
           <Link href="/" className="inline-flex items-center gap-3 mb-6">
-            <span className="text-5xl">📚</span>
+            <span className="text-5xl"></span>
             <span className="text-3xl font-display font-bold gradient-text">
               TomeSphere
             </span>

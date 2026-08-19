@@ -21,7 +21,7 @@ Rather than completing entire epics sequentially, work is bundled into cross-epi
 
 ---
 
-## 🏗️ Platform
+## ️ Platform
 
 _The foundational domains that support the entire application._
 
@@ -46,7 +46,7 @@ _Ensuring the platform remains healthy and scalable._
 
 ---
 
-## 📱 Core Product
+##  Core Product
 
 _The essential daily-use features for readers._
 
@@ -67,7 +67,7 @@ _Surfacing books using the robust recommendation engine._
 - [ ] **Continue Reading:** Quick-access for current library items.
 - [ ] **Personalized Shelves:** Dynamic home screen layout based on user signals.
 - [ ] **Because You Read...:** Contextual recommendations based on past ratings.
-- [ ] **Recommendation Explanations:** e.g., _"Recommended because you rated Atomic Habits ★★★★★"_.
+- [ ] **Recommendation Explanations:** e.g., _"Recommended because you rated Atomic Habits "_.
 - [ ] **Trending & New Releases:** Leveraging the `analytics_book_statistics` projection.
 
 ### Epic 5: Library Organization
@@ -81,7 +81,7 @@ _Empowering power-users to manage massive collections._
 
 ---
 
-## 🧠 Intelligence
+##  Intelligence
 
 _Differentiating capabilities that make TomeSphere smart._
 
@@ -105,7 +105,7 @@ _Integrating LLMs natively into the reading experience._
 
 ---
 
-## 🔮 Future
+##  Future
 
 _Capabilities reserved for long-term growth._
 

@@ -8,7 +8,7 @@ import {
 } from "@/shared/core/events/types";
 import { ReaderPreferencesDto } from "../application/dto/ReaderPageDto";
 
-// 🚨 STRICT ARCHITECTURAL RULE:
+//  STRICT ARCHITECTURAL RULE:
 // This store ONLY holds presentation and session state.
 // Persistence is owned entirely by the Backend Commands.
 

@@ -200,7 +200,7 @@ function VerifyPasswordForm() {
           </div>
 
           <div className="mt-4 text-center text-xs text-slate-500">
-            💡 Press{" "}
+             Press{" "}
             <kbd className="px-2 py-1 bg-slate-700 rounded text-slate-300">
               Enter
             </kbd>{" "}

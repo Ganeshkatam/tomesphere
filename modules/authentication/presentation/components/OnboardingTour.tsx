@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 const TOUR_STEPS = [
   {
-    title: "Welcome to TomeSphere 📚",
+    title: "Welcome to TomeSphere ",
     description:
       "Your ultimate platform for books, reading, and academic resources. Let's take a quick tour!",
     icon: <BookOpen size={48} className="text-indigo-400" />,

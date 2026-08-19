@@ -270,7 +270,7 @@ export default function SearchClient({
         {books.length === 0 ? (
           <FadeIn>
             <div className="text-center py-20 bg-white/5 rounded-3xl border border-[var(--border-subtle)]">
-              <div className="text-6xl mb-6">🔍</div>
+              <div className="text-6xl mb-6"></div>
               <h3 className="text-2xl font-bold text-white mb-3">
                 {initialQuery ? (
                   <>

@@ -61,10 +61,10 @@ export const getInputHint = (input: string): string => {
 
   switch (type) {
     case "email":
-      return "📧 Email detected";
+      return "Email detected";
     case "phone":
-      return "📱 Phone detected";
+      return "Phone detected";
     default:
-      return "⌨️ Keep typing...";
+      return "Keep typing...";
   }
 };

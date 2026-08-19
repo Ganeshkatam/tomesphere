@@ -333,7 +333,7 @@ export default function EnhancedLoginPage() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm">📖</span>
+                    <span className="text-sm"></span>
                     <h4 className="text-slate-50 text-xs font-semibold tracking-wide truncate max-w-[200px]">
                       Algorithms
                     </h4>

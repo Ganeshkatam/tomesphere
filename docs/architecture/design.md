@@ -212,19 +212,19 @@ Primary navigation is intentionally minimal.
 
 ```
 
-🏠 Home
+ Home
 
 
 
-🔍 Discover
+ Discover
 
 
 
-📚 Library
+ Library
 
 
 
-👤 Me
+ Me
 
 ```
 

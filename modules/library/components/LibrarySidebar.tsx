@@ -83,16 +83,12 @@ export default function LibrarySidebar({ navigation }: LibrarySidebarProps) {
           className="w-full flex items-center justify-between text-xs uppercase tracking-wider text-slate-500 font-semibold mb-2 px-3 hover:text-slate-300"
         >
           <span>Collections</span>
-          <span
-            className="transform transition-transform duration-200"
-            style={{
-              transform: isExpanded("collections")
-                ? "rotate(90deg)"
-                : "rotate(0deg)",
-            }}
-          >
-            ▶
-          </span>
+          <ChevronRight
+            size={12}
+            className={`transform transition-transform duration-200 ${
+              isExpanded("collections") ? "rotate-90" : "rotate-0"
+            }`}
+          />
         </button>
         {isExpanded("collections") && (
           <div className="space-y-1">

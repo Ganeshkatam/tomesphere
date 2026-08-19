@@ -229,7 +229,7 @@ export default function ReadingGoalProgress({
           className="mt-4 p-4 rounded-lg bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 text-center"
         >
           <p className="text-green-400 font-medium">
-            🎉 Goal Achieved! Congratulations!
+             Goal Achieved! Congratulations!
           </p>
         </motion.div>
       )}

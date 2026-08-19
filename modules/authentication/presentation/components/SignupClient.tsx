@@ -125,7 +125,7 @@ export default function SignupClient() {
             className="flex items-center gap-3 group w-fit relative z-10"
           >
             <span className="text-3xl group-hover:scale-105 transition-transform">
-              📚
+              
             </span>
             <div>
               <span className="text-lg font-display font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
@@ -161,7 +161,7 @@ export default function SignupClient() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm">✨</span>
+                    <span className="text-sm"></span>
                     <h4 className="text-slate-50 text-xs font-semibold tracking-wide truncate max-w-[200px]">
                       New Library
                     </h4>

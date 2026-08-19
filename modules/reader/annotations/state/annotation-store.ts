@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { Annotation, AnnotationCreatePayload } from "../types/models";
 
 /**
- * 🚨 ANNOTATION SUBSYSTEM STATE
+ *  ANNOTATION SUBSYSTEM STATE
  *
  * This store is strictly for Annotation data.
  * It is completely separated from the base `reader-store.ts` to prevent

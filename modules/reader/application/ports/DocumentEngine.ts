@@ -1,5 +1,5 @@
 /**
- * 🚨 PLATFORM CONTRACT: DocumentEngine
+ *  PLATFORM CONTRACT: DocumentEngine
  *
  * This is the foundational abstraction layer for the Reader Domain.
  * The UI components MUST NEVER import `pdf.js` or `epub.js` directly.

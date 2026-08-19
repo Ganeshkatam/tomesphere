@@ -508,13 +508,13 @@ Feature layouts compose these primitives.
 Primary Navigation
 
 ```
-🏠 Home
+ Home
 
-🔍 Discover
+ Discover
 
-📚 Library
+ Library
 
-👤 Me
+ Me
 ```
 
 Reader navigation is contextual.

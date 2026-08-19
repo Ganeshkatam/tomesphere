@@ -143,7 +143,7 @@ export default function ProgressDashboardScreen({
                 key={ach.id}
                 className="p-4 rounded-xl border border-indigo-500/35 bg-indigo-600/10 text-center transition-all"
               >
-                <span className="text-3xl block mb-2">🏅</span>
+                <span className="text-3xl block mb-2"></span>
                 <div className="text-xs font-bold text-slate-50 capitalize">
                   {ach.id.replace(/-/g, " ")}
                 </div>

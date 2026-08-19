@@ -26,7 +26,7 @@ export default function HomeGenreFilter({
   totalGenres,
 }: HomeGenreFilterProps) {
   const getAllGenres = () => ALL_GENRES;
-  const getGenreConfig = (genre: string) => ({ icon: "📚" });
+  const getGenreConfig = (genre: string) => ({ icon: "" });
 
   return (
     <SlideUp delay={0.6}>
@@ -59,7 +59,7 @@ export default function HomeGenreFilter({
                 onClick={() => setGenreSearch("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
               >
-                ✕
+                
               </button>
             )}
 
@@ -102,7 +102,7 @@ export default function HomeGenreFilter({
                         >
                           <span>{genre}</span>
                           {isSelected && (
-                            <span className="text-green-400">✓</span>
+                            <span className="text-green-400"></span>
                           )}
                         </button>
                       );
@@ -115,7 +115,7 @@ export default function HomeGenreFilter({
 
         <div className="flex items-center justify-center gap-4 mb-4">
           <p className="text-base text-slate-300 font-semibold">
-            📚{" "}
+            {" "}
             {selectedGenres.length > 0
               ? `${selectedGenres.length} genre${selectedGenres.length > 1 ? "s" : ""} selected`
               : `Browse by Genre`}
@@ -162,7 +162,7 @@ export default function HomeGenreFilter({
               title="Clear filters"
               className="px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 border backdrop-blur-md bg-red-600/20 text-red-300 border-red-500/30 hover:bg-red-600/30 hover:border-red-500/50"
             >
-              ✕ Clear Filters
+               Clear Filters
             </button>
           )}
         </div>

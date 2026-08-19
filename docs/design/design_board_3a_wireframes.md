@@ -78,7 +78,7 @@ This board establishes the structural blueprints for the core screens. We are de
 
 ```text
 +-------------------------------------------------------------+
-|  [Logo]              [ Global Search Bar ]   [🔔] [Profile] |
+|  [Logo]              [ Global Search Bar ]   [] [Profile] |
 +-------------------------------------------------------------+
 |             |                                               |
 | [Nav]       |  [H1: Welcome back, {Name}]                   |

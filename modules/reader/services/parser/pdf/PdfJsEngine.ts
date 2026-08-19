@@ -136,7 +136,7 @@ export class PdfJsEngine implements DocumentEngine {
   }
 
   async destroy(): Promise<void> {
-    // 🚨 CRITICAL MEMORY MANAGEMENT
+    //  CRITICAL MEMORY MANAGEMENT
     // Cancel all active rendering tasks to prevent memory leaks
     for (const task of this.renderTasks) {
       task.cancel();

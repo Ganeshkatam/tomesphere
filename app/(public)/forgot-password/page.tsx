@@ -46,7 +46,7 @@ export default function ForgotPasswordPage() {
         {/* Header */}
         <div className="text-center mb-8 animate-fadeIn">
           <Link href="/" className="inline-flex items-center gap-3 mb-6">
-            <span className="text-5xl">📚</span>
+            <span className="text-5xl"></span>
             <span className="text-3xl font-display font-bold gradient-text">
               TomeSphere
             </span>
@@ -102,7 +102,7 @@ export default function ForgotPasswordPage() {
           </form>
         ) : (
           <div className="card animate-scaleIn text-center">
-            <div className="text-6xl mb-4">✉️</div>
+            <div className="text-6xl mb-4">️</div>
             <h2 className="text-2xl font-display font-bold mb-3">
               Check Your Email
             </h2>
@@ -112,7 +112,7 @@ export default function ForgotPasswordPage() {
             </p>
             <div className="glass rounded-xl p-4 mb-6">
               <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-                📝 Click the link in the email to reset your password. The link
+                 Click the link in the email to reset your password. The link
                 expires in 1 hour.
               </p>
             </div>

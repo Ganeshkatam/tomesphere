@@ -2,7 +2,7 @@
 
 This module is the **highest-complexity, highest-performance-pressure subsystem** in TomeSphere. It must be treated with extreme architectural rigor.
 
-## 🚨 Core Directives
+##  Core Directives
 
 ### 1. State Management (Anti-Collapse Rule)
 
@@ -31,7 +31,7 @@ Progress (`/progress`) is currently tracked here, but it will eventually become 
 
 ```text
 /modules/reader
-├── contracts/       # 🚨 Foundation: Abstract models and engine interfaces
+├── contracts/       #  Foundation: Abstract models and engine interfaces
 ├── application/     # Application services and CQRS commands
 ├── domain/          # Domain entities and events
 ├── infrastructure/  # Repositories and external integrations

@@ -37,7 +37,7 @@ export default function WelcomeTour({ isOpen, onClose }: WelcomeTourProps) {
 
   const tourSteps: TourStep[] = [
     {
-      title: "Welcome to TomeSphere! 🎉",
+      title: "Welcome to TomeSphere! ",
       description:
         "Your ultimate book discovery and learning platform. Let's take a quick tour to get you started!",
       icon: <BookOpen size={48} className="text-indigo-400" />,
@@ -48,18 +48,18 @@ export default function WelcomeTour({ isOpen, onClose }: WelcomeTourProps) {
       ],
     },
     {
-      title: "Discover Amazing Books 📚",
+      title: "Discover Amazing Books ",
       description: "Browse thousands of books with smart search and filters.",
       icon: <Search size={48} className="text-purple-400" />,
       tips: [
-        "Use voice input 🎤 for faster search",
+        "Use voice input  for faster search",
         "Filter by genre, author, or rating",
         "Save books to your personal library",
         "Get personalized recommendations",
       ],
     },
     {
-      title: "Read Anywhere, Anytime 📖",
+      title: "Read Anywhere, Anytime ",
       description:
         "Enjoy books in our beautiful e-reader with customizable settings.",
       icon: <Zap size={48} className="text-yellow-400" />,

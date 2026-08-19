@@ -63,7 +63,7 @@ export default function ReadingStreak({ userId }: ReadingStreakProps) {
           </div>
           <div className="text-sm text-slate-400">Day Streak</div>
           {streak.currentStreak > 0 && (
-            <div className="text-xs text-slate-500 mt-2">Keep it going! 🔥</div>
+            <div className="text-xs text-slate-500 mt-2">Keep it going! </div>
           )}
         </motion.div>
 
@@ -81,7 +81,7 @@ export default function ReadingStreak({ userId }: ReadingStreakProps) {
             {streak.longestStreak}
           </div>
           <div className="text-sm text-slate-400">Best Streak</div>
-          <div className="text-xs text-slate-500 mt-2">Personal record 🏆</div>
+          <div className="text-xs text-slate-500 mt-2">Personal record </div>
         </motion.div>
 
         {/* Total Days */}
@@ -98,7 +98,7 @@ export default function ReadingStreak({ userId }: ReadingStreakProps) {
             {streak.totalDays}
           </div>
           <div className="text-sm text-slate-400">Total Days</div>
-          <div className="text-xs text-slate-500 mt-2">Lifetime reading 📚</div>
+          <div className="text-xs text-slate-500 mt-2">Lifetime reading </div>
         </motion.div>
       </div>
 
@@ -111,7 +111,7 @@ export default function ReadingStreak({ userId }: ReadingStreakProps) {
         >
           <p className="text-sm text-slate-300">
             Start your reading journey today! Open a book to begin your streak.
-            📖
+            
           </p>
         </motion.div>
       )}

@@ -1,7 +1,7 @@
 import { IEventBus, PlatformEventName, EventPayloads } from "./types";
 
 /**
- * 🚨 CORE SYSTEM EVENT BUS
+ *  CORE SYSTEM EVENT BUS
  *
  * An in-memory, strongly typed publisher/subscriber bus.
  * This prevents domains from importing each other to trigger side effects.

@@ -68,7 +68,7 @@ export default function VerifyEmailPage() {
         {/* Icon */}
         <div className="text-center mb-6">
           <div className="w-20 h-20 mx-auto mb-4 bg-amber-500/20 rounded-full flex items-center justify-center">
-            <span className="text-5xl">📧</span>
+            <span className="text-5xl"></span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">
             Verify Your Email
@@ -81,7 +81,7 @@ export default function VerifyEmailPage() {
         <div className="space-y-4 mb-6">
           <div className="backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-[var(--border-default)]">
             <h3 className="text-white font-semibold mb-2 flex items-center gap-2">
-              <span>📝</span> Next Steps:
+              <span></span> Next Steps:
             </h3>
             <ol className="text-sm text-slate-300 space-y-2 list-decimal list-inside">
               <li>Check your email inbox</li>
@@ -92,7 +92,7 @@ export default function VerifyEmailPage() {
 
           <div className="backdrop-blur-sm bg-amber-500/10 rounded-xl p-4 border border-amber-500/30">
             <p className="text-sm text-amber-200 flex items-center gap-2">
-              <span>⚠️</span>
+              <span>️</span>
               <span>
                 Check your spam folder if you don&apos;t see the email
               </span>

@@ -33,7 +33,7 @@ export default class GlobalErrorBoundary extends React.Component<
       return (
         <div className="min-h-screen bg-[var(--surface-canvas)] flex flex-col items-center justify-center p-4 text-center">
           <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mb-6">
-            <span className="text-4xl">⚠️</span>
+            <span className="text-4xl">️</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-slate-50 mb-4">
             Something went wrong
