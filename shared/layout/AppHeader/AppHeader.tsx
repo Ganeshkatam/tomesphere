@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { BookOpen, Search, Bell, User, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/shared/providers/theme-context";
 
@@ -23,7 +23,9 @@ const AUTH_ROUTES = [
 
 export function AppHeader({ className = "", variant = "application" }: AppHeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Omit header entirely on authentication routes
   if (pathname && AUTH_ROUTES.includes(pathname)) {
@@ -34,108 +36,144 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   const isDark = resolvedTheme === "dark";
 
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-colors duration-200 ${
         isDark
-          ? "bg-slate-950/90 backdrop-blur-md text-white"
-          : "bg-white/95 backdrop-blur-md text-slate-900"
-      } ${variant !== "marketing" ? (isDark ? "border-b border-white/10 shadow-xs" : "border-b border-slate-200/90 shadow-xs") : ""} ${className}`}
+          ? "bg-slate-950/95 backdrop-blur-md text-white border-b border-slate-800/80 shadow-md"
+          : "bg-white/95 backdrop-blur-md text-slate-900 border-b border-slate-200/90 shadow-xs"
+      } ${className}`}
       id="top-nav"
     >
-      {/* Upper Tier */}
-      <div className="h-[88px] max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center justify-between gap-4">
-        {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center gap-3 text-xl font-extrabold hover:opacity-90 transition-opacity flex-shrink-0"
-        >
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 font-bold">
-            <BookOpen size={22} />
-          </div>
-          <span
-            className={`tracking-tight font-display font-bold text-xl ${
-              isDark ? "text-white" : "text-slate-900"
-            }`}
+      <div className="h-20 sm:h-22 lg:h-24 max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center justify-between gap-4 sm:gap-6">
+        
+        {/* Left Side: Logo + Main Navigation Links */}
+        <div className="flex items-center gap-6 lg:gap-10">
+          {/* Logo */}
+          <Link
+            href={variant === "application" ? "/me" : "/"}
+            className="flex items-center gap-3 hover:opacity-90 transition-opacity flex-shrink-0"
           >
-            TomeSphere
-          </span>
-        </Link>
-
-        {/* Middle Section (Search for Application, Navigation for Marketing) */}
-        <div className="flex-1 flex justify-center max-w-xl mx-auto">
-          {variant === "application" && (
-            <div className="w-full relative flex items-center bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-xl px-4 py-2 transition-all focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
-              <Search size={18} className="text-[var(--text-tertiary)] mr-3 flex-shrink-0" />
-              <input
-                className="bg-transparent border-none focus:outline-none w-full text-sm font-medium text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
-                placeholder="Search digital archives..."
-                type="text"
-              />
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 font-bold">
+              <BookOpen size={22} />
             </div>
-          )}
-          {variant === "marketing" && (
-            <nav className="hidden md:flex items-center gap-2">
+            <span
+              className={`tracking-tight font-display font-extrabold text-xl sm:text-2xl ${
+                isDark ? "text-white" : "text-slate-900"
+              }`}
+            >
+              TomeSphere
+            </span>
+          </Link>
+
+          {/* Primary Navigation Links (Inline next to Logo) */}
+          {variant === "application" && (
+            <nav className="hidden md:flex items-center gap-1.5 sm:gap-2.5">
+              <Link
+                href="/me"
+                className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${
+                  pathname === "/me"
+                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                }`}
+              >
+                Home
+              </Link>
               <Link
                 href="/discover"
-                className={`text-base font-medium px-4 py-2 rounded-lg transition-all ${
-                  isDark
-                    ? "text-slate-300 hover:text-white hover:bg-white/10"
-                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-200"
+                className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${
+                  pathname && pathname.startsWith("/discover")
+                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                 }`}
               >
                 Discover
               </Link>
               <Link
                 href="/library"
-                className={`text-base font-medium px-4 py-2 rounded-lg transition-all ${
-                  isDark
-                    ? "text-slate-300 hover:text-white hover:bg-white/10"
-                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-200"
+                className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${
+                  pathname && pathname.startsWith("/library")
+                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                 }`}
               >
                 Library
               </Link>
+            </nav>
+          )}
+
+          {variant === "marketing" && (
+            <nav className="hidden md:flex items-center gap-1.5 sm:gap-2.5">
               <Link
                 href="/discover"
-                className={`text-base font-medium px-4 py-2 rounded-lg transition-all ${
+                className={`text-sm sm:text-base font-medium px-3.5 py-2 rounded-xl transition-all ${
                   isDark
                     ? "text-slate-300 hover:text-white hover:bg-white/10"
-                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-200"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                 }`}
               >
-                Reader
+                Discover
+              </Link>
+              <Link
+                href="/discover/collections"
+                className={`text-sm sm:text-base font-medium px-3.5 py-2 rounded-xl transition-all ${
+                  isDark
+                    ? "text-slate-300 hover:text-white hover:bg-white/10"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                }`}
+              >
+                Collections
               </Link>
               <Link
                 href="/about"
-                className={`text-base font-medium px-4 py-2 rounded-lg transition-all ${
+                className={`text-sm sm:text-base font-medium px-3.5 py-2 rounded-xl transition-all ${
                   isDark
                     ? "text-slate-300 hover:text-white hover:bg-white/10"
-                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-200"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                 }`}
               >
                 About
               </Link>
             </nav>
           )}
-          {variant === "reader" && (
-            <div className={`flex items-center text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
-              <span>Reader Mode</span>
-            </div>
-          )}
         </div>
 
-        {/* Right Utilities */}
-        <div className="flex items-center gap-6 flex-shrink-0">
+        {/* Right Side: Search Bar + Utilities + Profile Avatar */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          
+          {/* Search Bar */}
+          <form
+            onSubmit={handleSearchSubmit}
+            className="relative flex items-center w-48 sm:w-72 md:w-80 lg:w-96"
+          >
+            <div className="w-full relative flex items-center bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 sm:py-2.5 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 shadow-xs">
+              <Search size={18} className="text-slate-400 mr-3 flex-shrink-0" />
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-transparent border-none focus:outline-none w-full text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                placeholder="Search digital archives..."
+                type="text"
+              />
+            </div>
+          </form>
+
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
             className={`p-2.5 rounded-xl transition-colors cursor-pointer ${
               isDark
-                ? "text-slate-300 hover:text-white hover:bg-white/10 border border-white/10"
+                ? "text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
             }`}
           >
@@ -146,38 +184,34 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
             <>
               <button
                 aria-label="Notifications"
-                className={`p-2.5 rounded-xl transition-colors cursor-pointer ${
+                className={`p-2.5 rounded-xl transition-colors cursor-pointer hidden sm:flex items-center justify-center ${
                   isDark
-                    ? "text-slate-300 hover:text-white hover:bg-white/10 border border-white/10"
+                    ? "text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
                 }`}
               >
                 <Bell size={20} />
               </button>
-              <div className={`h-6 w-px mx-1 hidden sm:block ${isDark ? "bg-slate-800" : "bg-slate-200"}`} />
+
+              <div className={`h-6 w-px hidden sm:block ${isDark ? "bg-slate-800" : "bg-slate-200"}`} />
+
+              {/* Hotstar / Netflix style Circular Avatar Profile Pill */}
               <Link
                 href="/account"
-                className={`flex items-center gap-2 p-1.5 pl-2 pr-3 rounded-xl border transition-all group ${
-                  isDark
-                    ? "border-slate-800 hover:border-indigo-500 bg-slate-900"
-                    : "border-slate-200 hover:border-indigo-500 bg-white"
-                }`}
+                className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white font-bold text-sm shadow-md border-2 border-indigo-400/40 hover:border-indigo-300 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+                title="Account Settings"
+                aria-label="Account Settings"
               >
-                <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
-                  <User size={18} />
-                </div>
-                <span className={`text-sm font-semibold hidden sm:block ${isDark ? "text-slate-100" : "text-slate-800"}`}>
-                  Account
-                </span>
+                <User size={18} className="group-hover:scale-110 transition-transform" />
               </Link>
             </>
           ) : variant === "reader" ? null : (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Link
                 href="/login"
-                className={`text-base font-semibold px-5 py-2.5 rounded-lg border transition-all ${
+                className={`text-sm font-semibold px-4 py-2 rounded-lg border transition-all ${
                   isDark
-                    ? "text-slate-200 border-white/15 hover:bg-white/10 hover:text-white"
+                    ? "text-slate-200 border-slate-800 hover:bg-white/10 hover:text-white"
                     : "text-slate-700 border-slate-300 hover:bg-slate-100 hover:text-slate-900"
                 }`}
               >
@@ -185,54 +219,15 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
               </Link>
               <Link
                 href="/signup"
-                className="bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-500 text-white text-base font-semibold px-5 py-2.5 rounded-lg shadow-sm transition-all"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm transition-all"
               >
                 Get Started
               </Link>
             </div>
           )}
         </div>
-      </div>
 
-      {/* Lower Tier (Application navigation) */}
-      {variant === "application" && (
-        <div className="border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50">
-          <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 h-11 flex items-center">
-            <nav className="flex items-center gap-8 h-full">
-              <Link
-                href="/me"
-                className={`text-sm font-semibold h-full flex items-center transition-colors border-b-2 ${
-                  pathname === "/me"
-                    ? "text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400 font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border-transparent hover:border-slate-300 dark:hover:border-slate-700"
-                }`}
-              >
-                Home
-              </Link>
-              <Link
-                href="/discover"
-                className={`text-sm font-semibold h-full flex items-center transition-colors border-b-2 ${
-                  pathname && pathname.startsWith("/discover")
-                    ? "text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400 font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border-transparent hover:border-slate-300 dark:hover:border-slate-700"
-                }`}
-              >
-                Discover
-              </Link>
-              <Link
-                href="/library"
-                className={`text-sm font-semibold h-full flex items-center transition-colors border-b-2 ${
-                  pathname && pathname.startsWith("/library")
-                    ? "text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400 font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border-transparent hover:border-slate-300 dark:hover:border-slate-700"
-                }`}
-              >
-                Library
-              </Link>
-            </nav>
-          </div>
-        </div>
-      )}
+      </div>
     </header>
   );
 }

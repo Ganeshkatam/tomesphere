@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Atkinson_Hyperlegible, Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "@/shared/layout/layout.css";
-import Footer from "@/shared/layout/Footer/Footer";
 import { Providers } from "./providers";
 import { themeInitScript } from "./theme-init";
 
@@ -65,10 +64,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased font-sans" suppressHydrationWarning>
         <Providers>
-          <div className="min-h-screen flex flex-col">
-            <main className="flex-1 flex flex-col">{children}</main>
-            <Footer />
-          </div>
+          {children}
         </Providers>
       </body>
     </html>

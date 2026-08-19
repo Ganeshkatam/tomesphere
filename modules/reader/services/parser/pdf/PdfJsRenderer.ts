@@ -195,7 +195,9 @@ export class PdfJsRenderer implements ReaderRenderer {
     }
 
     if (this.container && this.canvas) {
-      this.container.removeChild(this.canvas);
+      if (this.canvas.parentNode === this.container) {
+        this.container.removeChild(this.canvas);
+      }
       this.canvas = null;
     }
   }

@@ -176,18 +176,18 @@ export default function BookShelfRow({
       <div className="relative">
         <div
           ref={scrollContainerRef}
-          className="flex gap-5 overflow-x-auto pb-4 pt-1 no-scrollbar scroll-smooth snap-x snap-mandatory"
+          className="flex gap-5 overflow-x-auto py-2 px-1 no-scrollbar scroll-smooth snap-x snap-mandatory"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {displayBooks.map((item) => (
             <div
               key={item.id}
-              className="w-[170px] sm:w-[195px] md:w-[210px] shrink-0 snap-start flex flex-col"
+              className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col relative hover:z-50 transition-all duration-300"
             >
               <FeaturedItemCard item={item} />
             </div>
           ))}
-          <div className="w-[170px] sm:w-[195px] md:w-[210px] shrink-0 snap-start flex flex-col">
+          <div className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col">
             <ViewAllCard
               href={viewAllHref}
               title={viewAllTitle}

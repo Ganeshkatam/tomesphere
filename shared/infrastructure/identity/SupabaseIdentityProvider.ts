@@ -14,9 +14,17 @@ export class SupabaseIdentityProvider implements IdentityProvider {
     const { data: { user } } = await this.supabase.auth.getUser();
     if (!user) return null;
 
+    const metadataName =
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      user.user_metadata?.display_name ||
+      user.user_metadata?.custom_claims?.name;
+
     return {
       id: user.id,
       email: user.email,
+      name: metadataName || undefined,
+      displayName: metadataName || undefined,
       role: user.role,
     };
   }

@@ -1,22 +1,25 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState, useMemo, useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Play, Plus, BookOpen, Clock, Check, Info, Star } from "lucide-react";
+import { generateSimpleDescription } from "@/modules/storage/services/pdf-description-generator";
+import DefaultBookCover from "./DefaultBookCover";
+
 export interface BookCardModel {
   readonly id: string;
   readonly slug?: string;
   readonly title: string;
-  readonly authors: readonly { readonly name: string; }[];
-  readonly genres?: readonly { readonly name: string; }[];
+  readonly authors: readonly { readonly name: string }[];
+  readonly genres?: readonly { readonly name: string }[];
   readonly coverUrl: string | null;
   readonly language?: string | null;
-  readonly publishedDate?: string | null; // Used by legacy BookDto
-  readonly publicationYear?: number | null; // Used by BookSummaryDto
+  readonly publishedDate?: string | null;
+  readonly publicationYear?: number | null;
   readonly isFeatured?: boolean;
 }
-import { useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
-import Image from "next/image";
-import { Heart, Star, Plus, BookOpen, Clock, Check } from "lucide-react";
-import { generateSimpleDescription } from "@/modules/storage/services/pdf-description-generator";
 
 interface BookCardProps {
   book: BookCardModel;
@@ -30,13 +33,55 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [alignment, setAlignment] = useState<"center" | "left" | "right">("center");
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
-  // Auto-generate description if missing (using title and author since description is not in BookDto)
+  const authorNames = useMemo(() => {
+    return book.authors?.map((a) => a.name).join(", ") || "Public Domain";
+  }, [book.authors]);
+
   const displayDescription = useMemo(() => {
-    const authorNames =
-      book.authors?.map((a) => a.name).join(", ") || "Unknown Author";
     return generateSimpleDescription(book.title, authorNames);
-  }, [book.title, book.authors]);
+  }, [book.title, authorNames]);
+
+  const year = book.publicationYear || (book.publishedDate
+    ? new Date(book.publishedDate).getFullYear()
+    : "2025");
+
+  const genreName = book.genres?.[0]?.name || "Literature";
+  const language = book.language || "English";
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+
+    if (cardRef.current && typeof window !== "undefined") {
+      const rect = cardRef.current.getBoundingClientRect();
+      const popupWidth = Math.min(window.innerWidth * 0.94, window.innerWidth >= 768 ? 340 : 320);
+      const halfPopup = popupWidth / 2;
+      const cardCenter = rect.left + rect.width / 2;
+      const edgePadding = 24;
+
+      if (cardCenter - halfPopup < edgePadding) {
+        setAlignment("left");
+      } else if (cardCenter + halfPopup > window.innerWidth - edgePadding) {
+        setAlignment("right");
+      } else {
+        setAlignment("center");
+      }
+    }
+
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsHovered(true);
+    }, 450); // 450ms deliberate hover intent delay
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setIsHovered(false);
+    setShowMenu(false);
+  };
 
   const handleCardClick = () => {
     router.push(`/book/${book.id}`);
@@ -44,180 +89,225 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
 
   return (
     <div
-      className="group relative glass rounded-2xl overflow-hidden border border-[var(--border-subtle)] hover:border-indigo-500/30 hover:shadow-[0_20px_40px_rgba(99,102,241,0.15)] transition-all duration-500 cursor-pointer h-full flex flex-col"
-      onClick={handleCardClick}
-      style={{
-        transform: "perspective(1000px) rotateX(0deg) rotateY(0deg)",
-        transition: "transform 0.3s ease-out, box-shadow 0.3s ease-out",
-      }}
-      onMouseMove={(e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        const rotateX = (y - centerY) / 20;
-        const rotateY = (centerX - x) / 20;
-        e.currentTarget.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.03)`;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform =
-          "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
-      }}
+      ref={cardRef}
+      className={`relative w-full h-full select-none ${isHovered ? "z-50" : "z-10"}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {/* Cover Image with Loading State */}
-      <div className="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900">
-        {!imageLoaded && book.coverUrl && !hasError && (
-          <div
-            className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 animate-pulse"
-            style={{ animation: "shimmer 2s ease-in-out infinite" }}
-          />
-        )}
-        {book.coverUrl && !hasError ? (
-          <Image
-            src={book.coverUrl}
-            alt={book.title}
-            fill
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
-            unoptimized={true}
-            className={`object-cover transition-all duration-750 z-10 group-hover:scale-[1.03] group-hover:brightness-105 ${imageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-110"}`}
-            onLoad={() => setImageLoaded(true)}
-            onError={() => {
-              setImageLoaded(true);
-              setHasError(true);
-            }}
-          />
-        ) : null}
+      {/* 1. Base Card with Visible Details (Smart Viewport Adaptive) */}
+      <div
+        onClick={handleCardClick}
+        className="w-full h-full rounded-xl sm:rounded-2xl overflow-hidden bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500/50 shadow-xs hover:shadow-xl cursor-pointer flex flex-col transition-all duration-300 group"
+      >
+        {/* Cover Aspect [2/3] */}
+        <div className="relative aspect-[2/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-950">
+          {!imageLoaded && book.coverUrl && !hasError && (
+            <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse z-0" />
+          )}
 
-        {/* Default Book Cover - Always rendered in the background as a perfect placeholder */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 z-0">
-          {/* Book Icon */}
-          <div className="mb-4 w-16 h-16 relative opacity-50">
+          {book.coverUrl && !hasError ? (
             <Image
-              src="/book-placeholder.svg"
-              alt=""
+              src={book.coverUrl}
+              alt={book.title}
               fill
-              className="object-contain"
+              sizes="(max-width: 480px) 40vw, (max-width: 768px) 30vw, 220px"
+              unoptimized={true}
+              className={`object-cover transition-transform duration-500 ${
+                imageLoaded ? "opacity-100" : "opacity-0"
+              }`}
+              onLoad={() => setImageLoaded(true)}
+              onError={() => {
+                setImageLoaded(true);
+                setHasError(true);
+              }}
             />
-          </div>
-          {/* Book Title on Cover */}
-          <div className="text-center space-y-2">
-            <h4 className="text-white/90 font-display font-bold text-sm leading-tight line-clamp-3">
-              {book.title}
-            </h4>
-            <p className="text-white/60 text-xs font-medium line-clamp-2">
-              {book.authors?.map((a) => a.name).join(", ") || "Unknown"}
-            </p>
-          </div>
-          {/* Decorative Elements */}
-          <div className="absolute top-4 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          <div className="absolute bottom-4 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-        </div>
+          ) : (
+            <DefaultBookCover
+              title={book.title}
+              authors={authorNames}
+              genre={genreName}
+            />
+          )}
 
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 z-10">
-          <p className="text-white text-sm line-clamp-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-            {displayDescription}
-          </p>
-        </div>
-
-        {/* Featured Badge */}
-        {book.isFeatured && (
-          <div className="absolute top-2.5 right-2.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-black px-2 py-0.5 rounded-md text-[10px] font-bold shadow-lg flex items-center gap-1 z-20">
-            <Star size={10} fill="currentColor" />
-            Featured
-          </div>
-        )}
-      </div>
-
-      {/* Book Info */}
-      <div className="p-2.5 sm:p-3 flex-1 flex flex-col justify-between">
-        <div>
-          <h3 className="text-base font-semibold text-[var(--text-primary)] line-clamp-1 mb-0.5 group-hover:text-indigo-500 transition-colors leading-tight">
-            {book.title}
-          </h3>
-          <p className="text-[13px] text-[var(--text-tertiary)] mb-1 font-medium truncate">
-            by {book.authors?.map((a) => a.name).join(", ") || "Unknown"}
-          </p>
-
-          <p className="text-[12px] text-[var(--text-secondary)] font-medium truncate">
-            {book.genres?.[0]?.name || "Uncategorized"}
-            {book.language ? ` • ${book.language}` : ""} •{" "}
-            {book.publicationYear || (book.publishedDate
-              ? new Date(book.publishedDate).getFullYear()
-              : "2025")}
-          </p>
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-2 mt-2">
-          {/* Primary action "Read →" */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/book/${book.id}`);
-            }}
-            className="flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all hover:scale-[1.05]"
-          >
-            <span>Read</span>
-            <span className="text-[10px]">→</span>
-          </button>
-
-          {/* Add to List */}
-          {onAddToList && (
-            <div className="relative ml-auto">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowMenu(!showMenu);
-                }}
-                onBlur={() => setTimeout(() => setShowMenu(false), 200)}
-                className="p-1.5 rounded-lg bg-[var(--surface-raised)] hover:bg-indigo-500/20 hover:text-indigo-500 text-[var(--text-secondary)] transition-all transform hover:scale-110"
-                title="Add to reading list"
-              >
-                <Plus size={14} />
-              </button>
-              {showMenu && (
-                <div className="absolute right-0 bottom-full mb-2 w-48 bg-[var(--surface-raised)]/95 backdrop-blur-xl rounded-xl shadow-2xl border border-[var(--border-default)] overflow-hidden z-20 animate-in fade-in slide-in-from-bottom-2 duration-200">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onAddToList("want_to_read");
-                      setShowMenu(false);
-                    }}
-                    className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-indigo-500/20 transition-colors"
-                  >
-                    <BookOpen size={16} />
-                    <span>Want to Read</span>
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onAddToList("currently_reading");
-                      setShowMenu(false);
-                    }}
-                    className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-indigo-500/20 transition-colors"
-                  >
-                    <Clock size={16} />
-                    <span>Currently Reading</span>
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onAddToList("finished");
-                      setShowMenu(false);
-                    }}
-                    className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-indigo-500/20 transition-colors"
-                  >
-                    <Check size={16} />
-                    <span>Finished</span>
-                  </button>
-                </div>
-              )}
+          {/* Featured Badge */}
+          {book.isFeatured && (
+            <div className="absolute top-1.5 sm:top-2.5 right-1.5 sm:right-2.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-black px-1.5 sm:px-2 py-0.5 rounded sm:rounded-md text-[9px] sm:text-[10px] font-extrabold shadow-lg flex items-center gap-0.5 sm:gap-1 z-10">
+              <Star size={9} fill="currentColor" />
+              <span>Featured</span>
             </div>
           )}
         </div>
+
+        {/* Base Details Section (Visible Below Cover) */}
+        <div className="p-2.5 sm:p-3 flex-1 flex flex-col justify-between bg-white dark:bg-slate-900/90">
+          <div>
+            <h4 className="text-[11px] sm:text-xs md:text-sm font-bold text-slate-900 dark:text-white line-clamp-1 truncate leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+              {book.title}
+            </h4>
+            <p className="text-[10px] sm:text-[11px] text-slate-600 dark:text-slate-400 truncate mt-0.5 font-medium">
+              by {authorNames}
+            </p>
+          </div>
+          <p className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-medium truncate mt-1">
+            {genreName} • {year}
+          </p>
+        </div>
       </div>
+
+      {/* 2. Hotstar / Netflix Floating Expanded Preview Card on Hover (Theme-Adaptive Smart Edge-Aware) */}
+      {isHovered && (
+        <div
+          className={`absolute top-1/2 -translate-y-1/2 w-[min(94vw,290px)] sm:w-[320px] md:w-[340px] max-w-[calc(100vw-1.5rem)] z-50 rounded-2xl overflow-hidden bg-white dark:bg-[#111217] border border-slate-200 dark:border-slate-700/90 shadow-[0_25px_60px_rgba(0,0,0,0.18)] dark:shadow-[0_35px_80px_rgba(0,0,0,0.98)] animate-in fade-in zoom-in-95 duration-200 flex flex-col ${
+            alignment === "left"
+              ? "left-0 translate-x-0"
+              : alignment === "right"
+                ? "right-0 left-auto translate-x-0"
+                : "left-1/2 -translate-x-1/2"
+          }`}
+          style={{
+            transformOrigin:
+              alignment === "left"
+                ? "left center"
+                : alignment === "right"
+                  ? "right center"
+                  : "center center",
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Top Cover Image Header (Sleek, compact & clear) */}
+          <div
+            onClick={handleCardClick}
+            className="relative h-44 min-[400px]:h-48 sm:h-52 md:h-56 w-full overflow-hidden bg-slate-100 dark:bg-slate-950 cursor-pointer group/preview"
+          >
+            {book.coverUrl && !hasError ? (
+              <Image
+                src={book.coverUrl}
+                alt={book.title}
+                fill
+                sizes="340px"
+                unoptimized={true}
+                className="object-cover group-hover/preview:scale-105 transition-transform duration-500"
+              />
+            ) : (
+              <DefaultBookCover
+                title={book.title}
+                authors={authorNames}
+                genre={genreName}
+              />
+            )}
+
+            {/* Featured Badge */}
+            {book.isFeatured && (
+              <div className="absolute top-2.5 right-2.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-black px-2 py-0.5 rounded text-[9px] font-black shadow-md flex items-center gap-0.5 z-20">
+                <Star size={9} fill="currentColor" />
+                <span>Featured</span>
+              </div>
+            )}
+          </div>
+
+          {/* Card Body Controls (Compact, clean & sharp) */}
+          <div className="p-3 sm:p-3.5 space-y-2.5 bg-white dark:bg-[#111217]">
+            {/* Title & Author */}
+            <div>
+              <h3
+                onClick={handleCardClick}
+                className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white leading-tight hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer line-clamp-1 truncate"
+              >
+                {book.title}
+              </h3>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium truncate mt-0.5">
+                by {authorNames}
+              </p>
+            </div>
+            
+            {/* Primary Action Buttons: ▶ Read Now + (+) Shelf + (i) Overview */}
+            <div className="flex items-center gap-1.5 pt-0.5">
+              <Link
+                href={`/read/${book.id}`}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-200 dark:text-slate-950 font-extrabold text-xs transition-all shadow-md active:scale-95 cursor-pointer"
+              >
+                <Play size={13} className="fill-white dark:fill-slate-950" />
+                <span>Read Now</span>
+              </Link>
+
+              {/* Add to Shelf Menu Button */}
+              <div className="relative">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowMenu(!showMenu);
+                  }}
+                  className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 dark:bg-white/10 dark:hover:bg-white/20 dark:border-white/10 dark:text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs active:scale-95"
+                  title="Add to library shelf"
+                >
+                  <Plus size={14} />
+                </button>
+
+                {showMenu && (
+                  <div className="absolute right-0 bottom-full mb-2 w-44 sm:w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in duration-150">
+                    <button
+                      onClick={() => {
+                        onAddToList?.("want_to_read");
+                        setShowMenu(false);
+                      }}
+                      className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    >
+                      <BookOpen size={13} className="text-indigo-500 dark:text-indigo-400" />
+                      <span>Want to Read</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        onAddToList?.("currently_reading");
+                        setShowMenu(false);
+                      }}
+                      className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    >
+                      <Clock size={13} className="text-amber-500 dark:text-amber-400" />
+                      <span>Currently Reading</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        onAddToList?.("finished");
+                        setShowMenu(false);
+                      }}
+                      className="flex items-center gap-2.5 w-full text-left px-3.5 py-2.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    >
+                      <Check size={13} className="text-emerald-500 dark:text-emerald-400" />
+                      <span>Finished</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Book Details Info Button */}
+              <Link
+                href={`/book/${book.id}`}
+                className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 dark:bg-white/10 dark:hover:bg-white/20 dark:border-white/10 dark:text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs active:scale-95"
+                title="Book Overview"
+              >
+                <Info size={14} />
+              </Link>
+            </div>
+
+            {/* Metadata Row */}
+            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex-wrap">
+              <span className="text-slate-900 dark:text-white font-bold">{year}</span>
+              <span>•</span>
+              <span className="px-1 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 text-[9px] font-bold">
+                Public Domain
+              </span>
+              <span>•</span>
+              <span className="truncate">{genreName}</span>
+            </div>
+
+            {/* Synopsis Description */}
+            <p className="text-[10px] sm:text-[11px] text-slate-600 dark:text-slate-300 font-serif line-clamp-2 leading-relaxed">
+              {displayDescription}
+            </p>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
