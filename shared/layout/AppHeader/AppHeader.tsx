@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { BookOpen, Search, Bell, User, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/shared/providers/theme-context";
 
@@ -12,8 +13,22 @@ export interface AppHeaderProps {
   variant?: HeaderVariant;
 }
 
+const AUTH_ROUTES = [
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email",
+];
+
 export function AppHeader({ className = "", variant = "application" }: AppHeaderProps) {
+  const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
+
+  // Omit header entirely on authentication routes
+  if (pathname && AUTH_ROUTES.includes(pathname)) {
+    return null;
+  }
 
   const toggleTheme = () => {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");

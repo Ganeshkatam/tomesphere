@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import AuthTopBar from "./AuthTopBar";
 
 import { showError, showSuccess } from "@/lib/toast";
 import {
@@ -78,13 +80,20 @@ export default function SignupClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--surface-canvas)] flex items-center justify-center p-4 sm:p-8 relative">
-      {/* ── Ambient background ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Noise texture overlay */}
-        <div className="absolute inset-0 opacity-[0.015] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]" />
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[140px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-purple-500/8 rounded-full blur-[120px]" />
+    <div className="min-h-screen bg-[var(--surface-canvas)] flex items-center justify-center p-4 sm:p-8 pt-20 sm:pt-24 pb-12 relative overflow-hidden">
+      {/* ── Floating Top Bar (Theme Toggle & Back Home) ── */}
+      <AuthTopBar />
+
+      {/* ── Route-related Grand Library Atrium Backdrop ── */}
+      <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+        <Image
+          src="/auth_signup_bg.jpg"
+          alt="Grand Library Atrium"
+          fill
+          className="object-cover object-center opacity-55 dark:opacity-85 transition-opacity duration-500"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-tr from-slate-50/60 via-slate-100/45 to-purple-50/40 dark:from-slate-950/75 dark:via-slate-950/65 dark:to-slate-900/50 backdrop-blur-[1px] transition-colors" />
       </div>
 
       {/* ══════════════════════════════════════

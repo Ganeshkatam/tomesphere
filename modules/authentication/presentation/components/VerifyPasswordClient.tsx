@@ -3,6 +3,8 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import AuthTopBar from "./AuthTopBar";
 import { showError, showSuccess } from "@/lib/toast";
 import { Eye, EyeOff, Lock, ArrowRight } from "lucide-react";
 
@@ -55,8 +57,23 @@ function VerifyPasswordForm() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--surface-canvas)] flex items-center justify-center p-4 sm:p-6 md:py-12">
-      <div className="w-full max-w-md animate-fadeIn">
+    <div className="min-h-screen bg-[var(--surface-canvas)] flex items-center justify-center p-4 sm:p-6 md:py-12 pt-20 sm:pt-24 relative overflow-hidden">
+      {/* ── Floating Top Bar (Theme Toggle & Back Home) ── */}
+      <AuthTopBar />
+
+      {/* ── Route-related Background Sanctuary Backdrop ── */}
+      <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+        <Image
+          src="/auth_login_bg.jpg"
+          alt="Library Sanctuary"
+          fill
+          className="object-cover object-center opacity-55 dark:opacity-85 transition-opacity duration-500"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-tr from-slate-50/60 via-slate-100/45 to-indigo-50/40 dark:from-slate-950/75 dark:via-slate-950/65 dark:to-slate-900/50 backdrop-blur-[1px] transition-colors" />
+      </div>
+
+      <div className="w-full max-w-md animate-fadeIn relative z-10">
         <div className="text-center mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-2 font-display">
             Welcome Back
