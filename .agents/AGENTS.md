@@ -2,6 +2,9 @@
 
 The following rules apply to all tasks and agents working in this repository.
 
+## Git Operations Rule
+**Never push or commit changes directly to the remote repository (https://github.com/Ganeshkatam/tomesphere-app).** Always create and commit changes to local branches only, unless explicitly instructed otherwise.
+
 ## Database Rules
 1. **Supabase MCP is the authoritative database source.** Always verify schema against the live database through Supabase MCP; never assume the schema from TypeScript types or migration files alone.
 2. **All schema changes are migration-driven.** Every schema modification must be represented as a migration and tested against the live database before applying.

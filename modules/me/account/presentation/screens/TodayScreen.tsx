@@ -13,7 +13,7 @@ import {
   BookMarked,
   FolderTree,
 } from "lucide-react";
-import type { DashboardOverviewDto } from "@/modules/account/application/queries/GetDashboardOverview/read-model";
+import type { DashboardOverviewDto } from "@/modules/me/account/application/queries/GetDashboardOverview/read-model";
 import type { ProfileDto } from "@/modules/user/profile/application/queries/GetProfile/read-model";
 
 interface TodayScreenProps {

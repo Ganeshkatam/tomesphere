@@ -1,5 +1,5 @@
 import { createSupabaseServerClient } from "@/shared/core/database/server";
-import { SupabaseProfileRepository } from "../../../user/profile/infrastructure/repositories/SupabaseProfileRepository";
+import { SupabaseProfileRepository } from "../../../../user/profile/infrastructure/repositories/SupabaseProfileRepository";
 import { SupabaseDashboardReadModel } from "../../infrastructure/read-models/SupabaseDashboardReadModel";
 import { AccountDashboardFacade } from "./AccountDashboardFacade";
 

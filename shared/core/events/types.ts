@@ -126,6 +126,11 @@ export interface EventPayloads {
     userId: string;
     bookId: string;
     durationSeconds: number;
+    pagesRead: number;
+  };
+  "reader.book.completed": {
+    userId: string;
+    bookId: string;
   };
   "auth.user.logged.in": { userId: string; timestamp: number };
   "library.book.added": { userId: string; bookId: string; status?: string };
@@ -140,7 +145,6 @@ export interface EventPayloads {
   "progress.achievement.unlocked": { userId: string; achievementId: string };
   "book.liked": { userId: string; bookId: string };
   "book.rated": { userId: string; bookId: string; rating: number };
-  "reader.book.completed": { userId: string; bookId: string };
   "catalog.book.published": { bookId: string };
   "catalog.book.updated": { bookId: string };
   "catalog.book.deleted": { bookId: string };

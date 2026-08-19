@@ -30,7 +30,7 @@ export default async function AccountPage({
       <div className="border-b border-outline-variant mb-8">
         <nav className="flex gap-8">
           <Link
-            href="/account?tab=profile"
+            href="/me/account?tab=profile"
             className={`pb-4 text-label-lg font-medium border-b-2 transition-colors ${
               tab === "profile"
                 ? "border-primary text-primary"
@@ -40,7 +40,7 @@ export default async function AccountPage({
             Profile
           </Link>
           <Link
-            href="/account?tab=preferences"
+            href="/me/account?tab=preferences"
             className={`pb-4 text-label-lg font-medium border-b-2 transition-colors ${
               tab === "preferences"
                 ? "border-primary text-primary"
@@ -50,7 +50,7 @@ export default async function AccountPage({
             Preferences
           </Link>
           <Link
-            href="/account?tab=security"
+            href="/me/account?tab=security"
             className={`pb-4 text-label-lg font-medium border-b-2 transition-colors ${
               tab === "security"
                 ? "border-primary text-primary"

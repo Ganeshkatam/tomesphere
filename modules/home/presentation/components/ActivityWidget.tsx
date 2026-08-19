@@ -1,4 +1,4 @@
-import { RecentActivityDto } from "@/modules/account/application/queries/GetRecentActivityQuery/dto";
+import { RecentActivityDto } from "@/modules/me/account/application/queries/GetRecentActivityQuery/dto";
 import {
   Activity,
   BookOpen,
@@ -102,7 +102,7 @@ export async function ActivityWidget({ promise }: ActivityWidgetProps) {
 
       <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 text-center">
         <Link
-          href="/account"
+          href="/me/account"
           className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
         >
           View Account History

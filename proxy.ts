@@ -14,7 +14,7 @@ const PROTECTED_PREFIXES = [
   "/me",
   "/library",
   "/read",
-  "/account",
+  "/me/account",
   "/onboarding",
 ];
 

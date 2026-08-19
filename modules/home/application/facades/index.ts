@@ -11,7 +11,7 @@ import { SupabaseReadingStreakReadModel } from "@/modules/progress/infrastructur
 import { SupabaseReadingStatisticsReadModel } from "@/modules/progress/infrastructure/read-models/SupabaseReadingStatisticsReadModel";
 import { SupabaseReadingCalendarReadModel } from "@/modules/progress/infrastructure/read-models/SupabaseReadingCalendarReadModel";
 import { SupabaseSuggestedReadsReadModel } from "@/modules/discovery/infrastructure/read-models/SupabaseSuggestedReadsReadModel";
-import { SupabaseRecentActivityReadModel } from "@/modules/account/infrastructure/read-models/SupabaseRecentActivityReadModel";
+import { SupabaseRecentActivityReadModel } from "@/modules/me/account/infrastructure/read-models/SupabaseRecentActivityReadModel";
 
 // Queries
 import { GetContinueReadingQuery } from "@/modules/library/application/queries/GetContinueReadingQuery";
@@ -22,7 +22,7 @@ import { GetReadingStreakQuery } from "@/modules/progress/application/queries/Ge
 import { GetReadingStatisticsQuery } from "@/modules/progress/application/queries/GetReadingStatisticsQuery";
 import { GetReadingCalendarQuery } from "@/modules/progress/application/queries/GetReadingCalendarQuery";
 import { GetSuggestedReadsQuery } from "@/modules/discovery/application/queries/GetSuggestedReadsQuery";
-import { GetRecentActivityQuery } from "@/modules/account/application/queries/GetRecentActivityQuery";
+import { GetRecentActivityQuery } from "@/modules/me/account/application/queries/GetRecentActivityQuery";
 
 export async function executeHomePageFacade() {
   const supabase = await createSupabaseServerClient();

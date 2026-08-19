@@ -236,3 +236,22 @@ export async function completeReadingSessionAction(
     };
   }
 }
+
+export async function completeBookAction(
+  payload: { bookId: string },
+): Promise<ServerActionResult<any>> {
+  try {
+    const user = await requireAuth();
+    const { executeCompleteBookCommand } = await import("../../application/commands/CompleteBookCommand");
+    await executeCompleteBookCommand({
+      ...payload,
+      userId: user.id,
+    });
+    return { success: true, data: null };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
+  }
+}

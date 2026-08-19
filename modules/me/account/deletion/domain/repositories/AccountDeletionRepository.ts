@@ -2,7 +2,7 @@
  * Account Deletion Repository Port
  *
  * Moved from modules/user/profile/domain/repositories/ to
- * modules/account/deletion/domain/repositories/ per frozen architecture.
+ * modules/me/account/deletion/domain/repositories/ per frozen architecture.
  *
  * Account owns the deletion lifecycle.
  */

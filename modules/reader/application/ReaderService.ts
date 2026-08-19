@@ -33,6 +33,7 @@ export class ReaderService {
   private sessionFacade: ReaderSessionFacade;
   private sessionStartTime: number | null = null;
   private accumulatedDurationSeconds: number = 0;
+  private uniquePagesVisited: Set<string> = new Set<string>();
 
   // Auto-save debounce
   private autoSaveTimer: NodeJS.Timeout | null = null;
@@ -64,9 +65,14 @@ export class ReaderService {
     store.setBook(this.bookId);
 
     // Listen for location changes
-    this.renderer.onLocationChanged((anchor: LocationAnchor) => {
+    this.renderer.onLocationChanged((anchor: LocationAnchor, percentage: number) => {
       useReaderStore.getState().setAnchor(anchor);
+      this.uniquePagesVisited.add(anchor.value);
       this.scheduleAutoSave(anchor);
+
+      if (percentage === 100) {
+        this.sessionFacade.markBookCompleted();
+      }
     });
 
     // Listen for text selections
@@ -123,7 +129,7 @@ export class ReaderService {
       this.accumulatedDurationSeconds += duration;
       this.sessionStartTime = null;
       if (this.accumulatedDurationSeconds > 0) {
-        this.sessionFacade.completeSession(this.accumulatedDurationSeconds);
+        this.sessionFacade.completeSession(this.accumulatedDurationSeconds, this.uniquePagesVisited.size);
       }
     }
   };
@@ -555,7 +561,7 @@ export class ReaderService {
     }
 
     if (this.accumulatedDurationSeconds > 0) {
-      await this.sessionFacade.completeSession(this.accumulatedDurationSeconds);
+      await this.sessionFacade.completeSession(this.accumulatedDurationSeconds, this.uniquePagesVisited.size);
     }
   }
 

@@ -197,7 +197,7 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
 
               {/* Hotstar / Netflix style Circular Avatar Profile Pill */}
               <Link
-                href="/account"
+                href="/me/account"
                 className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white font-bold text-sm shadow-md border-2 border-indigo-400/40 hover:border-indigo-300 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
                 title="Account Settings"
                 aria-label="Account Settings"

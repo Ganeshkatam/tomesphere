@@ -1,5 +1,5 @@
 import React from "react";
-import { AccountLayoutShell } from "@/modules/account/presentation/components/AccountLayoutShell";
+import { AccountLayoutShell } from "@/modules/me/account/presentation/components/AccountLayoutShell";
 
 export default function AccountLayout({
   children,

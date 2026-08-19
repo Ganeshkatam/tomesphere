@@ -9,17 +9,17 @@ export interface AccountNavigationItem {
 }
 
 export const ACCOUNT_NAVIGATION: readonly AccountNavigationItem[] = [
-  { id: "profile", label: "Profile", href: "/account/profile", icon: User },
+  { id: "profile", label: "Profile", href: "/me/account?tab=profile", icon: User },
   {
     id: "preferences",
     label: "Preferences",
-    href: "/account/preferences",
+    href: "/me/account?tab=preferences",
     icon: Settings,
   },
   {
     id: "security",
     label: "Security",
-    href: "/account/security",
+    href: "/me/account?tab=security",
     icon: Shield,
   },
 ] as const;

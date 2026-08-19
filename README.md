@@ -64,10 +64,11 @@ tomesphere-app/
 │   ├── (app)/                        # Public application routes (/discover, /search, /book)
 │   ├── (public)/                     # Informational & Auth routes (/about, /support, /login)
 │   ├── (reader)/                     # Standalone reader shell (/read/[id])
-│   ├── (workspace)/                  # Authenticated workspace (/library, /dashboard, /account)
+│   ├── (workspace)/                  # Authenticated workspace (/library, /me, /me/account)
 │   └── api/                          # API route handlers & background cron endpoints
 ├── modules/                          # Bounded Contexts (Clean Architecture)
-│   ├── account/                      # User account preferences, security & profile screens
+│   ├── me/                           # Dashboard & Account Subdomains
+│   │   └── account/                  # User account preferences, security & profile screens
 │   ├── authentication/               # Auth workflows (Magic links, password, MFA)
 │   ├── books/                        # Book catalog repository, entities & mappers
 │   ├── discovery/                    # Search documents, autocomplete & facet services

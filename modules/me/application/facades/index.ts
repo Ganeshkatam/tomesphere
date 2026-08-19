@@ -9,6 +9,7 @@ import { SupabaseCurrentReadingReadModel } from "@/modules/library/infrastructur
 import { SupabaseLibrarySnapshotReadModel } from "@/modules/library/infrastructure/read-models/SupabaseLibrarySnapshotReadModel";
 import { DiscoveryFacade } from "@/modules/discovery/application/facades/DiscoveryFacade";
 import { SupabaseDiscoveryReadModel } from "@/modules/discovery/infrastructure/read-models/SupabaseDiscoveryReadModel";
+import { SupabaseUserStatisticsReadModel } from "../../infrastructure/supabase/SupabaseUserStatisticsReadModel";
 
 export async function executeMePageFacade() {
   const supabase = await createSupabaseServerClient();
@@ -22,6 +23,7 @@ export async function executeMePageFacade() {
     new GetCurrentReadingQuery(new SupabaseCurrentReadingReadModel(supabase)),
     new GetLibrarySnapshotQuery(new SupabaseLibrarySnapshotReadModel(supabase)),
     discoveryFacade,
+    new SupabaseUserStatisticsReadModel(supabase),
   );
 
   return facade.get();

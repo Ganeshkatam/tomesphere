@@ -55,8 +55,8 @@ export async function GoalWidget({ promise }: GoalWidgetProps) {
           <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium">
             <span>{percentage}% achieved today</span>
             <Link
-              href="/account"
-              className="text-amber-600 dark:text-amber-400 hover:underline font-semibold"
+              href="/me/account"
+              className="text-indigo-600 dark:text-indigo-400 font-bold text-[10px] sm:text-xs hover:underline hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
             >
               Adjust Goal
             </Link>
@@ -68,7 +68,7 @@ export async function GoalWidget({ promise }: GoalWidgetProps) {
             Set a daily target to build a consistent reading habit.
           </p>
           <Link
-            href="/account"
+            href="/me/account"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex-shrink-0"
           >
             <span>Set Goal</span>
