@@ -8,6 +8,7 @@ import AuthTopBar from "./AuthTopBar";
 import { getSafeRedirectUrl } from "@/shared/core/utils/redirect";
 import {
   loginWithPassword,
+  signInWithGoogle,
   sendMagicLinkServer,
   verifyMagicLinkServer,
   getMFAStatus,
@@ -209,7 +210,21 @@ export default function EnhancedLoginPage() {
   };
 
   const handleGoogleSignIn = async () => {
-    showError("Google Sign-In is being migrated to Server Actions.");
+    setLoading(true);
+    try {
+      const res = await signInWithGoogle(redirectTo);
+      if (!res.success) {
+        showError(res.error.message);
+        setLoading(false);
+        return;
+      }
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (err: any) {
+      showError(err.message || "Failed to start Google sign-in");
+      setLoading(false);
+    }
   };
 
   /* ══════════════════════════════════════════

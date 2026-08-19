@@ -203,6 +203,53 @@ export async function signUpWithPassword(
   }
 }
 
+export async function signInWithGoogle(
+  redirectTo?: string,
+): Promise<ServerActionResult<{ url: string }>> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const hdrs = await headers();
+    const host =
+      hdrs.get("x-forwarded-host") || hdrs.get("host") || "localhost:3000";
+    const protocol =
+      hdrs.get("x-forwarded-proto") ||
+      (host.includes("localhost") ? "http" : "https");
+    const origin = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
+    const callbackUrl = `${origin}/auth/callback${
+      redirectTo ? `?next=${encodeURIComponent(redirectTo)}` : ""
+    }`;
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: callbackUrl,
+        queryParams: {
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
+    });
+
+    if (error) {
+      return { success: false, error: { message: error.message } };
+    }
+
+    if (data?.url) {
+      return { success: true, data: { url: data.url } };
+    }
+
+    return {
+      success: false,
+      error: { message: "Failed to generate Google Sign-In URL" },
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
+  }
+}
+
 export async function sendMagicLinkServer(
   emailOrPhone: string,
   isPhone: boolean,

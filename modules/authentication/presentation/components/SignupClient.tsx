@@ -16,7 +16,10 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { signUpWithPassword } from "@/modules/authentication/presentation/actions/auth";
+import {
+  signUpWithPassword,
+  signInWithGoogle,
+} from "@/modules/authentication/presentation/actions/auth";
 
 const inputCls =
   "w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl px-4 py-3.5 pl-12 focus:outline-none focus:border-indigo-600 dark:focus:border-indigo-400 focus:ring-1 focus:ring-indigo-600/30 transition-all text-sm";
@@ -76,7 +79,21 @@ export default function SignupClient() {
   };
 
   const handleGoogleSignUp = async () => {
-    showError("Google Sign-In is being migrated to Server Actions.");
+    setLoading(true);
+    try {
+      const res = await signInWithGoogle("/discover");
+      if (!res.success) {
+        showError(res.error.message);
+        setLoading(false);
+        return;
+      }
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (err: any) {
+      showError(err.message || "Failed to start Google sign-up");
+      setLoading(false);
+    }
   };
 
   return (
