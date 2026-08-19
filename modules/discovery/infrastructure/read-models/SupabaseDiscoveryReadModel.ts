@@ -18,6 +18,7 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       classicsRes,
       philosophyRes,
       scienceRes,
+      historyRes,
       curatedRes,
       authorsRes,
       genresRes,
@@ -70,6 +71,13 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
         .select(
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
+        .order("id", { ascending: false })
+        .limit(10),
+      this.supabase
+        .from("books")
+        .select(
+          "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
+        )
         .order("release_date", { ascending: false, nullsFirst: false })
         .limit(10),
       this.supabase.from("authors").select("name").limit(10),
@@ -94,6 +102,7 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       classicsBooks: (classicsRes.data || []).map(BookSummaryMapper.toDto),
       philosophyBooks: (philosophyRes.data || []).map(BookSummaryMapper.toDto),
       scienceBooks: (scienceRes.data || []).map(BookSummaryMapper.toDto),
+      historyBooks: (historyRes.data || []).map(BookSummaryMapper.toDto),
       curatedBooks: (curatedRes.data || []).map(BookSummaryMapper.toDto),
       featuredCollections: [], // Placeholder for V1 until collections table exists
       genres,
@@ -124,7 +133,7 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
         p_languages: [],
         p_publication_years: [],
         p_sort: sort || "relevance",
-        p_subjects: []
+        p_subjects: [],
       },
     );
 
@@ -151,14 +160,10 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
     if (sort === "newest") {
       dbQuery = dbQuery.order("created_at", { ascending: false });
     } else {
-      // For sorting by title when using IN, we just sort the result in memory or use db order
       dbQuery = dbQuery.order("title", { ascending: true });
     }
 
     const { data } = await dbQuery;
-
-    // Sort in-memory to match RPC order if needed, but RPC already sorts by title.
-    // Here we just use the DB sort which handles it.
 
     return {
       books: (data || []).map(BookSummaryMapper.toDto),
@@ -220,10 +225,6 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
         { count: "exact" },
       )
       .order(scoreCol, { ascending: false });
-
-    if (query.genre && query.genre !== "all") {
-      // Same constraint as searchBooks, filtering by related table requires inner join setup
-    }
 
     const start = (query.page - 1) * query.limit;
     const end = start + query.limit - 1;

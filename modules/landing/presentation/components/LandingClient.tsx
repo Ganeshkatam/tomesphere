@@ -3,12 +3,13 @@
 import { LandingViewModel } from "@/modules/landing/application/facades/LandingPageFacade";
 import HeroSection from "./HeroSection";
 import FeaturedBooksSection from "./FeaturedBooksSection";
+import TrendingBooksSection from "./TrendingBooksSection";
+import RecentlyAddedSection from "./RecentlyAddedSection";
 import SlowScrollBooksSection from "./SlowScrollBooksSection";
 import FeaturedCollectionsSection from "./FeaturedCollectionsSection";
 import GenreBrowserSection from "./GenreBrowserSection";
 import PopularAuthorsSection from "./PopularAuthorsSection";
 import AnnouncementSection from "./AnnouncementSection";
-// import StatisticsSection from "./StatisticsSection";
 
 interface LandingClientProps {
   model: LandingViewModel;
@@ -16,7 +17,7 @@ interface LandingClientProps {
 
 export default function LandingClient({ model }: LandingClientProps) {
   const { landing } = model;
-  const { overview, announcements, statistics } = landing;
+  const { overview, announcements } = landing;
 
   // Overview provides the curated lists and metadata
   const {
@@ -37,8 +38,10 @@ export default function LandingClient({ model }: LandingClientProps) {
       <HeroSection searchSuggestions={featuredBooks} />
 
       <div className="w-full relative z-20 flex flex-col gap-24 py-16">
-        {/* Above-the-fold Curated Showcase */}
+        {/* Above-the-fold Primary Book Shelves */}
         <FeaturedBooksSection items={featuredBooks} />
+        <TrendingBooksSection items={trendingBooks} />
+        <RecentlyAddedSection items={newBooks} />
 
         {/* Categorical & Discovery Browsers */}
         <FeaturedCollectionsSection collections={featuredCollections} />
@@ -52,10 +55,9 @@ export default function LandingClient({ model }: LandingClientProps) {
           classicsBooks={classicsBooks.length > 0 ? classicsBooks : featuredBooks}
           philosophyBooks={philosophyBooks.length > 0 ? philosophyBooks : trendingBooks}
           scienceBooks={scienceBooks.length > 0 ? scienceBooks : newBooks}
-          newBooks={newBooks}
-          trendingBooks={trendingBooks}
+        // newBooks={newBooks}
+        // trendingBooks={trendingBooks}
         />
-        {/* <StatisticsSection statistics={statistics} /> */}
       </div>
     </div>
   );

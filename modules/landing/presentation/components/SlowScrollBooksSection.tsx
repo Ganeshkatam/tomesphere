@@ -8,6 +8,7 @@ interface SlowScrollBooksSectionProps {
   classicsBooks?: any[];
   philosophyBooks?: any[];
   scienceBooks?: any[];
+  historyBooks?: any[];
   newBooks?: any[];
   trendingBooks?: any[];
   className?: string;
@@ -18,6 +19,7 @@ export default function SlowScrollBooksSection({
   classicsBooks = [],
   philosophyBooks = [],
   scienceBooks = [],
+  historyBooks = [],
   newBooks = [],
   trendingBooks = [],
   className = "",
@@ -76,7 +78,7 @@ export default function SlowScrollBooksSection({
       } ${className}`}
       aria-label="On-Demand Scroll Book Shelves"
     >
-      {/* On-Demand Section 1: Curator's Deep Reading Spotlight */}
+      {/* On-Demand Shelf 1: Curator's Deep Reading Spotlight */}
       <BookShelfRow
         title="Curator's Deep Reading Spotlight"
         description="Hand-picked selections tailored for sustained focus and intellectual depth."
@@ -87,7 +89,7 @@ export default function SlowScrollBooksSection({
         onDemand={false}
       />
 
-      {/* On-Demand Section 2: Timeless Classics & Literary Heritage */}
+      {/* On-Demand Shelf 2: Timeless Classics & Literary Heritage */}
       <BookShelfRow
         title="Timeless Classics & Heritage"
         description="Essential world literature and enduring masterpieces across centuries."
@@ -98,7 +100,7 @@ export default function SlowScrollBooksSection({
         onDemand={false}
       />
 
-      {/* On-Demand Section 3: Philosophy, Ethics & Human Thought */}
+      {/* On-Demand Shelf 3: Philosophy, Ethics & Human Thought */}
       <BookShelfRow
         title="Philosophy & Great Ideas"
         description="Foundational philosophical dialogues, ethical inquiries, and epistemology."
@@ -109,38 +111,52 @@ export default function SlowScrollBooksSection({
         onDemand={false}
       />
 
-      {/* On-Demand Section 4: Science, Technology & Mathematics */}
+      {/* On-Demand Shelf 4: Science, Technology & Mathematics */}
       <BookShelfRow
-        title="Science, Tech & Mathematics"
+        title="Science & Mathematics"
         description="Groundbreaking scientific treatises, computing foundations, and mathematical sciences."
         viewAllHref="/discover"
-        viewAllTitle="All Science & Tech"
+        viewAllTitle="All Science & Math"
         countLabel="STEM Corpus"
         items={scienceBooks}
         onDemand={false}
       />
 
-      {/* On-Demand Section 5: Fresh Ingested & Recent Acquisitions */}
+      {/* On-Demand Shelf 5: World History & Historical Records */}
       <BookShelfRow
-        title="Recent Digital Acquisitions"
-        description="The newest catalog additions and digitally preserved public domain editions."
-        viewAllHref="/discover/new"
-        viewAllTitle="All New Acquisitions"
-        countLabel="Fresh Catalog"
-        items={newBooks}
+        title="World History & Civilization"
+        description="Historical chronicles, pivotal moments, and ancient records across world civilizations."
+        viewAllHref="/discover"
+        viewAllTitle="All History Works"
+        countLabel="Historical Archive"
+        items={historyBooks.length > 0 ? historyBooks : curatedBooks}
         onDemand={false}
       />
 
-      {/* On-Demand Section 6 (Bonus): Popular Reader Favorites */}
-      <BookShelfRow
-        title="Top Rated & Reader Favorites"
-        description="The most frequently engaged books and community recommended titles."
-        viewAllHref="/discover/trending"
-        viewAllTitle="All Reader Favorites"
-        countLabel="Community Favorites"
-        items={trendingBooks}
-        onDemand={false}
-      />
+      {/* Optional Ingested / Trending if provided */}
+      {newBooks.length > 0 && (
+        <BookShelfRow
+          title="Recent Digital Acquisitions"
+          description="The newest catalog additions and digitally preserved public domain editions."
+          viewAllHref="/discover/new"
+          viewAllTitle="All New Acquisitions"
+          countLabel="Fresh Catalog"
+          items={newBooks}
+          onDemand={false}
+        />
+      )}
+
+      {trendingBooks.length > 0 && (
+        <BookShelfRow
+          title="Top Rated & Reader Favorites"
+          description="The most frequently engaged books and community recommended titles."
+          viewAllHref="/discover/trending"
+          viewAllTitle="All Reader Favorites"
+          countLabel="Community Favorites"
+          items={trendingBooks}
+          onDemand={false}
+        />
+      )}
     </div>
   );
 }

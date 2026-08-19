@@ -7,6 +7,7 @@ export interface DiscoveryOverviewDto {
   readonly classicsBooks?: BookSummaryDto[];
   readonly philosophyBooks?: BookSummaryDto[];
   readonly scienceBooks?: BookSummaryDto[];
+  readonly historyBooks?: BookSummaryDto[];
   readonly curatedBooks?: BookSummaryDto[];
   readonly featuredCollections: any[];
   readonly genres: string[];
