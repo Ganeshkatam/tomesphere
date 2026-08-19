@@ -2,6 +2,7 @@
 
 import { LibraryNavigationDto } from "../application/dto/response/LibraryPageDto";
 import { useLibraryStore } from "../store/library-store";
+import { ChevronRight } from "lucide-react";
 
 interface LibrarySidebarProps {
   navigation: LibraryNavigationDto;

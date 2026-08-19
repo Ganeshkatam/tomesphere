@@ -1289,6 +1289,7 @@ tomesphere-app
 │   ├── logo.png
 │   └── mock-document.pdf
 ├── scripts
+│   ├── sanitize-codebase.mjs
 │   └── update-tree.mjs
 ├── shared
 │   ├── application
