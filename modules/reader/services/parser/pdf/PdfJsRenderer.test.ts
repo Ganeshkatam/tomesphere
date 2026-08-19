@@ -67,6 +67,33 @@ describe("PdfJsRenderer continuous scrolling", () => {
     jest.clearAllMocks();
     MockIntersectionObserver.instances.length = 0;
     getDocumentMock.mockReset();
+    HTMLCanvasElement.prototype.getContext = jest.fn(() => ({
+      fillRect: jest.fn(),
+      clearRect: jest.fn(),
+      getImageData: jest.fn(),
+      putImageData: jest.fn(),
+      createImageData: jest.fn(),
+      setTransform: jest.fn(),
+      drawImage: jest.fn(),
+      save: jest.fn(),
+      fillText: jest.fn(),
+      restore: jest.fn(),
+      beginPath: jest.fn(),
+      moveTo: jest.fn(),
+      lineTo: jest.fn(),
+      closePath: jest.fn(),
+      stroke: jest.fn(),
+      translate: jest.fn(),
+      scale: jest.fn(),
+      rotate: jest.fn(),
+      arc: jest.fn(),
+      fill: jest.fn(),
+      measureText: jest.fn(() => ({ width: 0 })),
+      transform: jest.fn(),
+      rect: jest.fn(),
+      clip: jest.fn(),
+    })) as any;
+    getDocumentMock.mockReset();
     Object.defineProperty(window, "devicePixelRatio", {
       configurable: true,
       value: 1,
@@ -79,7 +106,7 @@ describe("PdfJsRenderer continuous scrolling", () => {
 
   it("creates one placeholder wrapper per PDF page and renders only the initial page", async () => {
     const { document: pdfDoc, pages } = createDocument(500);
-    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc) } as pdfjsLib.PDFDocumentLoadingTask);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc), destroy: jest.fn() } as unknown as pdfjsLib.PDFDocumentLoadingTask);
 
     const container = document.createElement("div");
     Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
@@ -99,7 +126,7 @@ describe("PdfJsRenderer continuous scrolling", () => {
 
   it("renders an intersecting page and releases it after leaving the virtualization window", async () => {
     const { document: pdfDoc, pages } = createDocument(4);
-    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc) } as pdfjsLib.PDFDocumentLoadingTask);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc), destroy: jest.fn() } as unknown as pdfjsLib.PDFDocumentLoadingTask);
 
     const container = document.createElement("div");
     Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
@@ -129,7 +156,7 @@ describe("PdfJsRenderer continuous scrolling", () => {
 
   it("goTo scrolls to the requested page and updates the persisted anchor", async () => {
     const { document: pdfDoc } = createDocument(3);
-    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc) } as pdfjsLib.PDFDocumentLoadingTask);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc), destroy: jest.fn() } as unknown as pdfjsLib.PDFDocumentLoadingTask);
 
     const container = document.createElement("div");
     Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
@@ -159,7 +186,7 @@ describe("PdfJsRenderer continuous scrolling", () => {
 
   it("cancels old renders and re-renders the active page when zoom changes", async () => {
     const { document: pdfDoc, pages } = createDocument(2);
-    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc) } as pdfjsLib.PDFDocumentLoadingTask);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc), destroy: jest.fn() } as unknown as pdfjsLib.PDFDocumentLoadingTask);
 
     const container = document.createElement("div");
     Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
@@ -170,8 +197,7 @@ describe("PdfJsRenderer continuous scrolling", () => {
     const initialRenderCount = pages[0].render.mock.calls.length;
 
     renderer.preferences({ zoom: 150 } as Parameters<typeof renderer.preferences>[0]);
-    await Promise.resolve();
-    await Promise.resolve();
+    await new Promise((resolve) => setTimeout(resolve, 20));
 
     expect(pages[0].cleanup).toHaveBeenCalled();
     expect(pages[0].render.mock.calls.length).toBeGreaterThan(initialRenderCount);
