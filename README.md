@@ -24,7 +24,7 @@ TomeSphere provides readers, students, and researchers with a focused, distracti
 
 | Layer | Technology |
 | :--- | :--- |
-| **Framework** | Next.js 16 (App Router, Server Components, Turbopack) |
+| **Runtime & Framework** | Next.js 16 (Turbopack, App Router, React 19) on Node.js 24+ |
 | **Language** | TypeScript 5 (Strict Mode) |
 | **Styling** | Tailwind CSS with Semantic Theme Tokens (Light & Dark modes) |
 | **Database** | PostgreSQL 17.6 via Supabase |
@@ -92,8 +92,8 @@ tomesphere-app/
 
 ### Prerequisites
 
-- Node.js 18.17.0 or higher
-- npm 9 or higher
+- Node.js 24.0.0 or higher
+- npm 10 or higher
 - A configured Supabase project (PostgreSQL 15+)
 
 ### Installation
@@ -134,6 +134,8 @@ tomesphere-app/
 - `npm run build`: Compiles and builds the production application.
 - `npm run start`: Starts the production server.
 - `npm run lint`: Runs ESLint checks across the codebase.
+- `npm run lint:arch`: Enforces Clean Architecture boundary rules using Dependency Cruiser.
+- `npm run test`: Runs unit and domain test suites using Jest.
 - `npx tsc --noEmit`: Validates TypeScript type checking without emitting files.
 
 ---
