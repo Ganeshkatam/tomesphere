@@ -24,7 +24,7 @@ type PageState = {
 const PAGE_CLASS = "tomesphere-pdf-page";
 const PAGE_PLACEHOLDER_CLASS = "tomesphere-pdf-page-placeholder";
 const VIRTUALIZATION_ROOT_MARGIN = "100% 0px";
-const MAX_RENDERED_PAGES = 7;
+const MAX_RENDERED_PAGES = 5;
 const MAX_DEVICE_PIXEL_RATIO = 2;
 
 export class PdfJsRenderer implements ReaderRenderer {
@@ -194,25 +194,19 @@ export class PdfJsRenderer implements ReaderRenderer {
     if (!container || this.pageStates.size === 0) return;
 
     const containerRect = container.getBoundingClientRect();
-    const viewportCenter = containerRect.top + container.clientHeight / 2;
-    let nearestPage = this.currentPageNum;
-    let nearestDistance = Number.POSITIVE_INFINITY;
+    const centerX = containerRect.left + container.clientWidth / 2;
+    const centerY = containerRect.top + container.clientHeight / 2;
+    const centerElement = document.elementFromPoint(centerX, centerY);
+    const wrapper = centerElement?.closest<HTMLElement>(`.${PAGE_CLASS}`);
+    const candidatePage = wrapper?.dataset.pageNumber;
+    const nearestPage = candidatePage ? Number(candidatePage) : this.currentPageNum;
 
-    for (const [pageNumber, state] of this.pageStates) {
-      const rect = state.wrapper.getBoundingClientRect();
-      const pageCenter = rect.top + rect.height / 2;
-      const distance = Math.abs(pageCenter - viewportCenter);
-      if (distance < nearestDistance) {
-        nearestDistance = distance;
-        nearestPage = pageNumber;
-      }
-    }
+    if (!Number.isInteger(nearestPage) || nearestPage < 1 || nearestPage > this.totalPages) return;
+    if (nearestPage === this.currentPageNum) return;
 
-    if (nearestPage !== this.currentPageNum) {
-      this.currentPageNum = nearestPage;
-      this.emitLocation(nearestPage);
-      this.enforceRenderBudget(nearestPage);
-    }
+    this.currentPageNum = nearestPage;
+    this.emitLocation(nearestPage);
+    this.enforceRenderBudget(nearestPage);
   }
 
   private emitLocation(pageNumber: number): void {
