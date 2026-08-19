@@ -48,11 +48,11 @@ export default function HeroSection({
       <div className="w-full max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
         <FadeIn className="text-center w-full mx-auto relative" delay={0.2}>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-5 leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
-            Search 250,000+ Books
+            Explore books. Discover ideas.
           </h1>
 
           <p className="text-base sm:text-lg mb-10 text-balance max-w-2xl mx-auto leading-relaxed text-slate-100 font-medium drop-shadow-[0_1px_8px_rgba(0,0,0,0.85)]">
-            Explore our massive catalog of fiction, history, science, and more.
+            An immersive digital library and reader crafted for curious minds, deep focus, and timeless knowledge.
           </p>
 
           {/* Central Search Bar */}

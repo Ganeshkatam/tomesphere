@@ -52,22 +52,28 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
           {variant === "marketing" && (
             <nav className="hidden md:flex items-center gap-8">
               <Link
-                href="/about"
+                href="/discover"
                 className="text-sm font-semibold text-[var(--text-primary)] hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
-                About
+                Discover
+              </Link>
+              <Link
+                href="/library"
+                className="text-sm font-semibold text-[var(--text-primary)] hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              >
+                Library
               </Link>
               <Link
                 href="/discover"
                 className="text-sm font-semibold text-[var(--text-primary)] hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
-                Browse Books
+                Reader
               </Link>
               <Link
-                href="/support"
+                href="/about"
                 className="text-sm font-semibold text-[var(--text-primary)] hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
-                Support
+                About
               </Link>
             </nav>
           )}
@@ -122,7 +128,7 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
                 href="/signup"
                 className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-sm transition-all"
               >
-                Join TomeSphere
+                Get Started
               </Link>
             </div>
           )}

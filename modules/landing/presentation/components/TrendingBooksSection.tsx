@@ -9,10 +9,10 @@ export default function TrendingBooksSection({
 }: TrendingBooksSectionProps) {
   return (
     <BookShelfRow
-      title="Trending Books"
-      description="The most popular and actively read books across Tomesphere right now."
+      title="Popular"
+      description="Trending across TomeSphere."
       viewAllHref="/discover/trending"
-      viewAllTitle="All Trending Books"
+      viewAllTitle="All Popular Books"
       countLabel="Trending Now"
       items={items}
       onDemand={false}

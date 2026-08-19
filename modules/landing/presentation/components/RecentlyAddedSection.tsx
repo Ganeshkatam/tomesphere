@@ -9,11 +9,11 @@ export default function RecentlyAddedSection({
 }: RecentlyAddedSectionProps) {
   return (
     <BookShelfRow
-      title="Recently Added"
-      description="Fresh digital additions and newly cataloged public domain editions."
+      title="New Arrivals"
+      description="Recently added to the collection."
       viewAllHref="/discover/new"
       viewAllTitle="All New Arrivals"
-      countLabel="Recently Ingested"
+      countLabel="Recently Added"
       items={items}
       onDemand={false}
     />

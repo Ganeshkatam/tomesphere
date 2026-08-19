@@ -1,20 +1,21 @@
 import BookShelfRow from "./BookShelfRow";
 
 interface FeaturedBooksSectionProps {
-  items: any[];
+  items?: any[];
 }
 
 export default function FeaturedBooksSection({
-  items,
+  items = [],
 }: FeaturedBooksSectionProps) {
   return (
     <BookShelfRow
-      title="Featured Books"
-      description="Editor-picked selections curated for you."
-      viewAllHref="/discover/featured"
-      viewAllTitle="All Featured Books"
-      countLabel="Curated Spotlight"
+      title="Featured"
+      description="Curated books worth discovering."
+      viewAllHref="/discover"
+      viewAllTitle="All Featured Selections"
+      countLabel="Featured Catalog"
       items={items}
+      onDemand={false}
     />
   );
 }
