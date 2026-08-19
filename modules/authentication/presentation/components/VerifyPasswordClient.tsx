@@ -3,8 +3,8 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-
 import { showError, showSuccess } from "@/lib/toast";
+import { Eye, EyeOff, Lock, ArrowRight } from "lucide-react";
 
 function VerifyPasswordForm() {
   const [password, setPassword] = useState("");
@@ -33,12 +33,6 @@ function VerifyPasswordForm() {
 
       if (authError) throw authError;
 
-      // Set session persistence based on checkbox (Note: this is simulated for now as sessionType is a custom user data field)
-      if (!keepLoggedIn) {
-        // We'd typically call a separate API to update this, but for V1 we'll ignore it or do it via an API if it existed.
-        // Doing this client-side directly violates ADR-001.
-      }
-
       if (authData?.user) {
         showSuccess("Welcome back!");
 
@@ -61,23 +55,21 @@ function VerifyPasswordForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-page flex items-start justify-center p-4 sm:p-6 md:py-12">
-      {/* <Toaster position="top-right" /> */}
-
+    <div className="min-h-screen bg-[var(--surface-canvas)] flex items-center justify-center p-4 sm:p-6 md:py-12">
       <div className="w-full max-w-md animate-fadeIn">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold gradient-text mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-2 font-display">
             Welcome Back
           </h1>
-          <p className="text-slate-300">Enter your password to continue</p>
+          <p className="text-slate-600 dark:text-slate-400 text-sm">Enter your password to continue</p>
         </div>
 
-        <div className="glass-strong rounded-2xl p-8 shadow-2xl">
-          <form onSubmit={handleVerify} className="space-y-6">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60">
+          <form onSubmit={handleVerify} className="space-y-5">
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium mb-2 text-slate-300"
+                className="block text-xs font-semibold uppercase tracking-wider mb-2 text-slate-600 dark:text-slate-400"
               >
                 Email Address
               </label>
@@ -86,14 +78,14 @@ function VerifyPasswordForm() {
                 id="email"
                 value={email}
                 readOnly
-                className="w-full opacity-70 cursor-not-allowed"
+                className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl px-4 py-3 text-sm cursor-not-allowed opacity-80"
               />
             </div>
 
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium mb-2 text-slate-300"
+                className="block text-xs font-semibold uppercase tracking-wider mb-2 text-slate-600 dark:text-slate-400"
               >
                 Password
               </label>
@@ -103,53 +95,19 @@ function VerifyPasswordForm() {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  onKeyPress={handleKeyPress}
+                  onKeyDown={handleKeyPress}
                   placeholder="Enter your password"
-                  className="w-full pr-12"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl px-4 py-3.5 pr-12 focus:outline-none focus:border-indigo-600 dark:focus:border-indigo-400 focus:ring-1 focus:ring-indigo-600/30 transition-all text-sm"
                   required
                   autoFocus
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer"
                   tabIndex={-1}
                 >
-                  {showPassword ? (
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
-                  )}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
@@ -161,11 +119,11 @@ function VerifyPasswordForm() {
                 id="keepLoggedIn"
                 checked={keepLoggedIn}
                 onChange={(e) => setKeepLoggedIn(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500"
               />
               <label
                 htmlFor="keepLoggedIn"
-                className="ml-2 text-sm text-slate-300 cursor-pointer"
+                className="ml-2 text-sm text-slate-600 dark:text-slate-400 cursor-pointer select-none"
               >
                 Keep me logged in
               </label>
@@ -174,37 +132,31 @@ function VerifyPasswordForm() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full flex items-center justify-center gap-2"
+              className="w-full h-[52px] rounded-xl font-semibold text-sm flex items-center justify-center gap-2 group transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20 active:scale-[0.99] cursor-pointer"
             >
               {loading ? (
                 <>
-                  <div className="spinner w-5 h-5 border-2 border-white border-t-transparent" />
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   <span>Verifying...</span>
                 </>
               ) : (
-                "Continue"
+                <>
+                  Continue <ArrowRight size={16} />
+                </>
               )}
             </button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Not you?{" "}
               <Link
-                href="/"
-                className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium"
+                href="/login"
+                className="text-indigo-600 dark:text-indigo-400 hover:underline transition-colors font-semibold"
               >
                 Use another account
               </Link>
             </p>
-          </div>
-
-          <div className="mt-4 text-center text-xs text-slate-500">
-             Press{" "}
-            <kbd className="px-2 py-1 bg-slate-700 rounded text-slate-300">
-              Enter
-            </kbd>{" "}
-            to submit
           </div>
         </div>
       </div>
@@ -216,8 +168,8 @@ export default function VerifyPassword() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-page flex items-center justify-center">
-          <div className="spinner" />
+        <div className="min-h-screen bg-[var(--surface-canvas)] flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin" />
         </div>
       }
     >

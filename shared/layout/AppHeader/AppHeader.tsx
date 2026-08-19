@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { BookOpen, Search, Bell, User, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/shared/providers/theme-context";
@@ -14,45 +14,35 @@ export interface AppHeaderProps {
 
 export function AppHeader({ className = "", variant = "application" }: AppHeaderProps) {
   const { resolvedTheme, setTheme } = useTheme();
-  const [isScrolledPastHero, setIsScrolledPastHero] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolledPastHero(window.scrollY > 600);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const toggleTheme = () => {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
-  // Determine if header should be dark glass (over hero/dark section) or match current theme surface
-  const isDarkHeader = variant === "marketing" ? !isScrolledPastHero || resolvedTheme === "dark" : resolvedTheme === "dark";
+  const isDark = resolvedTheme === "dark";
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isDarkHeader
-          ? "bg-slate-950/85 backdrop-blur-md border-b border-white/10 text-white"
-          : "bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/90 dark:border-slate-800 text-slate-900"
-      } shadow-xs ${className}`}
+      className={`sticky top-0 z-50 w-full transition-colors duration-200 ${
+        isDark
+          ? "bg-slate-950/90 backdrop-blur-md text-white"
+          : "bg-white/95 backdrop-blur-md text-slate-900"
+      } ${variant !== "marketing" ? (isDark ? "border-b border-white/10 shadow-xs" : "border-b border-slate-200/90 shadow-xs") : ""} ${className}`}
       id="top-nav"
     >
       {/* Upper Tier */}
-      <div className="h-16 max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center justify-between gap-4">
+      <div className="h-[88px] max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 text-xl font-extrabold hover:opacity-90 transition-opacity flex-shrink-0"
+          className="flex items-center gap-3 text-xl font-extrabold hover:opacity-90 transition-opacity flex-shrink-0"
         >
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 font-bold">
-            <BookOpen size={18} />
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 font-bold">
+            <BookOpen size={22} />
           </div>
           <span
-            className={`tracking-tight font-display font-bold text-lg ${
-              isDarkHeader ? "text-white" : "text-slate-900 dark:text-white"
+            className={`tracking-tight font-display font-bold text-xl ${
+              isDark ? "text-white" : "text-slate-900"
             }`}
           >
             TomeSphere
@@ -72,43 +62,43 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
             </div>
           )}
           {variant === "marketing" && (
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden md:flex items-center gap-2">
               <Link
                 href="/discover"
-                className={`text-sm font-medium transition-colors ${
-                  isDarkHeader
-                    ? "text-slate-300 hover:text-white"
-                    : "text-slate-700 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-white"
+                className={`text-base font-medium px-4 py-2 rounded-lg transition-all ${
+                  isDark
+                    ? "text-slate-300 hover:text-white hover:bg-white/10"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-200"
                 }`}
               >
                 Discover
               </Link>
               <Link
                 href="/library"
-                className={`text-sm font-medium transition-colors ${
-                  isDarkHeader
-                    ? "text-slate-300 hover:text-white"
-                    : "text-slate-700 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-white"
+                className={`text-base font-medium px-4 py-2 rounded-lg transition-all ${
+                  isDark
+                    ? "text-slate-300 hover:text-white hover:bg-white/10"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-200"
                 }`}
               >
                 Library
               </Link>
               <Link
                 href="/discover"
-                className={`text-sm font-medium transition-colors ${
-                  isDarkHeader
-                    ? "text-slate-300 hover:text-white"
-                    : "text-slate-700 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-white"
+                className={`text-base font-medium px-4 py-2 rounded-lg transition-all ${
+                  isDark
+                    ? "text-slate-300 hover:text-white hover:bg-white/10"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-200"
                 }`}
               >
                 Reader
               </Link>
               <Link
                 href="/about"
-                className={`text-sm font-medium transition-colors ${
-                  isDarkHeader
-                    ? "text-slate-300 hover:text-white"
-                    : "text-slate-700 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-white"
+                className={`text-base font-medium px-4 py-2 rounded-lg transition-all ${
+                  isDark
+                    ? "text-slate-300 hover:text-white hover:bg-white/10"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-200"
                 }`}
               >
                 About
@@ -116,44 +106,52 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
             </nav>
           )}
           {variant === "reader" && (
-            <div className={`flex items-center text-sm font-semibold ${isDarkHeader ? "text-white" : "text-slate-900 dark:text-white"}`}>
+            <div className={`flex items-center text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
               <span>Reader Mode</span>
             </div>
           )}
         </div>
 
         {/* Right Utilities */}
-        <div className="flex items-center gap-4 flex-shrink-0">
+        <div className="flex items-center gap-6 flex-shrink-0">
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className={`p-2 rounded-xl transition-colors cursor-pointer ${
-              isDarkHeader
+            className={`p-2.5 rounded-xl transition-colors cursor-pointer ${
+              isDark
                 ? "text-slate-300 hover:text-white hover:bg-white/10 border border-white/10"
-                : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
             }`}
           >
-            {resolvedTheme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            {isDark ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
           {variant === "application" ? (
             <>
               <button
                 aria-label="Notifications"
-                className="p-2 rounded-xl text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                className={`p-2.5 rounded-xl transition-colors cursor-pointer ${
+                  isDark
+                    ? "text-slate-300 hover:text-white hover:bg-white/10 border border-white/10"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
+                }`}
               >
-                <Bell size={18} />
+                <Bell size={20} />
               </button>
-              <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block" />
+              <div className={`h-6 w-px mx-1 hidden sm:block ${isDark ? "bg-slate-800" : "bg-slate-200"}`} />
               <Link
                 href="/account"
-                className="flex items-center gap-2 p-1.5 pl-2 pr-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-500 bg-white dark:bg-slate-800 transition-all group"
+                className={`flex items-center gap-2 p-1.5 pl-2 pr-3 rounded-xl border transition-all group ${
+                  isDark
+                    ? "border-slate-800 hover:border-indigo-500 bg-slate-900"
+                    : "border-slate-200 hover:border-indigo-500 bg-white"
+                }`}
               >
-                <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
-                  <User size={16} />
+                <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                  <User size={18} />
                 </div>
-                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 hidden sm:block">
+                <span className={`text-sm font-semibold hidden sm:block ${isDark ? "text-slate-100" : "text-slate-800"}`}>
                   Account
                 </span>
               </Link>
@@ -162,17 +160,17 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
             <div className="flex items-center gap-4">
               <Link
                 href="/login"
-                className={`text-sm font-medium transition-colors ${
-                  isDarkHeader
-                    ? "text-slate-300 hover:text-white"
-                    : "text-slate-700 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-white"
+                className={`text-base font-semibold px-5 py-2.5 rounded-lg border transition-all ${
+                  isDark
+                    ? "text-slate-200 border-white/15 hover:bg-white/10 hover:text-white"
+                    : "text-slate-700 border-slate-300 hover:bg-slate-100 hover:text-slate-900"
                 }`}
               >
                 Sign In
               </Link>
               <Link
                 href="/signup"
-                className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm transition-all"
+                className="bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-500 text-white text-base font-semibold px-5 py-2.5 rounded-lg shadow-sm transition-all"
               >
                 Get Started
               </Link>

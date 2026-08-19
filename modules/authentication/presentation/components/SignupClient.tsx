@@ -11,37 +11,19 @@ import {
   User,
   ArrowRight,
   BookOpen,
-  Sparkles,
-  Shield,
-  RefreshCw,
   Eye,
   EyeOff,
 } from "lucide-react";
-
-const LEFT_FEATURES = [
-  { icon: BookOpen, label: "Your books, always accessible" },
-  { icon: Sparkles, label: "Highlights saved across sessions" },
-  { icon: User, label: "Notes connected to your reading" },
-  { icon: Shield, label: "Flashcards built from your annotations" },
-  { icon: RefreshCw, label: "Citations generated automatically" },
-];
-
-const TRUST_SIGNALS = [
-  { icon: Shield, label: "Secure authentication" },
-  { icon: RefreshCw, label: "Sync across all devices" },
-  { icon: Lock, label: "Your reading data stays private" },
-];
+import { signUpWithPassword } from "@/modules/authentication/presentation/actions/auth";
 
 const inputCls =
-  "w-full bg-[var(--surface-raised)] border border-[var(--border-default)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] rounded-xl px-4 py-3.5 pl-12 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/40 transition-all text-sm";
+  "w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl px-4 py-3.5 pl-12 focus:outline-none focus:border-indigo-600 dark:focus:border-indigo-400 focus:ring-1 focus:ring-indigo-600/30 transition-all text-sm";
 const btnCls =
-  "w-full h-[54px] rounded-xl font-semibold text-sm flex items-center justify-center gap-2 group transition-all duration-200 disabled:opacity-50 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-[0_4px_20px_rgba(99,102,241,0.25)] active:scale-[0.99]";
+  "w-full h-[52px] rounded-xl font-semibold text-sm flex items-center justify-center gap-2 group transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20 active:scale-[0.99] cursor-pointer";
 
 const Spinner = () => (
   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
 );
-
-import { signUpWithPassword } from "@/modules/authentication/presentation/actions/auth";
 
 export default function SignupClient() {
   const [name, setName] = useState("");
@@ -108,30 +90,25 @@ export default function SignupClient() {
       {/* ══════════════════════════════════════
                 Centralized Workspace Card
             ══════════════════════════════════════ */}
-      <div className="w-full max-w-6xl bg-[var(--surface-default)]/85 backdrop-blur-2xl border border-[var(--border-subtle)] rounded-[24px] overflow-hidden flex flex-col lg:flex-row shadow-[var(--shadow-card)] relative z-10">
-        {/* ── character vertical divider (lg only) ── */}
-        <div className="hidden lg:block absolute left-[65%] top-[10%] bottom-[10%] w-[1px] bg-gradient-to-b from-transparent via-indigo-500/25 to-transparent pointer-events-none">
-          <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-1.5 h-6 bg-indigo-400 rounded-full blur-[2px] opacity-80" />
-        </div>
-
-        {/* ── Left Info Pane (65%) ── */}
-        <div className="w-full lg:w-[65%] bg-gradient-to-b from-[var(--surface-raised)]/60 via-[var(--surface-default)]/50 to-[var(--surface-raised)]/70 relative p-8 sm:p-10 lg:p-10 flex flex-col justify-between gap-8 overflow-hidden">
+      <div className="w-full max-w-6xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] overflow-hidden flex flex-col lg:flex-row shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 relative z-10">
+        {/* ── Left Info Pane (60%) ── */}
+        <div className="w-full lg:w-[60%] bg-slate-50/80 dark:bg-slate-950/60 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 relative p-8 sm:p-10 lg:p-12 flex flex-col justify-between gap-8 overflow-hidden">
           {/* Soft ambient glow on brand panel */}
-          <div className="absolute -top-24 -left-24 w-72 h-72 bg-indigo-500/[0.03] rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-24 -left-24 w-72 h-72 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
 
           {/* Logo */}
           <Link
             href="/"
             className="flex items-center gap-3 group w-fit relative z-10"
           >
-            <span className="text-3xl group-hover:scale-105 transition-transform">
-              
-            </span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+              <BookOpen size={22} />
+            </div>
             <div>
-              <span className="text-lg font-display font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              <span className="text-xl font-display font-bold text-slate-900 dark:text-white">
                 TomeSphere
               </span>
-              <p className="text-[9px] font-semibold text-slate-500 uppercase tracking-[0.2em] mt-2">
+              <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] mt-0.5">
                 READ • LEARN • REMEMBER
               </p>
             </div>
@@ -140,65 +117,61 @@ export default function SignupClient() {
           {/* Features & Copy */}
           <div className="space-y-6 relative z-10">
             <div className="space-y-3">
-              <h1 className="text-3xl sm:text-4xl font-display font-bold leading-tight text-slate-50">
+              <h1 className="text-3xl sm:text-4xl font-display font-bold leading-tight text-slate-900 dark:text-white">
                 Discover Books.
                 <br />
-                <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent dark:from-slate-100 dark:via-slate-200 dark:to-indigo-300">
+                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                   Start Learning.
                 </span>
               </h1>
-              <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
+              <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed max-w-md">
                 Build your personal reading list, annotate books as you read,
                 and create study cards to remember what matters.
               </p>
             </div>
 
-            {/* Soft Glow Behind the Onboarding Card */}
-            <div className="relative p-1 bg-[radial-gradient(circle_at_center,_rgba(99,102,241,0.06)_0%,transparent_70%)] w-fit rounded-3xl">
-              {/* Compact Onboarding Mock Card */}
-              <div className="glass bg-[var(--surface-default)]/60 border border-[var(--border-subtle)] rounded-2xl p-5 w-full max-w-sm sm:w-[350px] space-y-4 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-xl pointer-events-none" />
-
+            {/* Compact Onboarding Mock Card */}
+            <div className="relative p-1 w-fit rounded-3xl">
+              <div className="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 w-full max-w-sm sm:w-[360px] space-y-4 shadow-lg shadow-slate-200/50 dark:shadow-xl relative overflow-hidden">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm"></span>
-                    <h4 className="text-slate-50 text-xs font-semibold tracking-wide truncate max-w-[200px]">
+                    <h4 className="text-slate-900 dark:text-slate-100 text-sm font-bold tracking-wide truncate max-w-[200px]">
                       New Library
                     </h4>
                   </div>
-                  <span className="text-[10px] text-indigo-400 font-mono animate-pulse">
+                  <span className="text-xs text-indigo-600 dark:text-indigo-400 font-mono font-semibold">
                     Setup
                   </span>
                 </div>
 
                 {/* Animated Setup Goal Indicator */}
-                <div className="space-y-1">
-                  <div className="h-1.5 w-full bg-[var(--border-default)] rounded-full overflow-hidden relative">
-                    <div className="absolute top-0 left-0 h-full w-[15%] bg-purple-500 rounded-full animate-pulse" />
+                <div className="space-y-1.5">
+                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden relative">
+                    <div className="absolute top-0 left-0 h-full w-[25%] bg-purple-600 dark:bg-purple-500 rounded-full" />
                   </div>
-                  <div className="flex justify-between text-[9px] text-slate-500">
+                  <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
                     <span>Library Ready</span>
-                    <span>15%</span>
+                    <span>25%</span>
                   </div>
                 </div>
 
-                <div className="border-t border-white/[0.04] pt-3 space-y-3">
+                <div className="border-t border-slate-100 dark:border-slate-800 pt-3.5 space-y-3">
                   {/* Action checklist */}
                   <div className="space-y-2">
-                    <div className="text-[9px] font-semibold text-indigo-400/90 uppercase tracking-wider">
+                    <div className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
                       <span>Quick Start Steps</span>
                     </div>
-                    <ul className="space-y-1.5 pl-1.5">
-                      <li className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                        <span className="w-1 h-1 rounded-full bg-indigo-500" />
+                    <ul className="space-y-2">
+                      <li className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                         <span>Import PDF, EPUB, or Web Articles</span>
                       </li>
-                      <li className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                        <span className="w-1 h-1 rounded-full bg-indigo-500" />
+                      <li className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                         <span>Highlight and extract key ideas</span>
                       </li>
-                      <li className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                        <span className="w-1 h-1 rounded-full bg-indigo-500" />
+                      <li className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                         <span>Build active-recall flashcard decks</span>
                       </li>
                     </ul>
@@ -208,28 +181,28 @@ export default function SignupClient() {
             </div>
 
             {/* Workflow indicator */}
-            <div className="flex items-center gap-2.5 text-[11px] font-semibold text-slate-500">
-              <span className="text-slate-50/80">Import</span>
-              <span className="text-indigo-500/80">→</span>
-              <span className="text-slate-50/80">Highlight</span>
-              <span className="text-indigo-500/80">→</span>
-              <span className="text-slate-50/80">Learn</span>
+            <div className="flex items-center gap-2.5 text-xs font-semibold">
+              <span className="text-slate-700 dark:text-slate-300">Import</span>
+              <span className="text-indigo-600 dark:text-indigo-400">→</span>
+              <span className="text-slate-700 dark:text-slate-300">Highlight</span>
+              <span className="text-indigo-600 dark:text-indigo-400">→</span>
+              <span className="text-slate-700 dark:text-slate-300">Learn</span>
             </div>
           </div>
 
           {/* Accent border bottom spacer */}
-          <div className="w-16 h-1 bg-gradient-to-r from-indigo-500/20 to-transparent rounded-full" />
+          <div className="w-16 h-1 bg-gradient-to-r from-indigo-500 to-transparent rounded-full" />
         </div>
 
-        {/* ── Right Form Pane (35%) ── */}
-        <div className="w-full lg:w-[35%] p-8 sm:p-14 lg:p-16 bg-[var(--surface-raised)]/20 flex flex-col justify-between relative z-10">
+        {/* ── Right Form Pane (40%) ── */}
+        <div className="w-full lg:w-[40%] p-8 sm:p-10 lg:p-12 bg-white dark:bg-slate-900 flex flex-col justify-between relative z-10">
           <div className="space-y-6 w-full mx-auto my-auto">
             {/* Header */}
             <div>
-              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-1">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
                 Create Account
               </h2>
-              <p className="text-[var(--text-secondary)] text-xs leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
                 Start your learning journey.
               </p>
             </div>
@@ -240,8 +213,8 @@ export default function SignupClient() {
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                   <User
-                    className="text-slate-500 group-focus-within:text-indigo-400 transition-colors"
-                    size={16}
+                    className="text-slate-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors"
+                    size={18}
                   />
                 </div>
                 <input
@@ -259,8 +232,8 @@ export default function SignupClient() {
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                   <Mail
-                    className="text-slate-500 group-focus-within:text-indigo-400 transition-colors"
-                    size={16}
+                    className="text-slate-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors"
+                    size={18}
                   />
                 </div>
                 <input
@@ -278,8 +251,8 @@ export default function SignupClient() {
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                   <Lock
-                    className="text-slate-500 group-focus-within:text-indigo-400 transition-colors"
-                    size={16}
+                    className="text-slate-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors"
+                    size={18}
                   />
                 </div>
                 <input
@@ -294,10 +267,10 @@ export default function SignupClient() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-500 hover:text-white transition-colors"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer"
                   tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
 
@@ -307,7 +280,7 @@ export default function SignupClient() {
                   <Spinner />
                 ) : (
                   <>
-                    Create Account <ArrowRight size={15} />
+                    Create Account <ArrowRight size={16} />
                   </>
                 )}
               </button>
@@ -315,10 +288,10 @@ export default function SignupClient() {
               {/* Divider */}
               <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-white/8" />
+                  <div className="w-full border-t border-slate-200 dark:border-slate-800" />
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="px-3 bg-[#0a0f1d] text-slate-500">or</span>
+                  <span className="px-3 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 font-medium">or</span>
                 </div>
               </div>
 
@@ -327,7 +300,7 @@ export default function SignupClient() {
                 type="button"
                 onClick={handleGoogleSignUp}
                 disabled={loading}
-                className="w-full bg-white/5 hover:bg-white/10 border border-[var(--border-default)] hover:border-[var(--border-strong)] text-white h-[54px] rounded-xl font-medium text-sm flex items-center justify-center gap-3 transition-all"
+                className="w-full bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 h-[52px] rounded-xl font-semibold text-sm flex items-center justify-center gap-3 transition-all cursor-pointer shadow-xs"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -347,37 +320,37 @@ export default function SignupClient() {
                     fill="#EA4335"
                   />
                 </svg>
-                Continue with Google
+                <span>Continue with Google</span>
               </button>
             </form>
           </div>
 
           {/* Footer sign up & legal links */}
-          <div className="space-y-5 mt-8 border-t border-[var(--border-subtle)] pt-6 text-center">
-            <div className="text-slate-500 text-xs">
+          <div className="space-y-5 mt-8 border-t border-slate-200 dark:border-slate-800 pt-6 text-center">
+            <div className="text-slate-600 dark:text-slate-400 text-sm">
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
+                className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold transition-colors"
               >
                 Sign in
               </Link>
             </div>
 
-            <div className="flex items-center justify-center gap-4 text-[11px] text-slate-600">
-              <a
+            <div className="flex items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+              <Link
                 href="/privacy"
-                className="hover:text-slate-400 transition-colors"
+                className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
               >
                 Privacy
-              </a>
-              <span className="text-slate-800">•</span>
-              <a
+              </Link>
+              <span>•</span>
+              <Link
                 href="/terms"
-                className="hover:text-slate-400 transition-colors"
+                className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
               >
                 Terms
-              </a>
+              </Link>
             </div>
           </div>
         </div>

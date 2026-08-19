@@ -36,15 +36,13 @@ const COUNTRY_CODES = [
   { code: "+65", country: "Singapore" },
 ];
 
-
-
 /* ──────────────────────────────────────────
    Shared input class
 ────────────────────────────────────────── */
 const inputCls =
-  "w-full bg-[var(--surface-raised)] border border-[var(--border-default)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] rounded-xl px-4 py-3.5 pl-12 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/40 transition-all text-sm";
+  "w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl px-4 py-3.5 pl-12 focus:outline-none focus:border-indigo-600 dark:focus:border-indigo-400 focus:ring-1 focus:ring-indigo-600/30 transition-all text-sm";
 const btnCls =
-  "w-full h-[54px] rounded-xl font-semibold text-sm flex items-center justify-center gap-2 group transition-all duration-200 disabled:opacity-50 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-[0_4px_20px_rgba(99,102,241,0.25)] active:scale-[0.99]";
+  "w-full h-[52px] rounded-xl font-semibold text-sm flex items-center justify-center gap-2 group transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20 active:scale-[0.99] cursor-pointer";
 
 /* ──────────────────────────────────────────
    Spinner
@@ -221,15 +219,15 @@ export default function EnhancedLoginPage() {
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-600/8 rounded-full blur-[120px]" />
         </div>
-        <div className="relative w-full max-w-sm bg-[var(--surface-default)] backdrop-blur-xl border border-[var(--border-default)] rounded-2xl p-8 shadow-2xl">
+        <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 shadow-2xl">
           <div className="text-center mb-8">
             <div className="w-14 h-14 bg-indigo-500/15 border border-indigo-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Lock className="text-indigo-400" size={28} />
+              <Lock className="text-indigo-600 dark:text-indigo-400" size={28} />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-1">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
               Two-Factor Auth
             </h1>
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-600 dark:text-slate-400 text-sm">
               Enter the 6-digit code from your authenticator app
             </p>
           </div>
@@ -241,14 +239,14 @@ export default function EnhancedLoginPage() {
               onChange={(e) =>
                 setMfaCode(e.target.value.replace(/[^0-9]/g, ""))
               }
-              className="w-full bg-white/5 border border-[var(--border-default)] rounded-xl px-4 py-3.5 text-white text-center text-xl tracking-[0.5em] font-mono focus:outline-none focus:border-indigo-500/60 transition-all"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3.5 text-slate-900 dark:text-white text-center text-xl tracking-[0.5em] font-mono focus:outline-none focus:border-indigo-600 dark:focus:border-indigo-400 transition-all"
               placeholder="000000"
               autoFocus
             />
             <button
               type="submit"
               disabled={loading || mfaCode.length !== 6}
-              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? (
                 <Spinner />
@@ -280,30 +278,25 @@ export default function EnhancedLoginPage() {
       {/* ══════════════════════════════════════
                 Centralized Workspace Card
             ══════════════════════════════════════ */}
-      <div className="w-full max-w-6xl bg-[var(--surface-default)]/85 backdrop-blur-2xl border border-[var(--border-subtle)] rounded-[24px] overflow-hidden flex flex-col lg:flex-row shadow-[var(--shadow-card)] relative z-10">
-        {/* ── character vertical divider (lg only) ── */}
-        <div className="hidden lg:block absolute left-[65%] top-[10%] bottom-[10%] w-[1px] bg-gradient-to-b from-transparent via-indigo-500/25 to-transparent pointer-events-none">
-          <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-1.5 h-6 bg-indigo-400 rounded-full blur-[2px] opacity-80" />
-        </div>
-
-        {/* ── Left Info Pane (65%) ── */}
-        <div className="w-full lg:w-[65%] bg-gradient-to-b from-[var(--surface-raised)]/60 via-[var(--surface-default)]/50 to-[var(--surface-raised)]/70 relative p-8 sm:p-10 lg:p-10 flex flex-col justify-between gap-8 overflow-hidden">
+      <div className="w-full max-w-6xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] overflow-hidden flex flex-col lg:flex-row shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 relative z-10">
+        {/* ── Left Info Pane (60%) ── */}
+        <div className="w-full lg:w-[60%] bg-slate-50/80 dark:bg-slate-950/60 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 relative p-8 sm:p-10 lg:p-12 flex flex-col justify-between gap-8 overflow-hidden">
           {/* Soft ambient glow on brand panel */}
-          <div className="absolute -top-24 -left-24 w-72 h-72 bg-indigo-500/[0.03] rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-24 -left-24 w-72 h-72 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
 
           {/* Logo */}
           <Link
             href="/"
             className="flex items-center gap-3 group w-fit relative z-10"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
               <BookOpen size={22} />
             </div>
             <div>
-              <span className="text-lg font-display font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+              <span className="text-xl font-display font-bold text-slate-900 dark:text-white">
                 TomeSphere
               </span>
-              <p className="text-[9px] font-semibold text-[var(--text-tertiary)] uppercase tracking-[0.2em] mt-0.5">
+              <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] mt-0.5">
                 READ • LEARN • REMEMBER
               </p>
             </div>
@@ -312,56 +305,52 @@ export default function EnhancedLoginPage() {
           {/* Features & Copy */}
           <div className="space-y-6 relative z-10">
             <div className="space-y-3">
-              <h1 className="text-3xl sm:text-4xl font-display font-bold leading-tight text-[var(--text-primary)]">
+              <h1 className="text-3xl sm:text-4xl font-display font-bold leading-tight text-slate-900 dark:text-white">
                 Read Smarter.
                 <br />
-                <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent dark:from-slate-100 dark:via-slate-200 dark:to-indigo-300">
+                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                   Remember More.
                 </span>
               </h1>
-              <p className="text-[var(--text-secondary)] text-sm leading-relaxed max-w-sm">
+              <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed max-w-md">
                 Access your library, notes, highlights, and study plans in one
                 unified space.
               </p>
             </div>
 
-            {/* Soft Glow Behind the Workspace Card */}
-            <div className="relative p-1 bg-[radial-gradient(circle_at_center,_rgba(99,102,241,0.06)_0%,transparent_70%)] w-fit rounded-3xl">
-              {/* Compact Mock Reader Workspace Card */}
-              <div className="glass bg-[var(--surface-default)]/60 border border-[var(--border-subtle)] rounded-2xl p-5 w-full max-w-sm sm:w-[350px] space-y-4 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-xl pointer-events-none" />
-
+            {/* Mock Reader Workspace Card */}
+            <div className="relative p-1 w-fit rounded-3xl">
+              <div className="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 w-full max-w-sm sm:w-[360px] space-y-4 shadow-lg shadow-slate-200/50 dark:shadow-xl relative overflow-hidden">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm"></span>
-                    <h4 className="text-slate-50 text-xs font-semibold tracking-wide truncate max-w-[200px]">
+                    <h4 className="text-slate-900 dark:text-slate-100 text-sm font-bold tracking-wide truncate max-w-[200px]">
                       Algorithms
                     </h4>
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono animate-pulse">
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-mono font-medium">
                     Page 143
                   </span>
                 </div>
 
                 {/* Animated Progress Bar */}
-                <div className="space-y-1">
-                  <div className="h-1.5 w-full bg-[var(--border-default)] rounded-full overflow-hidden relative">
-                    <div className="absolute top-0 left-0 h-full w-[72%] bg-indigo-500 rounded-full animate-pulse" />
+                <div className="space-y-1.5">
+                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden relative">
+                    <div className="absolute top-0 left-0 h-full w-[72%] bg-indigo-600 dark:bg-indigo-500 rounded-full" />
                   </div>
-                  <div className="flex justify-between text-[9px] text-slate-500">
+                  <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
                     <span>Progress</span>
                     <span>72%</span>
                   </div>
                 </div>
 
-                <div className="border-t border-white/[0.04] pt-3 space-y-3">
+                <div className="border-t border-slate-100 dark:border-slate-800 pt-3.5 space-y-3">
                   {/* Highlight snippet */}
                   <div className="space-y-1">
-                    <div className="flex items-center gap-1.5 text-[9px] font-semibold text-yellow-500/90 uppercase tracking-wider">
-                      <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-ping" />
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
                       <span>Highlight</span>
                     </div>
-                    <p className="text-[11px] text-[var(--text-secondary)] italic pl-3 border-l border-yellow-500/40 leading-relaxed">
+                    <p className="text-xs text-slate-700 dark:text-slate-300 italic pl-3 border-l-2 border-amber-500/60 leading-relaxed">
                       &quot;Graph traversal algorithms like DFS and BFS form the
                       foundation...&quot;
                     </p>
@@ -369,10 +358,10 @@ export default function EnhancedLoginPage() {
 
                   {/* Note snippet */}
                   <div className="space-y-1">
-                    <div className="flex items-center gap-1.5 text-[9px] font-semibold text-indigo-400 uppercase tracking-wider">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
                       <span>Note</span>
                     </div>
-                    <p className="text-[11px] text-[var(--text-secondary)] pl-3 border-l border-indigo-500/40 leading-relaxed">
+                    <p className="text-xs text-slate-700 dark:text-slate-300 pl-3 border-l-2 border-indigo-500/60 leading-relaxed">
                       Remember: DFS uses a stack, BFS uses a queue.
                     </p>
                   </div>
@@ -381,48 +370,56 @@ export default function EnhancedLoginPage() {
             </div>
 
             {/* Workflow indicator */}
-            <div className="flex items-center gap-2.5 text-[11px] font-semibold text-slate-500">
-              <span className="text-slate-50/80">Read</span>
-              <span className="text-indigo-500/80">→</span>
-              <span className="text-slate-50/80">Highlight</span>
-              <span className="text-indigo-500/80">→</span>
-              <span className="text-slate-50/80">Learn</span>
+            <div className="flex items-center gap-2.5 text-xs font-semibold">
+              <span className="text-slate-700 dark:text-slate-300">Read</span>
+              <span className="text-indigo-600 dark:text-indigo-400">→</span>
+              <span className="text-slate-700 dark:text-slate-300">Highlight</span>
+              <span className="text-indigo-600 dark:text-indigo-400">→</span>
+              <span className="text-slate-700 dark:text-slate-300">Learn</span>
             </div>
           </div>
 
           {/* Accent border bottom spacer */}
-          <div className="w-16 h-1 bg-gradient-to-r from-indigo-500/20 to-transparent rounded-full" />
+          <div className="w-16 h-1 bg-gradient-to-r from-indigo-500 to-transparent rounded-full" />
         </div>
 
-        {/* ── Right Form Pane (35%) ── */}
-        <div className="w-full lg:w-[35%] p-8 sm:p-14 lg:p-16 bg-[var(--surface-raised)]/20 flex flex-col justify-between relative z-10">
+        {/* ── Right Form Pane (40%) ── */}
+        <div className="w-full lg:w-[40%] p-8 sm:p-10 lg:p-12 bg-white dark:bg-slate-900 flex flex-col justify-between relative z-10">
           <div className="space-y-6 w-full mx-auto my-auto">
             {/* Header */}
             <div>
-              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-1">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
                 Welcome Back
               </h2>
-              <p className="text-[var(--text-secondary)] text-xs leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
                 Continue where you left off.
               </p>
             </div>
 
             {/* Auth mode segmented control */}
             {step === "input" && (
-              <div className="flex p-1 bg-[var(--surface-raised)] rounded-xl relative border border-[var(--border-subtle)]">
+              <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl relative border border-slate-200 dark:border-slate-700">
                 <button
                   onClick={() => setAuthMode("password")}
-                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${authMode === "password" ? "bg-[var(--surface-default)] text-[var(--text-primary)] shadow-xs border border-[var(--border-subtle)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`}
+                  className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    authMode === "password"
+                      ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs border border-slate-200 dark:border-slate-700"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  }`}
                   type="button"
                 >
                   Password
                 </button>
                 <button
                   onClick={() => setAuthMode("magic")}
-                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${authMode === "magic" ? "bg-[var(--surface-default)] text-[var(--text-primary)] shadow-xs border border-[var(--border-subtle)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`}
+                  className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                    authMode === "magic"
+                      ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs border border-slate-200 dark:border-slate-700"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  }`}
                   type="button"
                 >
-                  <Sparkles size={11} /> Magic Link
+                  <Sparkles size={13} className="text-amber-500" /> Magic Link
                 </button>
               </div>
             )}
@@ -434,13 +431,13 @@ export default function EnhancedLoginPage() {
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                     {isPhone ? (
                       <Smartphone
-                        className="text-[var(--text-tertiary)] group-focus-within:text-indigo-500 transition-colors"
-                        size={16}
+                        className="text-slate-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors"
+                        size={18}
                       />
                     ) : (
                       <Mail
-                        className="text-[var(--text-tertiary)] group-focus-within:text-indigo-500 transition-colors"
-                        size={16}
+                        className="text-slate-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors"
+                        size={18}
                       />
                     )}
                   </div>
@@ -452,13 +449,13 @@ export default function EnhancedLoginPage() {
                           onClick={() =>
                             setShowCountryDropdown(!showCountryDropdown)
                           }
-                          className="h-full px-3 bg-[var(--surface-raised)] border-y border-l border-[var(--border-default)] rounded-l-xl text-[var(--text-primary)] hover:bg-[var(--surface-overlay)] flex items-center gap-1 text-sm transition-colors"
+                          className="h-full px-3 bg-slate-100 dark:bg-slate-800 border-y border-l border-slate-300 dark:border-slate-700 rounded-l-xl text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1 text-sm transition-colors cursor-pointer"
                         >
                           <span>{countryCode}</span>
                           <ChevronDown size={12} />
                         </button>
                         {showCountryDropdown && (
-                          <div className="absolute top-full left-0 mt-1 w-60 bg-[var(--surface-default)] border border-[var(--border-default)] rounded-xl shadow-xl z-50 max-h-56 overflow-y-auto">
+                          <div className="absolute top-full left-0 mt-1 w-60 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 max-h-56 overflow-y-auto">
                             {COUNTRY_CODES.map((c) => (
                               <button
                                 key={c.code}
@@ -467,14 +464,13 @@ export default function EnhancedLoginPage() {
                                   setCountryCode(c.code);
                                   setShowCountryDropdown(false);
                                 }}
-                                className="w-full px-4 py-2.5 text-left hover:bg-[var(--surface-raised)] flex items-center gap-3 transition-colors text-sm"
+                                className="w-full px-4 py-2.5 text-left hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-3 transition-colors text-sm cursor-pointer"
                               >
-                                <span className="font-semibold text-[var(--text-primary)]">{c.code}</span>
-                                <span className="text-[var(--text-secondary)]">
-                                  {c.country}
-                                </span>
-                                <span className="ml-auto text-slate-500 text-xs">
+                                <span className="font-semibold text-slate-900 dark:text-white">
                                   {c.code}
+                                </span>
+                                <span className="text-slate-600 dark:text-slate-300">
+                                  {c.country}
                                 </span>
                               </button>
                             ))}
@@ -504,7 +500,7 @@ export default function EnhancedLoginPage() {
                     <>
                       {authMode === "password" ? "Continue" : "Send Magic Link"}{" "}
                       <ArrowRight
-                        size={15}
+                        size={16}
                         className="group-hover:translate-x-0.5 transition-transform"
                       />
                     </>
@@ -513,10 +509,10 @@ export default function EnhancedLoginPage() {
 
                 <div className="relative my-4">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-[var(--border-default)]" />
+                    <div className="w-full border-t border-slate-200 dark:border-slate-800" />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="px-3 bg-[var(--surface-default)] text-slate-500">
+                    <span className="px-3 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 font-medium">
                       or
                     </span>
                   </div>
@@ -525,7 +521,7 @@ export default function EnhancedLoginPage() {
                 <button
                   type="button"
                   onClick={handleGoogleSignIn}
-                  className="w-full bg-[var(--surface-default)] hover:bg-[var(--surface-overlay)] border border-[var(--border-default)] text-slate-50 h-[54px] rounded-xl font-medium text-sm flex items-center justify-center gap-3 transition-all"
+                  className="w-full bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 h-[52px] rounded-xl font-semibold text-sm flex items-center justify-center gap-3 transition-all cursor-pointer shadow-xs"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
                     <path
@@ -545,7 +541,7 @@ export default function EnhancedLoginPage() {
                       fill="#EA4335"
                     />
                   </svg>
-                  Continue with Google
+                  <span>Continue with Google</span>
                 </button>
               </form>
             )}
@@ -553,16 +549,16 @@ export default function EnhancedLoginPage() {
             {/* ── STEP: password ── */}
             {step === "password" && (
               <form onSubmit={handlePasswordLogin} className="space-y-4">
-                <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-xl">
+                <div className="flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold text-sm">
+                    <div className="w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-sm">
                       {input.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-wide">
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wide font-medium">
                         Signing in as
                       </p>
-                      <p className="text-slate-50 text-sm font-medium">
+                      <p className="text-slate-900 dark:text-white text-sm font-semibold">
                         {input}
                       </p>
                     </div>
@@ -573,7 +569,7 @@ export default function EnhancedLoginPage() {
                       setStep("input");
                       setPassword("");
                     }}
-                    className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                    className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer"
                   >
                     Change
                   </button>
@@ -582,8 +578,8 @@ export default function EnhancedLoginPage() {
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <Lock
-                      className="text-slate-500 group-focus-within:text-indigo-400 transition-colors"
-                      size={16}
+                      className="text-slate-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors"
+                      size={18}
                     />
                   </div>
                   <input
@@ -597,19 +593,19 @@ export default function EnhancedLoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-500 hover:text-white transition-colors"
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer"
                   >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
 
                 <div className="flex justify-end">
-                  <a
+                  <Link
                     href="/forgot-password"
-                    className="text-xs text-slate-500 hover:text-slate-50 transition-colors"
+                    className="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-slate-200 transition-colors font-medium"
                   >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
 
                 <button
@@ -621,7 +617,7 @@ export default function EnhancedLoginPage() {
                     <Spinner />
                   ) : (
                     <>
-                      Resume Reading <ArrowRight size={15} />
+                      Resume Reading <ArrowRight size={16} />
                     </>
                   )}
                 </button>
@@ -632,22 +628,22 @@ export default function EnhancedLoginPage() {
             {step === "otp" && (
               <form onSubmit={handleVerifyOtp} className="space-y-5">
                 <div className="text-center">
-                  <div className="w-14 h-14 bg-gradient-to-br from-blue-500/15 to-purple-500/15 border border-[var(--border-default)] rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Mail className="text-indigo-400" size={26} />
+                  <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Mail className="text-indigo-600 dark:text-indigo-400" size={26} />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-50 mb-1">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
                     Check your inbox
                   </h3>
-                  <p className="text-slate-400 text-sm">
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">
                     Magic code sent to{" "}
-                    <span className="text-white font-medium">{input}</span>
+                    <span className="text-slate-900 dark:text-white font-semibold">{input}</span>
                   </p>
                 </div>
                 <input
                   type="text"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-full bg-white/5 border border-[var(--border-default)] text-white text-center text-2xl tracking-widest px-4 py-3.5 rounded-xl focus:outline-none focus:border-blue-500/60 focus:ring-1 focus:ring-blue-500/40 transition-all font-mono"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-2xl tracking-widest px-4 py-3.5 rounded-xl focus:outline-none focus:border-indigo-600 dark:focus:border-indigo-400 focus:ring-1 focus:ring-indigo-600/30 transition-all font-mono"
                   placeholder="000000"
                   maxLength={6}
                   required
@@ -664,7 +660,7 @@ export default function EnhancedLoginPage() {
                   <button
                     type="button"
                     onClick={() => setStep("input")}
-                    className="text-xs text-slate-500 hover:text-white transition-colors"
+                    className="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                   >
                     ← Back
                   </button>
@@ -674,31 +670,31 @@ export default function EnhancedLoginPage() {
           </div>
 
           {/* Footer sign up & legal links */}
-          <div className="space-y-5 mt-8 border-t border-[var(--border-subtle)] pt-6 text-center">
-            <div className="text-slate-500 text-xs">
+          <div className="space-y-5 mt-8 border-t border-slate-200 dark:border-slate-800 pt-6 text-center">
+            <div className="text-slate-600 dark:text-slate-400 text-sm">
               New to TomeSphere?{" "}
-              <button
-                onClick={() => router.push("/signup")}
-                className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
+              <Link
+                href="/signup"
+                className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold transition-colors"
               >
                 Create a free account
-              </button>
+              </Link>
             </div>
 
-            <div className="flex items-center justify-center gap-4 text-[11px] text-slate-600">
-              <a
+            <div className="flex items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+              <Link
                 href="/privacy"
-                className="hover:text-slate-400 transition-colors"
+                className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
               >
                 Privacy
-              </a>
-              <span className="text-slate-800">•</span>
-              <a
+              </Link>
+              <span>•</span>
+              <Link
                 href="/terms"
-                className="hover:text-slate-400 transition-colors"
+                className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
               >
                 Terms
-              </a>
+              </Link>
             </div>
           </div>
         </div>

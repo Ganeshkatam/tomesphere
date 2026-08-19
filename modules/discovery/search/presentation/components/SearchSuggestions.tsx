@@ -185,16 +185,16 @@ export default function SearchSuggestions({
 
   return (
     <div
-      className={`absolute top-full left-0 right-0 mt-2 bg-[var(--surface-default)] backdrop-blur-xl border border-[var(--border-default)] rounded-xl shadow-2xl z-50 overflow-hidden ${className}`}
+      className={`absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden ${className}`}
       onKeyDown={handleKeyDown}
     >
       {loading ? (
-        <div className="p-4 text-center text-slate-400 text-sm">
-          <div className="inline-block w-4 h-4 border-2 border-[var(--border-strong)] border-t-white rounded-full animate-spin mr-2" />
+        <div className="p-4 text-center text-slate-500 dark:text-slate-400 text-sm">
+          <div className="inline-block w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mr-2" />
           Searching...
         </div>
       ) : (
-        <ul className="py-1" ref={listRef}>
+        <ul className="py-1.5" ref={listRef}>
           {suggestions.map((item, idx) => (
             <li key={`${item.type}-${item.text}-${idx}`}>
               <button
@@ -206,15 +206,15 @@ export default function SearchSuggestions({
                   }
                 }}
                 onMouseEnter={() => setActiveIndex(idx)}
-                className={`w-full px-4 py-2.5 flex items-center gap-3 text-left transition-colors group ${
-                  activeIndex === idx ? "bg-white/10" : "hover:bg-white/5"
+                className={`w-full px-4 py-2.5 flex items-center gap-3 text-left transition-colors group cursor-pointer ${
+                  activeIndex === idx ? "bg-indigo-50 dark:bg-white/10" : "hover:bg-slate-50 dark:hover:bg-white/5"
                 }`}
               >
                 <div
                   className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
                     activeIndex === idx
-                      ? "bg-primary/20 text-primary"
-                      : "bg-white/5 text-slate-400 group-hover:bg-primary/10 group-hover:text-primary"
+                      ? "bg-indigo-600/10 text-indigo-600 dark:text-indigo-400"
+                      : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:bg-indigo-600/10 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
                   }`}
                 >
                   {item.type === "book" && <Book size={14} />}
@@ -222,17 +222,17 @@ export default function SearchSuggestions({
                   {item.type === "genre" && <Tag size={14} />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-slate-200 font-medium group-hover:text-white truncate">
+                  <p className="text-sm text-slate-800 dark:text-slate-200 font-medium group-hover:text-indigo-600 dark:group-hover:text-white truncate">
                     {item.text}
                   </p>
                   {item.subtitle && (
-                    <p className="text-xs text-slate-500 truncate">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                       {item.subtitle}
                     </p>
                   )}
                 </div>
                 {item.type === "book" && (
-                  <span className="text-[10px] text-slate-600 uppercase tracking-wider font-medium">
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">
                     ↵
                   </span>
                 )}
@@ -240,10 +240,10 @@ export default function SearchSuggestions({
             </li>
           ))}
           {suggestions.length > 0 && (
-            <li className="border-t border-[var(--border-subtle)] mt-1 pt-1">
+            <li className="border-t border-slate-100 dark:border-slate-800 mt-1 pt-1">
               <button
                 onClick={() => onSelect && onSelect(query, "genre")}
-                className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-white/10 text-left transition-colors text-xs text-slate-400 hover:text-white"
+                className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-white/10 text-left transition-colors text-xs text-slate-600 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-white cursor-pointer"
               >
                 <Search size={12} />
                 See all results for &quot;{query}&quot;
