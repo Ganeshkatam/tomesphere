@@ -17,8 +17,8 @@ const getDocumentMock = jest.mocked(pdfjsLib.getDocument);
 class MockIntersectionObserver {
   static instances: MockIntersectionObserver[] = [];
 
-  readonly observe = jest.fn<(element: Element) => void, [Element]>();
-  readonly disconnect = jest.fn<() => void, []>();
+  readonly observe = jest.fn<void, [Element]>();
+  readonly disconnect = jest.fn<void, []>();
 
   constructor(
     private readonly callback: IntersectionObserverCallback,
