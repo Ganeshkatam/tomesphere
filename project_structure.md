@@ -768,6 +768,7 @@ tomesphere-app
 │   │   ├── presentation
 │   │   │   └── components
 │   │   │       ├── AnnouncementSection.tsx
+│   │   │       ├── BookShelfRow.tsx
 │   │   │       ├── CatalogHero.tsx
 │   │   │       ├── ClassicsBooksSection.tsx
 │   │   │       ├── FeaturedBooksSection.tsx
