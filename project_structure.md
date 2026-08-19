@@ -770,20 +770,15 @@ tomesphere-app
 │   │   │       ├── AnnouncementSection.tsx
 │   │   │       ├── BookShelfRow.tsx
 │   │   │       ├── CatalogHero.tsx
-│   │   │       ├── ClassicsBooksSection.tsx
 │   │   │       ├── FeaturedBooksSection.tsx
 │   │   │       ├── FeaturedCollectionsSection.tsx
 │   │   │       ├── FeaturedItemCard.tsx
 │   │   │       ├── GenreBrowserSection.tsx
 │   │   │       ├── HeroSection.tsx
 │   │   │       ├── LandingClient.tsx
-│   │   │       ├── PhilosophyBooksSection.tsx
 │   │   │       ├── PopularAuthorsSection.tsx
-│   │   │       ├── RecentlyAddedSection.tsx
-│   │   │       ├── ScienceBooksSection.tsx
 │   │   │       ├── SlowScrollBooksSection.tsx
 │   │   │       ├── StatisticsSection.tsx
-│   │   │       ├── TrendingBooksSection.tsx
 │   │   │       └── ViewAllCard.tsx
 │   │   └── types
 │   ├── languages
