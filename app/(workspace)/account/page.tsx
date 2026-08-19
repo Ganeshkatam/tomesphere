@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function AccountPage({
   searchParams,
 }: {
-  searchParams: { tab?: string };
+  searchParams: Promise<{ tab?: string }>;
 }) {
   const supabase = await createSupabaseServerClient();
   const {
@@ -18,7 +18,8 @@ export default async function AccountPage({
     redirect("/login");
   }
 
-  const tab = searchParams.tab || "profile";
+  const resolvedParams = await searchParams;
+  const tab = resolvedParams?.tab || "profile";
 
   return (
     <div className="max-w-3xl mx-auto py-12 px-6">
@@ -66,7 +67,6 @@ export default async function AccountPage({
           <div>
             <h2 className="text-xl font-bold mb-4">Public Profile</h2>
             <p className="text-on-surface-variant mb-6">Manage how you appear to others on TomeSphere.</p>
-            {/* Profile Form Placeholder */}
             <div className="text-sm text-outline">Form fields will go here...</div>
           </div>
         )}
@@ -74,7 +74,6 @@ export default async function AccountPage({
           <div>
             <h2 className="text-xl font-bold mb-4">App Preferences</h2>
             <p className="text-on-surface-variant mb-6">Customize your reading experience and notifications.</p>
-            {/* Preferences Form Placeholder */}
             <div className="text-sm text-outline">Form fields will go here...</div>
           </div>
         )}
@@ -82,7 +81,6 @@ export default async function AccountPage({
           <div>
             <h2 className="text-xl font-bold mb-4">Security</h2>
             <p className="text-on-surface-variant mb-6">Manage your password and authentication methods.</p>
-            {/* Security Form Placeholder */}
             <div className="text-sm text-outline">Form fields will go here...</div>
           </div>
         )}

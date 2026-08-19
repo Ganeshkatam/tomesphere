@@ -3,26 +3,12 @@ const nextConfig = {
   reactStrictMode: true,
   turbopack: {}, // Empty turbopack config to silence warning
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
         hostname: "qusuvzwycdmnecixzsgc.supabase.co",
-        pathname: "/storage/v1/object/public/book-covers/**",
-      },
-      {
-        protocol: "https",
-        hostname: "qusuvzwycdmnecixzsgc.supabase.co",
-        pathname: "/storage/v1/object/public/author-images/**",
-      },
-      {
-        protocol: "https",
-        hostname: "qusuvzwycdmnecixzsgc.supabase.co",
-        pathname: "/storage/v1/object/public/collection-covers/**",
-      },
-      {
-        protocol: "https",
-        hostname: "qusuvzwycdmnecixzsgc.supabase.co",
-        pathname: "/storage/v1/object/public/avatars/**",
+        pathname: "/storage/v1/object/public/**",
       },
     ],
   },

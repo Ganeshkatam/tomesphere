@@ -1,102 +1,79 @@
 "use client";
 
-import { use, useState, Suspense } from "react";
+import { use, useRef, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import {
-  Search,
   BookOpen,
-  Bookmark,
   Compass,
   ArrowRight,
   ChevronRight,
+  ChevronLeft,
+  Flame,
+  Star,
+  Sparkles,
+  Layers,
+  Clock,
+  Bookmark,
 } from "lucide-react";
 import { MePageDto } from "../../application/facades/MePageFacade";
 import { CurrentReadingDto } from "@/modules/library/application/queries/GetCurrentReadingQuery/dto";
-import { LibrarySnapshotDto } from "@/modules/library/application/queries/GetLibrarySnapshotQuery/dto";
 import { DiscoveryOverviewPageDto } from "@/modules/discovery/application/facades/DiscoveryFacade";
+import BookCard from "@/modules/books/components/BookCard";
 
 interface MeClientProps {
   data: MePageDto;
 }
 
 export function MeClient({ data }: MeClientProps) {
-  const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
-    }
-  };
+  const userName = data.user.email?.split("@")[0] || "Reader";
 
   return (
-    <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 sm:py-12 flex flex-col gap-12 sm:gap-16">
-
-      {/* 1. Explore Something New — Serene Search Hero */}
-      <section className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-8 sm:p-12 shadow-xs transition-colors duration-200 text-center flex flex-col items-center">
-        <div className="max-w-2xl mx-auto w-full">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold mb-4">
-            <Compass size={14} className="text-indigo-500" />
-            <span>Digital Library Sanctuary</span>
+    <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8 flex flex-col gap-10 sm:gap-14">
+      
+      {/* 1. Serene Authenticated Header */}
+      <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-1">
+            <Sparkles size={13} />
+            <span>Reader Sanctuary</span>
           </div>
-
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-slate-900 dark:text-white tracking-tight mb-3">
-            Explore something new
+          <h1 className="text-2xl sm:text-3xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Welcome back, {userName}
           </h1>
-          <p className="text-sm sm:text-base font-serif text-slate-600 dark:text-slate-400 mb-8 max-w-xl mx-auto leading-relaxed">
-            Search our curated digital archives of timeless classics, philosophical treatises, and literary masterpieces.
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-serif mt-0.5">
+            Explore curated public domain archives, resume your reading, and discover timeless literature.
           </p>
+        </div>
 
-          <form onSubmit={handleSearchSubmit} className="relative w-full max-w-xl mx-auto">
-            <div className="relative flex items-center">
-              <Search
-                size={20}
-                className="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none"
-              />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search books, authors, subjects..."
-                className="w-full h-13 pl-12 pr-28 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
-              />
-              <button
-                type="submit"
-                className="absolute right-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
-              >
-                Search
-              </button>
-            </div>
-          </form>
-
-          {/* Quick Subject Tags */}
-          <div className="flex items-center justify-center gap-2 flex-wrap mt-6 text-xs text-slate-500 dark:text-slate-400">
-            <span className="font-semibold">Popular:</span>
-            {["Philosophy", "Literature", "History", "Science", "Essays"].map((tag) => (
-              <Link
-                key={tag}
-                href={`/search?genre=${encodeURIComponent(tag.toLowerCase())}`}
-                className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 border border-slate-200 dark:border-slate-700/60 transition-colors font-medium"
-              >
-                {tag}
-              </Link>
-            ))}
-          </div>
+        {/* Quick Nav Pills */}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <Link
+            href="/library"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-400 dark:hover:border-indigo-600 text-xs font-bold transition-all shadow-xs cursor-pointer"
+          >
+            <Bookmark size={14} className="text-emerald-500" />
+            <span>My Shelves</span>
+          </Link>
+          <Link
+            href="/discover"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+          >
+            <Compass size={14} />
+            <span>Explore Catalog</span>
+          </Link>
         </div>
       </section>
 
-      {/* 2. Continue Reading */}
-      <section className="space-y-5">
+      {/* 2. Continue Reading (Authenticated User In-Progress Books) */}
+      <section className="space-y-4">
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/60 dark:border-indigo-800/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-              <BookOpen size={18} />
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/60 dark:border-indigo-800/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-xs">
+              <BookOpen size={16} />
             </div>
             <div>
-              <h2 className="text-xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
                 Continue Reading
               </h2>
             </div>
@@ -115,66 +92,61 @@ export function MeClient({ data }: MeClientProps) {
         </Suspense>
       </section>
 
-      {/* 3. Your Library */}
-      <section className="space-y-5">
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-              <Bookmark size={18} />
-            </div>
-            <div>
-              <h2 className="text-xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
-                Your Library
-              </h2>
-            </div>
-          </div>
-          <Link
-            href="/library"
-            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
-          >
-            <span>Manage Shelves</span>
-            <ChevronRight size={14} />
-          </Link>
-        </div>
+      {/* 3. Trending Books (Exact same clean shelf style as public page) */}
+      <Suspense fallback={<BooksShelfSkeleton />}>
+        <PublicSizedShelfSection
+          title="Trending in Digital Archives"
+          description="Popular titles our community is actively reading this week."
+          icon={<Flame size={16} />}
+          iconBg="bg-red-50 dark:bg-red-950/60 border-red-200/60 dark:border-red-800/60 text-red-600 dark:text-red-400"
+          viewAllHref="/discover/trending"
+          promiseKey="trending"
+          promise={data.discovery}
+        />
+      </Suspense>
 
-        <Suspense fallback={<LibraryOverviewSkeleton />}>
-          <YourLibrarySection promise={data.librarySnapshot} />
-        </Suspense>
-      </section>
+      {/* 4. Featured Books (Exact same clean shelf style as public page) */}
+      <Suspense fallback={<BooksShelfSkeleton />}>
+        <PublicSizedShelfSection
+          title="Featured Masterpieces"
+          description="Handpicked discoveries from the TomeSphere collection."
+          icon={<Star size={16} />}
+          iconBg="bg-amber-50 dark:bg-amber-950/60 border-amber-200/60 dark:border-amber-800/60 text-amber-600 dark:text-amber-400"
+          viewAllHref="/discover/featured"
+          promiseKey="featured"
+          promise={data.discovery}
+        />
+      </Suspense>
 
-      {/* 4. Discover Section */}
-      <section className="space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/60 border border-purple-200/60 dark:border-purple-800/60 flex items-center justify-center text-purple-600 dark:text-purple-400">
-              <Compass size={18} />
-            </div>
-            <div>
-              <h2 className="text-xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
-                Discover
-              </h2>
-            </div>
-          </div>
-          <Link
-            href="/discover"
-            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
-          >
-            <span>Explore All</span>
-            <ChevronRight size={14} />
-          </Link>
-        </div>
+      {/* 5. Recently Added (Exact same clean shelf style as public page) */}
+      <Suspense fallback={<BooksShelfSkeleton />}>
+        <PublicSizedShelfSection
+          title="Recently Added to Archives"
+          description="Fresh additions to our growing digital public domain catalog."
+          icon={<Clock size={16} />}
+          iconBg="bg-cyan-50 dark:bg-cyan-950/60 border-cyan-200/60 dark:border-cyan-800/60 text-cyan-600 dark:text-cyan-400"
+          viewAllHref="/discover/new"
+          promiseKey="newArrivals"
+          promise={data.discovery}
+        />
+      </Suspense>
 
-        <Suspense fallback={<DiscoveryTabsSkeleton />}>
-          <DiscoverShowcase promise={data.discovery} />
-        </Suspense>
-      </section>
+      {/* 6. Curated Collections (Public Showcase) */}
+      <Suspense fallback={<DiscoveryTabsSkeleton />}>
+        <CuratedCollectionsSection promise={data.discovery} />
+      </Suspense>
+
+      {/* 7. Browse by Subject & Discipline (Public Showcase) */}
+      <Suspense fallback={<DiscoveryTabsSkeleton />}>
+        <SubjectsExplorerSection promise={data.discovery} />
+      </Suspense>
 
     </div>
   );
 }
 
 // ----------------------------------------------------------------------
-// Sub-components
+// Continue Reading Shelf
 // ----------------------------------------------------------------------
 
 function ContinueReadingShelf({
@@ -187,23 +159,23 @@ function ContinueReadingShelf({
 
   if (books.length === 0) {
     return (
-      <div className="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center flex flex-col items-center justify-center gap-3">
-        <p className="text-sm text-slate-500 dark:text-slate-400 font-serif">
+      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center flex flex-col items-center justify-center gap-3 shadow-xs">
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-serif">
           You don&apos;t have any books currently in progress.
         </p>
         <Link
           href="/discover"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
         >
           <span>Find a book to read</span>
-          <ArrowRight size={14} />
+          <ArrowRight size={13} />
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {books.map((book) => {
         const progress = Math.min(Math.max(book.progressPercentage || 0, 0), 100);
 
@@ -211,9 +183,9 @@ function ContinueReadingShelf({
           <Link
             key={book.bookId}
             href={`/read/${book.bookId}`}
-            className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-all duration-200 group shadow-xs hover:shadow-md"
+            className="flex items-center gap-3.5 p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-all duration-200 group shadow-xs hover:shadow-md cursor-pointer"
           >
-            <div className="w-16 h-22 rounded-xl bg-slate-200 dark:bg-slate-800 overflow-hidden relative flex-shrink-0 shadow-xs border border-slate-200/80 dark:border-slate-700/80">
+            <div className="w-14 sm:w-16 aspect-[2/3] rounded-lg bg-slate-200 dark:bg-slate-800 overflow-hidden relative flex-shrink-0 shadow-xs border border-slate-200/80 dark:border-slate-700/80">
               {book.coverUrl ? (
                 <Image
                   src={book.coverUrl}
@@ -233,7 +205,7 @@ function ContinueReadingShelf({
               <h4 className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
                 {book.title}
               </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5 mb-2.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5 mb-2">
                 {book.author}
               </p>
 
@@ -259,271 +231,290 @@ function ContinueReadingShelf({
   );
 }
 
-function YourLibrarySection({
+// ----------------------------------------------------------------------
+// Public Sized Horizontal Shelf Section (Exact BookCard & scroll rows)
+// ----------------------------------------------------------------------
+
+interface PublicSizedShelfSectionProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  iconBg: string;
+  viewAllHref: string;
+  promiseKey: "featured" | "trending" | "newArrivals";
+  promise: Promise<DiscoveryOverviewPageDto>;
+}
+
+function PublicSizedShelfSection({
+  title,
+  description,
+  icon,
+  iconBg,
+  viewAllHref,
+  promiseKey,
   promise,
-}: {
-  promise: Promise<LibrarySnapshotDto | null>;
-}) {
+}: PublicSizedShelfSectionProps) {
   const result = use(promise);
-  const wantToRead = result?.wantToReadCount ?? 0;
-  const reading = result?.currentlyReadingCount ?? 0;
-  const finished = result?.finishedCount ?? 0;
-  const total = wantToRead + reading + finished;
-  const covers = result?.recentCovers || [];
+  const rawItems =
+    promiseKey === "featured"
+      ? result?.featured?.items
+      : promiseKey === "trending"
+        ? result?.trending?.books
+        : result?.newArrivals?.items;
+
+  const items = rawItems || [];
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  if (items.length === 0) return null;
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const scrollAmount = scrollRef.current.clientWidth * 0.75;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
-    <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6">
+    <section className="space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <div className={`w-8 h-8 rounded-lg border flex items-center justify-center shadow-xs ${iconBg}`}>
+              {icon}
+            </div>
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
+              {title}
+            </h2>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            {description}
+          </p>
+        </div>
 
-      {/* 3 Shelves Metrics */}
-      <div className="grid grid-cols-3 gap-3 w-full md:w-auto flex-1 max-w-xl">
-        <Link
-          href="/library?status=want_to_read"
-          className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50/50 dark:hover:bg-slate-800 border border-slate-200/70 dark:border-slate-700/60 transition-colors text-center"
-        >
-          <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-            Want to Read
-          </div>
-          <div className="text-2xl font-display font-extrabold text-slate-900 dark:text-white">
-            {wantToRead}
-          </div>
-        </Link>
-
-        <Link
-          href="/library?status=reading"
-          className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50/50 dark:hover:bg-slate-800 border border-slate-200/70 dark:border-slate-700/60 transition-colors text-center"
-        >
-          <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-            Reading
-          </div>
-          <div className="text-2xl font-display font-extrabold text-slate-900 dark:text-white">
-            {reading}
-          </div>
-        </Link>
-
-        <Link
-          href="/library?status=finished"
-          className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50/50 dark:hover:bg-slate-800 border border-slate-200/70 dark:border-slate-700/60 transition-colors text-center"
-        >
-          <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-            Finished
-          </div>
-          <div className="text-2xl font-display font-extrabold text-slate-900 dark:text-white">
-            {finished}
-          </div>
-        </Link>
+        {/* Scroll Arrows & View All */}
+        <div className="flex items-center gap-2.5 self-end sm:self-auto">
+          <Link
+            href={viewAllHref}
+            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline mr-1"
+          >
+            See all →
+          </Link>
+          <button
+            onClick={() => scroll("left")}
+            aria-label={`Scroll ${title} left`}
+            className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer shadow-xs"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            aria-label={`Scroll ${title} right`}
+            className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer shadow-xs"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
       </div>
 
-      {/* Recent Covers Strip */}
-      <div className="flex items-center gap-3 w-full md:w-auto justify-end border-t md:border-t-0 pt-4 md:pt-0 border-slate-100 dark:border-slate-800">
-        {covers.length > 0 ? (
-          <div className="flex items-center gap-2">
-            {covers.slice(0, 4).map((cov, i) => (
-              <div
-                key={i}
-                className="w-11 h-16 rounded-lg bg-slate-200 dark:bg-slate-800 overflow-hidden relative flex-shrink-0 border border-slate-200 dark:border-slate-700 shadow-xs"
-              >
-                <Image
-                  src={cov}
-                  alt="Saved book"
-                  fill
-                  className="object-cover"
-                  sizes="44px"
-                />
+      {/* Public Page BookCard Shelf with EXACT sizing */}
+      <div className="relative">
+        <div
+          ref={scrollRef}
+          className="flex gap-5 overflow-x-auto pb-4 pt-1 no-scrollbar scroll-smooth snap-x snap-mandatory"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {items.slice(0, 10).map((item: any) => (
+            <div
+              key={item.id}
+              className="w-[170px] sm:w-[195px] md:w-[210px] shrink-0 snap-start flex flex-col"
+            >
+              <BookCard book={item} />
+            </div>
+          ))}
+          <div className="w-[170px] sm:w-[195px] md:w-[210px] shrink-0 snap-start flex flex-col">
+            <Link
+              href={viewAllHref}
+              className="w-full h-full min-h-[260px] rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 flex flex-col items-center justify-center p-6 text-center group transition-all cursor-pointer bg-slate-50/50 dark:bg-slate-900/50"
+            >
+              <div className="w-12 h-12 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/60 dark:border-indigo-800/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform mb-3">
+                <ArrowRight size={20} />
               </div>
-            ))}
+              <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                View All {title}
+              </span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Explore entire archive
+              </span>
+            </Link>
           </div>
-        ) : (
-          <span className="text-xs text-slate-500 dark:text-slate-400">
-            {total} titles in your collection
-          </span>
-        )}
-
-        <Link
-          href="/library"
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-colors ml-2"
-        >
-          <span>Open Shelves</span>
-          <ArrowRight size={13} />
-        </Link>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
-function DiscoverShowcase({
+// ----------------------------------------------------------------------
+// Curated Collections Showcase
+// ----------------------------------------------------------------------
+
+function CuratedCollectionsSection({
   promise,
 }: {
   promise: Promise<DiscoveryOverviewPageDto>;
 }) {
   const result = use(promise);
-  const featured = result?.featured?.items || [];
-  const trending = result?.trending?.books || [];
   const collections = result?.collections?.items || [];
 
+  if (collections.length === 0) return null;
+
   return (
-    <div className="space-y-8">
-      {/* Featured Shelf */}
-      {featured.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">
-              Featured Selections
-            </h3>
-            <Link
-              href="/discover/featured"
-              className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
-            >
-              See all →
-            </Link>
+    <section className="space-y-4">
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/60 border border-purple-200/60 dark:border-purple-800/60 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-xs">
+            <Compass size={16} />
           </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
-            {featured.slice(0, 6).map((book: any) => (
-              <Link
-                key={book.id}
-                href={`/book/${book.id}`}
-                className="flex flex-col p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-all duration-200 group shadow-xs hover:shadow-md"
-              >
-                <div className="w-full aspect-[3/4] rounded-xl bg-slate-200 dark:bg-slate-800 overflow-hidden relative mb-2 shadow-xs">
-                  {book.coverUrl ? (
-                    <Image
-                      src={book.coverUrl}
-                      alt={book.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 768px) 50vw, 16vw"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-400">
-                      <BookOpen size={24} />
-                    </div>
-                  )}
-                </div>
-                <h4 className="font-bold text-xs text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
-                  {book.title}
-                </h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
-                  {book.author}
-                </p>
-              </Link>
-            ))}
+          <div>
+            <h2 className="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
+              Curated Collections & Anthologies
+            </h2>
           </div>
         </div>
-      )}
+        <Link
+          href="/discover/collections"
+          className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
+        >
+          <span>All collections</span>
+          <ChevronRight size={14} />
+        </Link>
+      </div>
 
-      {/* Trending Shelf */}
-      {trending.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">
-              Trending in Digital Archives
-            </h3>
-            <Link
-              href="/discover/trending"
-              className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
-            >
-              See all →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
-            {trending.slice(0, 6).map((book: any) => (
-              <Link
-                key={book.id}
-                href={`/book/${book.id}`}
-                className="flex flex-col p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-all duration-200 group shadow-xs hover:shadow-md"
-              >
-                <div className="w-full aspect-[3/4] rounded-xl bg-slate-200 dark:bg-slate-800 overflow-hidden relative mb-2 shadow-xs">
-                  {book.coverUrl ? (
-                    <Image
-                      src={book.coverUrl}
-                      alt={book.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 768px) 50vw, 16vw"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-400">
-                      <BookOpen size={24} />
-                    </div>
-                  )}
-                </div>
-                <h4 className="font-bold text-xs text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
-                  {book.title}
-                </h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
-                  {book.author}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Curated Collections Shelf */}
-      {collections.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">
-              Curated Collections
-            </h3>
-            <Link
-              href="/discover/collections"
-              className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
-            >
-              All collections →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {collections.slice(0, 4).map((col: any) => (
-              <Link
-                key={col.id}
-                href={`/discover/collections`}
-                className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-all group shadow-xs hover:shadow-md flex flex-col justify-between"
-              >
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-1 block">
-                    Curated Collection
-                  </span>
-                  <h4 className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                    {col.name || col.title}
-                  </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1">
-                    {col.description}
-                  </p>
-                </div>
-                <div className="mt-3 text-xs font-semibold text-indigo-600 dark:text-indigo-400 flex items-center justify-between">
-                  <span>{col.bookCount || 12} volumes</span>
-                  <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        {collections.slice(0, 4).map((col: any) => (
+          <Link
+            key={col.id}
+            href={`/discover/collections`}
+            className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-all group shadow-xs hover:shadow-md flex flex-col justify-between cursor-pointer"
+          >
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-1 block">
+                Archive Series
+              </span>
+              <h4 className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                {col.name || col.title}
+              </h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1 font-serif">
+                {col.description}
+              </p>
+            </div>
+            <div className="mt-3.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center justify-between">
+              <span>{col.bookCount || 12} volumes</span>
+              <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
+
+// ----------------------------------------------------------------------
+// Subjects & Disciplines Explorer
+// ----------------------------------------------------------------------
+
+function SubjectsExplorerSection({
+  promise,
+}: {
+  promise: Promise<DiscoveryOverviewPageDto>;
+}) {
+  const result = use(promise);
+  const subjects = result?.subjects?.items || result?.genres?.items || [];
+
+  const defaultTopics = [
+    { name: "Philosophy", count: "120+ books", slug: "philosophy" },
+    { name: "Mathematics", count: "85+ books", slug: "mathematics" },
+    { name: "Astrophysics & Science", count: "90+ books", slug: "science" },
+    { name: "Classical Literature", count: "240+ books", slug: "literature" },
+    { name: "World History", count: "160+ books", slug: "history" },
+    { name: "Psychology & Mind", count: "75+ books", slug: "psychology" },
+  ];
+
+  const topicsToDisplay = subjects.length > 0
+    ? subjects.slice(0, 6).map((s: any) => {
+        const name = typeof s === "string" ? s : s?.name || "Literature";
+        const slug = typeof s === "string" ? s.toLowerCase() : s?.slug || (s?.name ? s.name.toLowerCase() : "literature");
+        const count = typeof s === "object" && s?.bookCount ? `${s.bookCount}+ titles` : "20+ titles";
+        return { name, slug, count };
+      })
+    : defaultTopics;
+
+  return (
+    <section className="space-y-3.5">
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-xs">
+            <Layers size={16} />
+          </div>
+          <div>
+            <h2 className="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
+              Explore by Discipline & Subject
+            </h2>
+          </div>
+        </div>
+        <Link
+          href="/discover"
+          className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
+        >
+          <span>Catalog index</span>
+          <ChevronRight size={14} />
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {topicsToDisplay.map((topic, i) => (
+          <Link
+            key={i}
+            href={`/search?genre=${encodeURIComponent(topic.slug)}`}
+            className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-600 transition-all duration-200 group shadow-xs hover:shadow-md flex flex-col justify-between cursor-pointer"
+          >
+            <div>
+              <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                {topic.name}
+              </h4>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                {topic.count}
+              </p>
+            </div>
+            <div className="mt-3 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center justify-end">
+              <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ----------------------------------------------------------------------
+// Skeletons
+// ----------------------------------------------------------------------
 
 function BooksShelfSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 animate-pulse">
-      <div className="h-28 bg-slate-200 dark:bg-slate-900 rounded-2xl" />
-      <div className="h-28 bg-slate-200 dark:bg-slate-900 rounded-2xl" />
-      <div className="h-28 bg-slate-200 dark:bg-slate-900 rounded-2xl" />
+    <div className="flex gap-5 overflow-hidden animate-pulse">
+      <div className="w-[195px] h-64 bg-slate-200 dark:bg-slate-900 rounded-2xl shrink-0" />
+      <div className="w-[195px] h-64 bg-slate-200 dark:bg-slate-900 rounded-2xl shrink-0" />
+      <div className="w-[195px] h-64 bg-slate-200 dark:bg-slate-900 rounded-2xl shrink-0" />
+      <div className="w-[195px] h-64 bg-slate-200 dark:bg-slate-900 rounded-2xl shrink-0" />
     </div>
-  );
-}
-
-function LibraryOverviewSkeleton() {
-  return (
-    <div className="h-32 bg-slate-200 dark:bg-slate-900 rounded-3xl animate-pulse" />
   );
 }
 
 function DiscoveryTabsSkeleton() {
   return (
-    <div className="h-64 bg-slate-200 dark:bg-slate-900 rounded-3xl animate-pulse" />
+    <div className="h-32 bg-slate-200 dark:bg-slate-900 rounded-xl animate-pulse" />
   );
 }
