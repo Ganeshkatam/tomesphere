@@ -34,7 +34,7 @@ export function MeClient({ data }: MeClientProps) {
 
   return (
     <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 sm:py-12 flex flex-col gap-12 sm:gap-16">
-      
+
       {/* 1. Explore Something New — Serene Search Hero */}
       <section className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-8 sm:p-12 shadow-xs transition-colors duration-200 text-center flex flex-col items-center">
         <div className="max-w-2xl mx-auto w-full">
@@ -273,7 +273,7 @@ function YourLibrarySection({
 
   return (
     <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6">
-      
+
       {/* 3 Shelves Metrics */}
       <div className="grid grid-cols-3 gap-3 w-full md:w-auto flex-1 max-w-xl">
         <Link

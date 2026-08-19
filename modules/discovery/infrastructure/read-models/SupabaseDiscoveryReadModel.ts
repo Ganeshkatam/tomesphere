@@ -39,7 +39,7 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
         .order("created_at", { ascending: false })
         .limit(10),
       this.supabase
-        .from("trending_books")
+        .from("trending_books_projection")
         .select(
           "books!inner(id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name)))",
         )
@@ -212,7 +212,7 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
     const rankCol = periodRankMap[query.period];
 
     let dbQuery = this.supabase
-      .from("trending_books")
+      .from("trending_books_projection")
       .select(
         `
         ${scoreCol},
