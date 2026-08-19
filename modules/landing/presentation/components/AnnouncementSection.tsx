@@ -10,7 +10,7 @@ export default function AnnouncementSection({
   if (!announcements || announcements.length === 0) return null;
 
   return (
-    <section className="max-w-[1400px] mx-auto px-8 sm:px-12 lg:px-16 w-full">
+    <section className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 w-full">
       <h2 className="text-3xl font-display font-bold text-[var(--text-primary)] mb-8">
         Announcements
       </h2>

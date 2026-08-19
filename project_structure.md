@@ -1291,6 +1291,7 @@ tomesphere-app
 │   ├── about_showcase.jpg
 │   ├── book-placeholder.svg
 │   ├── hero_library_bg.jpg
+│   ├── hero_sanctuary_bg.jpg
 │   ├── icon.png
 │   ├── library_bg.png
 │   ├── logo.png

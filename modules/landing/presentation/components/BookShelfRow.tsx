@@ -14,6 +14,7 @@ interface BookShelfRowProps {
   countLabel?: string;
   headerBadge?: React.ReactNode;
   onDemand?: boolean;
+  isDarkSurface?: boolean;
 }
 
 export default function BookShelfRow({
@@ -25,6 +26,7 @@ export default function BookShelfRow({
   countLabel = "Explore Collection",
   headerBadge,
   onDemand = true,
+  isDarkSurface = false,
 }: BookShelfRowProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -116,7 +118,7 @@ export default function BookShelfRow({
   return (
     <section
       ref={sectionRef}
-      className={`max-w-[1400px] mx-auto px-8 sm:px-12 lg:px-16 w-full group/shelf relative transition-all duration-700 ease-out ${
+      className={`max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 w-full group/shelf relative transition-all duration-700 ease-out ${
         isRevealed
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-8 pointer-events-none min-h-[100px]"
@@ -125,44 +127,48 @@ export default function BookShelfRow({
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
         <div>
           {headerBadge && <div className="mb-2">{headerBadge}</div>}
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-[var(--text-primary)]">
+          <h2
+            className={`text-2xl sm:text-3xl font-display font-bold ${
+              isDarkSurface ? "text-white" : "text-[var(--text-primary)]"
+            }`}
+          >
             {title}
           </h2>
-          <p className="text-[var(--text-secondary)] text-sm mt-1.5">
+          <p
+            className={`text-sm mt-1.5 ${
+              isDarkSurface ? "text-slate-400" : "text-[var(--text-secondary)]"
+            }`}
+          >
             {description}
           </p>
         </div>
 
-        {/* Action Bar: Scroll Buttons */}
-        <div className="flex items-center gap-3 self-end sm:self-auto">
-          {/* Previous / Next Scroll Buttons */}
-          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[var(--surface-raised)] border border-[var(--border-default)] shadow-xs">
-            <button
-              onClick={() => scroll("left")}
-              disabled={!canScrollLeft}
-              aria-label={`Scroll ${title} backwards`}
-              className={`p-2 rounded-xl transition-all cursor-pointer ${
-                canScrollLeft
-                  ? "text-[var(--text-primary)] hover:bg-indigo-600 hover:text-white hover:shadow-md hover:shadow-indigo-500/20 active:scale-95"
-                  : "text-[var(--text-tertiary)] opacity-40 cursor-not-allowed"
-              }`}
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <div className="w-px h-4 bg-[var(--border-default)]" />
-            <button
-              onClick={() => scroll("right")}
-              disabled={!canScrollRight}
-              aria-label={`Scroll ${title} forwards`}
-              className={`p-2 rounded-xl transition-all cursor-pointer ${
-                canScrollRight
-                  ? "text-[var(--text-primary)] hover:bg-indigo-600 hover:text-white hover:shadow-md hover:shadow-indigo-500/20 active:scale-95"
-                  : "text-[var(--text-tertiary)] opacity-40 cursor-not-allowed"
-              }`}
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
+        {/* Action Bar: Minimalist Round Arrow Buttons */}
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            onClick={() => scroll("left")}
+            disabled={!canScrollLeft}
+            aria-label={`Scroll ${title} backwards`}
+            className={`w-8 h-8 rounded-full border border-slate-700/60 bg-slate-900/60 flex items-center justify-center transition-all cursor-pointer ${
+              canScrollLeft
+                ? "text-slate-300 hover:text-white hover:bg-slate-800 hover:border-slate-500 active:scale-95"
+                : "text-slate-600 opacity-40 cursor-not-allowed"
+            }`}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            disabled={!canScrollRight}
+            aria-label={`Scroll ${title} forwards`}
+            className={`w-8 h-8 rounded-full border border-slate-700/60 bg-slate-900/60 flex items-center justify-center transition-all cursor-pointer ${
+              canScrollRight
+                ? "text-slate-300 hover:text-white hover:bg-slate-800 hover:border-slate-500 active:scale-95"
+                : "text-slate-600 opacity-40 cursor-not-allowed"
+            }`}
+          >
+            <ChevronRight size={16} />
+          </button>
         </div>
       </div>
 

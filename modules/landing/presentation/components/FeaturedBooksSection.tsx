@@ -2,10 +2,12 @@ import BookShelfRow from "./BookShelfRow";
 
 interface FeaturedBooksSectionProps {
   items?: any[];
+  isDarkSurface?: boolean;
 }
 
 export default function FeaturedBooksSection({
   items = [],
+  isDarkSurface = false,
 }: FeaturedBooksSectionProps) {
   return (
     <BookShelfRow
@@ -16,6 +18,7 @@ export default function FeaturedBooksSection({
       countLabel="Featured Catalog"
       items={items}
       onDemand={false}
+      isDarkSurface={isDarkSurface}
     />
   );
 }

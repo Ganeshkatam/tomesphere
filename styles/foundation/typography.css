@@ -1,9 +1,10 @@
 /* Typography tokens */
 :root {
   /* Font mappings - Uses next/font variables defined on html/body, fallbacks to system/fallback fonts */
-  --font-sans: var(--font-inter, "Inter"), system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-atkinson, "Atkinson Hyperlegible"), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-source-serif, "Source Serif 4"), Georgia, Cambria, serif;
   --font-display:
-    var(--font-outfit, "Outfit"), system-ui, -apple-system, sans-serif;
+    var(--font-source-serif, "Source Serif 4"), Georgia, serif;
   --font-mono: var(--font-jetbrains-mono, "JetBrains Mono"), monospace;
 
   /* Typography scale */

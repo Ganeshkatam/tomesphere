@@ -58,7 +58,7 @@ export default function Footer() {
 
   return (
     <footer className="relative overflow-hidden bg-[var(--surface-default)] border-t border-[var(--border-default)] transition-colors duration-200">
-      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         {/* ── Main Columns ── */}
         <div className="pt-16 pb-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand Column (2 cols on lg) */}

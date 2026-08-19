@@ -53,23 +53,17 @@ body::after {
   transition: background var(--duration-base) var(--ease-in-out);
 }
 
-/* Scrollbars */
+/* Scrollbars - Hide scrollbars/indicators globally */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  display: none;
+  width: 0px;
+  height: 0px;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.3);
-  border-radius: var(--radius-sm);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.5);
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 /* Base input element overrides */

@@ -91,7 +91,7 @@ export default function SlowScrollBooksSection({
     >
       {!isRevealed ? (
         /* Ultra-lightweight Lazy Loading Placeholder - saves DOM nodes and memory */
-        <div className="max-w-[1400px] mx-auto px-8 sm:px-12 lg:px-16 w-full py-8">
+        <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 w-full py-8">
           <div className="flex flex-col gap-6 animate-pulse opacity-40">
             <div className="h-7 bg-[var(--surface-raised)] rounded-xl w-64" />
             <div className="h-4 bg-[var(--surface-raised)] rounded-lg w-96 max-w-full" />
