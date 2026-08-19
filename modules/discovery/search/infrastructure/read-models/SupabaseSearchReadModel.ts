@@ -41,12 +41,16 @@ export class SupabaseSearchReadModel {
 
     if (searchResult.error) {
       console.error("[SearchReadModel] Search RPC Error:", searchResult.error);
-      throw new Error(`Search failed: ${searchResult.error.message}`);
-    }
-
-    if (facetsResult.error) {
-      console.error("[SearchReadModel] Facets RPC Error:", facetsResult.error);
-      // We don't fail the whole search if facets fail, but we log it.
+      return {
+        results: [],
+        totalCount: 0,
+        totalPages: 0,
+        facets: [],
+        page: request.page,
+        pageSize: request.pageSize,
+        executionTimeMs: Date.now() - startTime,
+        isTypoFallback: false,
+      };
     }
 
     const rows = searchResult.data || [];

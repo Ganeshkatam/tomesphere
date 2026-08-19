@@ -4,6 +4,8 @@ import { BookCard } from "@/modules/discovery/presentation/components/BookCard";
 import { SearchRequest } from "@/modules/discovery/search/application/dto/SearchRequestDto";
 import { Frown } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Search Catalog - TomeSphere",
   description: "Search for books, authors, genres, and more in the TomeSphere catalog.",
@@ -12,11 +14,12 @@ export const metadata = {
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const query = typeof searchParams.q === "string" ? searchParams.q : "";
-  const page = typeof searchParams.page === "string" ? parseInt(searchParams.page, 10) : 1;
-  const sort = typeof searchParams.sort === "string" ? (searchParams.sort as any) : "relevance";
+  const resolvedParams = await searchParams;
+  const query = typeof resolvedParams.q === "string" ? resolvedParams.q : "";
+  const page = typeof resolvedParams.page === "string" ? parseInt(resolvedParams.page, 10) : 1;
+  const sort = typeof resolvedParams.sort === "string" ? (resolvedParams.sort as any) : "relevance";
 
   // In V1, we assume specific filter parameters rather than "facet.xxx" mapping
   // Let's adapt whatever comes in if needed, but for now we expect structured filters
