@@ -4,8 +4,10 @@ import { LandingViewModel } from "@/modules/landing/application/facades/LandingP
 import HeroSection from "./HeroSection";
 import FeaturedBooksSection from "./FeaturedBooksSection";
 import TrendingBooksSection from "./TrendingBooksSection";
-import FeaturedCollectionsSection from "./FeaturedCollectionsSection";
 import RecentlyAddedSection from "./RecentlyAddedSection";
+import ClassicsBooksSection from "./ClassicsBooksSection";
+import SlowScrollBooksSection from "./SlowScrollBooksSection";
+import FeaturedCollectionsSection from "./FeaturedCollectionsSection";
 import GenreBrowserSection from "./GenreBrowserSection";
 import PopularAuthorsSection from "./PopularAuthorsSection";
 import AnnouncementSection from "./AnnouncementSection";
@@ -24,6 +26,8 @@ export default function LandingClient({ model }: LandingClientProps) {
     featuredBooks = [],
     trendingBooks = [],
     newBooks = [],
+    classicsBooks = [],
+    curatedBooks = [],
     featuredCollections = [],
     genres = [],
     authors = [],
@@ -34,10 +38,17 @@ export default function LandingClient({ model }: LandingClientProps) {
       <HeroSection searchSuggestions={featuredBooks} />
 
       <div className="w-full relative z-20 flex flex-col gap-24 py-16">
+        {/* Dynamic Slow Scroll Discovery Section */}
+        <SlowScrollBooksSection items={curatedBooks.length > 0 ? curatedBooks : featuredBooks} />
+
+        {/* Core Book Sections (10 items + View All Card) */}
         <FeaturedBooksSection items={featuredBooks} />
         <TrendingBooksSection items={trendingBooks} />
-        <FeaturedCollectionsSection collections={featuredCollections} />
+        <ClassicsBooksSection items={classicsBooks.length > 0 ? classicsBooks : featuredBooks} />
         <RecentlyAddedSection items={newBooks} />
+
+        {/* Exploratory & Categorical Sections */}
+        <FeaturedCollectionsSection collections={featuredCollections} />
         <GenreBrowserSection genres={genres} />
         <PopularAuthorsSection authors={authors} />
         <AnnouncementSection announcements={announcements} />

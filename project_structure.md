@@ -769,6 +769,7 @@ tomesphere-app
 │   │   │   └── components
 │   │   │       ├── AnnouncementSection.tsx
 │   │   │       ├── CatalogHero.tsx
+│   │   │       ├── ClassicsBooksSection.tsx
 │   │   │       ├── FeaturedBooksSection.tsx
 │   │   │       ├── FeaturedCollectionsSection.tsx
 │   │   │       ├── FeaturedItemCard.tsx
@@ -777,8 +778,10 @@ tomesphere-app
 │   │   │       ├── LandingClient.tsx
 │   │   │       ├── PopularAuthorsSection.tsx
 │   │   │       ├── RecentlyAddedSection.tsx
+│   │   │       ├── SlowScrollBooksSection.tsx
 │   │   │       ├── StatisticsSection.tsx
-│   │   │       └── TrendingBooksSection.tsx
+│   │   │       ├── TrendingBooksSection.tsx
+│   │   │       └── ViewAllCard.tsx
 │   │   └── types
 │   ├── languages
 │   │   ├── application

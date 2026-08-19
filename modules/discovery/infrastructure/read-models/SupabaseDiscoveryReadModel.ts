@@ -15,6 +15,8 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       featuredRes,
       newBooksRes,
       trendingRes,
+      classicsRes,
+      curatedRes,
       authorsRes,
       genresRes,
       subjectsRes,
@@ -25,21 +27,35 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
         .eq("is_featured", true)
-        .limit(8),
+        .limit(10),
       this.supabase
         .from("books")
         .select(
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
         .order("created_at", { ascending: false })
-        .limit(8),
+        .limit(10),
       this.supabase
         .from("trending_books")
         .select(
           "books!inner(id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name)))",
         )
         .order("daily_score", { ascending: false })
-        .limit(8),
+        .limit(10),
+      this.supabase
+        .from("books")
+        .select(
+          "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
+        )
+        .order("title", { ascending: true })
+        .limit(10),
+      this.supabase
+        .from("books")
+        .select(
+          "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
+        )
+        .order("release_date", { ascending: false, nullsFirst: false })
+        .limit(10),
       this.supabase.from("authors").select("name").limit(10),
       this.supabase.from("genres").select("name").limit(12),
       this.supabase.from("subjects").select("name").limit(12),
@@ -59,6 +75,8 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       featuredBooks: (featuredRes.data || []).map(BookSummaryMapper.toDto),
       trendingBooks: trendingBooksData.map(BookSummaryMapper.toDto),
       newBooks: (newBooksRes.data || []).map(BookSummaryMapper.toDto),
+      classicsBooks: (classicsRes.data || []).map(BookSummaryMapper.toDto),
+      curatedBooks: (curatedRes.data || []).map(BookSummaryMapper.toDto),
       featuredCollections: [], // Placeholder for V1 until collections table exists
       genres,
       subjects,

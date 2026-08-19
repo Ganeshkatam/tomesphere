@@ -2,13 +2,13 @@ import { ArrowRight } from "lucide-react";
 import FeaturedItemCard from "./FeaturedItemCard";
 import ViewAllCard from "./ViewAllCard";
 
-interface TrendingBooksSectionProps {
-  items: any[];
+interface ClassicsBooksSectionProps {
+  items?: any[];
 }
 
-export default function TrendingBooksSection({
+export default function ClassicsBooksSection({
   items,
-}: TrendingBooksSectionProps) {
+}: ClassicsBooksSectionProps) {
   if (!items || items.length === 0) return null;
 
   const displayBooks = items.slice(0, 10);
@@ -18,14 +18,14 @@ export default function TrendingBooksSection({
       <div className="flex justify-between items-end mb-8">
         <div>
           <h2 className="text-3xl font-display font-bold text-[var(--text-primary)]">
-            Trending Now
+            Timeless Classics
           </h2>
           <p className="text-[var(--text-secondary)] mt-2">
-            The most popular books right now.
+            Essential literature and foundational works across history.
           </p>
         </div>
         <a
-          href="/discover/trending"
+          href="/discover"
           className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline transition-colors flex items-center gap-1"
         >
           View all <ArrowRight size={16} />
@@ -36,9 +36,9 @@ export default function TrendingBooksSection({
           <FeaturedItemCard key={item.id} item={item} />
         ))}
         <ViewAllCard
-          href="/discover/trending"
-          title="All Trending Books"
-          countLabel="Reader Favorites"
+          href="/discover"
+          title="All Classics"
+          countLabel="Timeless Heritage"
         />
       </div>
     </section>
