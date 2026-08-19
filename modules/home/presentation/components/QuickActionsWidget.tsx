@@ -30,7 +30,7 @@ export function QuickActionsWidget() {
     {
       label: "Reading Goals",
       description: "Track your streaks and milestones",
-      href: "/account",
+      href: "/me/account",
       icon: Target,
       color: "text-amber-600 dark:text-amber-400",
       bg: "bg-amber-50 dark:bg-amber-950/60 border-amber-200/60 dark:border-amber-800/60",
