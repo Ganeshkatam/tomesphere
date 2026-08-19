@@ -5,7 +5,6 @@ import "@/shared/layout/layout.css";
 import Footer from "@/shared/layout/Footer/Footer";
 import { Providers } from "./providers";
 import { themeInitScript } from "./theme-init";
-import Script from "next/script";
 
 const atkinson = Atkinson_Hyperlegible({
   subsets: ["latin"],
@@ -32,17 +31,9 @@ export const metadata: Metadata = {
   title: "TomeSphere - Discover Your Next Favorite Book",
   description:
     "A comprehensive book discovery platform with curated recommendations, curated collections, and personalized reading lists.",
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "TomeSphere",
-  },
   icons: {
-    apple: "/icon-192.png",
     icon: [
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/icon.png", type: "image/png" },
     ],
   },
 };
@@ -64,12 +55,12 @@ export default function RootLayout({
       className={`${atkinson.variable} ${sourceSerif.variable} ${jetbrainsMono.variable}`}
     >
       <head>
-        <Script
+        <script
           id="theme-init-script"
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: themeInitScript,
           }}
+          suppressHydrationWarning
         />
       </head>
       <body className="antialiased font-sans" suppressHydrationWarning>
