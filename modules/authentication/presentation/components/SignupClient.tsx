@@ -66,8 +66,10 @@ export default function SignupClient() {
         return;
       }
 
-      if (res.data?.user) {
-        // Always require email verification — never auto-login
+      if (res.data?.session) {
+        showSuccess("Account created successfully!");
+        router.push("/discover");
+      } else if (res.data?.user) {
         showSuccess("Check your email to verify your account.");
         router.push("/verify-email");
       }

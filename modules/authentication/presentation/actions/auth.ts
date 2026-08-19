@@ -167,9 +167,16 @@ export async function signUpWithPassword(
   email: string,
   password: string,
   displayName: string,
-): Promise<ServerActionResult<{ user: any }>> {
+): Promise<ServerActionResult<{ user: any; session?: any }>> {
   try {
     const supabase = await createSupabaseServerClient();
+    const hdrs = await headers();
+    const host =
+      hdrs.get("x-forwarded-host") || hdrs.get("host") || "localhost:3000";
+    const protocol =
+      hdrs.get("x-forwarded-proto") ||
+      (host.includes("localhost") ? "http" : "https");
+    const origin = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -178,12 +185,15 @@ export async function signUpWithPassword(
         data: {
           display_name: displayName,
         },
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+        emailRedirectTo: `${origin}/auth/callback`,
       },
     });
 
     if (error) {
-      if (error.message.includes("already registered")) {
+      if (
+        error.message.toLowerCase().includes("already registered") ||
+        error.message.toLowerCase().includes("user already exists")
+      ) {
         return {
           success: false,
           error: {
@@ -194,7 +204,24 @@ export async function signUpWithPassword(
       return { success: false, error: { message: error.message } };
     }
 
-    return { success: true, data: { user: data.user } };
+    if (
+      data.user &&
+      Array.isArray(data.user.identities) &&
+      data.user.identities.length === 0
+    ) {
+      return {
+        success: false,
+        error: {
+          message:
+            "An account with this email already exists. Please sign in instead.",
+        },
+      };
+    }
+
+    return {
+      success: true,
+      data: { user: data.user, session: data.session },
+    };
   } catch (error: any) {
     return {
       success: false,
