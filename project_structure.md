@@ -76,10 +76,7 @@ tomesphere-app
 │   │   │   └── page.tsx
 │   │   └── layout.tsx
 │   ├── api
-│   │   ├── book-resources
-│   │   │   └── [bookId]
-│   │   │       └── download
-│   │   │           └── route.ts
+
 │   │   └── cron
 │   │       └── process-outbox
 │   │           └── route.ts

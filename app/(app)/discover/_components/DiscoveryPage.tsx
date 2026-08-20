@@ -1,19 +1,6 @@
 import React from "react";
 
-export type DiscoveryMode =
-  | "overview"
-  | "authors"
-  | "collections"
-  | "featured"
-  | "new"
-  | "trending";
-
-export interface DiscoveryConfiguration {
-  mode: DiscoveryMode;
-  title: string;
-  description: string;
-  gridContent: React.ReactNode;
-}
+import { DiscoveryConfiguration } from "@/modules/discovery/presentation/types/DiscoveryConfiguration";
 
 export function DiscoveryPage({ config }: { config: DiscoveryConfiguration }) {
   return (
