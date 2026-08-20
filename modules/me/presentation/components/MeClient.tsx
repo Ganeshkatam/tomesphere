@@ -519,6 +519,7 @@ function ContinueReadingSection({
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-300"
                     sizes="64px"
+                    priority
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-400">
@@ -646,7 +647,7 @@ function PersonalizedRecommendationsSection({
               key={`personalized-${item.id || idx}-${idx}`}
               className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col group/item transition-all duration-300 relative hover:z-50"
             >
-              <BookCard book={item} />
+              <BookCard book={item} priority={idx < 5} />
             </div>
           ))}
         </div>

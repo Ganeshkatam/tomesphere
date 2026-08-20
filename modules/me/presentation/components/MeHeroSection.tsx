@@ -64,6 +64,7 @@ export default function MeHeroSection({ promise }: MeHeroSectionProps) {
               fill
               className="object-cover"
               sizes="60vw"
+              priority
               loading="eager"
             />
           </div>
@@ -229,7 +230,7 @@ export default function MeHeroSection({ promise }: MeHeroSectionProps) {
                   #{rank}
                 </div>
 
-                <BookCard book={book} />
+                <BookCard book={book} priority={idx < 5} />
               </div>
             );
           })}

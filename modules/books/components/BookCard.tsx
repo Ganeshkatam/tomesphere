@@ -26,9 +26,10 @@ interface BookCardProps {
   onAddToList?: (
     status: "want_to_read" | "currently_reading" | "finished",
   ) => void;
+  priority?: boolean;
 }
 
-export default function BookCard({ book, onAddToList }: BookCardProps) {
+export default function BookCard({ book, onAddToList, priority = false }: BookCardProps) {
   const router = useRouter();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -111,6 +112,7 @@ export default function BookCard({ book, onAddToList }: BookCardProps) {
               alt={book.title}
               fill
               sizes="(max-width: 480px) 40vw, (max-width: 768px) 30vw, 220px"
+              priority={priority}
               unoptimized={true}
               className={`object-cover transition-transform duration-500 ${
                 imageLoaded ? "opacity-100" : "opacity-0"

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BookOpen, Search, Bell, User, Sun, Moon } from "lucide-react";
+import { BookOpen, Search, Bell, User, Sun, Moon, Menu, X } from "lucide-react";
 import { useTheme } from "@/shared/providers/theme-context";
 
 export type HeaderVariant = "marketing" | "application" | "reader";
@@ -11,7 +11,14 @@ export type HeaderVariant = "marketing" | "application" | "reader";
 export interface AppHeaderProps {
   className?: string;
   variant?: HeaderVariant;
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    avatarUrl?: string | null;
+  } | null;
 }
+
+import { UserMenu } from "./UserMenu";
 
 const AUTH_ROUTES = [
   "/login",
@@ -21,11 +28,12 @@ const AUTH_ROUTES = [
   "/verify-email",
 ];
 
-export function AppHeader({ className = "", variant = "application" }: AppHeaderProps) {
+export function AppHeader({ className = "", variant = "application", user }: AppHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Omit header entirely on authentication routes
   if (pathname && AUTH_ROUTES.includes(pathname)) {
@@ -150,10 +158,23 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
         {/* Right Side: Search Bar + Utilities + Profile Avatar */}
         <div className="flex items-center gap-3 sm:gap-4">
           
+          {/* Mobile Menu Toggle Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle navigation menu"
+            className={`p-2.5 rounded-xl transition-colors cursor-pointer md:hidden flex items-center justify-center ${
+              isDark
+                ? "text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
+            }`}
+          >
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+
           {/* Search Bar */}
           <form
             onSubmit={handleSearchSubmit}
-            className="relative flex items-center w-48 sm:w-72 md:w-80 lg:w-96"
+            className="relative hidden sm:flex items-center w-48 sm:w-72 md:w-80 lg:w-96"
           >
             <div className="w-full relative flex items-center bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 sm:py-2.5 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 shadow-xs">
               <Search size={18} className="text-slate-400 mr-3 flex-shrink-0" />
@@ -195,17 +216,19 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
 
               <div className={`h-6 w-px hidden sm:block ${isDark ? "bg-slate-800" : "bg-slate-200"}`} />
 
-              {/* Hotstar / Netflix style Circular Avatar Profile Pill */}
-              <Link
-                href="/me/account"
-                className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white font-bold text-sm shadow-md border-2 border-indigo-400/40 hover:border-indigo-300 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
-                title="Account Settings"
-                aria-label="Account Settings"
-              >
-                <User size={18} className="group-hover:scale-110 transition-transform" />
-              </Link>
+              {user ? (
+                <UserMenu user={user} />
+              ) : (
+                <div
+                  className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white font-bold text-sm shadow-md border-2 border-indigo-400/40"
+                >
+                  <User size={18} />
+                </div>
+              )}
             </>
-          ) : variant === "reader" ? null : (
+          ) : variant === "reader" ? null : user ? (
+            <UserMenu user={user} />
+          ) : (
             <div className="flex items-center gap-3">
               <Link
                 href="/login"
@@ -228,6 +251,106 @@ export function AppHeader({ className = "", variant = "application" }: AppHeader
         </div>
 
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div
+          className={`md:hidden absolute top-full left-0 w-full border-b shadow-lg flex flex-col ${
+            isDark ? "bg-slate-950 border-slate-800" : "bg-white border-slate-200"
+          }`}
+        >
+          <div className="px-4 pt-2 pb-6 flex flex-col gap-2">
+            <form onSubmit={handleSearchSubmit} className="relative flex items-center w-full mb-4 sm:hidden">
+              <div className="w-full relative flex items-center bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 shadow-xs">
+                <Search size={18} className="text-slate-400 mr-3 flex-shrink-0" />
+                <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-transparent border-none focus:outline-none w-full text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                  placeholder="Search digital archives..."
+                  type="text"
+                />
+              </div>
+            </form>
+            
+            {variant === "application" && (
+              <>
+                <Link
+                  href="/me"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`text-base font-semibold px-4 py-3 rounded-xl transition-all ${
+                    pathname === "/me"
+                      ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                  }`}
+                >
+                  Home
+                </Link>
+                <Link
+                  href="/discover"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`text-base font-semibold px-4 py-3 rounded-xl transition-all ${
+                    pathname && pathname.startsWith("/discover")
+                      ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                  }`}
+                >
+                  Discover
+                </Link>
+                <Link
+                  href="/library"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`text-base font-semibold px-4 py-3 rounded-xl transition-all ${
+                    pathname && pathname.startsWith("/library")
+                      ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                  }`}
+                >
+                  Library
+                </Link>
+              </>
+            )}
+
+            {variant === "marketing" && (
+              <>
+                <Link
+                  href="/discover"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`text-base font-medium px-4 py-3 rounded-xl transition-all ${
+                    isDark
+                      ? "text-slate-300 hover:text-white hover:bg-white/10"
+                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                  }`}
+                >
+                  Discover
+                </Link>
+                <Link
+                  href="/discover/collections"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`text-base font-medium px-4 py-3 rounded-xl transition-all ${
+                    isDark
+                      ? "text-slate-300 hover:text-white hover:bg-white/10"
+                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                  }`}
+                >
+                  Collections
+                </Link>
+                <Link
+                  href="/about"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`text-base font-medium px-4 py-3 rounded-xl transition-all ${
+                    isDark
+                      ? "text-slate-300 hover:text-white hover:bg-white/10"
+                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                  }`}
+                >
+                  About
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }
