@@ -8,12 +8,12 @@ export default function AccountLayout({
 }) {
   return (
     <AccountLayoutShell>
-      <div className="w-full flex flex-col h-full">
-        <h1 className="text-2xl sm:text-3xl font-display font-bold text-slate-900 dark:text-white mb-6">
+      <div className="w-full flex flex-col h-full min-h-0">
+        <h1 className="text-2xl sm:text-3xl font-display font-bold text-slate-900 dark:text-white mb-4 shrink-0">
           Account Settings
         </h1>
         
-        <div className="flex-1 w-full mt-2">
+        <div className="flex-1 w-full overflow-y-auto min-h-0 pr-2 pb-14">
           {children}
         </div>
       </div>

@@ -1485,6 +1485,36 @@ export type Database = {
           },
         ]
       }
+      user_notification_preferences: {
+        Row: {
+          created_at: string
+          reading_reminders_enabled: boolean
+          recommendations_enabled: boolean
+          system_announcements_enabled: boolean
+          updated_at: string
+          user_id: string
+          weekly_digest_enabled: boolean
+        }
+        Insert: {
+          created_at?: string
+          reading_reminders_enabled?: boolean
+          recommendations_enabled?: boolean
+          system_announcements_enabled?: boolean
+          updated_at?: string
+          user_id: string
+          weekly_digest_enabled?: boolean
+        }
+        Update: {
+          created_at?: string
+          reading_reminders_enabled?: boolean
+          recommendations_enabled?: boolean
+          system_announcements_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+          weekly_digest_enabled?: boolean
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           content_languages: string[]

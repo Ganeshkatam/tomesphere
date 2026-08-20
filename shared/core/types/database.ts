@@ -1452,6 +1452,69 @@ export type Database = {
           },
         ]
       }
+      user_book_completions: {
+        Row: {
+          book_id: string
+          completed_at: string | null
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          completed_at?: string | null
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          completed_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_book_completions_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_book_completions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_notification_preferences: {
+        Row: {
+          created_at: string
+          reading_reminders_enabled: boolean
+          recommendations_enabled: boolean
+          system_announcements_enabled: boolean
+          updated_at: string
+          user_id: string
+          weekly_digest_enabled: boolean
+        }
+        Insert: {
+          created_at?: string
+          reading_reminders_enabled?: boolean
+          recommendations_enabled?: boolean
+          system_announcements_enabled?: boolean
+          updated_at?: string
+          user_id: string
+          weekly_digest_enabled?: boolean
+        }
+        Update: {
+          created_at?: string
+          reading_reminders_enabled?: boolean
+          recommendations_enabled?: boolean
+          system_announcements_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+          weekly_digest_enabled?: boolean
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           content_languages: string[]
@@ -1507,9 +1570,11 @@ export type Database = {
           books_completed: number | null
           books_started: number | null
           current_streak: number | null
+          last_read_date: string | null
           longest_streak: number | null
           minutes_read: number | null
           pages_read: number | null
+          seconds_read: number | null
           updated_at: string | null
           user_id: string
         }
@@ -1517,9 +1582,11 @@ export type Database = {
           books_completed?: number | null
           books_started?: number | null
           current_streak?: number | null
+          last_read_date?: string | null
           longest_streak?: number | null
           minutes_read?: number | null
           pages_read?: number | null
+          seconds_read?: number | null
           updated_at?: string | null
           user_id: string
         }
@@ -1527,9 +1594,11 @@ export type Database = {
           books_completed?: number | null
           books_started?: number | null
           current_streak?: number | null
+          last_read_date?: string | null
           longest_streak?: number | null
           minutes_read?: number | null
           pages_read?: number | null
+          seconds_read?: number | null
           updated_at?: string | null
           user_id?: string
         }
@@ -1538,6 +1607,35 @@ export type Database = {
             foreignKeyName: "user_statistics_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_statistics_event_log: {
+        Row: {
+          event_id: string
+          event_type: string
+          processed_at: string | null
+          user_id: string
+        }
+        Insert: {
+          event_id: string
+          event_type: string
+          processed_at?: string | null
+          user_id: string
+        }
+        Update: {
+          event_id?: string
+          event_type?: string
+          processed_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_statistics_event_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },

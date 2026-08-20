@@ -1,4 +1,4 @@
-import { User, Settings, Shield } from "lucide-react";
+import { User, Settings, Bell, HardDrive, Link2, Shield } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface AccountNavigationItem {
@@ -15,6 +15,24 @@ export const ACCOUNT_NAVIGATION: readonly AccountNavigationItem[] = [
     label: "Preferences",
     href: "/me/account/preferences",
     icon: Settings,
+  },
+  {
+    id: "notifications",
+    label: "Notifications",
+    href: "/me/account/notifications",
+    icon: Bell,
+  },
+  {
+    id: "storage",
+    label: "Reading & Storage",
+    href: "/me/account/storage",
+    icon: HardDrive,
+  },
+  {
+    id: "connections",
+    label: "Connected Accounts",
+    href: "/me/account/connections",
+    icon: Link2,
   },
   {
     id: "security",
