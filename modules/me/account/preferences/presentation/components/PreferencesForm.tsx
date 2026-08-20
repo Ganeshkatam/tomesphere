@@ -34,7 +34,7 @@ export function PreferencesForm({
       if (res.success) {
         showSuccess("Preferences updated successfully");
       } else {
-        showError(res.error || "Failed to update preferences");
+        showError(res.error?.message || "Failed to update preferences");
       }
     });
   };

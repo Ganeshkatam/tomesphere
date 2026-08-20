@@ -16,7 +16,7 @@ export default async function ApplicationLayout({
   if (user) {
     const { data } = await supabase
       .from("profiles")
-      .select("name, email, avatar_url")
+      .select("display_name, avatar_url")
       .eq("id", user.id)
       .single();
     profile = data;
@@ -24,7 +24,7 @@ export default async function ApplicationLayout({
 
   const appUser = user
     ? {
-        name: profile?.name || null,
+        name: profile?.display_name || user.user_metadata?.full_name || null,
         email: user.email || null,
         avatarUrl: profile?.avatar_url || null,
       }

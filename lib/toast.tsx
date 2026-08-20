@@ -2,143 +2,163 @@
 
 import toast from "react-hot-toast";
 import {
-  XCircle,
-  CheckCircle,
+  CheckCircle2,
+  AlertCircle,
   AlertTriangle,
   Info,
   Loader2,
+  X,
 } from "lucide-react";
 import React from "react";
 
-// Toast configuration with excellent styling
-const toastConfig = {
-  duration: 3000,
-  style: {
-    background: "#1e293b",
-    color: "#f1f5f9",
-    border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: "12px",
-    padding: "14px 18px",
-    fontSize: "14px",
-    fontWeight: "500",
-    boxShadow:
-      "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)",
-    maxWidth: "400px",
-  },
+// Base styling for modern glassmorphism toast cards
+const BASE_CARD_CLASS =
+  "flex items-center gap-3.5 px-5 py-4 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.55)] border backdrop-blur-2xl transition-all duration-300 min-w-[320px] max-w-md pointer-events-auto";
+
+const CARD_STYLE: React.CSSProperties = {
+  marginRight: "28px",
+  marginTop: "16px",
+  marginBottom: "8px",
 };
 
-// Custom styled toast functions
-export const showError = (message: string, options?: { duration?: number }) => {
+export const showError = (message: string, options?: { duration?: number; title?: string }) => {
   return toast.custom(
     (t) => (
       <div
+        style={CARD_STYLE}
         className={`${
-          t.visible ? "animate-enter" : "animate-leave"
-        } flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl border border-red-500/30 bg-gradient-to-r from-red-950/90 to-slate-900/90 backdrop-blur-xl max-w-md`}
+          t.visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95"
+        } ${BASE_CARD_CLASS} bg-slate-950/90 border-rose-500/30 text-white`}
       >
-        <div className="flex-shrink-0 p-1 rounded-full bg-red-500/20">
-          <XCircle className="w-5 h-5 text-red-400" />
+        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/20 flex items-center justify-center text-rose-400">
+          <AlertCircle className="w-4 h-4" />
         </div>
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-red-200">Error</p>
-          <p className="text-sm text-slate-300">{message}</p>
+        <div className="flex-1 min-w-0 pr-1">
+          <p className="text-xs font-bold text-rose-300 tracking-wide uppercase">
+            {options?.title || "Error"}
+          </p>
+          <p className="text-xs font-medium text-slate-200 mt-0.5 leading-relaxed break-words">
+            {message}
+          </p>
         </div>
         <button
           onClick={() => toast.dismiss(t.id)}
-          className="flex-shrink-0 p-1 rounded-full hover:bg-white/10 transition-colors"
+          className="flex-shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+          aria-label="Dismiss notification"
         >
-          <XCircle className="w-4 h-4 text-slate-400 hover:text-white" />
+          <X className="w-3.5 h-3.5" />
         </button>
       </div>
     ),
-    { duration: options?.duration ?? 3000 },
+    { position: "top-right", duration: options?.duration ?? 4000 },
   );
 };
 
 export const showSuccess = (
   message: string,
-  options?: { duration?: number },
+  options?: { duration?: number; title?: string },
 ) => {
   return toast.custom(
     (t) => (
       <div
+        style={CARD_STYLE}
         className={`${
-          t.visible ? "animate-enter" : "animate-leave"
-        } flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl border border-green-500/30 bg-gradient-to-r from-green-950/90 to-slate-900/90 backdrop-blur-xl max-w-md`}
+          t.visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95"
+        } ${BASE_CARD_CLASS} bg-slate-950/90 border-emerald-500/30 text-white`}
       >
-        <div className="flex-shrink-0 p-1 rounded-full bg-green-500/20">
-          <CheckCircle className="w-5 h-5 text-green-400" />
+        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <CheckCircle2 className="w-4 h-4" />
         </div>
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-green-200">Success</p>
-          <p className="text-sm text-slate-300">{message}</p>
+        <div className="flex-1 min-w-0 pr-1">
+          <p className="text-xs font-bold text-emerald-300 tracking-wide uppercase">
+            {options?.title || "Success"}
+          </p>
+          <p className="text-xs font-medium text-slate-200 mt-0.5 leading-relaxed break-words">
+            {message}
+          </p>
         </div>
         <button
           onClick={() => toast.dismiss(t.id)}
-          className="flex-shrink-0 p-1 rounded-full hover:bg-white/10 transition-colors"
+          className="flex-shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+          aria-label="Dismiss notification"
         >
-          <XCircle className="w-4 h-4 text-slate-400 hover:text-white" />
+          <X className="w-3.5 h-3.5" />
         </button>
       </div>
     ),
-    { duration: options?.duration ?? 3000 },
+    { position: "top-right", duration: options?.duration ?? 3500 },
   );
 };
 
 export const showWarning = (
   message: string,
-  options?: { duration?: number },
+  options?: { duration?: number; title?: string },
 ) => {
   return toast.custom(
     (t) => (
       <div
+        style={CARD_STYLE}
         className={`${
-          t.visible ? "animate-enter" : "animate-leave"
-        } flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl border border-amber-500/30 bg-gradient-to-r from-amber-950/90 to-slate-900/90 backdrop-blur-xl max-w-md`}
+          t.visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95"
+        } ${BASE_CARD_CLASS} bg-slate-950/90 border-amber-500/30 text-white`}
       >
-        <div className="flex-shrink-0 p-1 rounded-full bg-amber-500/20">
-          <AlertTriangle className="w-5 h-5 text-amber-400" />
+        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/20 flex items-center justify-center text-amber-400">
+          <AlertTriangle className="w-4 h-4" />
         </div>
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-amber-200">Warning</p>
-          <p className="text-sm text-slate-300">{message}</p>
+        <div className="flex-1 min-w-0 pr-1">
+          <p className="text-xs font-bold text-amber-300 tracking-wide uppercase">
+            {options?.title || "Warning"}
+          </p>
+          <p className="text-xs font-medium text-slate-200 mt-0.5 leading-relaxed break-words">
+            {message}
+          </p>
         </div>
         <button
           onClick={() => toast.dismiss(t.id)}
-          className="flex-shrink-0 p-1 rounded-full hover:bg-white/10 transition-colors"
+          className="flex-shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+          aria-label="Dismiss notification"
         >
-          <XCircle className="w-4 h-4 text-slate-400 hover:text-white" />
+          <X className="w-3.5 h-3.5" />
         </button>
       </div>
     ),
-    { duration: options?.duration ?? 3000 },
+    { position: "top-right", duration: options?.duration ?? 4000 },
   );
 };
 
-export const showInfo = (message: string, options?: { duration?: number }) => {
+export const showInfo = (
+  message: string,
+  options?: { duration?: number; title?: string },
+) => {
   return toast.custom(
     (t) => (
       <div
+        style={CARD_STYLE}
         className={`${
-          t.visible ? "animate-enter" : "animate-leave"
-        } flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl border border-blue-500/30 bg-gradient-to-r from-blue-950/90 to-slate-900/90 backdrop-blur-xl max-w-md`}
+          t.visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95"
+        } ${BASE_CARD_CLASS} bg-slate-950/90 border-indigo-500/30 text-white`}
       >
-        <div className="flex-shrink-0 p-1 rounded-full bg-blue-500/20">
-          <Info className="w-5 h-5 text-blue-400" />
+        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+          <Info className="w-4 h-4" />
         </div>
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-blue-200">Info</p>
-          <p className="text-sm text-slate-300">{message}</p>
+        <div className="flex-1 min-w-0 pr-1">
+          <p className="text-xs font-bold text-indigo-300 tracking-wide uppercase">
+            {options?.title || "Note"}
+          </p>
+          <p className="text-xs font-medium text-slate-200 mt-0.5 leading-relaxed break-words">
+            {message}
+          </p>
         </div>
         <button
           onClick={() => toast.dismiss(t.id)}
-          className="flex-shrink-0 p-1 rounded-full hover:bg-white/10 transition-colors"
+          className="flex-shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+          aria-label="Dismiss notification"
         >
-          <XCircle className="w-4 h-4 text-slate-400 hover:text-white" />
+          <X className="w-3.5 h-3.5" />
         </button>
       </div>
     ),
-    { duration: options?.duration ?? 3000 },
+    { position: "top-right", duration: options?.duration ?? 3500 },
   );
 };
 
@@ -146,24 +166,28 @@ export const showLoading = (message: string) => {
   return toast.custom(
     (t) => (
       <div
+        style={CARD_STYLE}
         className={`${
-          t.visible ? "animate-enter" : "animate-leave"
-        } flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/90 to-slate-900/90 backdrop-blur-xl max-w-md`}
+          t.visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95"
+        } ${BASE_CARD_CLASS} bg-slate-950/90 border-indigo-500/30 text-white`}
       >
-        <div className="flex-shrink-0 p-1 rounded-full bg-indigo-500/20">
-          <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />
+        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+          <Loader2 className="w-4 h-4 animate-spin" />
         </div>
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-indigo-200">Loading</p>
-          <p className="text-sm text-slate-300">{message}</p>
+        <div className="flex-1 min-w-0 pr-1">
+          <p className="text-xs font-bold text-indigo-300 tracking-wide uppercase">
+            Please wait
+          </p>
+          <p className="text-xs font-medium text-slate-200 mt-0.5 leading-relaxed break-words">
+            {message}
+          </p>
         </div>
       </div>
     ),
-    { duration: Infinity },
+    { position: "top-right", duration: Infinity },
   );
 };
 
-// Promise-based toast for async operations
 export const showPromise = <T,>(
   promise: Promise<T>,
   messages: {
@@ -172,75 +196,21 @@ export const showPromise = <T,>(
     error: string | ((err: Error) => string);
   },
 ) => {
-  return toast.promise(
-    promise,
-    {
-      loading: messages.loading,
-      success: (data) =>
-        typeof messages.success === "function"
-          ? messages.success(data)
-          : messages.success,
-      error: (err) =>
-        typeof messages.error === "function"
-          ? messages.error(err)
-          : messages.error,
-    },
-    {
-      style: toastConfig.style,
-      success: {
-        icon: <CheckCircle className="w-5 h-5 text-green-400" />,
-        duration: 3000,
-        style: {
-          ...toastConfig.style,
-          borderColor: "rgba(34, 197, 94, 0.3)",
-          background:
-            "linear-gradient(to right, rgb(20, 83, 45, 0.9), rgb(30, 41, 59, 0.9))",
-        },
-      },
-      error: {
-        icon: <XCircle className="w-5 h-5 text-red-400" />,
-        duration: 3000,
-        style: {
-          ...toastConfig.style,
-          borderColor: "rgba(239, 68, 68, 0.3)",
-          background:
-            "linear-gradient(to right, rgb(127, 29, 29, 0.9), rgb(30, 41, 59, 0.9))",
-        },
-      },
-      loading: {
-        icon: <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />,
-        style: {
-          ...toastConfig.style,
-          borderColor: "rgba(99, 102, 241, 0.3)",
-          background:
-            "linear-gradient(to right, rgb(49, 46, 129, 0.9), rgb(30, 41, 59, 0.9))",
-        },
-      },
-    },
-  );
+  const toastId = showLoading(messages.loading);
+
+  return promise
+    .then((data) => {
+      toast.dismiss(toastId);
+      const msg = typeof messages.success === "function" ? messages.success(data) : messages.success;
+      showSuccess(msg);
+      return data;
+    })
+    .catch((err) => {
+      toast.dismiss(toastId);
+      const msg = typeof messages.error === "function" ? messages.error(err) : messages.error;
+      showError(msg);
+      throw err;
+    });
 };
 
-// Export default toast for simple usage
 export { toast };
-
-// Toaster configuration for app-wide use
-export const toasterConfig = {
-  position: "top-right" as const,
-  toastOptions: {
-    ...toastConfig,
-    success: {
-      duration: 3000,
-      iconTheme: {
-        primary: "#22c55e",
-        secondary: "#dcfce7",
-      },
-    },
-    error: {
-      duration: 3000,
-      iconTheme: {
-        primary: "#ef4444",
-        secondary: "#fee2e2",
-      },
-    },
-  },
-};

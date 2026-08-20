@@ -40,17 +40,15 @@ export function UserMenu({ user }: UserMenuProps) {
 
   const trigger = (
     <div
-      className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white font-bold text-sm shadow-md border-2 border-indigo-400/40 hover:border-indigo-300 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+      className="relative flex items-center justify-center w-10 h-10 rounded-full overflow-hidden bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white font-bold text-sm shadow-md border-2 border-indigo-400/40 hover:border-indigo-300 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
       title="Account Settings"
       aria-label="Account Settings"
     >
       {user.avatarUrl ? (
-        <Image
+        <img
           src={user.avatarUrl}
           alt={user.name || "User avatar"}
-          fill
-          className="object-cover rounded-full"
-          sizes="40px"
+          className="w-full h-full object-cover rounded-full"
         />
       ) : (
         <span className="group-hover:scale-110 transition-transform">
