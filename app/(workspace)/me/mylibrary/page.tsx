@@ -1,5 +1,6 @@
-import LibraryScreen from "@/modules/library/presentation/screens/LibraryScreen";
 import { createSupabaseServerClient } from "@/shared/core/database/server";
+import { executeLibraryPageFacade } from "@/modules/library/application/facades";
+import LibraryClient from "@/modules/library/components/LibraryClient";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -14,5 +15,14 @@ export default async function MyLibraryPage() {
     redirect("/login");
   }
 
-  return <LibraryScreen />;
+  const pageData = await executeLibraryPageFacade(user.id, {
+    viewType: "overview",
+    viewId: "overview",
+    sortBy: "date_added",
+    sortDirection: "desc",
+    page: 1,
+    pageSize: 24,
+  });
+
+  return <LibraryClient initialData={pageData} />;
 }

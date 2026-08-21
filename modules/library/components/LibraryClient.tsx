@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useTransition } from "react";
+import { useEffect, useState, useCallback, useTransition, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { LibraryPageDto } from "../application/dto/response/LibraryPageDto";
@@ -31,6 +31,7 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
   } = useLibraryStore();
 
   const [page, setPage] = useState(1);
+  const isInitialMount = useRef(true);
 
   // Parse viewId to determine type
   const fetchPageData = useCallback(async () => {
@@ -77,6 +78,10 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
   }, [activeViewId, searchQuery, sortBy, sortDirection]);
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     fetchPageData();
   }, [fetchPageData]);
 
