@@ -1,7 +1,7 @@
 import { getDiscoveryFacade } from "@/modules/discovery/application/facades";
 import { DiscoverySection } from "@/modules/discovery/presentation/components/DiscoverySection";
 import { FeaturedBooks } from "@/modules/discovery/presentation/components/FeaturedBooks";
-import { BookGrid } from "@/modules/discovery/presentation/components/BookGrid";
+import { BookCarousel } from "@/modules/discovery/presentation/components/BookCarousel";
 import { CollectionGrid } from "@/modules/discovery/presentation/components/CollectionGrid";
 import { AuthorGrid } from "@/modules/discovery/presentation/components/AuthorGrid";
 import { SubjectGrid } from "@/modules/discovery/presentation/components/SubjectGrid";
@@ -23,7 +23,7 @@ export default async function DiscoverOverviewPage() {
               description="Curated highlights and hand-picked treasures from the archive."
               actionHref="/discover/featured"
             >
-              <FeaturedBooks items={data.featured.items.slice(0, 6)} />
+              <FeaturedBooks items={data.featured.items} />
             </DiscoverySection>
           )}
 
@@ -33,7 +33,7 @@ export default async function DiscoverOverviewPage() {
               description="Most active and frequently read works across the digital catalogue."
               actionHref="/discover/trending"
             >
-              <BookGrid items={data.trending.books.slice(0, 6)} priority={true} />
+              <BookCarousel items={data.trending.books} priority={true} />
             </DiscoverySection>
           )}
 
@@ -52,7 +52,7 @@ export default async function DiscoverOverviewPage() {
               description="Freshly catalogued and preserved public domain editions."
               actionHref="/discover/new"
             >
-              <BookGrid items={data.newArrivals.items.slice(0, 6)} />
+              <BookCarousel items={data.newArrivals.items} />
             </DiscoverySection>
           )}
 
@@ -72,7 +72,7 @@ export default async function DiscoverOverviewPage() {
               description="Discover the prolific minds whose writings shaped history."
               actionHref="/discover/authors"
             >
-              <AuthorGrid items={data.authors.items.slice(0, 6)} />
+              <AuthorGrid items={data.authors.items.slice(0, 12)} />
             </DiscoverySection>
           )}
         </div>

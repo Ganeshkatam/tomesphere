@@ -44,43 +44,43 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
           "books!inner(id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name)))",
         )
         .order("daily_score", { ascending: false })
-        .limit(10),
+        .limit(16),
       this.supabase
         .from("books")
         .select(
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
         .order("title", { ascending: true })
-        .limit(10),
+        .limit(16),
       this.supabase
         .from("books")
         .select(
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
         .order("title", { ascending: false })
-        .limit(10),
+        .limit(16),
       this.supabase
         .from("books")
         .select(
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
         .order("release_date", { ascending: true, nullsFirst: false })
-        .limit(10),
+        .limit(16),
       this.supabase
         .from("books")
         .select(
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
         .order("id", { ascending: false })
-        .limit(10),
+        .limit(16),
       this.supabase
         .from("books")
         .select(
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
         .order("release_date", { ascending: false, nullsFirst: false })
-        .limit(10),
-      this.supabase.from("authors").select("name").limit(10),
+        .limit(16),
+      this.supabase.from("authors").select("name").limit(12),
       this.supabase.from("genres").select("name").limit(12),
       this.supabase.from("subjects").select("name").limit(12),
     ]);
