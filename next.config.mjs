@@ -8,9 +8,6 @@ const nextConfig = {
     // Number of pages that should be kept simultaneously without being disposed
     pagesBufferLength: 1,
   },
-  experimental: {
-    webpackMemoryOptimizations: true,
-  },
   images: {
     unoptimized: true,
     remotePatterns: [
