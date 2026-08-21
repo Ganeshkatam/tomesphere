@@ -9,6 +9,8 @@ export interface SearchResult {
   genres: string[];
   subjects: string[];
   language: string;
+  coverUrl?: string | null;
+  publicationYear?: number | null;
   averageRating: number;
   ratingCount: number;
   popularityScore: number;

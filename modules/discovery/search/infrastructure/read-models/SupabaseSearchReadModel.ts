@@ -60,6 +60,27 @@ export class SupabaseSearchReadModel {
     const suggestedQuery =
       rows.length > 0 ? rows[0].suggested_query || undefined : undefined;
 
+    // Fetch covers and metadata for returned search results
+    const bookIds = rows.map((r: any) => r.book_id);
+    const { data: booksData } =
+      bookIds.length > 0
+        ? await this.supabase
+            .from("books")
+            .select("id, cover_url, release_date")
+            .in("id", bookIds)
+        : { data: [] };
+
+    const coverMap = new Map<string, string | null>();
+    const yearMap = new Map<string, number | null>();
+    if (booksData) {
+      booksData.forEach((b: any) => {
+        coverMap.set(b.id, b.cover_url ? b.cover_url.replace(/ /g, "%20") : null);
+        if (b.release_date) {
+          yearMap.set(b.id, new Date(b.release_date).getFullYear());
+        }
+      });
+    }
+
     const results: SearchResult[] = rows.map((row: any) => ({
       id: row.book_id,
       slug: row.slug,
@@ -69,6 +90,8 @@ export class SupabaseSearchReadModel {
       genres: row.genres || [],
       subjects: row.subjects || [],
       language: row.language,
+      coverUrl: coverMap.get(row.book_id) || null,
+      publicationYear: row.publication_year || yearMap.get(row.book_id) || null,
       averageRating: row.average_rating || 0,
       ratingCount: row.rating_count || 0,
       popularityScore: row.popularity_score || 0,

@@ -61,13 +61,13 @@ export default async function SearchPage({
                   key={book.id}
                   book={{
                     id: book.id,
-                    slug: book.id,
+                    slug: book.slug || book.id,
                     title: book.title,
                     authors: book.authors ? book.authors.map((a) => ({ name: a })) : [],
-                    genres: [],
-                    coverUrl: (book as any).coverUrl ? (book as any).coverUrl.replace(/ /g, "%20") : null,
-                    language: null,
-                    publicationYear: null,
+                    genres: book.genres ? book.genres.map((g) => ({ name: g })) : [],
+                    coverUrl: book.coverUrl ? book.coverUrl.replace(/ /g, "%20") : null,
+                    language: book.language,
+                    publicationYear: book.publicationYear,
                   }}
                 />
               ))}
