@@ -258,10 +258,19 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
   ): Promise<
     import("../../application/queries/GetFeaturedBooks/response").GetFeaturedBooksResponseDto
   > {
-    const overview = await this.getOverview();
+    const limit = query.limit || 6;
+    const { data } = await this.supabase
+      .from("books")
+      .select(
+        "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
+      )
+      .eq("is_featured", true)
+      .limit(limit);
+
+    const items = (data || []).map(BookSummaryMapper.toDto);
     return {
-      items: overview.featuredBooks || [],
-      total: (overview.featuredBooks || []).length,
+      items,
+      total: items.length,
       page: query.page,
       hasMore: false,
     };
@@ -272,10 +281,19 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
   ): Promise<
     import("../../application/queries/GetNewArrivals/response").GetNewArrivalsResponseDto
   > {
-    const overview = await this.getOverview();
+    const limit = query.limit || 6;
+    const { data } = await this.supabase
+      .from("books")
+      .select(
+        "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
+      )
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    const items = (data || []).map(BookSummaryMapper.toDto);
     return {
-      items: overview.newBooks || [],
-      total: (overview.newBooks || []).length,
+      items,
+      total: items.length,
       page: query.page,
       hasMore: false,
     };
@@ -286,10 +304,9 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
   ): Promise<
     import("../../application/queries/GetCollections/response").GetCollectionsResponseDto
   > {
-    const overview = await this.getOverview();
     return {
-      items: overview.featuredCollections || [],
-      total: (overview.featuredCollections || []).length,
+      items: [],
+      total: 0,
       page: query.page,
       hasMore: false,
     };
@@ -300,10 +317,12 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
   ): Promise<
     import("../../application/queries/GetGenres/response").GetGenresResponseDto
   > {
-    const overview = await this.getOverview();
+    const limit = query.limit || 12;
+    const { data } = await this.supabase.from("genres").select("name").limit(limit);
+    const items = (data || []).map((g: any) => g.name);
     return {
-      items: overview.genres || [],
-      total: (overview.genres || []).length,
+      items,
+      total: items.length,
       page: query.page,
       hasMore: false,
     };
@@ -343,10 +362,10 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
   ): Promise<
     import("../../application/queries/GetLanguages/response").GetLanguagesResponseDto
   > {
-    const overview = await this.getOverview();
+    const items = ["English"];
     return {
-      items: overview.languages || [],
-      total: (overview.languages || []).length,
+      items,
+      total: items.length,
       page: query.page,
       hasMore: false,
     };
@@ -357,10 +376,12 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
   ): Promise<
     import("../../application/queries/GetSubjects/response").GetSubjectsResponseDto
   > {
-    const overview = await this.getOverview();
+    const limit = query.limit || 12;
+    const { data } = await this.supabase.from("subjects").select("name").limit(limit);
+    const items = (data || []).map((s: any) => s.name);
     return {
-      items: overview.subjects || [],
-      total: (overview.subjects || []).length,
+      items,
+      total: items.length,
       page: query.page,
       hasMore: false,
     };
