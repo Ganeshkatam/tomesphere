@@ -22,7 +22,7 @@ export default async function WorkspaceLayout({
       .from("profiles")
       .select("display_name, avatar_url")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
     profile = data;
   }
 
