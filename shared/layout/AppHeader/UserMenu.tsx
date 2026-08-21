@@ -1,10 +1,20 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
+import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, Settings, LogOut } from "lucide-react";
-import { Dropdown } from "@/shared/ui/Dropdown";
+import {
+  User,
+  Settings,
+  LogOut,
+  LayoutDashboard,
+  Bookmark,
+  Bell,
+  Shield,
+  Sliders,
+  HardDrive,
+  Sparkles,
+} from "lucide-react";
 import { supabase } from "@/shared/core/database/client";
 
 export interface UserMenuProps {
@@ -17,6 +27,20 @@ export interface UserMenuProps {
 
 export function UserMenu({ user }: UserMenuProps) {
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const getInitials = () => {
     if (user.name) {
@@ -33,52 +57,145 @@ export function UserMenu({ user }: UserMenuProps) {
   };
 
   const handleSignOut = async () => {
+    setIsOpen(false);
     await supabase.auth.signOut();
     router.push("/login");
     router.refresh();
   };
 
-  const trigger = (
-    <div
-      className="relative flex items-center justify-center w-10 h-10 rounded-full overflow-hidden bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white font-bold text-sm shadow-md border-2 border-indigo-400/40 hover:border-indigo-300 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
-      title="Account Settings"
-      aria-label="Account Settings"
-    >
-      {user.avatarUrl ? (
-        <img
-          src={user.avatarUrl}
-          alt={user.name || "User avatar"}
-          className="w-full h-full object-cover rounded-full"
-        />
-      ) : (
-        <span className="group-hover:scale-110 transition-transform">
-          {getInitials()}
-        </span>
+  return (
+    <div ref={menuRef} className="relative inline-block text-left">
+      {/* Avatar Trigger */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative flex items-center justify-center w-10 h-10 rounded-full overflow-hidden bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white font-bold text-sm shadow-md border-2 border-indigo-400/40 hover:border-indigo-300 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+        title="Account menu"
+        aria-label="Account menu"
+        aria-expanded={isOpen}
+      >
+        {user.avatarUrl ? (
+          <img
+            src={user.avatarUrl}
+            alt={user.name || "User avatar"}
+            className="w-full h-full object-cover rounded-full"
+          />
+        ) : (
+          <span className="group-hover:scale-110 transition-transform">
+            {getInitials()}
+          </span>
+        )}
+      </button>
+
+      {/* Rich Dropdown Panel */}
+      {isOpen && (
+        <div className="absolute right-0 mt-2.5 w-64 sm:w-72 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-slate-900/20 py-2 z-50 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-md">
+          {/* User Profile Header Card */}
+          <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800/80">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-tr from-indigo-600 to-purple-600 text-white font-bold text-sm flex items-center justify-center shrink-0 border border-indigo-400/30">
+                {user.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={user.name || "Avatar"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  getInitials()
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                  {user.name || "TomeSphere Reader"}
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                  {user.email || "reader@tomesphere.org"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Reading Workspace Section */}
+          <div className="px-2 py-1.5 border-b border-slate-100 dark:border-slate-800/80">
+            <p className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              Workspace
+            </p>
+            <Link
+              href="/me"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              <LayoutDashboard size={16} className="text-indigo-500" />
+              <span>Reading Dashboard</span>
+            </Link>
+            <Link
+              href="/me/mylibrary"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              <Bookmark size={16} className="text-purple-500" />
+              <span>My Library & Shelves</span>
+            </Link>
+          </div>
+
+          {/* Account & Settings Section */}
+          <div className="px-2 py-1.5 border-b border-slate-100 dark:border-slate-800/80">
+            <p className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              Account & Preferences
+            </p>
+            <Link
+              href="/me/account/profile"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              <User size={16} className="text-slate-400 dark:text-slate-500" />
+              <span>Profile Details</span>
+            </Link>
+            <Link
+              href="/me/account/preferences"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              <Sliders size={16} className="text-slate-400 dark:text-slate-500" />
+              <span>Reading Preferences</span>
+            </Link>
+            <Link
+              href="/me/account/notifications"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              <Bell size={16} className="text-slate-400 dark:text-slate-500" />
+              <span>Notifications</span>
+            </Link>
+            <Link
+              href="/me/account/security"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              <Shield size={16} className="text-slate-400 dark:text-slate-500" />
+              <span>Security & Password</span>
+            </Link>
+            <Link
+              href="/me/account/storage"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              <HardDrive size={16} className="text-slate-400 dark:text-slate-500" />
+              <span>Offline Storage & Data</span>
+            </Link>
+          </div>
+
+          {/* Sign Out Section */}
+          <div className="px-2 pt-1.5 pb-1">
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+            >
+              <LogOut size={16} />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
       )}
     </div>
-  );
-
-  return (
-    <Dropdown
-      trigger={trigger}
-      items={[
-        {
-          label: "Profile",
-          icon: <User size={16} />,
-          onClick: () => router.push("/me/account"),
-        },
-        {
-          label: "Settings",
-          icon: <Settings size={16} />,
-          onClick: () => router.push("/me/account"),
-        },
-        { divider: true, label: "" },
-        {
-          label: "Sign out",
-          icon: <LogOut size={16} className="text-rose-500" />,
-          onClick: handleSignOut,
-        },
-      ]}
-    />
   );
 }

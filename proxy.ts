@@ -12,9 +12,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // Routes that require authentication
 const PROTECTED_PREFIXES = [
   "/me",
-  "/library",
   "/read",
-  "/me/account",
   "/onboarding",
 ];
 

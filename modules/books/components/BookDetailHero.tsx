@@ -166,16 +166,16 @@ export function BookDetailHero({
 
   return (
     <div className="w-full space-y-10 sm:space-y-14">
-      
+
       {/* 1. Breadcrumb Navigation Bar */}
       <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
         <div className="flex items-center gap-2">
           <Link
-            href="/me"
+            href="/me/mylibrary"
             className="inline-flex items-center gap-1 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
             <ArrowLeft size={14} />
-            <span>Library</span>
+            <span>My Library</span>
           </Link>
           <span>/</span>
           <span className="text-slate-700 dark:text-slate-300 font-bold">{primaryGenre}</span>
@@ -191,7 +191,7 @@ export function BookDetailHero({
 
       {/* 2. Cinematic Hero Spotlight (Cover on Left, Title & Direct Actions on Right) */}
       <div className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xl dark:shadow-2xl p-6 sm:p-8 lg:p-10 transition-colors">
-        
+
         {/* Subtle Ambient Blurred Backdrop Glow */}
         {book.coverUrl && (
           <div className="absolute right-0 top-0 w-full sm:w-2/3 h-full opacity-10 dark:opacity-20 blur-3xl pointer-events-none overflow-hidden">
@@ -206,7 +206,7 @@ export function BookDetailHero({
         )}
 
         <div className="relative z-10 flex flex-col md:flex-row gap-8 lg:gap-12 items-center md:items-start">
-          
+
           {/* Left: 3D Hardcover Cover Showcase */}
           <div className="w-[180px] min-[400px]:w-[210px] sm:w-[240px] md:w-[260px] lg:w-[280px] shrink-0">
             <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.25)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.9)] border border-slate-200 dark:border-slate-700/80 group">
@@ -231,7 +231,7 @@ export function BookDetailHero({
 
           {/* Right: Title, Author, Badges, Primary Action CTAs & Key Stats */}
           <div className="flex-1 min-w-0 flex flex-col justify-between space-y-6 text-left w-full">
-            
+
             {/* Header Badges & Title */}
             <div>
               <div className="flex items-center gap-2 flex-wrap mb-3">
@@ -293,11 +293,10 @@ export function BookDetailHero({
               <button
                 onClick={handleToggleLibrary}
                 disabled={isAdding}
-                className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${
-                  inLibrary
+                className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${inLibrary
                     ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
                     : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
-                }`}
+                  }`}
               >
                 {inLibrary ? (
                   <>
@@ -314,11 +313,10 @@ export function BookDetailHero({
 
               <button
                 onClick={handleShare}
-                className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${
-                  copied
+                className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${copied
                     ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
                     : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
-                }`}
+                  }`}
                 title="Share this book"
               >
                 {copied ? (
@@ -389,10 +387,10 @@ export function BookDetailHero({
 
       {/* 3. Two-Column Detailed Content Body */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-        
+
         {/* Left / Main Column: About this Work & Structured Learning Stages */}
         <div className="lg:col-span-8 space-y-8">
-          
+
           {/* Archival Overview */}
           <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
             <div className="flex items-center gap-2.5 border-b border-slate-200/80 dark:border-slate-800 pb-4">
@@ -463,7 +461,7 @@ export function BookDetailHero({
 
         {/* Right / Sidebar Column: Archival Provenance & Integrity Specs */}
         <div className="lg:col-span-4 space-y-6">
-          
+
           {/* Provenance & Publication Card */}
           <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">

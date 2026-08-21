@@ -18,7 +18,7 @@ export default function SitemapPage() {
                     href="/"
                     className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                   >
-                    Home / Landing
+                    Home
                   </Link>
                 </li>
                 <li>
@@ -31,7 +31,7 @@ export default function SitemapPage() {
                 </li>
                 <li>
                   <Link
-                    href="/library"
+                    href="/me/mylibrary"
                     className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                   >
                     My Library

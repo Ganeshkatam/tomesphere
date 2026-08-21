@@ -37,14 +37,14 @@ export function useCommandPalette() {
       id: "library",
       label: "Go to Library",
       shortcut: "l",
-      action: () => router.push("/library"),
+      action: () => router.push("/me/mylibrary"),
       category: "navigation",
     },
     {
       id: "profile",
       label: "Go to Profile",
       shortcut: "p",
-      action: () => router.push("/profile"),
+      action: () => router.push("/me/account/profile"),
       category: "navigation",
     },
 

@@ -489,7 +489,7 @@ function ContinueReadingSection({
           </div>
         </div>
         <Link
-          href="/library"
+          href="/me/mylibrary"
           className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
         >
           <span>All Books</span>
