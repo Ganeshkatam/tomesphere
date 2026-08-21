@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { CollectionSummaryDto } from "../../application/dto/CollectionSummaryDto";
+import { Layers, ArrowRight } from "lucide-react";
 
 interface CollectionCardProps {
   collection: CollectionSummaryDto;
@@ -9,21 +12,33 @@ export function CollectionCard({ collection }: CollectionCardProps) {
   return (
     <Link
       href={`/discover/collections/${collection.slug || collection.id}`}
-      className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface rounded-xl"
+      className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-3xl"
     >
-      <div className="flex flex-col h-full bg-surface-variant/20 border border-outline-variant/30 rounded-xl p-5 md:p-6 transition-all duration-200 ease-in-out group-hover:-translate-y-[2px] group-hover:shadow-md group-hover:border-primary/30 group-hover:bg-surface-variant/30">
-        <h3 className="font-serif text-title-lg md:text-headline-sm text-on-surface uppercase tracking-widest mb-3 transition-colors duration-200 group-hover:text-primary">
+      <div className="flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-700/80">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <Layers size={16} />
+          </div>
+          <span className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+            Curated Collection
+          </span>
+        </div>
+
+        <h3 className="font-display font-bold text-lg sm:text-xl text-slate-900 dark:text-white mb-2 transition-colors duration-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
           {collection.title}
         </h3>
+
         {collection.description && (
-          <p className="text-body-md text-on-surface-variant line-clamp-3 mb-6">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-3 mb-6 font-medium leading-relaxed">
             {collection.description}
           </p>
         )}
-        <div className="mt-auto flex items-center justify-between text-label-md text-on-surface-variant/70">
-          <span>{collection.bookCount} books</span>
-          <span className="opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-primary font-medium">
-            Explore &rarr;
+
+        <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400">
+          <span>{collection.bookCount || 0} Volumes included</span>
+          <span className="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 group-hover:translate-x-1 transition-transform">
+            <span>Explore</span>
+            <ArrowRight size={13} />
           </span>
         </div>
       </div>

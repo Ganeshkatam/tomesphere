@@ -18,7 +18,7 @@ export default async function ApplicationLayout({
       .from("profiles")
       .select("display_name, avatar_url")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
     profile = data;
   }
 
