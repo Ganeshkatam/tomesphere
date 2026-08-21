@@ -4,9 +4,12 @@ const nextConfig = {
   turbopack: {}, // Empty turbopack config to silence warning
   onDemandEntries: {
     // Period (in ms) where the server will keep pages in the buffer
-    maxInactiveAge: 15 * 1000,
+    maxInactiveAge: 10 * 1000,
     // Number of pages that should be kept simultaneously without being disposed
-    pagesBufferLength: 2,
+    pagesBufferLength: 1,
+  },
+  experimental: {
+    webpackMemoryOptimizations: true,
   },
   images: {
     unoptimized: true,
