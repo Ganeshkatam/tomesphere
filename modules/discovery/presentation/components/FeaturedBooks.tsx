@@ -9,7 +9,6 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
-  Plus,
   Bookmark,
   Check,
   Clock,
@@ -256,11 +255,10 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
                     type="button"
                     onClick={() => setSelectedIndex(idx)}
                     aria-label={`Jump to featured title ${idx + 1}`}
-                    className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                      idx === selectedIndex % validItems.length
+                    className={`h-1.5 rounded-full transition-all cursor-pointer ${idx === selectedIndex % validItems.length
                         ? "w-6 bg-indigo-500"
                         : "w-1.5 bg-white/20 hover:bg-white/40"
-                    }`}
+                      }`}
                   />
                 ))}
               </div>

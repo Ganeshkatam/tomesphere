@@ -19,6 +19,7 @@ export interface AppHeaderProps {
 }
 
 import { UserMenu } from "./UserMenu";
+import { SearchBar } from "@/modules/discovery/search/presentation/components/SearchBar";
 
 const AUTH_ROUTES = [
   "/login",
@@ -171,22 +172,10 @@ export function AppHeader({ className = "", variant = "application", user }: App
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
-          {/* Search Bar */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="relative hidden sm:flex items-center w-48 sm:w-72 md:w-80 lg:w-96"
-          >
-            <div className="w-full relative flex items-center bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 sm:py-2.5 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 shadow-xs">
-              <Search size={18} className="text-slate-400 mr-3 flex-shrink-0" />
-              <input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ring-0 w-full text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-none appearance-none"
-                placeholder="Search digital archives..."
-                type="text"
-              />
-            </div>
-          </form>
+          {/* Search Bar with live autocomplete */}
+          <div className="relative hidden sm:flex items-center w-52 sm:w-72 md:w-80 lg:w-96">
+            <SearchBar size="md" placeholder="Search digital archives..." />
+          </div>
 
           {/* Theme Toggle Button */}
           <button
@@ -256,18 +245,9 @@ export function AppHeader({ className = "", variant = "application", user }: App
             }`}
         >
           <div className="px-4 pt-2 pb-6 flex flex-col gap-2">
-            <form onSubmit={handleSearchSubmit} className="relative flex items-center w-full mb-4 sm:hidden">
-              <div className="w-full relative flex items-center bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 shadow-xs">
-                <Search size={18} className="text-slate-400 mr-3 flex-shrink-0" />
-                <input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ring-0 w-full text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-none appearance-none"
-                  placeholder="Search digital archives..."
-                  type="text"
-                />
-              </div>
-            </form>
+            <div className="relative flex items-center w-full mb-4 sm:hidden">
+              <SearchBar size="sm" placeholder="Search digital archives..." />
+            </div>
 
             {variant === "application" && (
               <>

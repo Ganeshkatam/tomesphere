@@ -40,7 +40,13 @@ export class SupabaseSearchReadModel {
     ]);
 
     if (searchResult.error) {
-      console.error("[SearchReadModel] Search RPC Error:", searchResult.error);
+      console.error(
+        "[SearchReadModel] Search RPC Error:",
+        searchResult.error.message || searchResult.error,
+        searchResult.error.details || "",
+        searchResult.error.hint || "",
+        searchResult.error.code || "",
+      );
       return {
         results: [],
         totalCount: 0,
