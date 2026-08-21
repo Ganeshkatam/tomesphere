@@ -511,12 +511,13 @@ export class ReaderService {
     await this.renderer.previous();
   }
 
-  public startSession(): void {
+  public startSession(initialPage: number = 1): void {
     const store = useReaderStore.getState();
     if (store.sessionState === "active") return;
 
     this.sessionStartTime = Date.now();
     store.setSessionState("active");
+    this.sessionFacade.startSession(initialPage);
   }
 
   public pauseSession(): void {

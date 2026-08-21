@@ -11,4 +11,6 @@ export interface LibraryBookDto {
   downloaded: boolean;
   favorite: boolean;
   format?: string; // e.g., "epub" | "pdf"
+  currentPage?: number;
+  totalPages?: number;
 }

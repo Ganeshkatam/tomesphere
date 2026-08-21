@@ -1,9 +1,7 @@
 "use server";
 import { ServerActionResult } from "@/lib/actions/action-result";
 import { SupabaseIdentityProvider } from "@/shared/infrastructure/identity/SupabaseIdentityProvider";
-
 import { createSupabaseServerClient } from "@/shared/core/database/server";
-
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -49,6 +47,16 @@ const UpdateProgressInputSchema = z.object({
   progress: z.number().min(0).max(100),
 });
 
+function revalidateLibraryPaths(bookId?: string) {
+  revalidatePath("/me");
+  revalidatePath("/me/library");
+  revalidatePath("/me/mylibrary");
+  revalidatePath("/me/mydashboard");
+  if (bookId) {
+    revalidatePath(`/book/${bookId}`);
+  }
+}
+
 // Actions
 export async function addBookToLibraryAction(
   bookId: string,
@@ -75,7 +83,7 @@ export async function addBookToLibraryAction(
         bookId: validated.bookId,
         newState: validated.initialState || "want_to_read",
       });
-      revalidatePath("/home");
+      revalidateLibraryPaths(validated.bookId);
       return { success: true, data: output };
     }
 
@@ -84,7 +92,7 @@ export async function addBookToLibraryAction(
       ...validated,
     });
 
-    revalidatePath("/home");
+    revalidateLibraryPaths(validated.bookId);
     return { success: true, data: output };
   } catch (error: any) {
     return {
@@ -111,8 +119,30 @@ export async function changeReadingStateAction(
       ...validated,
     });
 
-    revalidatePath("/home");
+    revalidateLibraryPaths(validated.bookId);
     return { success: true, data: output };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
+  }
+}
+
+export async function removeBookFromLibraryAction(
+  bookId: string,
+): Promise<ServerActionResult<{ removed: boolean }>> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const identityProvider = new SupabaseIdentityProvider(supabase);
+    const user = await identityProvider.currentUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const libraryRepo = new SupabaseLibraryRepository(supabase);
+    await libraryRepo.remove(user.id, bookId);
+
+    revalidateLibraryPaths(bookId);
+    return { success: true, data: { removed: true } };
   } catch (error: any) {
     return {
       success: false,
@@ -138,7 +168,7 @@ export async function updateReadingProgressAction(
       ...validated,
     });
 
-    revalidatePath("/home");
+    revalidateLibraryPaths(validated.bookId);
     return { success: true, data: output };
   } catch (error: any) {
     return {
@@ -161,28 +191,6 @@ export async function getCurrentlyReadingAction(): Promise<
     const bookRepo = new SupabaseBookRepository(supabase);
 
     const output = await getCurrentlyReading(libraryRepo, bookRepo, user.id);
-    return { success: true, data: output };
-  } catch (error: any) {
-    return {
-      success: false,
-      error: { message: error.message || "An unexpected error occurred" },
-    };
-  }
-}
-
-export async function getFinishedBooksAction(): Promise<
-  ServerActionResult<LibraryCollectionItemDto[]>
-> {
-  try {
-    const supabase = await createSupabaseServerClient();
-    const identityProvider = new SupabaseIdentityProvider(supabase);
-    const user = await identityProvider.currentUser();
-    if (!user) throw new Error("Unauthorized");
-
-    const libraryRepo = new SupabaseLibraryRepository(supabase);
-    const bookRepo = new SupabaseBookRepository(supabase);
-
-    const output = await getFinishedBooks(libraryRepo, bookRepo, user.id);
     return { success: true, data: output };
   } catch (error: any) {
     return {

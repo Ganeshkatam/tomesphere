@@ -198,6 +198,27 @@ export async function deleteBookmarkAction(
   }
 }
 
+export async function startReadingSessionAction(
+  payload: { bookId: string; initialPage?: number },
+): Promise<ServerActionResult<{ sessionId: string; status: "existing" | "created" }>> {
+  try {
+    const user = await requireAuth();
+    const { executeStartReadingSession } = await import(
+      "../../application/commands/StartReadingSessionCommand"
+    );
+    const data = await executeStartReadingSession({
+      ...payload,
+      userId: user.id,
+    });
+    return { success: true, data };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
+  }
+}
+
 export async function updateReaderPositionAction(
   payload: any,
 ): Promise<ServerActionResult<any>> {

@@ -32,6 +32,10 @@ export default function LibraryGrid({ books }: LibraryGridProps) {
                   title: item.title,
                   authors: item.authors || [],
                   coverUrl: item.coverUrl,
+                  progress: item.progress,
+                  currentPage: item.currentPage,
+                  totalPages: item.totalPages,
+                  status: item.status,
                 }}
               />
             </div>

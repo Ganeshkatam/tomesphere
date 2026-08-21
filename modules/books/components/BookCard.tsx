@@ -19,6 +19,10 @@ export interface BookCardModel {
   readonly publishedDate?: string | null;
   readonly publicationYear?: number | null;
   readonly isFeatured?: boolean;
+  readonly progress?: number;
+  readonly currentPage?: number;
+  readonly totalPages?: number;
+  readonly status?: "want_to_read" | "currently_reading" | "finished" | "reading" | "abandoned" | "none";
 }
 
 interface BookCardProps {
@@ -159,9 +163,36 @@ export default function BookCard({ book, onAddToList, priority = false }: BookCa
               by {authorNames}
             </p>
           </div>
-          <p className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-medium truncate mt-1">
-            {genreName} • {year}
-          </p>
+
+          <div className="mt-1">
+            {/* Reading Progress Indicator */}
+            {typeof book.progress === "number" && book.progress > 0 && (
+              <div className="space-y-1 mb-1">
+                <div className="flex items-center justify-between text-[9px] font-bold text-indigo-600 dark:text-indigo-400">
+                  <span>
+                    {book.status === "finished"
+                      ? "Finished"
+                      : book.currentPage && book.totalPages
+                        ? `p. ${book.currentPage}/${book.totalPages}`
+                        : `${book.progress}%`}
+                  </span>
+                  <span>{book.progress}%</span>
+                </div>
+                <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all ${
+                      book.status === "finished" ? "bg-emerald-500" : "bg-indigo-600"
+                    }`}
+                    style={{ width: `${Math.max(4, book.progress)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <p className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-medium truncate">
+              {genreName} • {year}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -238,7 +269,13 @@ export default function BookCard({ book, onAddToList, priority = false }: BookCa
                 className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-200 dark:text-slate-950 font-extrabold text-xs transition-all shadow-md active:scale-95 cursor-pointer"
               >
                 <Play size={13} className="fill-white dark:fill-slate-950" />
-                <span>Read Now</span>
+                <span>
+                  {book.status === "reading" || book.status === "currently_reading"
+                    ? "Continue Reading"
+                    : book.status === "finished"
+                      ? "Read Again"
+                      : "Read Now"}
+                </span>
               </Link>
 
               {/* Add to Shelf Menu Button */}

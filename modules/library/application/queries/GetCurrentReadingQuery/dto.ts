@@ -4,6 +4,8 @@ export interface CurrentReadingBookDto {
   author: string;
   coverUrl?: string;
   progressPercentage: number;
+  currentPage?: number;
+  totalPages?: number;
 }
 
 export interface CurrentReadingDto {

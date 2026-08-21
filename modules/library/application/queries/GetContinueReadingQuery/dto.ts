@@ -4,5 +4,7 @@ export interface ContinueReadingDto {
   author: string;
   coverUrl?: string;
   progressPercentage: number;
+  currentPage?: number;
+  totalPages?: number;
   lastReadAt: string;
 }

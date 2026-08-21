@@ -45,11 +45,19 @@ export function BookDetailHero({
   relatedBooks = [],
   authorWorks,
 }: BookDetailHeroProps) {
-  const [inLibrary, setInLibrary] = useState(viewer?.libraryStatus === "in_library");
-  const [isAdding, setIsAdding] = useState(false);
+  const [readingStatus, setReadingStatus] = useState<
+    "none" | "want_to_read" | "currently_reading" | "finished"
+  >(viewer?.readingStatus || (viewer?.libraryStatus === "in_library" ? "want_to_read" : "none"));
+  const [progressPercentage, setProgressPercentage] = useState(viewer?.progressPercentage || 0);
+  const [currentPage, setCurrentPage] = useState(viewer?.currentPage);
+  const [totalPages] = useState(viewer?.totalPages || book.pageCount || 0);
+  const [isUpdatingState, setIsUpdatingState] = useState(false);
+  const [showShelfMenu, setShowShelfMenu] = useState(false);
   const [copied, setCopied] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const authorScrollRef = useRef<HTMLDivElement>(null);
+
+  const inLibrary = readingStatus !== "none";
 
   const authorNames = useMemo(() => {
     if (!book.authors || book.authors.length === 0) return "TomeSphere Library";
@@ -104,16 +112,31 @@ export function BookDetailHero({
     };
   }, [rawDescription]);
 
-  const handleToggleLibrary = async () => {
-    if (isAdding) return;
-    setIsAdding(true);
+  const handleSetState = async (
+    targetState: "want_to_read" | "currently_reading" | "finished" | "remove"
+  ) => {
+    if (isUpdatingState) return;
+    setIsUpdatingState(true);
+    setShowShelfMenu(false);
+
     try {
-      await addBookToLibraryAction(book.id, "want_to_read");
-      setInLibrary(true);
+      if (targetState === "remove") {
+        const { removeBookFromLibraryAction } = await import(
+          "@/modules/library/presentation/actions/library"
+        );
+        await removeBookFromLibraryAction(book.id);
+        setReadingStatus("none");
+      } else {
+        await addBookToLibraryAction(book.id, targetState);
+        setReadingStatus(targetState);
+        if (targetState === "finished") {
+          setProgressPercentage(100);
+        }
+      }
     } catch {
       // fallback
     } finally {
-      setIsAdding(false);
+      setIsUpdatingState(false);
     }
   };
 
@@ -164,6 +187,26 @@ export function BookDetailHero({
     }
   };
 
+  // Compute CTA label and icon
+  const ctaInfo = useMemo(() => {
+    if (readingStatus === "currently_reading") {
+      return {
+        label: "Continue Reading",
+        icon: Play,
+      };
+    }
+    if (readingStatus === "finished") {
+      return {
+        label: "Read Again",
+        icon: Play,
+      };
+    }
+    return {
+      label: "Start Reading",
+      icon: Play,
+    };
+  }, [readingStatus]);
+
   return (
     <div className="w-full space-y-10 sm:space-y-14">
 
@@ -171,7 +214,7 @@ export function BookDetailHero({
       <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
         <div className="flex items-center gap-2">
           <Link
-            href="/me/mylibrary"
+            href="/me/library"
             className="inline-flex items-center gap-1 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
             <ArrowLeft size={14} />
@@ -269,6 +312,26 @@ export function BookDetailHero({
                     <span>{primaryGenre}</span>
                   </span>
                 )}
+
+                {/* Live Reading State Badge */}
+                {readingStatus === "currently_reading" && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-600 text-white text-xs font-bold uppercase tracking-wider shadow-sm animate-in fade-in">
+                    <BookOpen size={12} />
+                    <span>Currently Reading ({progressPercentage}%)</span>
+                  </span>
+                )}
+                {readingStatus === "finished" && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider shadow-sm animate-in fade-in">
+                    <Check size={12} />
+                    <span>Finished</span>
+                  </span>
+                )}
+                {readingStatus === "want_to_read" && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-700 dark:text-amber-300 text-xs font-bold uppercase tracking-wider shadow-xs animate-in fade-in">
+                    <Bookmark size={12} />
+                    <span>Want to Read</span>
+                  </span>
+                )}
               </div>
 
               <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15] mb-2">
@@ -280,36 +343,124 @@ export function BookDetailHero({
               </p>
             </div>
 
+            {/* Reading Progress Indicator (if reading) */}
+            {readingStatus === "currently_reading" && (
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 max-w-xl space-y-2">
+                <div className="flex items-center justify-between text-xs sm:text-sm font-bold text-indigo-900 dark:text-indigo-200">
+                  <span>
+                    {currentPage && totalPages
+                      ? `Page ${currentPage} of ${totalPages}`
+                      : "Reading in Progress"}
+                  </span>
+                  <span>{progressPercentage}% completed</span>
+                </div>
+                <div className="w-full h-2.5 bg-indigo-200/60 dark:bg-indigo-900/60 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.max(4, progressPercentage)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Primary Action Buttons (Immediately Accessible) */}
-            <div className="flex items-center gap-3 flex-wrap pt-1">
+            <div className="flex items-center gap-3 flex-wrap pt-1 relative">
               <Link
                 href={`/read/${book.id}`}
-                className="h-12 sm:h-13 px-8 sm:px-10 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-xl shadow-indigo-600/30 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+                className="h-12 sm:h-13 px-8 sm:px-10 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-xl shadow-indigo-600/30 hover:scale-[1.02] transition-all cursor-pointer"
               >
                 <Play size={18} className="fill-white text-white translate-x-0.5" />
-                <span>Start Reading</span>
+                <span>{ctaInfo.label}</span>
               </Link>
 
-              <button
-                onClick={handleToggleLibrary}
-                disabled={isAdding}
-                className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${inLibrary
-                    ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
-                    : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
+              {/* Shelf Status Dropdown Switcher */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowShelfMenu(!showShelfMenu)}
+                  disabled={isUpdatingState}
+                  className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${
+                    inLibrary
+                      ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
+                      : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
                   }`}
-              >
-                {inLibrary ? (
-                  <>
-                    <Check size={16} className="text-emerald-600 dark:text-emerald-400" />
-                    <span>In Library</span>
-                  </>
-                ) : (
-                  <>
-                    <Bookmark size={16} />
-                    <span>{isAdding ? "Adding..." : "Add to Library"}</span>
-                  </>
+                >
+                  {isUpdatingState ? (
+                    <span>Updating...</span>
+                  ) : readingStatus === "want_to_read" ? (
+                    <>
+                      <Bookmark size={16} className="text-amber-500" />
+                      <span>Want to Read</span>
+                    </>
+                  ) : readingStatus === "currently_reading" ? (
+                    <>
+                      <BookOpen size={16} className="text-indigo-600 dark:text-indigo-400" />
+                      <span>Currently Reading</span>
+                    </>
+                  ) : readingStatus === "finished" ? (
+                    <>
+                      <Check size={16} className="text-emerald-600 dark:text-emerald-400" />
+                      <span>Finished</span>
+                    </>
+                  ) : (
+                    <>
+                      <Bookmark size={16} />
+                      <span>Add to Library</span>
+                    </>
+                  )}
+                </button>
+
+                {showShelfMenu && (
+                  <div className="absolute left-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl z-30 p-2 text-xs font-semibold text-slate-700 dark:text-slate-200 animate-in fade-in slide-in-from-top-2">
+                    <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                      Set Shelf Status
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSetState("want_to_read")}
+                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
+                        readingStatus === "want_to_read" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 font-bold" : ""
+                      }`}
+                    >
+                      <span>Want to Read</span>
+                      {readingStatus === "want_to_read" && <Check size={14} />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSetState("currently_reading")}
+                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
+                        readingStatus === "currently_reading" ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 font-bold" : ""
+                      }`}
+                    >
+                      <span>Currently Reading</span>
+                      {readingStatus === "currently_reading" && <Check size={14} />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSetState("finished")}
+                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
+                        readingStatus === "finished" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 font-bold" : ""
+                      }`}
+                    >
+                      <span>Finished</span>
+                      {readingStatus === "finished" && <Check size={14} />}
+                    </button>
+
+                    {inLibrary && (
+                      <>
+                        <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
+                        <button
+                          type="button"
+                          onClick={() => handleSetState("remove")}
+                          className="w-full text-left px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer font-bold"
+                        >
+                          Remove from Library
+                        </button>
+                      </>
+                    )}
+                  </div>
                 )}
-              </button>
+              </div>
 
               <button
                 onClick={handleShare}

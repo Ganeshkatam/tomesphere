@@ -10,24 +10,36 @@ interface UpdateReaderPositionRequest {
 }
 
 /**
- * Updates the user's latest reading position and emits a domain event.
- * Uses last-write-wins semantics.
+ * Lightweight, high-frequency durable reader position update.
+ * Strictly manages reading_progress with last-write-wins (LWW) idempotency.
+ * Emits an outbox event only when the position actually changes/advances.
  */
 export async function executeUpdateReaderPosition(
   repository: ReaderPositionRepository,
   request: UpdateReaderPositionRequest,
 ): Promise<void> {
-  // 1. Upsert the position (last write wins) via repository
+  const current = await repository.getPosition(request.userId, request.bookId);
+
+  // If position hasn't changed, skip redundant write and event emission
+  if (
+    current &&
+    current.locationAnchor?.type === request.locationAnchor.type &&
+    current.locationAnchor?.value === request.locationAnchor.value
+  ) {
+    return;
+  }
+
+  // 1. Upsert durable position (last write wins)
   await repository.upsertPosition(
     request.userId,
     request.bookId,
     request.locationAnchor,
   );
 
+  // 2. Emit position_updated event only when position actually changes
   const supabase = await createSupabaseServerClient();
   const now = new Date().toISOString();
 
-  // 2. Emit position_updated event
   await emitOutboxEvent(supabase, "reader.position.updated", {
     userId: request.userId,
     bookId: request.bookId,

@@ -122,6 +122,12 @@ export interface EventPayloads {
     pageNumber: number;
     timestamp: number;
   };
+  "reader.session.started": {
+    userId: string;
+    bookId: string;
+    sessionId: string;
+    startedAt: string;
+  };
   "reader.session.ended": {
     userId: string;
     bookId: string;
