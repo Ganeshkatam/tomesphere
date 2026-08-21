@@ -1,6 +1,9 @@
-import { BookCard } from "./BookCard";
+"use client";
+
+import BookCard from "@/modules/books/components/BookCard";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { BookSummaryDto } from "../../application/dto/BookSummaryDto";
+import { addBookToLibraryAction } from "@/modules/library/presentation/actions/library";
 
 interface BookGridProps {
   items: readonly BookSummaryDto[];
@@ -17,13 +20,34 @@ export function BookGrid({ items, priority = false }: BookGridProps) {
     );
   }
 
+  const handleAddToList = async (
+    bookId: string,
+    status: "want_to_read" | "currently_reading" | "finished",
+  ) => {
+    try {
+      await addBookToLibraryAction(bookId, status);
+    } catch (error) {
+      console.error("Failed to add book to library:", error);
+    }
+  };
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-4 sm:gap-6 min-w-0">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5 min-w-0">
       {items.map((item, index) => (
-        <BookCard 
-          key={item.id || item.slug} 
-          book={item} 
-          priority={priority && index < 3} // Only eagerly load first few if this grid is high priority
+        <BookCard
+          key={item.id || item.slug || `book-${index}`}
+          book={{
+            id: item.id,
+            slug: item.slug,
+            title: item.title,
+            authors: item.authors || [],
+            genres: item.genres || [],
+            coverUrl: item.coverUrl ? item.coverUrl.replace(/ /g, "%20") : null,
+            language: item.language,
+            publicationYear: item.publicationYear,
+          }}
+          priority={priority && index < 4}
+          onAddToList={(status) => handleAddToList(item.id, status)}
         />
       ))}
     </div>

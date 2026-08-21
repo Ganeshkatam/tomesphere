@@ -1,6 +1,6 @@
 import { searchAction } from "@/modules/discovery/search/presentation/actions/searchActions";
 import { SearchFacetSidebar } from "@/modules/discovery/search/presentation/components/SearchFacetSidebar";
-import { BookCard } from "@/modules/discovery/presentation/components/BookCard";
+import BookCard from "@/modules/books/components/BookCard";
 import { SearchRequest } from "@/modules/discovery/search/application/dto/SearchRequestDto";
 import { Frown } from "lucide-react";
 
@@ -63,9 +63,9 @@ export default async function SearchPage({
                     id: book.id,
                     slug: book.id,
                     title: book.title,
-                    authors: book.authors ? book.authors.map(a => ({ id: a, name: a, slug: a })) : [],
+                    authors: book.authors ? book.authors.map((a) => ({ name: a })) : [],
                     genres: [],
-                    coverUrl: null,
+                    coverUrl: (book as any).coverUrl ? (book as any).coverUrl.replace(/ /g, "%20") : null,
                     language: null,
                     publicationYear: null,
                   }}
