@@ -1,6 +1,5 @@
 import { getDiscoveryFacade } from "@/modules/discovery/application/facades";
 import { DiscoverySection } from "@/modules/discovery/presentation/components/DiscoverySection";
-import { FeaturedBooks } from "@/modules/discovery/presentation/components/FeaturedBooks";
 import { BookCarousel } from "@/modules/discovery/presentation/components/BookCarousel";
 import { CollectionGrid } from "@/modules/discovery/presentation/components/CollectionGrid";
 import { AuthorGrid } from "@/modules/discovery/presentation/components/AuthorGrid";
@@ -23,7 +22,7 @@ export default async function DiscoverOverviewPage() {
               description="Curated highlights and hand-picked treasures from the archive."
               actionHref="/discover/featured"
             >
-              <FeaturedBooks items={data.featured.items} />
+              <BookCarousel items={data.featured.items} priority={true} />
             </DiscoverySection>
           )}
 
