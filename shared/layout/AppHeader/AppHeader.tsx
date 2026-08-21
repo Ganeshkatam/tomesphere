@@ -56,8 +56,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-colors duration-200 ${isDark
-          ? "bg-slate-950/95 backdrop-blur-md text-white border-b border-slate-800/80 shadow-md"
-          : "bg-white/95 backdrop-blur-md text-slate-900 border-b border-slate-200/90 shadow-xs"
+        ? "bg-slate-950/95 backdrop-blur-md text-white border-b border-slate-800/80 shadow-md"
+        : "bg-white/95 backdrop-blur-md text-slate-900 border-b border-slate-200/90 shadow-xs"
         } ${className}`}
       id="top-nav"
     >
@@ -87,8 +87,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
               <Link
                 href="/me"
                 className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${pathname === "/me"
-                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                  ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                   }`}
               >
                 Home
@@ -96,17 +96,26 @@ export function AppHeader({ className = "", variant = "application", user }: App
               <Link
                 href="/discover"
                 className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${pathname && pathname.startsWith("/discover")
-                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                  ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                   }`}
               >
                 Discover
               </Link>
               <Link
+                href="/dashboard"
+                className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${pathname && pathname.startsWith("/dashboard")
+                  ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                  }`}
+              >
+                MyDashboard
+              </Link>
+              <Link
                 href="/me/mylibrary"
                 className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${pathname && pathname.startsWith("/me/mylibrary")
-                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                  ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                   }`}
               >
                 MyLibrary
@@ -119,8 +128,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
               <Link
                 href="/discover"
                 className={`text-sm sm:text-base font-medium px-3.5 py-2 rounded-xl transition-all ${isDark
-                    ? "text-slate-300 hover:text-white hover:bg-white/10"
-                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                  ? "text-slate-300 hover:text-white hover:bg-white/10"
+                  : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                   }`}
               >
                 Discover
@@ -128,8 +137,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
               <Link
                 href="/discover/collections"
                 className={`text-sm sm:text-base font-medium px-3.5 py-2 rounded-xl transition-all ${isDark
-                    ? "text-slate-300 hover:text-white hover:bg-white/10"
-                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                  ? "text-slate-300 hover:text-white hover:bg-white/10"
+                  : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                   }`}
               >
                 Collections
@@ -137,8 +146,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
               <Link
                 href="/about"
                 className={`text-sm sm:text-base font-medium px-3.5 py-2 rounded-xl transition-all ${isDark
-                    ? "text-slate-300 hover:text-white hover:bg-white/10"
-                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                  ? "text-slate-300 hover:text-white hover:bg-white/10"
+                  : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                   }`}
               >
                 About
@@ -155,8 +164,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle navigation menu"
             className={`p-2.5 rounded-xl transition-colors cursor-pointer md:hidden flex items-center justify-center ${isDark
-                ? "text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
+              ? "text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
               }`}
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -184,8 +193,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
             onClick={toggleTheme}
             aria-label="Toggle theme"
             className={`p-2.5 rounded-xl transition-colors cursor-pointer ${isDark
-                ? "text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
+              ? "text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
               }`}
           >
             {isDark ? <Sun size={20} /> : <Moon size={20} />}
@@ -196,8 +205,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
               <button
                 aria-label="Notifications"
                 className={`p-2.5 rounded-xl transition-colors cursor-pointer hidden sm:flex items-center justify-center ${isDark
-                    ? "text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
+                  ? "text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
                   }`}
               >
                 <Bell size={20} />
@@ -222,8 +231,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
               <Link
                 href="/login"
                 className={`text-sm font-semibold px-4 py-2 rounded-lg border transition-all ${isDark
-                    ? "text-slate-200 border-slate-800 hover:bg-white/10 hover:text-white"
-                    : "text-slate-700 border-slate-300 hover:bg-slate-100 hover:text-slate-900"
+                  ? "text-slate-200 border-slate-800 hover:bg-white/10 hover:text-white"
+                  : "text-slate-700 border-slate-300 hover:bg-slate-100 hover:text-slate-900"
                   }`}
               >
                 Sign In
@@ -266,8 +275,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
                   href="/me"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`text-base font-semibold px-4 py-3 rounded-xl transition-all ${pathname === "/me"
-                      ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                     }`}
                 >
                   Home
@@ -276,18 +285,28 @@ export function AppHeader({ className = "", variant = "application", user }: App
                   href="/discover"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`text-base font-semibold px-4 py-3 rounded-xl transition-all ${pathname && pathname.startsWith("/discover")
-                      ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                     }`}
                 >
                   Discover
                 </Link>
                 <Link
+                  href="/dashboard"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`text-base font-semibold px-4 py-3 rounded-xl transition-all ${pathname && pathname.startsWith("/dashboard")
+                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                    }`}
+                >
+                  MyDashboard
+                </Link>
+                <Link
                   href="/me/mylibrary"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`text-base font-semibold px-4 py-3 rounded-xl transition-all ${pathname && pathname.startsWith("/me/mylibrary")
-                      ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                     }`}
                 >
                   Library
@@ -301,8 +320,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
                   href="/discover"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`text-base font-medium px-4 py-3 rounded-xl transition-all ${isDark
-                      ? "text-slate-300 hover:text-white hover:bg-white/10"
-                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                    ? "text-slate-300 hover:text-white hover:bg-white/10"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
                   Discover
@@ -311,8 +330,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
                   href="/discover/collections"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`text-base font-medium px-4 py-3 rounded-xl transition-all ${isDark
-                      ? "text-slate-300 hover:text-white hover:bg-white/10"
-                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                    ? "text-slate-300 hover:text-white hover:bg-white/10"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
                   Collections
@@ -321,8 +340,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
                   href="/about"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`text-base font-medium px-4 py-3 rounded-xl transition-all ${isDark
-                      ? "text-slate-300 hover:text-white hover:bg-white/10"
-                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                    ? "text-slate-300 hover:text-white hover:bg-white/10"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
                   About

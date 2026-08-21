@@ -27,7 +27,12 @@ export default function LibraryGrid({ books }: LibraryGridProps) {
               className={`h-full transition-transform ${isSelected ? "scale-95 ring-2 ring-primary rounded-xl" : ""}`}
             >
               <BookCard
-                book={item as any} // Might need mapping depending on exact BookCard expectations
+                book={{
+                  id: item.bookId,
+                  title: item.title,
+                  authors: item.authors || [],
+                  coverUrl: item.coverUrl,
+                }}
               />
             </div>
 

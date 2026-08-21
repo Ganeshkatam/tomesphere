@@ -7,7 +7,6 @@ import { LibraryPageDto } from "../application/dto/response/LibraryPageDto";
 import { useLibraryStore } from "../store/library-store";
 import { getLibraryPageAction } from "@/app/(workspace)/me/mylibrary/actions";
 
-import LibrarySidebar from "./LibrarySidebar";
 import LibraryOverview from "./LibraryOverview";
 import LibraryToolbar from "./LibraryToolbar";
 import LibraryGrid from "./LibraryGrid";
@@ -85,12 +84,8 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
   const hasBooks = data.books.items.length > 0;
 
   return (
-    <div className="flex bg-gradient-page min-h-screen relative">
-      {/* Sidebar */}
-      <LibrarySidebar navigation={data.navigation} />
-
-      {/* Main Content */}
-      <main className="flex-1 min-w-0 flex flex-col relative">
+    <div className="min-h-screen relative w-full">
+      <main className="w-full flex flex-col relative">
         <div className="p-6 md:p-8 max-w-7xl mx-auto w-full flex-1">
           {isOverview && <LibraryOverview summary={data.summary} />}
 
