@@ -14,8 +14,8 @@ export default async function DiscoverOverviewPage() {
   const data = await facade.getOverview();
 
   return (
-    <div className="min-h-screen bg-[var(--surface-canvas)] py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-12 sm:space-y-16 animate-in fade-in duration-300">
+    <div className="min-h-screen bg-[var(--surface-canvas)] py-6 sm:py-10 px-4 sm:px-6 lg:px-8 xl:px-12 w-full">
+      <div className="w-full max-w-[1760px] mx-auto space-y-12 sm:space-y-16 animate-in fade-in duration-300">
         {/* Discovery Hero Search & Trending Pills */}
         <DiscoveryHero />
 

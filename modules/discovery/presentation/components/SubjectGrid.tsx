@@ -15,7 +15,7 @@ export function SubjectGrid({ items }: SubjectGridProps) {
   const icons = [Brain, Atom, Landmark, Feather, Compass, Scroll, Palette, Telescope, Lightbulb, HeartHandshake, Globe, BookOpen];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 min-w-0">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-12 gap-3 sm:gap-4 min-w-0">
       {items.map((subject, idx) => {
         const Icon = icons[idx % icons.length];
         return (

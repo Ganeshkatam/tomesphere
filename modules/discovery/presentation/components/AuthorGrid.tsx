@@ -11,7 +11,7 @@ export function AuthorGrid({ items }: AuthorGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-8 min-w-0">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-4 md:gap-6 min-w-0">
       {items.map((item) => (
         <AuthorCard key={item.id} author={item} />
       ))}
