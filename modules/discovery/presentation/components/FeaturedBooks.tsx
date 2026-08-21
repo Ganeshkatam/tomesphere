@@ -4,207 +4,215 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { BookSummaryDto } from "../../application/dto/BookSummaryDto";
-import {
-  BookOpen,
-  Sparkles,
-  ChevronLeft,
-  ChevronRight,
-  Info,
-  Calendar,
-  Layers,
-  Star,
-} from "lucide-react";
+import { BookOpen, Sparkles, ChevronRight, ArrowRight } from "lucide-react";
 import DefaultBookCover from "@/modules/books/components/DefaultBookCover";
-import { generateSimpleDescription } from "@/modules/storage/services/pdf-description-generator";
 
 interface FeaturedBooksProps {
   items: readonly Partial<BookSummaryDto>[];
 }
 
 export function FeaturedBooks({ items }: FeaturedBooksProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   const validItems = (items || []).filter(
     (item): item is BookSummaryDto => Boolean(item && item.id && item.title),
   );
 
-  // Auto-advance spotlight every 7 seconds
+  // Auto-rotate featured selection every 8 seconds when not hovered
   useEffect(() => {
-    if (validItems.length <= 1) return;
+    if (validItems.length <= 1 || isPaused) return;
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % validItems.length);
-    }, 7000);
+      setSelectedIndex((prev) => (prev + 1) % validItems.length);
+    }, 8000);
     return () => clearInterval(interval);
-  }, [validItems.length]);
+  }, [validItems.length, isPaused]);
 
   if (validItems.length === 0) {
     return null;
   }
 
-  const current = validItems[activeIndex];
-  const authorNames =
-    current.authors && current.authors.length > 0
-      ? current.authors.map((a) => a.name).join(", ")
-      : "TomeSphere Archive";
+  const primary = validItems[selectedIndex % validItems.length];
+  const primaryAuthors =
+    primary.authors && primary.authors.length > 0
+      ? primary.authors.map((a) => a.name).join(", ")
+      : "TomeSphere Library";
 
-  const primaryGenre =
-    (current.genres && current.genres.length > 0
-      ? typeof current.genres[0] === "string"
-        ? current.genres[0]
-        : (current.genres[0] as any)?.name
-      : null) || "Masterpiece";
+  const primaryLanguage = (primary.language || "English").toUpperCase();
+  const primaryYear = primary.publicationYear || null;
 
-  const description = generateSimpleDescription(current.title, authorNames);
-
-  const prevSlide = () => {
-    setActiveIndex((prev) => (prev - 1 + validItems.length) % validItems.length);
-  };
-
-  const nextSlide = () => {
-    setActiveIndex((prev) => (prev + 1) % validItems.length);
-  };
+  // Pick up to 3 secondary items from the remaining books
+  const secondaryItems = validItems
+    .map((item, originalIndex) => ({ item, originalIndex }))
+    .filter(({ originalIndex }) => originalIndex !== selectedIndex % validItems.length)
+    .slice(0, 3);
 
   return (
-    <div className="relative w-full rounded-3xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl transition-all min-h-[360px] sm:min-h-[390px] flex flex-col justify-between p-6 sm:p-8 lg:p-10 text-white">
-      {/* Ambient Blurred Backdrop Glow */}
-      {current.coverUrl && (
-        <div className="absolute right-0 top-0 w-full lg:w-2/3 h-full opacity-20 dark:opacity-25 blur-3xl pointer-events-none overflow-hidden select-none">
-          <Image
-            src={current.coverUrl.replace(/ /g, "%20")}
-            alt=""
-            fill
-            className="object-cover"
-            sizes="50vw"
-          />
-        </div>
-      )}
+    <div
+      className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch w-full min-w-0"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* Primary Spotlight Banner (8 Cols on LG) */}
+      <div className="lg:col-span-8 flex flex-col justify-between p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-950 to-slate-900 text-white border border-indigo-800/30 shadow-xl relative overflow-hidden group transition-all duration-500">
+        {/* Glow Effects */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Decorative Brand Gradient Shimmer */}
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/95 to-slate-900/80 pointer-events-none" />
-
-      {/* Foreground Spotlight Content */}
-      <div className="relative z-10 flex flex-col md:flex-row gap-6 sm:gap-8 lg:gap-12 items-center md:items-start w-full">
-        {/* Left: 3D Hardcover Cover Showcase */}
-        <div className="w-[170px] sm:w-[200px] md:w-[220px] lg:w-[240px] shrink-0">
-          <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 group cursor-pointer">
-            {current.coverUrl ? (
+        <div className="relative z-10 flex flex-col sm:flex-row gap-6 sm:gap-8 items-start sm:items-center">
+          {/* Cover */}
+          <div className="relative w-36 sm:w-44 md:w-52 aspect-[2/3] shrink-0 rounded-2xl overflow-hidden shadow-2xl border border-white/10 group-hover:scale-[1.02] transition-transform duration-300">
+            {primary.coverUrl ? (
               <Image
-                src={current.coverUrl.replace(/ /g, "%20")}
-                alt={`Cover of ${current.title}`}
+                src={primary.coverUrl.replace(/ /g, "%20")}
+                alt={primary.title}
                 fill
+                className="object-cover transition-opacity duration-500"
+                sizes="(max-width: 640px) 144px, 208px"
                 priority
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                sizes="(max-width: 768px) 200px, 240px"
               />
             ) : (
               <DefaultBookCover
-                title={current.title}
-                authors={authorNames}
-                genre={primaryGenre}
+                title={primary.title}
+                authors={primaryAuthors}
               />
             )}
           </div>
-        </div>
 
-        {/* Right: Rich Metadata, Title, Description, & Direct Action Buttons */}
-        <div className="flex-1 min-w-0 flex flex-col justify-between space-y-4 sm:space-y-5 text-left w-full">
-          <div>
-            {/* Badges row */}
-            <div className="flex items-center gap-2 flex-wrap mb-2.5">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-[11px] font-extrabold uppercase tracking-wider">
+          {/* Book Info */}
+          <div className="flex-1 flex flex-col justify-between space-y-4 min-w-0">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-[11px] font-extrabold uppercase tracking-wider">
                 <Sparkles size={12} className="text-amber-400" />
-                <span>Featured Masterpiece</span>
-              </span>
+                <span>Featured Selection</span>
+              </div>
 
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/10 text-white text-[11px] font-bold">
-                {primaryGenre}
-              </span>
+              <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-extrabold text-white leading-snug line-clamp-2 transition-all duration-300">
+                {primary.title}
+              </h3>
 
-              {current.publicationYear && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/10 text-slate-300 text-[11px] font-mono font-bold">
-                  <Calendar size={11} />
-                  <span>{current.publicationYear}</span>
+              <p className="text-xs sm:text-sm text-indigo-200 font-medium line-clamp-1">
+                by <span className="text-white font-bold">{primaryAuthors}</span>
+              </p>
+
+              <div className="flex items-center gap-2 text-xs text-indigo-300/80 pt-1 font-semibold">
+                {primaryYear && (
+                  <span className="px-2.5 py-0.5 rounded-md bg-white/10 text-white font-mono text-[11px]">
+                    {primaryYear}
+                  </span>
+                )}
+                <span className="px-2.5 py-0.5 rounded-md bg-white/10 text-slate-200 font-mono text-[11px]">
+                  {primaryLanguage}
                 </span>
-              )}
+              </div>
             </div>
 
-            {/* Title */}
-            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight line-clamp-2">
-              {current.title}
-            </h2>
-
-            {/* Author */}
-            <p className="text-sm sm:text-base text-indigo-300 font-semibold mt-1">
-              by <span className="text-white font-bold">{authorNames}</span>
-            </p>
-
-            {/* Synopsis / Description */}
-            <p className="text-xs sm:text-sm text-slate-300 font-serif leading-relaxed line-clamp-3 mt-2.5 max-w-3xl">
-              {description}
-            </p>
-          </div>
-
-          {/* Action CTAs & Slide Indicators */}
-          <div className="flex items-center justify-between gap-4 pt-2 flex-wrap">
-            <div className="flex items-center gap-3">
+            {/* CTAs */}
+            <div className="flex items-center gap-3 pt-2">
               <Link
-                href={`/read/${current.id}`}
-                className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs sm:text-sm font-extrabold shadow-xl shadow-indigo-600/30 hover:scale-[1.02] transition-all cursor-pointer"
+                href={`/read/${primary.id}`}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs sm:text-sm font-bold shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
               >
-                <BookOpen size={16} />
+                <BookOpen size={15} />
                 <span>Start Reading</span>
               </Link>
-
               <Link
-                href={`/book/${current.slug || current.id}`}
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-white text-xs sm:text-sm font-bold border border-white/10 hover:border-white/20 transition-all cursor-pointer"
+                href={`/book/${primary.slug || primary.id}`}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white text-xs sm:text-sm font-bold transition-all border border-white/10 cursor-pointer"
               >
-                <Info size={15} />
-                <span>Overview</span>
+                <span>Book Details</span>
+                <ChevronRight size={14} />
               </Link>
             </div>
-
-            {/* Slide Navigation Controls */}
-            {validItems.length > 1 && (
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={prevSlide}
-                  aria-label="Previous featured book"
-                  className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer active:scale-95"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-
-                <div className="flex items-center gap-1.5 px-2">
-                  {validItems.map((_, idx) => (
-                    <button
-                      key={`dot-${idx}`}
-                      type="button"
-                      onClick={() => setActiveIndex(idx)}
-                      aria-label={`Go to slide ${idx + 1}`}
-                      className={`h-2 rounded-full transition-all cursor-pointer ${
-                        idx === activeIndex
-                          ? "w-6 bg-indigo-500"
-                          : "w-2 bg-white/30 hover:bg-white/50"
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={nextSlide}
-                  aria-label="Next featured book"
-                  className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer active:scale-95"
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
+
+      {/* Secondary Featured List (4 Cols on LG) */}
+      {secondaryItems.length > 0 && (
+        <div className="lg:col-span-4 flex flex-col justify-between p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+          <div>
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
+              <h4 className="font-display font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
+                Also Hand-Picked
+              </h4>
+              <span className="text-[11px] font-bold text-slate-400">
+                {secondaryItems.length} Titles
+              </span>
+            </div>
+
+            <div className="space-y-2.5">
+              {secondaryItems.map(({ item: book, originalIndex }) => {
+                const author =
+                  book.authors && book.authors.length > 0
+                    ? book.authors.map((a) => a.name).join(", ")
+                    : "TomeSphere Library";
+
+                const year = book.publicationYear || null;
+
+                return (
+                  <div
+                    key={book.id}
+                    onClick={() => setSelectedIndex(originalIndex)}
+                    className="flex items-center gap-3.5 p-2.5 rounded-2xl hover:bg-indigo-50/60 dark:hover:bg-slate-800/60 border border-transparent hover:border-indigo-200 dark:hover:border-slate-700/80 transition-all group cursor-pointer"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        setSelectedIndex(originalIndex);
+                      }
+                    }}
+                  >
+                    <div className="relative w-12 sm:w-14 aspect-[2/3] shrink-0 rounded-xl overflow-hidden shadow-xs border border-slate-200/60 dark:border-slate-800 group-hover:scale-105 transition-transform">
+                      {book.coverUrl ? (
+                        <Image
+                          src={book.coverUrl.replace(/ /g, "%20")}
+                          alt={book.title}
+                          fill
+                          className="object-cover"
+                          sizes="56px"
+                        />
+                      ) : (
+                        <DefaultBookCover
+                          title={book.title}
+                          authors={author}
+                        />
+                      )}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <h5 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                        {book.title}
+                      </h5>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5 font-medium">
+                        by {author}
+                      </p>
+                      {year && (
+                        <span className="inline-block mt-0.5 text-[10px] font-mono font-semibold text-slate-400">
+                          {year}
+                        </span>
+                      )}
+                    </div>
+
+                    <ChevronRight
+                      size={14}
+                      className="text-slate-300 dark:text-slate-600 group-hover:text-indigo-500 group-hover:translate-x-0.5 transition-all shrink-0"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <Link
+            href="/discover/featured"
+            className="inline-flex items-center justify-center gap-1.5 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+          >
+            <span>View All Curated Collections</span>
+            <ArrowRight size={13} />
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
