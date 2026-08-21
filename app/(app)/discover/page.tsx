@@ -1,5 +1,4 @@
 import { getDiscoveryFacade } from "@/modules/discovery/application/facades";
-import { DiscoveryHero } from "@/modules/discovery/presentation/components/DiscoveryHero";
 import { DiscoverySection } from "@/modules/discovery/presentation/components/DiscoverySection";
 import { FeaturedBooks } from "@/modules/discovery/presentation/components/FeaturedBooks";
 import { BookGrid } from "@/modules/discovery/presentation/components/BookGrid";
@@ -14,13 +13,10 @@ export default async function DiscoverOverviewPage() {
   const data = await facade.getOverview();
 
   return (
-    <div className="min-h-screen bg-[var(--surface-canvas)] py-6 sm:py-10 px-4 sm:px-6 lg:px-8 xl:px-12 w-full">
-      <div className="w-full max-w-[1760px] mx-auto space-y-12 sm:space-y-16 animate-in fade-in duration-300">
-        {/* Discovery Hero Search & Trending Pills */}
-        <DiscoveryHero />
-
+    <div className="min-h-screen bg-[var(--surface-canvas)] py-6 sm:py-8 px-4 sm:px-6 lg:px-8 xl:px-12 w-full">
+      <div className="w-full max-w-[1760px] mx-auto space-y-8 sm:space-y-12 animate-in fade-in duration-300">
         {/* Main Catalogue Sections */}
-        <div className="flex flex-col gap-12 sm:gap-16">
+        <div className="flex flex-col gap-10 sm:gap-14">
           {data.featured?.items?.length > 0 && (
             <DiscoverySection
               title="Featured Masterpieces"
