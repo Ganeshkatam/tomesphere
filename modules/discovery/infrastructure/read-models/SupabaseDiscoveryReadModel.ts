@@ -29,15 +29,26 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
         .select(
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
-        .eq("is_featured", true)
-        .limit(10),
+        .in("id", [
+          "0ffa0e00-ebe5-4a9c-b9df-e2aa80d15de0", // Wings of Fire
+          "eb7a357d-795e-48d3-a126-cf9e7a47fce2", // The Monk Who Sold His Ferrari
+          "022a18c9-9cae-411e-b3f3-ac6888440d75", // Figure Drawing
+          "99bf045e-c1ac-41b5-8a30-a1ec7ae5b3ae", // In the Silence You Left Behind
+          "5631de5a-c8de-4ff1-973c-3f0f7c7cdfbb", // Maths Sutra
+        ]),
       this.supabase
         .from("books")
         .select(
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
-        .order("created_at", { ascending: false })
-        .limit(10),
+        .in("id", [
+          "f3b1a35d-ad15-497a-98ad-80446c622ebd", // Web Application Hacker's Handbook
+          "0044eee6-a5d8-4ea6-b086-618d403691bf", // Mobile Application Hacker's Handbook
+          "1c9d5a74-a673-4096-a794-5206671fa817", // Everything Science
+          "152e9932-c07b-483c-bf18-ad4da052ff52", // Java for Absolute Beginners
+          "64b22807-7b10-46ae-8460-5dc23b1efd9d", // Vedic Mathematics Made Easy
+          "32f179c6-dfe8-452d-9f5f-8142320d6993", // JavaScript for Beginners
+        ]),
       this.supabase
         .from("trending_books_projection")
         .select(
