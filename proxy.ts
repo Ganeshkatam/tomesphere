@@ -11,10 +11,9 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // Routes that require authentication
 const PROTECTED_PREFIXES = [
+  "/dashboard",
   "/me",
-  "/library",
   "/read",
-  "/me/account",
   "/onboarding",
 ];
 
@@ -84,8 +83,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect authenticated users away from auth pages
-  if (user && isAuthRoute(pathname)) {
+  // Redirect authenticated users away from auth pages and root landing to /me
+  if (user && (isAuthRoute(pathname) || pathname === "/")) {
     const url = request.nextUrl.clone();
     url.pathname = "/me";
     return NextResponse.redirect(url);

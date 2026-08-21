@@ -18,7 +18,15 @@ export default function SitemapPage() {
                     href="/"
                     className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                   >
-                    Home / Landing
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/me/dashboard"
+                    className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                  >
+                    Reading Dashboard
                   </Link>
                 </li>
                 <li>
@@ -31,7 +39,7 @@ export default function SitemapPage() {
                 </li>
                 <li>
                   <Link
-                    href="/library"
+                    href="/me/mylibrary"
                     className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                   >
                     My Library

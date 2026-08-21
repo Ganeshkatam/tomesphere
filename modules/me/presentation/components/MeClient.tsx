@@ -9,11 +9,9 @@ import {
   ArrowRight,
   ChevronRight,
   ChevronLeft,
-  Flame,
   Star,
   Layers,
   Clock,
-  Info,
   Sparkles,
   Brain,
   Atom,
@@ -21,7 +19,6 @@ import {
   Landmark,
   Scroll,
   Palette,
-  Quote,
   Gem,
   BookmarkCheck,
   Telescope,
@@ -29,7 +26,6 @@ import {
   Lightbulb,
   PlusCircle,
   Loader2,
-  Play,
 } from "lucide-react";
 import { MePageDto } from "../../application/facades/MePageFacade";
 import { CurrentReadingDto } from "@/modules/library/application/queries/GetCurrentReadingQuery/dto";
@@ -136,7 +132,7 @@ export function MeClient({ data }: MeClientProps) {
 
   return (
     <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8 flex flex-col gap-8 sm:gap-10">
-      
+
       {/* 1. Header with greeting */}
       <section>
         <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-1">
@@ -493,7 +489,7 @@ function ContinueReadingSection({
           </div>
         </div>
         <Link
-          href="/library"
+          href="/me/mylibrary"
           className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
         >
           <span>All Books</span>
@@ -609,7 +605,7 @@ function PersonalizedRecommendationsSection({
               <Sparkles size={16} />
             </div>
             <h2 className="text-xl sm:text-2xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
-              Curated For {userName}
+              Curated For You
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -988,12 +984,12 @@ function SubjectsExplorerSection({
 
   const topicsToDisplay = subjects.length > 0
     ? subjects.slice(0, 6).map((s: any, idx: number) => {
-        const name = typeof s === "string" ? s : s?.name || "Literature";
-        const slug = typeof s === "string" ? s.toLowerCase() : s?.slug || (s?.name ? s.name.toLowerCase() : "literature");
-        const count = typeof s === "object" && s?.bookCount ? `${s.bookCount}+ titles` : "20+ titles";
-        const defaultGrad = defaultTopics[idx % defaultTopics.length].gradient;
-        return { name, slug, count, gradient: defaultGrad };
-      })
+      const name = typeof s === "string" ? s : s?.name || "Literature";
+      const slug = typeof s === "string" ? s.toLowerCase() : s?.slug || (s?.name ? s.name.toLowerCase() : "literature");
+      const count = typeof s === "object" && s?.bookCount ? `${s.bookCount}+ titles` : "20+ titles";
+      const defaultGrad = defaultTopics[idx % defaultTopics.length].gradient;
+      return { name, slug, count, gradient: defaultGrad };
+    })
     : defaultTopics;
 
   return (

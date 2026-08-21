@@ -40,7 +40,7 @@ CREATE TABLE public.reader_sessions (
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     book_id UUID NOT NULL REFERENCES public.books(id) ON DELETE CASCADE,
     current_page INTEGER DEFAULT 0,
-    total_pages INTEGER,
+    pages INTEGER,
     percentage NUMERIC DEFAULT 0,
     started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     last_read_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

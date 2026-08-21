@@ -1,13 +1,46 @@
+import { createSupabaseServerClient } from "@/shared/core/database/server";
+import { SupabaseProfileRepository } from "@/modules/me/account/profile/infrastructure/repositories/SupabaseProfileRepository";
+import { ProfileForm } from "@/modules/me/account/profile/presentation/components/ProfileForm";
+import { redirect } from "next/navigation";
+import { UserId } from "@/shared/kernel/UserId";
+
 export const dynamic = "force-dynamic";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    redirect("/auth/sign-in");
+  }
+
+  const profileRepo = new SupabaseProfileRepository(supabase);
+  const userId = UserId.create(user.id);
+  let profile = await profileRepo.findById(userId);
+
+  if (!profile) {
+    profile = {
+      id: userId,
+      displayName: "",
+      bio: "",
+      location: "",
+      avatarUrl: "",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+  }
+
+  const profileDto = {
+    displayName: profile.displayName,
+    bio: profile.bio,
+    location: profile.location,
+    avatarUrl: profile.avatarUrl,
+    email: user.email || "",
+  };
+
   return (
     <div>
-      <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Public Profile</h2>
-      <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">Manage how you appear to others on TomeSphere.</p>
-      <div className="text-sm text-slate-400 dark:text-slate-600 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center">
-        Form fields will go here...
-      </div>
+      <ProfileForm initialValues={profileDto} />
     </div>
   );
 }

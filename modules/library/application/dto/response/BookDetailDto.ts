@@ -14,6 +14,10 @@ export interface BookDetailDto {
   description: string | null;
   publishedDate: string | null;
   pageCount: number | null;
+  publisher?: string | null;
+  isbn?: string | null;
+  edition?: string | null;
+  language?: string | null;
   isTextbook: boolean;
   isPublicDomain: boolean;
 }

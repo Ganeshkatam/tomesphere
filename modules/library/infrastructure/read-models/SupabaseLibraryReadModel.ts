@@ -22,7 +22,6 @@ export class SupabaseLibraryReadModel implements LibraryReadModel {
       viewId,
       sortBy = "date_added",
       sortDirection = "desc",
-      filters = {},
       page = 1,
       pageSize = 24,
     } = params;
@@ -31,11 +30,24 @@ export class SupabaseLibraryReadModel implements LibraryReadModel {
       .from("library_books")
       .select(
         `
-        *,
-        books:book_id (
-          id, title, cover_image_url, cover_url, pdf_url, created_at,
-          book_authors(authors(id, name)),
-          shelf_items(shelf_id)
+        id,
+        user_id,
+        book_id,
+        status,
+        queue_order,
+        added_at,
+        updated_at,
+        books (
+          id,
+          title,
+          cover_url,
+          created_at,
+          book_authors (
+            authors (
+              id,
+              name
+            )
+          )
         )
       `,
         { count: "exact" },
@@ -44,12 +56,9 @@ export class SupabaseLibraryReadModel implements LibraryReadModel {
 
     // View Filtering
     if (viewType === "status") {
-      query = query.eq("status", viewId as any);
+      const dbStatus = viewId === "reading" ? "currently_reading" : viewId;
+      query = query.eq("status", dbStatus as any);
     } else if (viewType === "collection") {
-      // For collection, we need to ensure the book is in the shelf
-      // Postgrest doesn't easily allow filtering by deep nested relation existence,
-      // so we might need a different approach or fetch IDs first.
-      // Better approach: Join shelf_items
       const { data: shelfItems } = await this.supabase
         .from("shelf_items")
         .select("book_id")
@@ -62,18 +71,12 @@ export class SupabaseLibraryReadModel implements LibraryReadModel {
       query = query.in("book_id", bookIds);
     }
 
-    // Metadata Filtering (client-side usually handles small things, but we can do some here if needed)
-    // We will leave advanced filtering for later or do basic in-memory for MVP if needed,
-    // but the task says "Paginated, filtered, sorted".
-
     // Sorting
     if (sortBy === "date_added") {
       query = query.order("added_at", { ascending: sortDirection === "asc" });
-    } else if (sortBy === "progress") {
-      // If we had progress in library_books
     } else if (sortBy === "title") {
-      // Requires joining books for order, which postgrest can do with referenced tables
-      query = query.order("books(title)", {
+      query = query.order("title", {
+        referencedTable: "books",
         ascending: sortDirection === "asc",
       });
     }
@@ -118,8 +121,7 @@ export class SupabaseLibraryReadModel implements LibraryReadModel {
       totalBooks: libraryData?.length || 0,
       totalCollections: collectionsCount || 0,
       currentlyReading:
-        libraryData?.filter((d) => d.status === "currently_reading").length ||
-        0,
+        libraryData?.filter((d) => d.status === "currently_reading").length || 0,
       wantToRead:
         libraryData?.filter((d) => d.status === "want_to_read").length || 0,
       finished: libraryData?.filter((d) => d.status === "finished").length || 0,
@@ -133,32 +135,29 @@ export class SupabaseLibraryReadModel implements LibraryReadModel {
   }
 
   private mapToBookDto(row: any): LibraryBookDto {
-    const book = row.books;
+    const book = row.books || {};
 
     // Extract authors
     const authors = (book.book_authors || [])
       .map((ba: any) => ba.authors)
       .filter(Boolean)
-      .map((a: any) => ({ id: a.id, name: a.name }));
-
-    // Extract collections this book belongs to
-    const collections = (book.shelf_items || []).map((si: any) => si.shelf_id);
+      .map((a: any) => ({ id: a.id || "", name: a.name || "" }));
 
     return {
       bookId: row.book_id,
       title: book.title || "Unknown Title",
-      coverUrl: book.cover_image_url || book.cover_url || null,
+      coverUrl: book.cover_url ? book.cover_url.replace(/ /g, "%20") : null,
       authors: authors,
-      progress: 0, // Would come from reading_sessions
+      progress: 0,
       status: (row.status === "currently_reading"
         ? "reading"
         : row.status || "want_to_read") as any,
-      collections: collections,
+      collections: [],
       dateAdded: row.added_at || new Date().toISOString(),
       lastOpened: row.updated_at || null,
       downloaded: false,
       favorite: false,
-      format: book.pdf_url ? "pdf" : "epub", // Very basic heuristic
+      format: "pdf",
     };
   }
 

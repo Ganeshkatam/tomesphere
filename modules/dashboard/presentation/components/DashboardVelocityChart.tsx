@@ -1,0 +1,182 @@
+"use client";
+
+import React from "react";
+import { WeeklyActivityDayDto } from "../../application/dto/DashboardPageDto";
+import { BarChart3, Sun, Sunset, Moon, Sunrise, Calendar } from "lucide-react";
+
+interface DashboardVelocityChartProps {
+  weeklyActivity: WeeklyActivityDayDto[];
+  timeOfDayBreakdown: {
+    morningPercent: number;
+    afternoonPercent: number;
+    eveningPercent: number;
+    nightPercent: number;
+  };
+}
+
+export default function DashboardVelocityChart({
+  weeklyActivity,
+  timeOfDayBreakdown,
+}: DashboardVelocityChartProps) {
+  const maxMinutes = Math.max(45, ...weeklyActivity.map((d) => d.minutes));
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* 1. 7-Day Velocity Chart */}
+      <div className="lg:col-span-2 p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+          <div>
+            <div className="flex items-center gap-2">
+              <BarChart3 size={18} className="text-indigo-600 dark:text-indigo-400" />
+              <h3 className="text-lg font-display font-extrabold text-slate-900 dark:text-white">
+                Reading Velocity & Habit Cadence
+              </h3>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+              Daily minutes read over the trailing 7 days vs 30 min daily target
+            </p>
+          </div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/60 text-xs font-bold text-indigo-700 dark:text-indigo-300 self-start sm:self-auto">
+            <Calendar size={12} />
+            <span>Past 7 Days</span>
+          </div>
+        </div>
+
+        {/* Bar Visualizer */}
+        <div className="pt-4 pb-2">
+          <div className="h-48 flex items-end justify-between gap-2 sm:gap-4 px-2">
+            {weeklyActivity.map((day, idx) => {
+              const heightPercent = Math.min(100, Math.max(12, Math.round((day.minutes / maxMinutes) * 100)));
+              const isTargetMet = day.minutes >= day.targetMinutes;
+
+              return (
+                <div key={idx} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end">
+                  {/* Tooltip on hover */}
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 dark:bg-slate-800 text-white text-[11px] font-bold py-1 px-2 rounded-lg shadow-lg pointer-events-none mb-1 whitespace-nowrap z-10">
+                    {day.minutes} mins ({day.pages} pgs)
+                  </div>
+
+                  {/* Bar */}
+                  <div className="w-full max-w-[42px] bg-slate-100 dark:bg-slate-800/80 rounded-xl overflow-hidden p-1 flex flex-col justify-end h-full">
+                    <div
+                      className={`w-full rounded-lg transition-all duration-500 group-hover:brightness-110 ${
+                        isTargetMet
+                          ? "bg-gradient-to-t from-indigo-600 via-indigo-500 to-purple-500 shadow-xs shadow-indigo-500/20"
+                          : "bg-gradient-to-t from-slate-400 to-slate-300 dark:from-slate-700 dark:to-slate-600"
+                      }`}
+                      style={{ height: `${heightPercent}%` }}
+                    />
+                  </div>
+
+                  {/* Day label */}
+                  <span className="text-xs font-bold text-slate-600 dark:text-slate-400 mt-1">
+                    {day.day}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Goal Line Reference */}
+          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-indigo-500 inline-block" />
+              <span>Target Achieved (30+ min)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-slate-400 dark:bg-slate-600 inline-block" />
+              <span>Moderate Session</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Diurnal Reading Time Distribution */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+        <div>
+          <h3 className="text-lg font-display font-extrabold text-slate-900 dark:text-white mb-1">
+            Diurnal Rhythm
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-6">
+            Peak focus distribution across daytime windows
+          </p>
+
+          <div className="space-y-4">
+            {/* Morning */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-bold">
+                <div className="flex items-center gap-1.5 text-amber-500">
+                  <Sunrise size={14} />
+                  <span>Morning (6am – 12pm)</span>
+                </div>
+                <span className="text-slate-700 dark:text-slate-300">{timeOfDayBreakdown.morningPercent}%</span>
+              </div>
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-amber-400 h-full rounded-full"
+                  style={{ width: `${timeOfDayBreakdown.morningPercent}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Afternoon */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-bold">
+                <div className="flex items-center gap-1.5 text-cyan-500">
+                  <Sun size={14} />
+                  <span>Afternoon (12pm – 5pm)</span>
+                </div>
+                <span className="text-slate-700 dark:text-slate-300">{timeOfDayBreakdown.afternoonPercent}%</span>
+              </div>
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-cyan-400 h-full rounded-full"
+                  style={{ width: `${timeOfDayBreakdown.afternoonPercent}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Evening */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-bold">
+                <div className="flex items-center gap-1.5 text-indigo-500">
+                  <Sunset size={14} />
+                  <span>Evening (5pm – 9pm)</span>
+                </div>
+                <span className="text-slate-700 dark:text-slate-300">{timeOfDayBreakdown.eveningPercent}%</span>
+              </div>
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-indigo-500 h-full rounded-full"
+                  style={{ width: `${timeOfDayBreakdown.eveningPercent}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Night */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-bold">
+                <div className="flex items-center gap-1.5 text-purple-400">
+                  <Moon size={14} />
+                  <span>Night (9pm – 6am)</span>
+                </div>
+                <span className="text-slate-700 dark:text-slate-300">{timeOfDayBreakdown.nightPercent}%</span>
+              </div>
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-purple-400 h-full rounded-full"
+                  style={{ width: `${timeOfDayBreakdown.nightPercent}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400">
+          <p className="font-semibold text-slate-800 dark:text-slate-200 mb-0.5">Primary Insight</p>
+          You achieve your highest focus density during <strong className="text-indigo-600 dark:text-indigo-400">Afternoon & Evening</strong> sessions.
+        </div>
+      </div>
+    </div>
+  );
+}

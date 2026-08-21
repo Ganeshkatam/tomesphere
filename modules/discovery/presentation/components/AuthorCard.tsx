@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { User } from "lucide-react";
+import Image from "next/image";
+import { User, Feather } from "lucide-react";
 import { AuthorCardDto } from "../../application/dto/AuthorCardDto";
 
 interface AuthorCardProps {
@@ -10,26 +13,28 @@ export function AuthorCard({ author }: AuthorCardProps) {
   return (
     <Link
       href={`/discover/authors/${author.slug}`}
-      className="group flex flex-col items-center text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface rounded-lg p-2"
+      className="group flex flex-col items-center text-center p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700/80 hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
     >
-      <div className="relative w-24 h-24 md:w-32 md:h-32 mb-4 bg-surface-variant/30 rounded-full shadow-sm overflow-hidden transition-transform duration-200 group-hover:-translate-y-[2px] group-hover:shadow-md flex items-center justify-center">
+      <div className="relative w-20 h-20 sm:w-24 sm:h-24 mb-3 rounded-2xl overflow-hidden bg-indigo-50 dark:bg-indigo-950/60 shadow-sm border border-slate-200/60 dark:border-slate-800 flex items-center justify-center group-hover:scale-105 transition-transform">
         {author.imageUrl ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={author.imageUrl}
-            alt={`Portrait of ${author.name}`}
-            className="w-full h-full object-cover"
-            loading="lazy"
+          <Image
+            src={author.imageUrl.replace(/ /g, "%20")}
+            alt={author.name}
+            fill
+            className="object-cover"
+            sizes="96px"
           />
         ) : (
-          <User className="w-10 h-10 md:w-12 md:h-12 text-on-surface-variant/50" />
+          <Feather className="w-8 h-8 text-indigo-500" />
         )}
       </div>
-      <h4 className="font-serif text-title-md text-on-surface line-clamp-2 transition-colors duration-200 group-hover:text-primary">
+
+      <h4 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
         {author.name}
       </h4>
-      <p className="text-body-sm text-on-surface-variant mt-1">
-        {author.bookCount} {author.bookCount === 1 ? 'book' : 'books'}
+
+      <p className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5">
+        {author.bookCount} {author.bookCount === 1 ? "work" : "works"}
       </p>
     </Link>
   );

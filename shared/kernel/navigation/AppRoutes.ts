@@ -1,9 +1,9 @@
 export const AppRoutes = {
   home: "/",
   me: "/me",
+  dashboard: "/dashboard",
   discover: "/discover",
-  library: "/library",
-  // admin: '/admin',
+  library: "/me/mylibrary",
 } as const;
 
 export type AppRoute = (typeof AppRoutes)[keyof typeof AppRoutes];

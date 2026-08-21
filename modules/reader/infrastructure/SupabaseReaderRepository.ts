@@ -21,7 +21,6 @@ export class SupabaseReaderRepository implements ReaderRepository {
         Math.floor(session.totalDurationSeconds / 60) || null,
       started_at: session.startedAt.toISOString(),
       finished_at: session.finishedAt?.toISOString() || null,
-      total_pages: null,
     });
 
     if (error) {

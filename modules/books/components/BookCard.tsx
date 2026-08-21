@@ -40,7 +40,11 @@ export default function BookCard({ book, onAddToList, priority = false }: BookCa
   const cardRef = useRef<HTMLDivElement>(null);
 
   const authorNames = useMemo(() => {
-    return book.authors?.map((a) => a.name).join(", ") || "Public Domain";
+    if (!book.authors || book.authors.length === 0) return "TomeSphere Library";
+    const names = book.authors
+      .map((a: any) => (typeof a === "string" ? a : a?.name))
+      .filter(Boolean);
+    return names.length > 0 ? names.join(", ") : "TomeSphere Library";
   }, [book.authors]);
 
   const displayDescription = useMemo(() => {
@@ -51,7 +55,12 @@ export default function BookCard({ book, onAddToList, priority = false }: BookCa
     ? new Date(book.publishedDate).getFullYear()
     : "2025");
 
-  const genreName = book.genres?.[0]?.name || "Literature";
+  const genreName = useMemo(() => {
+    const firstGenre = book.genres?.[0];
+    if (!firstGenre) return "Digital Archive";
+    const name = typeof firstGenre === "string" ? firstGenre : (firstGenre as any)?.name;
+    return name || "Digital Archive";
+  }, [book.genres]);
   const language = book.language || "English";
 
   const handleMouseEnter = () => {

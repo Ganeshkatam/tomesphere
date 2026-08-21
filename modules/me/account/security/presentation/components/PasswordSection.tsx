@@ -19,12 +19,12 @@ export function PasswordSection() {
     }
 
     startTransition(async () => {
-      const res = await updatePasswordAction(formData);
+      const res = await updatePasswordAction({ password: formData.newPassword });
       if (res.success) {
         showSuccess("Password updated successfully");
         setFormData({ newPassword: "", confirmPassword: "" });
       } else {
-        showError(res.error || "Failed to update password");
+        showError(res.error?.message || "Failed to update password");
       }
     });
   };

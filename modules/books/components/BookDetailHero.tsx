@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { BookDetailDto } from "@/modules/library/application/dto/response/BookDetailDto";
 import { BookViewerContextDto } from "@/modules/books/application/queries/GetBookViewerContext/handler";
+import { AuthorBooksDto } from "@/modules/books/application/queries/GetBooksByAuthor/handler";
 import { generateSimpleDescription } from "@/modules/storage/services/pdf-description-generator";
 import { addBookToLibraryAction } from "@/modules/library/presentation/actions/library";
 import BookCard from "@/modules/books/components/BookCard";
@@ -35,19 +36,39 @@ interface BookDetailHeroProps {
   book: BookDetailDto;
   viewer?: BookViewerContextDto;
   relatedBooks?: any[];
+  authorWorks?: AuthorBooksDto | null;
 }
 
-export function BookDetailHero({ book, viewer, relatedBooks = [] }: BookDetailHeroProps) {
+export function BookDetailHero({
+  book,
+  viewer,
+  relatedBooks = [],
+  authorWorks,
+}: BookDetailHeroProps) {
   const [inLibrary, setInLibrary] = useState(viewer?.libraryStatus === "in_library");
   const [isAdding, setIsAdding] = useState(false);
   const [copied, setCopied] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const authorScrollRef = useRef<HTMLDivElement>(null);
 
-  const authorNames = book.authors?.map((a) => a.name).join(", ") || "Public Domain";
+  const authorNames = useMemo(() => {
+    if (!book.authors || book.authors.length === 0) return "TomeSphere Library";
+    const names = book.authors
+      .map((a: any) => (typeof a === "string" ? a : a?.name))
+      .filter(Boolean);
+    return names.length > 0 ? names.join(", ") : "TomeSphere Library";
+  }, [book.authors]);
+
   const year = book.publishedDate
     ? new Date(book.publishedDate).getFullYear()
     : "Historic Archive";
-  const primaryGenre = book.genres?.[0]?.name || "Literature";
+
+  const primaryGenre = useMemo(() => {
+    const g = book.genres?.[0];
+    if (!g) return "Literature";
+    return typeof g === "string" ? g : (g as any)?.name || "Literature";
+  }, [book.genres]);
+
   const rawDescription =
     book.description || generateSimpleDescription(book.title, authorNames);
 
@@ -97,14 +118,25 @@ export function BookDetailHero({ book, viewer, relatedBooks = [] }: BookDetailHe
   };
 
   const handleShare = async () => {
-    if (typeof window !== "undefined") {
+    if (typeof window === "undefined") return;
+    if (navigator.share) {
       try {
-        await navigator.clipboard.writeText(window.location.href);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } catch {
-        // clipboard unavailable
+        await navigator.share({
+          title: book.title,
+          text: `Read "${book.title}" on TomeSphere Digital Archive`,
+          url: window.location.href,
+        });
+        return;
+      } catch (err: any) {
+        if (err?.name === "AbortError") return;
       }
+    }
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      // clipboard fallback
     }
   };
 
@@ -120,18 +152,30 @@ export function BookDetailHero({ book, viewer, relatedBooks = [] }: BookDetailHe
     }
   };
 
+  const scrollAuthorLeft = () => {
+    if (authorScrollRef.current) {
+      authorScrollRef.current.scrollBy({ left: -400, behavior: "smooth" });
+    }
+  };
+
+  const scrollAuthorRight = () => {
+    if (authorScrollRef.current) {
+      authorScrollRef.current.scrollBy({ left: 400, behavior: "smooth" });
+    }
+  };
+
   return (
     <div className="w-full space-y-10 sm:space-y-14">
-      
+
       {/* 1. Breadcrumb Navigation Bar */}
       <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
         <div className="flex items-center gap-2">
           <Link
-            href="/me"
+            href="/me/mylibrary"
             className="inline-flex items-center gap-1 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
             <ArrowLeft size={14} />
-            <span>Library</span>
+            <span>My Library</span>
           </Link>
           <span>/</span>
           <span className="text-slate-700 dark:text-slate-300 font-bold">{primaryGenre}</span>
@@ -147,7 +191,7 @@ export function BookDetailHero({ book, viewer, relatedBooks = [] }: BookDetailHe
 
       {/* 2. Cinematic Hero Spotlight (Cover on Left, Title & Direct Actions on Right) */}
       <div className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xl dark:shadow-2xl p-6 sm:p-8 lg:p-10 transition-colors">
-        
+
         {/* Subtle Ambient Blurred Backdrop Glow */}
         {book.coverUrl && (
           <div className="absolute right-0 top-0 w-full sm:w-2/3 h-full opacity-10 dark:opacity-20 blur-3xl pointer-events-none overflow-hidden">
@@ -162,7 +206,7 @@ export function BookDetailHero({ book, viewer, relatedBooks = [] }: BookDetailHe
         )}
 
         <div className="relative z-10 flex flex-col md:flex-row gap-8 lg:gap-12 items-center md:items-start">
-          
+
           {/* Left: 3D Hardcover Cover Showcase */}
           <div className="w-[180px] min-[400px]:w-[210px] sm:w-[240px] md:w-[260px] lg:w-[280px] shrink-0">
             <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.25)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.9)] border border-slate-200 dark:border-slate-700/80 group">
@@ -187,25 +231,44 @@ export function BookDetailHero({ book, viewer, relatedBooks = [] }: BookDetailHe
 
           {/* Right: Title, Author, Badges, Primary Action CTAs & Key Stats */}
           <div className="flex-1 min-w-0 flex flex-col justify-between space-y-6 text-left w-full">
-            
+
             {/* Header Badges & Title */}
             <div>
               <div className="flex items-center gap-2 flex-wrap mb-3">
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
-                  <Sparkles size={12} />
-                  <span>{primaryGenre}</span>
-                </span>
-                {book.genres?.slice(1, 3).map((g: any, idx: number) => (
-                  <span
-                    key={g.id || g.name || `genre-${idx}`}
-                    className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold border border-slate-200 dark:border-slate-700"
-                  >
-                    {typeof g === "string" ? g : g.name}
+                {book.genres && book.genres.length > 0 ? (
+                  book.genres.map((g: any, idx: number) => {
+                    const name = typeof g === "string" ? g : g.name;
+                    if (!name) return null;
+
+                    const colorThemes = [
+                      "bg-indigo-500/10 dark:bg-indigo-500/20 border-indigo-500/30 text-indigo-700 dark:text-indigo-300",
+                      "bg-purple-500/10 dark:bg-purple-500/20 border-purple-500/30 text-purple-700 dark:text-purple-300",
+                      "bg-cyan-500/10 dark:bg-cyan-500/20 border-cyan-500/30 text-cyan-700 dark:text-cyan-300",
+                      "bg-emerald-500/10 dark:bg-emerald-500/20 border-emerald-500/30 text-emerald-700 dark:text-emerald-300",
+                      "bg-amber-500/10 dark:bg-amber-500/20 border-amber-500/30 text-amber-700 dark:text-amber-300",
+                    ];
+                    const theme = colorThemes[idx % colorThemes.length];
+
+                    return (
+                      <span
+                        key={g.id || name || `genre-${idx}`}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-wider shadow-xs backdrop-blur-xs transition-colors ${theme}`}
+                      >
+                        {idx === 0 ? (
+                          <Sparkles size={12} className="shrink-0" />
+                        ) : (
+                          <span className="w-1.5 h-1.5 rounded-full bg-current opacity-75 shrink-0" />
+                        )}
+                        <span>{name}</span>
+                      </span>
+                    );
+                  })
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-wider">
+                    <Sparkles size={12} />
+                    <span>{primaryGenre}</span>
                   </span>
-                ))}
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-700 dark:text-amber-300 text-xs font-bold">
-                  Public Domain
-                </span>
+                )}
               </div>
 
               <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15] mb-2">
@@ -230,11 +293,10 @@ export function BookDetailHero({ book, viewer, relatedBooks = [] }: BookDetailHe
               <button
                 onClick={handleToggleLibrary}
                 disabled={isAdding}
-                className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${
-                  inLibrary
+                className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${inLibrary
                     ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
                     : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
-                }`}
+                  }`}
               >
                 {inLibrary ? (
                   <>
@@ -251,13 +313,23 @@ export function BookDetailHero({ book, viewer, relatedBooks = [] }: BookDetailHe
 
               <button
                 onClick={handleShare}
-                className="h-12 sm:h-13 px-4 sm:px-5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
-                title="Share link"
+                className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${copied
+                    ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
+                    : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
+                  }`}
+                title="Share this book"
               >
-                <Share2 size={16} />
-                <span className="text-xs font-semibold">
-                  {copied ? "Copied!" : "Share"}
-                </span>
+                {copied ? (
+                  <>
+                    <Check size={16} className="text-emerald-600 dark:text-emerald-400" />
+                    <span>Link Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 size={16} className="text-slate-600 dark:text-slate-300" />
+                    <span>Share</span>
+                  </>
+                )}
               </button>
             </div>
 
@@ -287,7 +359,14 @@ export function BookDetailHero({ book, viewer, relatedBooks = [] }: BookDetailHe
                   <span>Est. Read</span>
                 </div>
                 <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                  {book.pageCount ? `${Math.round(book.pageCount * 1.5)} mins` : "~4 hours"}
+                  {(() => {
+                    if (!book.pageCount || book.pageCount <= 0) return "~4 hours";
+                    const totalMinutes = Math.round(book.pageCount * 1.5);
+                    if (totalMinutes < 60) return `~${totalMinutes} mins`;
+                    const hours = Math.floor(totalMinutes / 60);
+                    const mins = totalMinutes % 60;
+                    return mins > 0 ? `~${hours}h ${mins}m` : `~${hours} hours`;
+                  })()}
                 </span>
               </div>
 
@@ -308,10 +387,10 @@ export function BookDetailHero({ book, viewer, relatedBooks = [] }: BookDetailHe
 
       {/* 3. Two-Column Detailed Content Body */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-        
+
         {/* Left / Main Column: About this Work & Structured Learning Stages */}
         <div className="lg:col-span-8 space-y-8">
-          
+
           {/* Archival Overview */}
           <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
             <div className="flex items-center gap-2.5 border-b border-slate-200/80 dark:border-slate-800 pb-4">
@@ -382,30 +461,42 @@ export function BookDetailHero({ book, viewer, relatedBooks = [] }: BookDetailHe
 
         {/* Right / Sidebar Column: Archival Provenance & Integrity Specs */}
         <div className="lg:col-span-4 space-y-6">
-          
-          {/* Provenance Card */}
+
+          {/* Provenance & Publication Card */}
           <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
               <Award size={16} className="text-amber-500" />
-              <span>Archival Specifications</span>
+              <span>Publication & Archival Details</span>
             </h3>
 
             <div className="space-y-3 text-xs">
               <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400">Archive Origin</span>
-                <span className="font-bold text-slate-800 dark:text-slate-200">TomeSphere Open Library</span>
+                <span className="text-slate-500 dark:text-slate-400">Publisher</span>
+                <span className="font-bold text-slate-800 dark:text-slate-200">{book.publisher || "TomeSphere Open Library"}</span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400">Licensing</span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">Public Domain / CC0</span>
+                <span className="text-slate-500 dark:text-slate-400">Release Year</span>
+                <span className="font-bold text-slate-800 dark:text-slate-200">{year}</span>
               </div>
+              {book.edition && (
+                <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-slate-500 dark:text-slate-400">Edition</span>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">{book.edition}</span>
+                </div>
+              )}
+              {book.isbn && (
+                <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-slate-500 dark:text-slate-400">ISBN</span>
+                  <span className="font-mono text-slate-700 dark:text-slate-300">{book.isbn}</span>
+                </div>
+              )}
               <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-slate-500 dark:text-slate-400">Digital Format</span>
                 <span className="font-bold text-slate-800 dark:text-slate-200">Unabridged High-Res PDF</span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400">Reader Compatibility</span>
-                <span className="font-bold text-slate-800 dark:text-slate-200">Desktop, Tablet, Mobile</span>
+                <span className="text-slate-500 dark:text-slate-400">Language</span>
+                <span className="font-bold text-slate-800 dark:text-slate-200">{book.language || "English"}</span>
               </div>
               <div className="flex items-center justify-between py-2">
                 <span className="text-slate-500 dark:text-slate-400">Annotation Support</span>
@@ -429,7 +520,69 @@ export function BookDetailHero({ book, viewer, relatedBooks = [] }: BookDetailHe
 
       </div>
 
-      {/* 4. Related Works Shelf */}
+      {/* 4. More by This Author Shelf */}
+      {authorWorks && authorWorks.books.length > 0 && (
+        <section className="space-y-4 pt-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-0.5">
+                <Sparkles size={13} />
+                <span>Author Bibliography</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
+                More by {authorWorks.authorName}
+              </h2>
+            </div>
+
+            {/* Scroll navigation arrows */}
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={scrollAuthorLeft}
+                className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center shadow-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                title="Scroll Left"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                onClick={scrollAuthorRight}
+                className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center shadow-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                title="Scroll Right"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+
+          <div
+            ref={authorScrollRef}
+            className="flex gap-4 sm:gap-5 overflow-x-auto py-2 px-1 no-scrollbar scroll-smooth snap-x snap-mandatory"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {authorWorks.books.map((item: any, idx: number) => (
+              <div
+                key={item.id || idx}
+                className="w-[140px] min-[400px]:w-[160px] sm:w-[190px] md:w-[210px] shrink-0 snap-start"
+              >
+                <BookCard
+                  book={{
+                    id: item.id,
+                    slug: item.slug,
+                    title: item.title,
+                    authors: item.authors || [],
+                    genres: item.genres || [],
+                    coverUrl: item.coverUrl,
+                    publicationYear: item.publicationYear,
+                    publishedDate: item.publishedDate,
+                    isFeatured: item.isFeatured,
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 5. Related Works Shelf */}
       {relatedBooks && relatedBooks.length > 0 && (
         <section className="space-y-4 pt-4">
           <div className="flex items-center justify-between">
