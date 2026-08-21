@@ -102,7 +102,6 @@ COMMENT ON COLUMN public.books.series IS 'Book series title if part of a multi-v
 COMMENT ON COLUMN public.books.series_order IS 'Numerical sequence position within the series.';
 COMMENT ON COLUMN public.books.is_textbook IS 'Flag indicating whether this is an academic textbook.';
 COMMENT ON COLUMN public.books.edition IS 'Edition label (e.g. 1st Edition, Revised 2026).';
-COMMENT ON COLUMN public.books.total_pages IS 'Total verified page count.';
 COMMENT ON COLUMN public.books.fts IS 'PostgreSQL full-text search vector generated from title and description.';
 COMMENT ON COLUMN public.books.embedding IS 'Vector embedding representation for semantic similarity search.';
 COMMENT ON COLUMN public.books.hash IS 'Content hash for deduplication and integrity.';
@@ -346,7 +345,6 @@ COMMENT ON COLUMN public.reading_sessions.id IS 'Primary key identifier for the 
 COMMENT ON COLUMN public.reading_sessions.user_id IS 'Foreign key referencing the user.';
 COMMENT ON COLUMN public.reading_sessions.book_id IS 'Foreign key referencing the book read.';
 COMMENT ON COLUMN public.reading_sessions.current_page IS 'Highest page reached during this session.';
-COMMENT ON COLUMN public.reading_sessions.total_pages IS 'Total page count of the book being read.';
 COMMENT ON COLUMN public.reading_sessions.percentage IS 'Calculated percentage completion (0.0 to 100.0).';
 COMMENT ON COLUMN public.reading_sessions.started_at IS 'Timestamp when the reading session started.';
 COMMENT ON COLUMN public.reading_sessions.last_read_at IS 'Timestamp of the latest interaction in this session.';

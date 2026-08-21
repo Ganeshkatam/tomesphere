@@ -14,6 +14,10 @@ export async function getBookDetail(id: string): Promise<BookDetailDto | null> {
       description,
       release_date,
       pages,
+      publisher,
+      isbn,
+      edition,
+      language,
       is_textbook,
       book_authors ( authors ( name ) ),
       book_genres ( genres ( name ) )
@@ -38,6 +42,10 @@ export async function getBookDetail(id: string): Promise<BookDetailDto | null> {
     subjects: [], // Not consumed by UI
     pageCount: raw.pages,
     publishedDate: raw.release_date,
+    publisher: raw.publisher || null,
+    isbn: raw.isbn || null,
+    edition: raw.edition || null,
+    language: raw.language || "English",
     isTextbook: raw.is_textbook || false,
     isPublicDomain: false, // Could compute this from release_date if needed
   };

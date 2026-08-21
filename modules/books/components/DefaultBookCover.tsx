@@ -17,12 +17,12 @@ export default function DefaultBookCover({
   className = "",
 }: DefaultBookCoverProps) {
   const authorName = useMemo(() => {
-    if (!authors) return "Public Domain";
+    if (!authors) return "TomeSphere Library";
     if (typeof authors === "string") return authors;
     if (Array.isArray(authors)) {
-      return authors.map((a: any) => (typeof a === "string" ? a : a.name)).join(", ") || "Public Domain";
+      return authors.map((a: any) => (typeof a === "string" ? a : a?.name)).filter(Boolean).join(", ") || "TomeSphere Library";
     }
-    return "Public Domain";
+    return "TomeSphere Library";
   }, [authors]);
 
   const genreLabel = useMemo(() => {

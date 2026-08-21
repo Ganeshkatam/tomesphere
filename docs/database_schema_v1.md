@@ -71,7 +71,7 @@
 *(For brevity, standard UUID id, created_at, updated_at are omitted unless noteworthy).*
 
 ### Catalog Domain
-- **`books`**: `title`, `description`, `release_date`, `cover_url`, `isbn`, `pages`, `publisher`, `language`, `is_featured`, `is_textbook`, `edition`, `total_pages`, `hash`.
+- **`books`**: `title`, `description`, `release_date`, `cover_url`, `isbn`, `pages`, `publisher`, `language`, `is_featured`, `is_textbook`, `edition`, `pages`, `hash`.
 - **`authors`**: `name`, `slug`, `bio`, `avatar_url`.
 - **`publishers`**: `name`, `slug`, `website`.
 - **`series`**: `name`, `slug`, `description`.
@@ -93,7 +93,7 @@
 - **`shelf_items`**: `shelf_id`, `book_id`, `position`, `added_at`.
 
 ### Reader Domain
-- **`reading_sessions`**: `user_id`, `book_id`, `current_page`, `total_pages`, `percentage`, `started_at`, `last_read_at`, `finished_at`, `reading_time_minutes`.
+- **`reading_sessions`**: `user_id`, `book_id`, `current_page`, `pages`, `percentage`, `started_at`, `last_read_at`, `finished_at`, `reading_time_minutes`.
 - **`reading_progress`**: `user_id`, `book_id`, `location_anchor` (JSONB), `last_read_at`.
 - **`bookmarks`**: `user_id`, `book_id`, `page_number`, `label`.
 - **`highlights`**: `user_id`, `book_id`, `location_anchor` (JSONB), `selected_text`, `color`.

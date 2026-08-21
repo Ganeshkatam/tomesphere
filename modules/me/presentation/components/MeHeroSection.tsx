@@ -88,7 +88,7 @@ export default function MeHeroSection({ promise }: MeHeroSectionProps) {
               </h2>
 
               <p className="text-sm sm:text-base text-indigo-300 font-medium mb-3">
-                by {spotlightBook.authors?.map((a: any) => a.name).join(", ") || "Public Domain"}
+                by {spotlightBook.authors?.map((a: any) => (typeof a === "string" ? a : a?.name)).filter(Boolean).join(", ") || "TomeSphere Library"}
               </p>
 
               {spotlightBook.genres && spotlightBook.genres.length > 0 && (

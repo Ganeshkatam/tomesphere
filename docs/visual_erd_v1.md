@@ -146,7 +146,7 @@ erDiagram
         text series
         numeric series_order
         text title
-        numeric total_pages
+        numeric pages
         text updated_at
         numeric view_count
     }
@@ -353,7 +353,7 @@ erDiagram
         numeric percentage
         numeric reading_time_minutes
         text started_at
-        numeric total_pages
+        numeric pages
         text user_id FK
     }
     search_history {
