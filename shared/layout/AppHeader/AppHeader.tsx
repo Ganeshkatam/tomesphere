@@ -241,7 +241,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
         <div
-          className={`md:hidden absolute top-full left-0 w-full border-b shadow-2xl backdrop-blur-xl flex flex-col origin-top animate-in slide-in-from-top-2 fade-in duration-200 ${
+          className={`md:hidden absolute top-[calc(100%+0.5rem)] inset-x-4 sm:inset-x-8 border rounded-2xl shadow-2xl backdrop-blur-xl flex flex-col origin-top animate-in slide-in-from-top-2 fade-in duration-200 overflow-hidden ${
             isDark ? "bg-slate-950/85 border-slate-800/80 shadow-black/50" : "bg-white/90 border-slate-200/80 shadow-slate-200/50"
           }`}
         >
