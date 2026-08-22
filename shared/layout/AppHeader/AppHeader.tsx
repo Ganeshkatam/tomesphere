@@ -273,97 +273,102 @@ export function AppHeader({ className = "", variant = "application", user }: App
               </div>
 
             {variant === "application" && (
-              <>
+              <div className="flex flex-col gap-1.5 mt-2">
                 <Link
                   href="/me"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-base font-semibold px-4 py-3 rounded-xl transition-all ${pathname === "/me"
-                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                  className={`group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 active:scale-[0.98] ${pathname === "/me"
+                    ? "bg-indigo-600/10 text-indigo-600 dark:text-indigo-400"
+                    : isDark ? "text-slate-300 hover:text-white hover:bg-slate-800/60" : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
-                  Home
+                  <div className={`p-2 rounded-xl transition-colors ${pathname === "/me" ? "bg-indigo-600/20" : isDark ? "bg-slate-800/80 group-hover:bg-indigo-500/20 group-hover:text-indigo-400" : "bg-slate-200/60 group-hover:bg-indigo-100 group-hover:text-indigo-600"}`}>
+                    <BookOpen size={20} />
+                  </div>
+                  <span className="text-[17px] font-semibold">Home</span>
                 </Link>
                 <Link
                   href="/discover"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-base font-semibold px-4 py-3 rounded-xl transition-all ${pathname && pathname.startsWith("/discover")
-                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                  className={`group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 active:scale-[0.98] ${pathname?.startsWith("/discover")
+                    ? "bg-indigo-600/10 text-indigo-600 dark:text-indigo-400"
+                    : isDark ? "text-slate-300 hover:text-white hover:bg-slate-800/60" : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
-                  Discover
+                  <div className={`p-2 rounded-xl transition-colors ${pathname?.startsWith("/discover") ? "bg-indigo-600/20" : isDark ? "bg-slate-800/80 group-hover:bg-indigo-500/20 group-hover:text-indigo-400" : "bg-slate-200/60 group-hover:bg-indigo-100 group-hover:text-indigo-600"}`}>
+                    <Search size={20} />
+                  </div>
+                  <span className="text-[17px] font-semibold">Discover</span>
                 </Link>
                 <Link
                   href="/dashboard"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-base font-semibold px-4 py-3 rounded-xl transition-all ${pathname && pathname.startsWith("/dashboard")
-                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                  className={`group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 active:scale-[0.98] ${pathname?.startsWith("/dashboard")
+                    ? "bg-indigo-600/10 text-indigo-600 dark:text-indigo-400"
+                    : isDark ? "text-slate-300 hover:text-white hover:bg-slate-800/60" : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
-                  MyDashboard
+                  <div className={`p-2 rounded-xl transition-colors ${pathname?.startsWith("/dashboard") ? "bg-indigo-600/20" : isDark ? "bg-slate-800/80 group-hover:bg-indigo-500/20 group-hover:text-indigo-400" : "bg-slate-200/60 group-hover:bg-indigo-100 group-hover:text-indigo-600"}`}>
+                    <User size={20} />
+                  </div>
+                  <span className="text-[17px] font-semibold">Dashboard</span>
                 </Link>
-                <Link
-                  href="/me/mylibrary"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-base font-semibold px-4 py-3 rounded-xl transition-all ${pathname && pathname.startsWith("/me/mylibrary")
-                    ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
-                    }`}
-                >
-                  Library
-                </Link>
-              </>
+              </div>
             )}
 
             {variant === "marketing" && (
-              <>
+              <div className="flex flex-col gap-1.5 mt-2">
                 <Link
                   href="/discover"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-base font-medium px-4 py-3 rounded-xl transition-all flex items-center gap-3 ${isDark
-                    ? "text-slate-300 hover:text-white hover:bg-white/10"
+                  className={`group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 active:scale-[0.98] ${isDark
+                    ? "text-slate-300 hover:text-white hover:bg-slate-800/60"
                     : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
-                  <Search size={18} className="opacity-70" />
-                  Discover
+                  <div className={`p-2 rounded-xl transition-colors ${isDark ? "bg-slate-800/80 group-hover:bg-indigo-500/20 group-hover:text-indigo-400" : "bg-slate-200/60 group-hover:bg-indigo-100 group-hover:text-indigo-600"}`}>
+                    <Search size={20} />
+                  </div>
+                  <span className="text-[17px] font-semibold">Discover</span>
                 </Link>
                 <Link
                   href="/discover/collections"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-base font-medium px-4 py-3 rounded-xl transition-all flex items-center gap-3 ${isDark
-                    ? "text-slate-300 hover:text-white hover:bg-white/10"
+                  className={`group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 active:scale-[0.98] ${isDark
+                    ? "text-slate-300 hover:text-white hover:bg-slate-800/60"
                     : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
-                  <BookOpen size={18} className="opacity-70" />
-                  Collections
+                  <div className={`p-2 rounded-xl transition-colors ${isDark ? "bg-slate-800/80 group-hover:bg-indigo-500/20 group-hover:text-indigo-400" : "bg-slate-200/60 group-hover:bg-indigo-100 group-hover:text-indigo-600"}`}>
+                    <BookOpen size={20} />
+                  </div>
+                  <span className="text-[17px] font-semibold">Collections</span>
                 </Link>
                 <Link
                   href="/about"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-base font-medium px-4 py-3 rounded-xl transition-all flex items-center gap-3 ${isDark
-                    ? "text-slate-300 hover:text-white hover:bg-white/10"
+                  className={`group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 active:scale-[0.98] ${isDark
+                    ? "text-slate-300 hover:text-white hover:bg-slate-800/60"
                     : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
-                  <User size={18} className="opacity-70" />
-                  About
+                  <div className={`p-2 rounded-xl transition-colors ${isDark ? "bg-slate-800/80 group-hover:bg-indigo-500/20 group-hover:text-indigo-400" : "bg-slate-200/60 group-hover:bg-indigo-100 group-hover:text-indigo-600"}`}>
+                    <User size={20} />
+                  </div>
+                  <span className="text-[17px] font-semibold">About</span>
                 </Link>
-              </>
+              </div>
             )}
 
             {/* Mobile Auth & Utilities */}
             {!user && variant !== "reader" && (
-              <div className="border-t border-slate-100 dark:border-slate-800 mt-2 pt-4 px-4 flex flex-col gap-3">
+              <div className="mt-4 pt-6 flex flex-col gap-3 relative before:absolute before:top-0 before:left-4 before:right-4 before:h-px before:bg-gradient-to-r before:from-transparent before:via-slate-200 dark:before:via-slate-700 before:to-transparent">
                 <Link
                   href="/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-center text-sm font-semibold px-4 py-2.5 rounded-lg border transition-all ${isDark
-                    ? "text-slate-200 border-slate-800 hover:bg-white/10"
-                    : "text-slate-700 border-slate-300 hover:bg-slate-100"
+                  className={`text-center text-base font-bold px-4 py-3.5 rounded-xl transition-all duration-300 active:scale-[0.98] ${isDark
+                    ? "text-slate-200 bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/50"
+                    : "text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200/80"
                     }`}
                 >
                   Sign In
@@ -371,24 +376,25 @@ export function AppHeader({ className = "", variant = "application", user }: App
                 <Link
                   href="/signup"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg shadow-sm transition-all"
+                  className="text-center text-white text-base font-bold px-4 py-3.5 rounded-xl transition-all duration-300 active:scale-[0.98] bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-500/25"
                 >
                   Get Started
                 </Link>
               </div>
             )}
             
-            <div className="border-t border-slate-100 dark:border-slate-800 mt-2 pt-4 px-4 flex items-center justify-between">
-              <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Theme</span>
+            <div className="mt-auto pt-6 pb-2 relative before:absolute before:top-0 before:left-4 before:right-4 before:h-px before:bg-gradient-to-r before:from-transparent before:via-slate-200 dark:before:via-slate-700 before:to-transparent">
               <button
                 onClick={toggleTheme}
-                aria-label="Toggle theme"
-                className={`p-2 rounded-lg transition-colors cursor-pointer flex items-center justify-center ${isDark
-                  ? "text-slate-300 hover:text-white hover:bg-slate-800"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                className={`w-full group flex items-center justify-between px-5 py-4 rounded-2xl transition-all duration-300 active:scale-[0.98] ${isDark
+                  ? "bg-slate-800/30 hover:bg-slate-800/60 text-slate-300"
+                  : "bg-slate-50 hover:bg-slate-100 text-slate-700"
                   }`}
               >
-                {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                <span className="text-[16px] font-semibold">Appearance</span>
+                <div className={`p-2 rounded-full transition-colors ${isDark ? "bg-slate-800 text-amber-400" : "bg-white text-indigo-600 shadow-sm"}`}>
+                  {isDark ? <Sun size={18} fill="currentColor" /> : <Moon size={18} fill="currentColor" />}
+                </div>
               </button>
             </div>
           </div>
