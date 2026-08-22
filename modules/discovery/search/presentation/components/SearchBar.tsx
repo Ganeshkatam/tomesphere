@@ -225,7 +225,7 @@ export function SearchBar({
             }}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ring-0 w-full font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-none appearance-none p-0"
+            className="bg-transparent border-0 border-none outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ring-0 w-full min-w-0 font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-none appearance-none p-0"
           />
 
           {query && (
