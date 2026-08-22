@@ -8,6 +8,17 @@ const nextConfig = {
     "*.ngrok.io",
     "*.ngrok.app",
   ],
+  experimental: {
+    serverActions: {
+      allowedOrigins: [
+        "acorn-daily-overture.ngrok-free.dev",
+        "*.ngrok-free.dev",
+        "*.ngrok-free.app",
+        "*.ngrok.io",
+        "*.ngrok.app",
+      ],
+    },
+  },
   turbopack: {}, // Empty turbopack config to silence warning
   onDemandEntries: {
     // Period (in ms) where the server will keep pages in the buffer
