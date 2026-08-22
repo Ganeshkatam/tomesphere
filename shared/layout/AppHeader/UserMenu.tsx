@@ -15,7 +15,7 @@ import {
   HardDrive,
   Sparkles,
 } from "lucide-react";
-import { supabase } from "@/shared/core/database/client";
+import { logOut } from "@/modules/authentication/presentation/actions/auth";
 
 export interface UserMenuProps {
   user: {
@@ -28,6 +28,7 @@ export interface UserMenuProps {
 export function UserMenu({ user }: UserMenuProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,10 +58,15 @@ export function UserMenu({ user }: UserMenuProps) {
   };
 
   const handleSignOut = async () => {
-    setIsOpen(false);
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
+    try {
+      setIsSigningOut(true);
+      setIsOpen(false);
+      await logOut();
+    } catch (err) {
+      console.error("Failed to sign out:", err);
+    } finally {
+      window.location.href = "/login";
+    }
   };
 
   return (
@@ -188,10 +194,11 @@ export function UserMenu({ user }: UserMenuProps) {
           <div className="px-2 pt-1.5 pb-1">
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+              disabled={isSigningOut}
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer disabled:opacity-50"
             >
               <LogOut size={16} />
-              <span>Sign Out</span>
+              <span>{isSigningOut ? "Signing Out..." : "Sign Out"}</span>
             </button>
           </div>
         </div>

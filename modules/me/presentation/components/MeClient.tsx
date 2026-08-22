@@ -629,7 +629,7 @@ function PersonalizedRecommendationsSection({
       <div className="relative">
         <div
           ref={scrollRef}
-          className="flex items-stretch gap-5 overflow-x-auto pt-3 pb-4 px-1.5 no-scrollbar scroll-smooth snap-x snap-mandatory"
+          className="flex items-start gap-5 overflow-x-auto pt-3 pb-4 px-1.5 no-scrollbar scroll-smooth snap-x snap-mandatory"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {recommendedItems.map((item: any, idx: number) => (
@@ -732,7 +732,7 @@ function PublicSizedShelfSection({
       <div className="relative">
         <div
           ref={scrollRef}
-          className="flex items-stretch gap-5 overflow-x-auto pt-3 pb-4 px-1.5 no-scrollbar scroll-smooth snap-x snap-mandatory"
+          className="flex items-start gap-5 overflow-x-auto pt-3 pb-4 px-1.5 no-scrollbar scroll-smooth snap-x snap-mandatory"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {items.slice(0, 10).map((item: any, idx: number) => (
@@ -885,7 +885,7 @@ function CuratedDisciplineShelfSection({
       <div className="relative">
         <div
           ref={scrollRef}
-          className="flex items-stretch gap-5 overflow-x-auto pt-3 pb-4 px-1.5 no-scrollbar scroll-smooth snap-x snap-mandatory"
+          className="flex items-start gap-5 overflow-x-auto pt-3 pb-4 px-1.5 no-scrollbar scroll-smooth snap-x snap-mandatory"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {disciplineBooks.map((item: any, i: number) => (
