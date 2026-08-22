@@ -18,7 +18,7 @@ export default function AuthTopBar({ showLogo = false }: AuthTopBarProps) {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <div className="absolute top-4 sm:top-6 left-4 sm:left-8 right-4 sm:right-8 z-30 flex items-center justify-between pointer-events-auto">
+    <div className="absolute top-4 sm:top-6 left-0 right-0 z-30 flex items-center justify-between pointer-events-auto w-full max-w-6xl mx-auto px-4 sm:px-8">
       {/* Return to Home / Discover */}
       <Link
         href="/"
