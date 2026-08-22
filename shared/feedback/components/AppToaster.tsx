@@ -8,7 +8,7 @@ export default function AppToaster() {
       position="top-right"
       gutter={16}
       containerStyle={{
-        top: 96,
+        top: 24,
         right: 48,
       }}
       toastOptions={{

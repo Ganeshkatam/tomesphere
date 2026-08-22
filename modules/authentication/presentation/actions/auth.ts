@@ -287,16 +287,21 @@ export async function sendMagicLinkServer(
       ? await supabase.auth.signInWithOtp({ phone: emailOrPhone })
       : await supabase.auth.signInWithOtp({
           email: emailOrPhone,
-          options: { shouldCreateUser: false },
+          options: {
+            shouldCreateUser: false,
+            emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+          },
         });
 
-    if (result.error)
+    if (result.error) {
+      console.error("[sendMagicLinkServer] OTP Error:", result.error);
       return {
         success: false,
         error: {
-          message: "Failed to send verification code. Please try again.",
+          message: result.error.message || "Failed to send verification code. Please try again.",
         },
       };
+    }
 
     return { success: true, data: undefined };
   } catch (error: any) {
@@ -324,14 +329,16 @@ export async function verifyMagicLinkServer(
       : await supabase.auth.verifyOtp({
           email: emailOrPhone,
           token,
-          type: "email",
+          type: "magiclink",
         });
 
-    if (result.error)
+    if (result.error) {
+      console.error("[verifyMagicLinkServer] Verify Error:", result.error);
       return {
         success: false,
-        error: { message: "Invalid or expired verification code." },
+        error: { message: result.error.message || "Invalid or expired verification code." },
       };
+    }
 
     return { success: true, data: undefined };
   } catch (error: any) {

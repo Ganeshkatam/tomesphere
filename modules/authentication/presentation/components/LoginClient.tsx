@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -63,7 +63,7 @@ export default function EnhancedLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
-  const [step, setStep] = useState<"input" | "password" | "otp" | "mfa">(
+  const [step, setStep] = useState<"input" | "password" | "otp" | "mfa" | "magic-link-sent">(
     "input",
   );
   const [mfaCode, setMfaCode] = useState("");
@@ -75,6 +75,17 @@ export default function EnhancedLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = getSafeRedirectUrl(searchParams.get("redirectTo"));
+  const [resendTimer, setResendTimer] = useState(0);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
 
   /* ── helpers ── */
   const detectInputType = (value: string): "email" | "phone" | "unknown" => {
@@ -133,11 +144,35 @@ export default function EnhancedLoginPage() {
       }
 
       showSuccess(
-        isPhone ? "SMS code sent!" : "Magic code sent to your email!",
+        isPhone ? "SMS code sent!" : "Magic link sent to your email!",
       );
-      setStep("otp");
+      setResendTimer(90);
+      setStep(isPhone ? "otp" : "magic-link-sent");
     } catch (err: any) {
       showError(err.message || "Failed to send verification code");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (resendTimer > 0) return;
+    setLoading(true);
+    try {
+      let id = input;
+      if (isPhone) {
+        const c = input.replace(/[\s-]/g, "");
+        id = c.startsWith("+") ? c : `${countryCode}${c}`;
+      }
+      const res = await sendMagicLinkServer(id, isPhone);
+      if (!res.success) {
+        showError(res.error.message);
+        return;
+      }
+      showSuccess(isPhone ? "SMS code resent!" : "Magic link resent!");
+      setResendTimer(90);
+    } catch (err: any) {
+      showError(err.message || "Failed to resend");
     } finally {
       setLoading(false);
     }
@@ -180,8 +215,6 @@ export default function EnhancedLoginPage() {
       throw new Error(
         "MFA is currently being migrated to Server Actions. Please contact support.",
       );
-      showSuccess("MFA Verified! Logging in...");
-      router.push(redirectTo);
     } catch (err: any) {
       showError(err.message || "Invalid code");
     } finally {
@@ -437,22 +470,20 @@ export default function EnhancedLoginPage() {
               <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl relative border border-slate-200 dark:border-slate-700">
                 <button
                   onClick={() => setAuthMode("password")}
-                  className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    authMode === "password"
-                      ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs border border-slate-200 dark:border-slate-700"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                  }`}
+                  className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${authMode === "password"
+                    ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs border border-slate-200 dark:border-slate-700"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    }`}
                   type="button"
                 >
                   Password
                 </button>
                 <button
                   onClick={() => setAuthMode("magic")}
-                  className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                    authMode === "magic"
-                      ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs border border-slate-200 dark:border-slate-700"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                  }`}
+                  className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${authMode === "magic"
+                    ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs border border-slate-200 dark:border-slate-700"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    }`}
                   type="button"
                 >
                   <Sparkles size={13} className="text-amber-500" /> Magic Link
@@ -699,16 +730,56 @@ export default function EnhancedLoginPage() {
                 >
                   {loading ? <Spinner /> : "Verify & Sign In"}
                 </button>
-                <div className="text-center">
+                <div className="flex items-center justify-between mt-4">
                   <button
                     type="button"
                     onClick={() => setStep("input")}
-                    className="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                    className="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer font-medium"
                   >
                     ← Back
                   </button>
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={resendTimer > 0 || loading}
+                    className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:no-underline"
+                  >
+                    {resendTimer > 0 ? `Resend code in ${resendTimer}s` : "Resend code"}
+                  </button>
                 </div>
               </form>
+            )}
+
+            {/* ── STEP: MAGIC LINK SENT ── */}
+            {step === "magic-link-sent" && (
+              <div className="space-y-5 text-center py-6">
+                <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Mail className="text-indigo-600 dark:text-indigo-400" size={32} />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                  Check your email
+                </h3>
+                <p className="text-slate-600 dark:text-slate-400 text-sm max-w-[280px] mx-auto leading-relaxed">
+                  We've sent a magic link to <span className="text-slate-900 dark:text-white font-semibold">{input}</span>. Click the link to instantly log in.
+                </p>
+                <div className="pt-4 space-y-4">
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={resendTimer > 0 || loading}
+                    className="text-sm w-full h-[52px] rounded-xl font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {resendTimer > 0 ? `Resend link in ${resendTimer}s` : "Resend magic link"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStep("input")}
+                    className={btnCls}
+                  >
+                    Back to login
+                  </button>
+                </div>
+              </div>
             )}
           </div>
 
