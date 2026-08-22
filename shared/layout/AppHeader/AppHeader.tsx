@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { BookOpen, Search, Bell, User, Sun, Moon, Menu, X } from "lucide-react";
 import { useTheme } from "@/shared/providers/theme-context";
 
@@ -32,10 +32,16 @@ const AUTH_ROUTES = [
 export function AppHeader({ className = "", variant = "application", user }: AppHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { resolvedTheme, setTheme } = useTheme();
-  const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Close overlays on navigation
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsSearchOpen(false);
+  }, [pathname, searchParams]);
 
   // Omit header entirely on authentication routes
   if (pathname && AUTH_ROUTES.includes(pathname)) {
@@ -44,14 +50,6 @@ export function AppHeader({ className = "", variant = "application", user }: App
 
   const toggleTheme = () => {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      setIsSearchOpen(false);
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-    }
   };
 
   const isDark = resolvedTheme === "dark";
@@ -424,33 +422,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
                 <X size={20} />
               </button>
             </div>
-            <form onSubmit={handleSearchSubmit} className="relative mt-2">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search size={22} className={isDark ? "text-slate-500" : "text-slate-400"} />
-              </div>
-              <input
-                type="text"
-                autoFocus
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search digital archives, books, authors..."
-                className={`w-full text-lg px-4 py-4 pl-12 rounded-xl border focus:outline-none focus:ring-2 transition-all ${
-                  isDark 
-                    ? "bg-slate-900 border-slate-800 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-indigo-500/20" 
-                    : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:ring-indigo-500/20"
-                }`}
-              />
-              <button
-                type="submit"
-                className={`absolute inset-y-2 right-2 px-5 py-2 rounded-lg font-semibold text-sm transition-all cursor-pointer flex items-center ${
-                  isDark
-                    ? "bg-indigo-600 hover:bg-indigo-700 text-white"
-                    : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
-                }`}
-              >
-                Search
-              </button>
-            </form>
+            <SearchBar size="lg" placeholder="Search digital archives, books, authors..." autoFocus={true} />
           </div>
         </div>
       )}
