@@ -297,7 +297,7 @@ export default function EnhancedLoginPage() {
   return (
     <div className="min-h-screen bg-[var(--surface-canvas)] flex items-center justify-center p-4 sm:p-8 pt-20 sm:pt-24 pb-12 relative overflow-hidden">
       {/* ── Floating Top Bar (Theme Toggle & Back Home) ── */}
-      <AuthTopBar />
+      <AuthTopBar showLogo={true} />
 
       {/* ── Route-related Background Sanctuary Backdrop ── */}
       <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
@@ -316,7 +316,7 @@ export default function EnhancedLoginPage() {
             ══════════════════════════════════════ */}
       <div className="w-full max-w-6xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] overflow-hidden flex flex-col lg:flex-row shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 relative z-10">
         {/* ── Left Info Pane (60%) ── */}
-        <div className="w-full lg:w-[60%] bg-slate-50/80 dark:bg-slate-950/60 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 relative p-8 sm:p-10 lg:p-12 flex flex-col justify-between gap-8 overflow-hidden">
+        <div className="hidden lg:flex w-full lg:w-[60%] bg-slate-50/80 dark:bg-slate-950/60 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 relative p-8 sm:p-10 lg:p-12 flex-col justify-between gap-8 overflow-hidden">
           {/* Soft ambient glow on brand panel */}
           <div className="absolute -top-24 -left-24 w-72 h-72 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
 
