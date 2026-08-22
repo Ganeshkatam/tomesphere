@@ -635,7 +635,7 @@ function PersonalizedRecommendationsSection({
           {recommendedItems.map((item: any, idx: number) => (
             <div
               key={`personalized-${item.id || idx}-${idx}`}
-              className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col group/item transition-all duration-300 relative hover:z-50"
+              className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col group/item transition-all duration-300 relative hover:z-40"
             >
               <BookCard book={item} priority={idx < 5} />
             </div>
@@ -738,7 +738,7 @@ function PublicSizedShelfSection({
           {items.slice(0, 10).map((item: any, idx: number) => (
             <div
               key={`shelf-${promiseKey}-${item.id || idx}-${idx}`}
-              className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col group/item transition-all duration-300 relative hover:z-50"
+              className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col group/item transition-all duration-300 relative hover:z-40"
             >
               <BookCard book={item} />
             </div>
@@ -891,7 +891,7 @@ function CuratedDisciplineShelfSection({
           {disciplineBooks.map((item: any, i: number) => (
             <div
               key={`discipline-${genre}-${item.id || i}-${i}`}
-              className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col group/item transition-all duration-300 relative hover:z-50"
+              className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col group/item transition-all duration-300 relative hover:z-40"
             >
               <BookCard book={item} />
             </div>

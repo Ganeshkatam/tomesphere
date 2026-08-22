@@ -217,7 +217,7 @@ export default function MeHeroSection({ promise }: MeHeroSectionProps) {
                   cardRefs.current[idx] = el;
                 }}
                 onClick={() => setActiveIndex(idx)}
-                className={`w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col relative transition-all duration-300 cursor-pointer hover:z-50 ${isSelected ? "opacity-100" : "opacity-90 hover:opacity-100"
+                className={`w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col relative transition-all duration-300 cursor-pointer hover:z-40 ${isSelected ? "opacity-100" : "opacity-90 hover:opacity-100"
                   }`}
               >
                 {/* Clean Rank Badge on top-left corner */}

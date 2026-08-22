@@ -182,7 +182,7 @@ export default function BookShelfRow({
           {displayBooks.map((item) => (
             <div
               key={item.id}
-              className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col relative hover:z-50 transition-all duration-300"
+              className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col relative hover:z-40 transition-all duration-300"
             >
               <FeaturedItemCard item={item} />
             </div>
