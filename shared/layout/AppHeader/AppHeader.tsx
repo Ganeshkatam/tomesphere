@@ -160,6 +160,11 @@ export function AppHeader({ className = "", variant = "application", user }: App
         {/* Right Side: Search Bar + Utilities + Profile Avatar */}
         <div className="flex items-center gap-3 sm:gap-4">
 
+          {/* Search Bar with live autocomplete */}
+          <div className="relative hidden sm:flex items-center w-52 sm:w-72 md:w-80 lg:w-96">
+            <SearchBar size="md" placeholder="Search digital archives..." />
+          </div>
+
           {/* Mobile Menu Toggle Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -171,11 +176,6 @@ export function AppHeader({ className = "", variant = "application", user }: App
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
-
-          {/* Search Bar with live autocomplete */}
-          <div className="relative hidden sm:flex items-center w-52 sm:w-72 md:w-80 lg:w-96">
-            <SearchBar size="md" placeholder="Search digital archives..." />
-          </div>
 
           {/* Theme Toggle Button */}
           <button
