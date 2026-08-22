@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, X, Loader2, Book, ArrowRight, Clock, TrendingUp, Trash2 } from "lucide-react";
+import { Search, X, Loader2, Book, ArrowRight, Clock, TrendingUp } from "lucide-react";
 import {
   autocompleteAction,
   getRecentSearchesAction,
@@ -273,11 +273,10 @@ export function SearchBar({
                   href={item.url || `/search?q=${encodeURIComponent(item.title)}`}
                   onClick={() => setIsOpen(false)}
                   onMouseEnter={() => setHighlightedIndex(index)}
-                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors cursor-pointer ${
-                    isHighlighted
+                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors cursor-pointer ${isHighlighted
                       ? "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-950 dark:text-indigo-200"
                       : "text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0 pr-2">
                     <div className="w-6 h-6 rounded-lg bg-indigo-100 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
