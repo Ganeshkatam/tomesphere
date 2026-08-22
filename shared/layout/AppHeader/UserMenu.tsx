@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   User,
-  Settings,
   LogOut,
   LayoutDashboard,
   Bookmark,
@@ -14,6 +13,8 @@ import {
   Sliders,
   HardDrive,
   Sparkles,
+  FileText,
+  MessageSquare,
 } from "lucide-react";
 import { logOut } from "@/modules/authentication/presentation/actions/auth";
 
@@ -148,6 +149,22 @@ export function UserMenu({ user }: UserMenuProps) {
             >
               <Sparkles size={16} className="text-teal-500" />
               <span>My Shelves</span>
+            </Link>
+            <Link
+              href="/me/notes"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              <FileText size={16} className="text-amber-500" />
+              <span>My Notes</span>
+            </Link>
+            <Link
+              href="/me/annotations"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              <MessageSquare size={16} className="text-blue-500" />
+              <span>My Annotations</span>
             </Link>
           </div>
 
