@@ -35,6 +35,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
   const { resolvedTheme, setTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // Omit header entirely on authentication routes
   if (pathname && AUTH_ROUTES.includes(pathname)) {
@@ -161,10 +162,17 @@ export function AppHeader({ className = "", variant = "application", user }: App
         {/* Right Side: Search Bar + Utilities + Profile Avatar */}
         <div className="flex items-center gap-3 sm:gap-4">
 
-          {/* Search Bar with live autocomplete */}
-          <div className="relative hidden sm:flex items-center w-52 sm:w-72 md:w-80 lg:w-96">
-            <SearchBar size="md" placeholder="Search digital archives..." />
-          </div>
+          {/* Search Button (Opens Overlay) */}
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            aria-label="Open search"
+            className={`p-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center ${isDark
+              ? "text-slate-300 hover:text-white hover:bg-slate-800"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              }`}
+          >
+            <Search size={20} />
+          </button>
 
           {/* Mobile Menu Toggle Button */}
           <button
@@ -268,9 +276,6 @@ export function AppHeader({ className = "", variant = "application", user }: App
             </div>
             
             <div className="flex-1 overflow-y-auto px-8 py-6 flex flex-col gap-2">
-              <div className="relative flex items-center w-full mb-6 sm:hidden">
-                <SearchBar size="sm" placeholder="Search digital archives..." />
-              </div>
 
             {variant === "application" && (
               <div className="flex flex-col gap-1.5 mt-2">
@@ -400,6 +405,30 @@ export function AppHeader({ className = "", variant = "application", user }: App
           </div>
         </div>
         </>
+      )}
+
+      {/* Search Overlay */}
+      {isSearchOpen && (
+        <div className="fixed inset-0 z-[100] flex flex-col px-4 animate-in fade-in duration-200">
+          <div 
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            onClick={() => setIsSearchOpen(false)}
+          />
+          <div className={`relative w-full max-w-3xl mx-auto mt-4 sm:mt-24 p-4 sm:p-6 shadow-2xl rounded-2xl animate-in slide-in-from-top-4 duration-300 ${isDark ? "bg-slate-950 border border-slate-800" : "bg-white border border-slate-200"}`}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className={`text-lg font-semibold ${isDark ? "text-slate-200" : "text-slate-800"}`}>Search</h2>
+              <button 
+                onClick={() => setIsSearchOpen(false)}
+                className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                  isDark ? "hover:bg-slate-800 text-slate-400 hover:text-white" : "hover:bg-slate-100 text-slate-500 hover:text-slate-900"
+                }`}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <SearchBar size="lg" placeholder="Search digital archives, books, authors..." autoFocus={true} />
+          </div>
+        </div>
       )}
     </>
   );
