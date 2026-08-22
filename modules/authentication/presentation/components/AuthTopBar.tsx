@@ -30,7 +30,7 @@ export default function AuthTopBar({ showLogo = false }: AuthTopBarProps) {
 
       {/* Optional Central Minimal Logo for smaller screens */}
       {showLogo && (
-        <Link href="/" className="flex items-center gap-2 sm:hidden">
+        <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 sm:hidden">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-xs">
             <BookOpen size={16} />
           </div>
