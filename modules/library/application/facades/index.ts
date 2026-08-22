@@ -16,3 +16,15 @@ export async function executeLibraryPageFacade(
   const facade = new LibraryPageFacade(readModel, collectionRepo);
   return facade.get(userId, params);
 }
+
+export async function executeShelvesPageFacade(
+  userId: string,
+): Promise<any> {
+  const supabase = await createSupabaseServerClient();
+  const readModel = new SupabaseLibraryReadModel(supabase);
+
+  // Dynamic import or just use ShelvesPageFacade
+  const { ShelvesPageFacade } = await import("./ShelvesPageFacade");
+  const facade = new ShelvesPageFacade(readModel);
+  return facade.get(userId);
+}

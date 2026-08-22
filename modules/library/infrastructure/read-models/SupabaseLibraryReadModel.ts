@@ -183,6 +183,80 @@ export class SupabaseLibraryReadModel implements LibraryReadModel {
     return summary;
   }
 
+  async getShelvesWithPreviews(userId: string): Promise<any> {
+    const { data: shelvesData, error: shelvesError } = await this.supabase
+      .from("shelves")
+      .select(`
+        id,
+        name,
+        description,
+        is_public,
+        shelf_items (count)
+      `)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (shelvesError || !shelvesData) {
+      return { shelves: [], totalShelves: 0 };
+    }
+
+    const shelfIds = shelvesData.map((s) => s.id);
+    const shelves = shelvesData.map((row: any) => ({
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      isPublic: row.is_public,
+      bookCount: row.shelf_items?.[0]?.count ?? 0,
+      previewBooks: [] as any[],
+    }));
+
+    if (shelfIds.length > 0) {
+      // Bounded query for previews: get up to 4 books for each shelf without N+1
+      // For V1, we fetch items for these shelves, ordered by added_at.
+      // (If shelves are huge, this could fetch many rows. In a real prod environment, an RPC would limit per-group.)
+      const { data: previewData, error: previewError } = await this.supabase
+        .from("shelf_items")
+        .select(`
+          shelf_id,
+          book_id,
+          added_at,
+          books (
+            title,
+            cover_url
+          )
+        `)
+        .in("shelf_id", shelfIds)
+        .order("added_at", { ascending: false });
+
+      if (!previewError && previewData) {
+        // Group by shelf_id and limit to 4
+        const previewsByShelf = new Map<string, any[]>();
+        previewData.forEach((item: any) => {
+          if (!previewsByShelf.has(item.shelf_id)) {
+            previewsByShelf.set(item.shelf_id, []);
+          }
+          const shelfPreviews = previewsByShelf.get(item.shelf_id)!;
+          if (shelfPreviews.length < 4) {
+            shelfPreviews.push({
+              bookId: item.book_id,
+              title: item.books?.title || "Unknown",
+              coverUrl: item.books?.cover_url ? item.books.cover_url.replace(/ /g, "%20") : null,
+            });
+          }
+        });
+
+        shelves.forEach((shelf) => {
+          shelf.previewBooks = previewsByShelf.get(shelf.id) || [];
+        });
+      }
+    }
+
+    return {
+      shelves,
+      totalShelves: shelves.length,
+    };
+  }
+
   private mapToBookDto(row: any, prog?: any, sess?: any): LibraryBookDto {
     const book = row.books || {};
 

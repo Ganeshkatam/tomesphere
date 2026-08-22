@@ -29,4 +29,5 @@ export interface LibraryReadModel {
     params: LibraryQueryParams,
   ): Promise<LibraryBooksPageDto>;
   getLibrarySummary(userId: string): Promise<LibrarySummaryDto>;
+  getShelvesWithPreviews(userId: string): Promise<any>;
 }
