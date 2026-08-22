@@ -155,13 +155,6 @@ export default async function SearchPage({
                   );
                 })}
               </div>
-
-              {/* Filter Drawer Toggle */}
-              {showSidebar && (
-                <div className="ml-2">
-                  <SearchFacetSidebar facets={usefulFacets} />
-                </div>
-              )}
             </div>
           </div>
 
@@ -176,11 +169,19 @@ export default async function SearchPage({
         </div>
 
         {/* Main Search Body Results Grid */}
-        <div className="grid grid-cols-1 gap-8 items-start">
+        <div className="grid grid-cols-1 gap-6 items-start">
+          
+          {/* Inline Collapsible Filters */}
+          {showSidebar && (
+            <div className="w-full">
+              <SearchFacetSidebar facets={usefulFacets} />
+            </div>
+          )}
+
           {/* Results Grid Area */}
           <main className="w-full min-w-0">
             {results.results.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
                 {results.results.map((book, index) => (
                   <div key={book.id} className="w-full">
                     <BookCard

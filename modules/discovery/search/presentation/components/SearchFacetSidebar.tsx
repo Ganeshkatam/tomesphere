@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { SearchFacetDto } from "../../application/dto/SearchFacetDto";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Filter, X, Check } from "lucide-react";
+import { Filter, X, Check, ChevronDown } from "lucide-react";
 
 interface SearchFacetSidebarProps {
   facets: SearchFacetDto[];
@@ -36,7 +36,6 @@ export function SearchFacetSidebar({ facets }: SearchFacetSidebarProps) {
     const q = searchParams.get("q");
     if (q) params.set("q", q);
     router.push(`/search?${params.toString()}`);
-    setIsOpen(false);
   };
 
   const hasActiveFilters = Array.from(searchParams.keys()).some((k) =>
@@ -44,7 +43,7 @@ export function SearchFacetSidebar({ facets }: SearchFacetSidebarProps) {
   );
 
   if (!facets || facets.length === 0) {
-    return null; // Don't show the filter button at all if no filters
+    return null;
   }
 
   const getFacetLabel = (key: string) => {
@@ -63,62 +62,49 @@ export function SearchFacetSidebar({ facets }: SearchFacetSidebarProps) {
   };
 
   return (
-    <>
-      {/* Trigger Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
-          hasActiveFilters 
-            ? "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-800/60" 
-            : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+    <div className="w-full">
+      {/* Filter Toggle Header */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-extrabold transition-all cursor-pointer ${
+            hasActiveFilters
+              ? "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-800/60"
+              : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs"
+          }`}
+        >
+          <Filter size={16} className={hasActiveFilters ? "text-indigo-600 dark:text-indigo-400" : ""} />
+          <span>Filter Results</span>
+          {hasActiveFilters && (
+            <span className="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400 ml-1" />
+          )}
+          <ChevronDown
+            size={16}
+            className={`transition-transform duration-300 ${isOpen ? "rotate-180" : ""} ${hasActiveFilters ? "text-indigo-600 dark:text-indigo-400 ml-2" : "text-slate-400 ml-2"}`}
+          />
+        </button>
+
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={handleClearAll}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+          >
+            <X size={14} />
+            <span>Clear Filters</span>
+          </button>
+        )}
+      </div>
+
+      {/* Inline Expandable Filters Section */}
+      <div
+        className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-in-out ${
+          isOpen ? "grid-rows-[1fr] opacity-100 mt-4" : "grid-rows-[0fr] opacity-0 mt-0"
         }`}
       >
-        <Filter size={14} className={hasActiveFilters ? "text-indigo-600 dark:text-indigo-400" : ""} />
-        <span>Filters</span>
-        {hasActiveFilters && (
-          <span className="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400 ml-0.5" />
-        )}
-      </button>
-
-      {/* Drawer */}
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] flex justify-end">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
-            onClick={() => setIsOpen(false)}
-          />
-
-          {/* Drawer Content */}
-          <div className="relative w-full max-w-[320px] h-full bg-white dark:bg-slate-900 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 border-l border-slate-200 dark:border-slate-800">
-            
-            {/* Header */}
-            <div className="flex items-center justify-between p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 shrink-0">
-              <div className="flex items-center gap-2 text-slate-900 dark:text-white font-extrabold text-base">
-                <Filter size={18} className="text-indigo-600 dark:text-indigo-400" />
-                <span>Filters</span>
-              </div>
-              <div className="flex items-center gap-3">
-                {hasActiveFilters && (
-                  <button
-                    type="button"
-                    onClick={handleClearAll}
-                    className="text-xs font-bold text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
-                  >
-                    Clear All
-                  </button>
-                )}
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 cursor-pointer"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-            </div>
-
-            {/* Scrollable Facets */}
-            <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-8">
+        <div className="overflow-hidden">
+          <div className="p-5 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl shadow-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
               {facets.map((facet) => {
                 if (!facet.values || facet.values.length === 0) return null;
 
@@ -128,7 +114,7 @@ export function SearchFacetSidebar({ facets }: SearchFacetSidebarProps) {
                       {getFacetLabel(facet.key)}
                     </h4>
 
-                    <div className="space-y-1.5 overflow-y-visible select-none">
+                    <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1 select-none">
                       {facet.values.map((val) => {
                         const isChecked = Boolean(val.selected);
 
@@ -187,8 +173,8 @@ export function SearchFacetSidebar({ facets }: SearchFacetSidebarProps) {
             </div>
           </div>
         </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 }
 
