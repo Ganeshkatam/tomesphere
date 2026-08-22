@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { emitOutboxEvent } from "@/shared/core/infrastructure/outbox/outbox";
+import { trackUserReadingActivity } from "../services/ReadingStreakTracker";
 
 export interface StartReadingSessionRequest {
   userId: string;
@@ -110,36 +111,10 @@ export async function executeStartReadingSession(
       .eq("id", existingLibraryEntry.id);
   }
 
-  // 3. Ensure user_statistics row exists
-  const { data: existingStats } = await supabase
-    .from("user_statistics")
-    .select("user_id, books_started")
-    .eq("user_id", request.userId)
-    .maybeSingle();
-
-  if (!existingStats) {
-    await supabase.from("user_statistics").insert({
-      user_id: request.userId,
-      books_started: 1,
-      books_completed: 0,
-      pages_read: 0,
-      minutes_read: 0,
-      seconds_read: 0,
-      current_streak: 1,
-      longest_streak: 1,
-      last_read_date: now.slice(0, 10),
-      updated_at: now,
-    });
-  } else if (!existingLibraryEntry) {
-    // If this was a new book, increment books_started
-    await supabase
-      .from("user_statistics")
-      .update({
-        books_started: (existingStats.books_started || 0) + 1,
-        updated_at: now,
-      })
-      .eq("user_id", request.userId);
-  }
+  // 3. Ensure user_statistics row exists and record today's active reading streak
+  await trackUserReadingActivity(supabase, request.userId, {
+    isNewBook: !existingLibraryEntry,
+  });
 
   // 4. Emit session started event
   await emitOutboxEvent(supabase, "reader.session.started", {

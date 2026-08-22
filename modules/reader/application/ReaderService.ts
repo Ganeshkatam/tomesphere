@@ -35,10 +35,13 @@ export class ReaderService {
   private accumulatedDurationSeconds: number = 0;
   private uniquePagesVisited: Set<string> = new Set<string>();
 
-  // Auto-save debounce
+  // Auto-save debounce & Heartbeat
   private autoSaveTimer: NodeJS.Timeout | null = null;
   private readonly AUTO_SAVE_DELAY_MS = 30000;
   private pendingSaveAnchor: LocationAnchor | null = null;
+  private heartbeatTimer: NodeJS.Timeout | null = null;
+  private readonly HEARTBEAT_INTERVAL_MS = 30000;
+  private lastFlushedPagesCount: number = 0;
 
   // In-memory highlight list for hasNote computation and target promotion
   private highlights: ReaderHighlight[] = [];
@@ -115,23 +118,45 @@ export class ReaderService {
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", this.handleUnload);
       window.addEventListener("pagehide", this.handleUnload);
+      document.addEventListener("visibilitychange", this.handleVisibilityChange);
+    }
+  }
+
+  private handleVisibilityChange = () => {
+    if (typeof document === "undefined") return;
+    if (document.visibilityState === "hidden") {
+      this.flushActiveReadingDuration();
+    } else if (document.visibilityState === "visible") {
+      if (useReaderStore.getState().sessionState === "active") {
+        this.sessionStartTime = Date.now();
+      }
+    }
+  };
+
+  public async flushActiveReadingDuration(): Promise<void> {
+    if (this.sessionStartTime) {
+      const now = Date.now();
+      const elapsed = Math.floor((now - this.sessionStartTime) / 1000);
+      if (elapsed > 0) {
+        this.sessionStartTime = now;
+        const currentPages = this.uniquePagesVisited.size;
+        const newPages = Math.max(0, currentPages - this.lastFlushedPagesCount);
+        this.lastFlushedPagesCount = currentPages;
+
+        const currentAnchor = useReaderStore.getState().currentAnchor;
+        const currentPage = currentAnchor?.value ? parseInt(currentAnchor.value, 10) : undefined;
+
+        await this.sessionFacade.completeSession(elapsed, newPages, currentPage);
+      }
     }
   }
 
   private handleUnload = () => {
-    // Synchronous flush on unload (navigator.sendBeacon is better, but we rely on the facade)
     if (this.pendingSaveAnchor) {
       this.sessionFacade.saveProgress(this.pendingSaveAnchor);
       this.pendingSaveAnchor = null;
     }
-    if (this.sessionStartTime) {
-      const duration = Math.floor((Date.now() - this.sessionStartTime) / 1000);
-      this.accumulatedDurationSeconds += duration;
-      this.sessionStartTime = null;
-      if (this.accumulatedDurationSeconds > 0) {
-        this.sessionFacade.completeSession(this.accumulatedDurationSeconds, this.uniquePagesVisited.size);
-      }
-    }
+    this.flushActiveReadingDuration();
   };
 
   public applyPreferences(prefs: any) {
@@ -567,18 +592,23 @@ export class ReaderService {
     this.sessionStartTime = Date.now();
     store.setSessionState("active");
     this.sessionFacade.startSession(initialPage);
+
+    if (this.heartbeatTimer) clearInterval(this.heartbeatTimer);
+    this.heartbeatTimer = setInterval(() => {
+      this.flushActiveReadingDuration();
+    }, this.HEARTBEAT_INTERVAL_MS);
   }
 
   public pauseSession(): void {
     const store = useReaderStore.getState();
     if (store.sessionState !== "active") return;
 
-    if (this.sessionStartTime) {
-      const duration = Math.floor((Date.now() - this.sessionStartTime) / 1000);
-      this.accumulatedDurationSeconds += duration;
-      this.sessionStartTime = null;
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
     }
 
+    this.flushActiveReadingDuration();
     store.setSessionState("paused");
   }
 
@@ -609,16 +639,18 @@ export class ReaderService {
       if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
       await this.savePosition(currentAnchor);
     }
-
-    if (this.accumulatedDurationSeconds > 0) {
-      await this.sessionFacade.completeSession(this.accumulatedDurationSeconds, this.uniquePagesVisited.size);
-    }
   }
 
   public async destroy(): Promise<void> {
     if (typeof window !== "undefined") {
       window.removeEventListener("beforeunload", this.handleUnload);
       window.removeEventListener("pagehide", this.handleUnload);
+      document.removeEventListener("visibilitychange", this.handleVisibilityChange);
+    }
+
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
     }
 
     // Force pending save

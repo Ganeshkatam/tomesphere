@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { emitOutboxEvent } from "@/shared/core/infrastructure/outbox/outbox";
+import { trackUserReadingActivity } from "../services/ReadingStreakTracker";
 
 export interface CompleteReadingSessionRequest {
   userId: string;
@@ -61,57 +62,10 @@ export async function executeCompleteReadingSession(
   }
 
   // 2. Update user_statistics with session deltas and streak calculation
-  const { data: stats } = await supabase
-    .from("user_statistics")
-    .select("*")
-    .eq("user_id", request.userId)
-    .maybeSingle();
-
-  if (stats) {
-    const prevDate = stats.last_read_date ? new Date(stats.last_read_date) : null;
-    const currentDate = new Date(today);
-    let newStreak = stats.current_streak || 1;
-
-    if (prevDate) {
-      const diffDays = Math.floor(
-        (currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24),
-      );
-      if (diffDays === 1) {
-        newStreak += 1;
-      } else if (diffDays > 1) {
-        newStreak = 1;
-      }
-    }
-
-    const totalSeconds = (stats.seconds_read || 0) + request.durationSeconds;
-    const longestStreak = Math.max(stats.longest_streak || 1, newStreak);
-
-    await supabase
-      .from("user_statistics")
-      .update({
-        seconds_read: totalSeconds,
-        minutes_read: Math.floor(totalSeconds / 60),
-        pages_read: (stats.pages_read || 0) + request.pagesRead,
-        current_streak: newStreak,
-        longest_streak: longestStreak,
-        last_read_date: today,
-        updated_at: now,
-      })
-      .eq("user_id", request.userId);
-  } else {
-    await supabase.from("user_statistics").insert({
-      user_id: request.userId,
-      books_started: 1,
-      books_completed: 0,
-      seconds_read: request.durationSeconds,
-      minutes_read: minutes,
-      pages_read: request.pagesRead,
-      current_streak: 1,
-      longest_streak: 1,
-      last_read_date: today,
-      updated_at: now,
-    });
-  }
+  await trackUserReadingActivity(supabase, request.userId, {
+    durationSeconds: request.durationSeconds,
+    pagesRead: request.pagesRead,
+  });
 
   // 3. Emit session ended event
   await emitOutboxEvent(supabase, "reader.session.ended", {

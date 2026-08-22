@@ -2,6 +2,7 @@ import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { LocationAnchor } from "@/shared/core/events/types";
 import { emitOutboxEvent } from "@/shared/core/infrastructure/outbox/outbox";
 import { ReaderPositionRepository } from "../../domain/repositories/ReaderPositionRepository";
+import { trackUserReadingActivity } from "../services/ReadingStreakTracker";
 
 interface UpdateReaderPositionRequest {
   userId: string;
@@ -36,8 +37,11 @@ export async function executeUpdateReaderPosition(
     request.locationAnchor,
   );
 
-  // 2. Emit position_updated event only when position actually changes
+  // 2. Track reading streak for today
   const supabase = await createSupabaseServerClient();
+  await trackUserReadingActivity(supabase, request.userId);
+
+  // 3. Emit position_updated event only when position actually changes
   const now = new Date().toISOString();
 
   await emitOutboxEvent(supabase, "reader.position.updated", {

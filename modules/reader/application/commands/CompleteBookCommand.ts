@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { emitOutboxEvent } from "@/shared/core/infrastructure/outbox/outbox";
+import { trackUserReadingActivity } from "../services/ReadingStreakTracker";
 
 export interface CompleteBookRequest {
   userId: string;
@@ -62,34 +63,9 @@ export async function executeCompleteBookCommand(
 
   // 4. Update user_statistics (only increment if this wasn't already completed)
   if (!isAlreadyFinished) {
-    const { data: stats } = await supabase
-      .from("user_statistics")
-      .select("user_id, books_completed")
-      .eq("user_id", request.userId)
-      .maybeSingle();
-
-    if (stats) {
-      await supabase
-        .from("user_statistics")
-        .update({
-          books_completed: (stats.books_completed || 0) + 1,
-          updated_at: now,
-        })
-        .eq("user_id", request.userId);
-    } else {
-      await supabase.from("user_statistics").insert({
-        user_id: request.userId,
-        books_started: 1,
-        books_completed: 1,
-        seconds_read: 0,
-        minutes_read: 0,
-        pages_read: 0,
-        current_streak: 1,
-        longest_streak: 1,
-        last_read_date: now.slice(0, 10),
-        updated_at: now,
-      });
-    }
+    await trackUserReadingActivity(supabase, request.userId, {
+      isCompletedBook: true,
+    });
   }
 
   // 5. Emit book completed event
