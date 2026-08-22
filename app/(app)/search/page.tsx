@@ -155,6 +155,13 @@ export default async function SearchPage({
                   );
                 })}
               </div>
+
+              {/* Filter Drawer Toggle */}
+              {showSidebar && (
+                <div className="ml-2">
+                  <SearchFacetSidebar facets={usefulFacets} />
+                </div>
+              )}
             </div>
           </div>
 
@@ -168,19 +175,10 @@ export default async function SearchPage({
           </div>
         </div>
 
-        {/* Main Search Body with Facets Sidebar and Results Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Sidebar Facets (3.5 cols on LG) */}
-          {showSidebar && (
-            <aside className="lg:col-span-3 w-full">
-              <div className="sticky top-24">
-                <SearchFacetSidebar facets={usefulFacets} />
-              </div>
-            </aside>
-          )}
-
-          {/* Results Grid Area (8.5 cols on LG) */}
-          <main className={`${showSidebar ? "lg:col-span-9" : "lg:col-span-12"} w-full min-w-0`}>
+        {/* Main Search Body Results Grid */}
+        <div className="grid grid-cols-1 gap-8 items-start">
+          {/* Results Grid Area */}
+          <main className="w-full min-w-0">
             {results.results.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
                 {results.results.map((book, index) => (
