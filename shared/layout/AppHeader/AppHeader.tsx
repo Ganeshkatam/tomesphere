@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { BookOpen, Search, Bell, User, Sun, Moon, Menu, X } from "lucide-react";
 import { useTheme } from "@/shared/providers/theme-context";
 
@@ -31,7 +31,6 @@ const AUTH_ROUTES = [
 
 export function AppHeader({ className = "", variant = "application", user }: AppHeaderProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { resolvedTheme, setTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
