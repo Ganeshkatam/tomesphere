@@ -15,7 +15,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import DefaultBookCover from "@/modules/books/components/DefaultBookCover";
-import { addBookToLibraryAction } from "@/modules/library/presentation/actions/library";
+import { addBookToLibraryAction } from "../actions/discovery";
 import { generateSimpleDescription } from "@/modules/storage/services/pdf-description-generator";
 
 interface FeaturedBooksProps {

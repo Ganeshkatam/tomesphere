@@ -3,7 +3,7 @@
 import BookCard from "@/modules/books/components/BookCard";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { BookSummaryDto } from "../../application/dto/BookSummaryDto";
-import { addBookToLibraryAction } from "@/modules/library/presentation/actions/library";
+import { addBookToLibraryAction } from "../actions/discovery";
 
 interface BookGridProps {
   items: readonly BookSummaryDto[];

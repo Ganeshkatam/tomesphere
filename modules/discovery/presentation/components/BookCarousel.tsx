@@ -5,7 +5,7 @@ import BookCard from "@/modules/books/components/BookCard";
 import { BookSummaryDto } from "../../application/dto/BookSummaryDto";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { addBookToLibraryAction } from "@/modules/library/presentation/actions/library";
+import { addBookToLibraryAction } from "../actions/discovery";
 
 interface BookCarouselProps {
   items: readonly BookSummaryDto[];
