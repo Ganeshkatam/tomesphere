@@ -251,7 +251,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
           
           {/* Side Drawer */}
           <div
-            className={`md:hidden fixed inset-y-0 right-0 z-[70] w-[280px] sm:w-[320px] shadow-2xl flex flex-col animate-in slide-in-from-right fade-in duration-300 border-l rounded-l-3xl overflow-hidden ${
+            className={`md:hidden fixed inset-y-0 right-0 z-[70] w-[280px] sm:w-[320px] shadow-2xl flex flex-col animate-in slide-in-from-right fade-in duration-300 border-l rounded-l-[3rem] overflow-hidden ${
               isDark ? "bg-slate-950 border-slate-800" : "bg-white border-slate-200"
             }`}
           >
