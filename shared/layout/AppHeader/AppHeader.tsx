@@ -49,6 +49,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      setIsSearchOpen(false);
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
@@ -423,7 +424,33 @@ export function AppHeader({ className = "", variant = "application", user }: App
                 <X size={20} />
               </button>
             </div>
-            <SearchBar size="lg" placeholder="Search digital archives, books, authors..." autoFocus={true} />
+            <form onSubmit={handleSearchSubmit} className="relative mt-2">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Search size={22} className={isDark ? "text-slate-500" : "text-slate-400"} />
+              </div>
+              <input
+                type="text"
+                autoFocus
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search digital archives, books, authors..."
+                className={`w-full text-lg px-4 py-4 pl-12 rounded-xl border focus:outline-none focus:ring-2 transition-all ${
+                  isDark 
+                    ? "bg-slate-900 border-slate-800 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-indigo-500/20" 
+                    : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:ring-indigo-500/20"
+                }`}
+              />
+              <button
+                type="submit"
+                className={`absolute inset-y-2 right-2 px-5 py-2 rounded-lg font-semibold text-sm transition-all cursor-pointer flex items-center ${
+                  isDark
+                    ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                    : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+                }`}
+              >
+                Search
+              </button>
+            </form>
           </div>
         </div>
       )}
