@@ -740,6 +740,10 @@ export default function EnhancedLoginPage() {
               <Link href="/contact" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
                 Contact
               </Link>
+              <span>•</span>
+              <Link href="/report" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                Report
+              </Link>
             </div>
           </div>
         </div>
