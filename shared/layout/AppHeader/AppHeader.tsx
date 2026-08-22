@@ -251,11 +251,11 @@ export function AppHeader({ className = "", variant = "application", user }: App
           
           {/* Side Drawer */}
           <div
-            className={`md:hidden fixed inset-y-0 right-0 z-[70] w-[280px] sm:w-[320px] shadow-2xl flex flex-col animate-in slide-in-from-right fade-in duration-300 border-l rounded-l-[3rem] overflow-hidden ${
+            className={`md:hidden fixed inset-y-0 right-0 z-[70] w-[280px] sm:w-[320px] shadow-2xl flex flex-col animate-in slide-in-from-right fade-in duration-300 border-l rounded-l-[4rem] overflow-hidden ${
               isDark ? "bg-slate-950 border-slate-800" : "bg-white border-slate-200"
             }`}
           >
-            <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center justify-between p-4 pl-8 border-b border-slate-100 dark:border-slate-800">
               <span className="font-bold text-lg text-slate-800 dark:text-slate-200">Menu</span>
               <button 
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -267,7 +267,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-1.5">
+            <div className="flex-1 overflow-y-auto px-4 pl-8 py-5 flex flex-col gap-1.5">
               <div className="relative flex items-center w-full mb-4 sm:hidden">
                 <SearchBar size="sm" placeholder="Search digital archives..." />
               </div>
