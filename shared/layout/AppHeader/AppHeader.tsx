@@ -238,17 +238,37 @@ export function AppHeader({ className = "", variant = "application", user }: App
 
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu Overlay & Drawer */}
       {isMobileMenuOpen && (
-        <div
-          className={`md:hidden absolute top-[calc(100%+0.5rem)] inset-x-4 sm:inset-x-8 border rounded-2xl shadow-2xl backdrop-blur-xl flex flex-col origin-top animate-in slide-in-from-top-2 fade-in duration-200 overflow-hidden ${
-            isDark ? "bg-slate-950/85 border-slate-800/80 shadow-black/50" : "bg-white/90 border-slate-200/80 shadow-slate-200/50"
-          }`}
-        >
-          <div className="px-4 py-5 flex flex-col gap-1.5">
-            <div className="relative flex items-center w-full mb-4 sm:hidden">
-              <SearchBar size="sm" placeholder="Search digital archives..." />
+        <>
+          {/* Backdrop */}
+          <div 
+            className="md:hidden fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          
+          {/* Side Drawer */}
+          <div
+            className={`md:hidden fixed inset-y-0 right-0 z-[70] w-[280px] sm:w-[320px] shadow-2xl flex flex-col animate-in slide-in-from-right fade-in duration-300 border-l ${
+              isDark ? "bg-slate-950 border-slate-800" : "bg-white border-slate-200"
+            }`}
+          >
+            <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
+              <span className="font-bold text-lg text-slate-800 dark:text-slate-200">Menu</span>
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                  isDark ? "hover:bg-slate-800 text-slate-400 hover:text-white" : "hover:bg-slate-100 text-slate-500 hover:text-slate-900"
+                }`}
+              >
+                <X size={20} />
+              </button>
             </div>
+            
+            <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-1.5">
+              <div className="relative flex items-center w-full mb-4 sm:hidden">
+                <SearchBar size="sm" placeholder="Search digital archives..." />
+              </div>
 
             {variant === "application" && (
               <>
@@ -371,6 +391,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
             </div>
           </div>
         </div>
+        </>
       )}
     </header>
   );
