@@ -18,12 +18,12 @@ export class SearchAnalyticsHandler {
       const isZeroResult = payload.resultCount === 0;
       const isSlowQuery = payload.executionTimeMs > 200;
 
-      // 1. Slow Query Telemetry
-      if (payload.executionTimeMs > 500) {
+      // 1. Slow Query Telemetry (Adjusted for network latency)
+      if (payload.executionTimeMs > 2500) {
         console.error(
           `[SearchAnalytics] CRITICAL: Slow query detected (${payload.executionTimeMs}ms) for query: "${payload.query}"`,
         );
-      } else if (payload.executionTimeMs > 200) {
+      } else if (payload.executionTimeMs > 1000) {
         console.warn(
           `[SearchAnalytics] WARNING: Sub-optimal query detected (${payload.executionTimeMs}ms) for query: "${payload.query}"`,
         );

@@ -68,6 +68,13 @@ export default async function SearchPage({
   const activeFilterCount =
     genres.length + subjects.length + language.length + publicationYear.length;
 
+  // Only show facets that can actually filter something (more than 1 option, or already selected)
+  const usefulFacets = results.facets.filter(
+    (f) => f.values && (f.values.length > 1 || f.values.some((v) => v.selected))
+  );
+
+  const showSidebar = usefulFacets.length > 0 || activeFilterCount > 0;
+
   return (
     <div className="min-h-screen bg-[var(--surface-canvas)] py-6 sm:py-10 px-4 sm:px-6 lg:px-8 xl:px-12 w-full">
       <div className="w-full max-w-[1760px] mx-auto space-y-6 sm:space-y-8 animate-in fade-in duration-300">
@@ -164,14 +171,16 @@ export default async function SearchPage({
         {/* Main Search Body with Facets Sidebar and Results Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Sidebar Facets (3.5 cols on LG) */}
-          <aside className="lg:col-span-3 w-full">
-            <div className="sticky top-24">
-              <SearchFacetSidebar facets={results.facets} />
-            </div>
-          </aside>
+          {showSidebar && (
+            <aside className="lg:col-span-3 w-full">
+              <div className="sticky top-24">
+                <SearchFacetSidebar facets={usefulFacets} />
+              </div>
+            </aside>
+          )}
 
           {/* Results Grid Area (8.5 cols on LG) */}
-          <main className="lg:col-span-9 w-full min-w-0">
+          <main className={`${showSidebar ? "lg:col-span-9" : "lg:col-span-12"} w-full min-w-0`}>
             {results.results.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
                 {results.results.map((book, index) => (

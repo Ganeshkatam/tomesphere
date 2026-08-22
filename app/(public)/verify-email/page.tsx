@@ -1,25 +1,44 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { showError, showSuccess } from "@/lib/toast";
 import AuthTopBar from "@/modules/authentication/presentation/components/AuthTopBar";
 import { Mail, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import { sendMagicLinkServer } from "@/modules/authentication/presentation/actions/auth";
 
-export default function VerifyEmailPage() {
-  const [email, setEmail] = useState("");
-  const [resending, setResending] = useState(false);
+export function VerifyEmailContent() {
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [isMagicLink, setIsMagicLink] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendTimer, setResendTimer] = useState(60);
+
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timerId = setInterval(() => setResendTimer((prev) => prev - 1), 1000);
+      return () => clearInterval(timerId);
+    }
+  }, [resendTimer]);
 
   const checkUser = useCallback(async () => {
     try {
+      // 1. Try to recover from short-lived client state (Magic Link flow)
+      const pendingEmail = typeof window !== "undefined" ? sessionStorage.getItem("tomesphere_pending_email") : null;
+      if (pendingEmail) {
+        setEmail(pendingEmail);
+        setIsMagicLink(true);
+      }
+
+      // 2. Perform authoritative server check
       const res = await fetch("/api/v1/auth/session");
       const resData = await res.json();
       const user = resData?.session?.user;
 
       if (!user) {
+        if (pendingEmail) return; // Keep showing the screen for magic link
         router.push("/login");
         return;
       }
@@ -43,19 +62,24 @@ export default function VerifyEmailPage() {
   const resendVerification = async () => {
     setResending(true);
     try {
-      const res = await fetch("/api/v1/auth/resend-verification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      const error = !res.ok ? new Error(data.error?.message || "Failed to resend email") : null;
-
-      if (error) throw error;
+      if (isMagicLink) {
+        const res = await sendMagicLinkServer(email, false);
+        if (!res.success) throw new Error(res.error?.message || "Failed to resend magic link");
+      } else {
+        const res = await fetch("/api/v1/auth/resend-verification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json();
+        const error = !res.ok ? new Error(data.error?.message || "Failed to resend email") : null;
+        if (error) throw error;
+      }
 
       showSuccess("Verification email resent! Check your inbox.");
+      setResendTimer(90);
     } catch (error: any) {
-      showError("Failed to resend email");
+      showError(error.message || "Failed to resend email");
     } finally {
       setResending(false);
     }
@@ -72,15 +96,15 @@ export default function VerifyEmailPage() {
       <AuthTopBar />
 
       {/* ── Route-related Background Sanctuary Backdrop ── */}
-      <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+      <div className="absolute inset-0 w-full h-full z-0 pointer-events-none overflow-hidden">
         <Image
           src="/auth_signup_bg.jpg"
           alt="Grand Library Atrium"
           fill
-          className="object-cover object-center opacity-55 dark:opacity-85 transition-opacity duration-500"
+          className="object-cover object-center opacity-50 dark:opacity-40 transition-opacity duration-500 scale-105"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-tr from-slate-50/60 via-slate-100/45 to-purple-50/40 dark:from-slate-950/75 dark:via-slate-950/65 dark:to-slate-900/50 backdrop-blur-[1px] transition-colors" />
+        <div className="absolute inset-0 bg-slate-900/30 dark:bg-slate-950/75 backdrop-blur-[3px] transition-colors" />
       </div>
 
       <div className="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 relative z-10">
@@ -122,24 +146,16 @@ export default function VerifyEmailPage() {
         <div className="space-y-3">
           <button
             onClick={resendVerification}
-            disabled={resending}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-500 text-white py-3 rounded-xl font-semibold text-sm transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            disabled={resending || resendTimer > 0}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-500 text-white py-3 rounded-xl font-semibold text-sm transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex justify-center items-center"
           >
-            {resending ? "Sending..." : "Resend Verification Email"}
-          </button>
-
-          <button
-            onClick={checkUser}
-            className="w-full bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 py-3 rounded-xl font-semibold text-sm transition-all border border-slate-300 dark:border-slate-700 cursor-pointer"
-          >
-            I&apos;ve Verified - Continue
-          </button>
-
-          <button
-            onClick={handleSignOut}
-            className="w-full text-slate-500 hover:text-slate-900 dark:hover:text-white py-2 text-xs transition-colors cursor-pointer font-medium"
-          >
-            Sign out
+            {resending ? (
+              "Sending..."
+            ) : resendTimer > 0 ? (
+              `Resend in ${resendTimer}s`
+            ) : (
+              "Resend Verification Email"
+            )}
           </button>
         </div>
 
@@ -157,5 +173,17 @@ export default function VerifyEmailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[var(--surface-canvas)] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

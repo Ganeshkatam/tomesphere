@@ -146,8 +146,14 @@ export default function EnhancedLoginPage() {
       showSuccess(
         isPhone ? "SMS code sent!" : "Magic link sent to your email!",
       );
-      setResendTimer(90);
-      setStep(isPhone ? "otp" : "magic-link-sent");
+      
+      if (isPhone) {
+        setResendTimer(90);
+        setStep("otp");
+      } else {
+        sessionStorage.setItem("tomesphere_pending_email", id);
+        router.push("/verify-email");
+      }
     } catch (err: any) {
       showError(err.message || "Failed to send verification code");
     } finally {
