@@ -255,7 +255,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
               isDark ? "bg-slate-950 border-slate-800" : "bg-white border-slate-200"
             }`}
           >
-            <div className="flex items-center justify-between p-4 pl-8 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 dark:border-slate-800">
               <span className="font-bold text-lg text-slate-800 dark:text-slate-200">Menu</span>
               <button 
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -267,8 +267,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto px-4 pl-8 py-5 flex flex-col gap-1.5">
-              <div className="relative flex items-center w-full mb-4 sm:hidden">
+            <div className="flex-1 overflow-y-auto px-8 py-6 flex flex-col gap-2">
+              <div className="relative flex items-center w-full mb-6 sm:hidden">
                 <SearchBar size="sm" placeholder="Search digital archives..." />
               </div>
 
