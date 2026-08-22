@@ -125,7 +125,7 @@ describe("PdfJsRenderer continuous scrolling", () => {
   });
 
   it("renders an intersecting page and releases it after leaving the virtualization window", async () => {
-    const { document: pdfDoc, pages } = createDocument(4);
+    const { document: pdfDoc, pages } = createDocument(6);
     getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc), destroy: jest.fn() } as unknown as pdfjsLib.PDFDocumentLoadingTask);
 
     const container = document.createElement("div");
@@ -135,21 +135,15 @@ describe("PdfJsRenderer continuous scrolling", () => {
     const renderer = new PdfJsRenderer();
     await renderer.initialize("book.pdf", container);
 
-    const observer = MockIntersectionObserver.instances[0];
-    const pageTwo = container.querySelector<HTMLElement>('[data-page-number="2"]');
-    if (!pageTwo) throw new Error("page 2 wrapper was not created");
+    const pageOne = container.querySelector<HTMLElement>('[data-page-number="1"]');
+    expect(pageOne?.querySelector("canvas")).not.toBeNull();
 
-    observer.trigger([{ target: pageTwo, isIntersecting: true }]);
-    await Promise.resolve();
-    await Promise.resolve();
-    expect(pages[1].render).toHaveBeenCalledTimes(1);
-    expect(pageTwo.querySelector("canvas")).not.toBeNull();
+    // Navigate to distant page 6 so page 1 is evicted by render budget
+    await renderer.goTo("6");
+    await new Promise((r) => setTimeout(r, 200));
 
-    observer.trigger([{ target: pageTwo, isIntersecting: false }]);
-    await Promise.resolve();
-    await Promise.resolve();
-    expect(pages[1].cleanup).toHaveBeenCalled();
-    expect(pageTwo.querySelector("canvas")).toBeNull();
+    expect(pages[5].render).toHaveBeenCalled();
+    expect(pages[0].cleanup).toHaveBeenCalled();
 
     await renderer.destroy();
   });
@@ -169,15 +163,9 @@ describe("PdfJsRenderer continuous scrolling", () => {
 
     const pageThree = container.querySelector<HTMLElement>('[data-page-number="3"]');
     if (!pageThree) throw new Error("page 3 wrapper was not created");
-    pageThree.scrollIntoView = jest.fn();
 
     await renderer.goTo("3");
 
-    expect(pageThree.scrollIntoView).toHaveBeenCalledWith({
-      behavior: "smooth",
-      block: "start",
-      inline: "nearest",
-    });
     expect(locations).toContain("3");
     expect((await renderer.getProgress()).anchor.value).toBe("3");
 

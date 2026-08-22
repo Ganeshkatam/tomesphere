@@ -1,4 +1,8 @@
 const crypto = require("crypto");
+const { TextEncoder, TextDecoder } = require("util");
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 if (typeof global.crypto === "undefined") {
   global.crypto = crypto.webcrypto || {
@@ -7,3 +11,32 @@ if (typeof global.crypto === "undefined") {
 } else if (!global.crypto.randomUUID) {
   global.crypto.randomUUID = () => crypto.randomUUID();
 }
+
+if (typeof global.Request === "undefined") {
+  global.Request = class Request {};
+}
+if (typeof global.Response === "undefined") {
+  global.Response = class Response {};
+}
+if (typeof global.Headers === "undefined") {
+  global.Headers = class Headers {};
+}
+
+if (typeof Element.prototype.scrollTo === "undefined") {
+  Element.prototype.scrollTo = function scrollTo(options) {
+    if (typeof options === "object") {
+      if (options.top !== undefined) this.scrollTop = options.top;
+      if (options.left !== undefined) this.scrollLeft = options.left;
+    }
+  };
+}
+
+if (typeof Element.prototype.scrollIntoView === "undefined") {
+  Element.prototype.scrollIntoView = function scrollIntoView() {};
+}
+
+jest.mock("next/cache", () => ({
+  revalidatePath: jest.fn(),
+  revalidateTag: jest.fn(),
+  unstable_cache: jest.fn((fn) => fn),
+}));
