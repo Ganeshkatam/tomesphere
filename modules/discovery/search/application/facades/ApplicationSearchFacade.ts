@@ -12,6 +12,8 @@ import { GetTrendingSearchesHandler } from "../queries/GetTrendingSearches/handl
 import { IEventBus } from "@/shared/core/events/types";
 import { randomUUID } from "crypto";
 
+import { SearchAnalyticsHandler } from "../event-handlers/SearchAnalyticsHandler";
+
 export class ApplicationSearchFacade implements SearchFacade {
   constructor(
     private readonly searchResultsHandler: GetSearchResultsHandler,
@@ -19,31 +21,39 @@ export class ApplicationSearchFacade implements SearchFacade {
     private readonly recentSearchesHandler: GetRecentSearchesHandler,
     private readonly trendingSearchesHandler: GetTrendingSearchesHandler,
     private readonly eventBus: IEventBus,
+    private readonly analyticsHandler?: SearchAnalyticsHandler,
   ) {}
 
   async search(request: SearchRequest): Promise<SearchResponse> {
     const response = await this.searchResultsHandler.handle(request);
 
-    // Fire-and-forget analytics event
+    // Prepare search analytics payload
     const searchId = randomUUID();
-    setImmediate(() => {
-      try {
-        this.eventBus.emit("discovery.search.executed", {
-          searchId,
-          query: request.query,
-          executionTimeMs: response.executionTimeMs,
-          resultCount: response.totalCount,
-          filters: request.filters || {},
-          sort: request.sort || "relevance",
-          timestamp: new Date().toISOString(),
-        });
-      } catch (err) {
-        console.error(
-          "[ApplicationSearchFacade] Failed to emit search analytics event",
-          err,
-        );
-      }
-    });
+    const payload = {
+      searchId,
+      userId: request.userId,
+      query: request.query,
+      executionTimeMs: response.executionTimeMs,
+      resultCount: response.totalCount,
+      filters: request.filters || {},
+      sort: request.sort || "relevance",
+      timestamp: new Date().toISOString(),
+    };
+
+    // 1. Emit to EventBus
+    try {
+      this.eventBus.emit("discovery.search.executed", payload);
+    } catch (err) {
+      console.error(
+        "[ApplicationSearchFacade] Failed to emit search analytics event",
+        err,
+      );
+    }
+
+    // 2. Direct durable persistence to search_history if analytics handler is injected
+    if (this.analyticsHandler && request.query && request.query.trim().length > 0) {
+      void this.analyticsHandler.handle(payload);
+    }
 
     return response;
   }

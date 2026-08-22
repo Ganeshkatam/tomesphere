@@ -10,4 +10,5 @@ export interface SearchRequest {
     publicationYear?: number[];
   };
   includeUnavailable?: boolean;
+  userId?: string;
 }

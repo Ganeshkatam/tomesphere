@@ -2,8 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, X, Loader2, Book, ArrowRight } from "lucide-react";
-import { autocompleteAction } from "../actions/searchActions";
+import { Search, X, Loader2, Book, ArrowRight, Clock, TrendingUp, Trash2 } from "lucide-react";
+import {
+  autocompleteAction,
+  getRecentSearchesAction,
+  getTrendingSearchesAction,
+  deleteSearchHistoryItemAction,
+  clearRecentSearchesAction,
+} from "../actions/searchActions";
 import Link from "next/link";
 
 interface SearchBarProps {
@@ -25,6 +31,8 @@ export function SearchBar({
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(initialQuery);
   const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [trendingSearches, setTrendingSearches] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -53,6 +61,20 @@ export function SearchBar({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Fetch recent and trending searches when focusing or query is empty
+  const fetchRecentAndTrending = useCallback(async () => {
+    try {
+      const [recent, trending] = await Promise.all([
+        getRecentSearchesAction(),
+        getTrendingSearchesAction(),
+      ]);
+      setRecentSearches(recent || []);
+      setTrendingSearches(trending || []);
+    } catch (err) {
+      console.error("Failed to load search history and trends:", err);
+    }
   }, []);
 
   // Debounced autocomplete fetcher
@@ -100,12 +122,34 @@ export function SearchBar({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = (e?: React.FormEvent, customQuery?: string) => {
     if (e) e.preventDefault();
-    const trimmed = query.trim();
-    if (trimmed) {
+    const targetQuery = (customQuery !== undefined ? customQuery : query).trim();
+    if (targetQuery) {
       setIsOpen(false);
-      router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+      router.push(`/search?q=${encodeURIComponent(targetQuery)}`);
+    }
+  };
+
+  const handleDeleteRecentItem = async (e: React.MouseEvent, item: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setRecentSearches((prev) => prev.filter((q) => q !== item));
+    try {
+      await deleteSearchHistoryItemAction(item);
+    } catch (err) {
+      console.error("Failed to delete search history item:", err);
+    }
+  };
+
+  const handleClearAllRecent = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setRecentSearches([]);
+    try {
+      await clearRecentSearchesAction();
+    } catch (err) {
+      console.error("Failed to clear search history:", err);
     }
   };
 
@@ -141,9 +185,14 @@ export function SearchBar({
     lg: "px-4 sm:px-5 py-3 sm:py-3.5 text-sm sm:text-base rounded-2xl",
   };
 
+  const isShowingHistory =
+    isOpen &&
+    (!query || query.trim().length < 2) &&
+    (recentSearches.length > 0 || trendingSearches.length > 0);
+
   return (
     <div ref={containerRef} className={`relative w-full ${className}`}>
-      <form onSubmit={handleSubmit} className="relative w-full">
+      <form onSubmit={(e) => handleSubmit(e)} className="relative w-full">
         <div
           className={`w-full relative flex items-center bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 shadow-xs ${sizeClasses[size]}`}
         >
@@ -169,7 +218,10 @@ export function SearchBar({
               setHighlightedIndex(-1);
             }}
             onFocus={() => {
-              if (suggestions.length > 0) setIsOpen(true);
+              setIsOpen(true);
+              if (!query || query.trim().length < 2) {
+                fetchRecentAndTrending();
+              }
             }}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
@@ -182,7 +234,8 @@ export function SearchBar({
               onClick={() => {
                 setQuery("");
                 setSuggestions([]);
-                setIsOpen(false);
+                setIsOpen(true);
+                fetchRecentAndTrending();
                 inputRef.current?.focus();
               }}
               aria-label="Clear search input"
@@ -203,7 +256,7 @@ export function SearchBar({
       </form>
 
       {/* Autocomplete Suggestions Popup */}
-      {isOpen && suggestions.length > 0 && (
+      {isOpen && query.trim().length >= 2 && suggestions.length > 0 && (
         <div className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in duration-150 p-1.5 text-xs">
           <div className="px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center justify-between">
             <span>Catalogue Suggestions</span>
@@ -261,6 +314,81 @@ export function SearchBar({
               See all &ldquo;{query}&rdquo;
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Recent Searches & Trending Searches Popup */}
+      {isShowingHistory && (
+        <div className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in duration-150 p-2 text-xs space-y-2">
+          {recentSearches.length > 0 && (
+            <div>
+              <div className="px-2 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Clock size={11} className="text-slate-400" />
+                  Recent Searches
+                </span>
+                <button
+                  type="button"
+                  onClick={handleClearAllRecent}
+                  className="text-[10px] text-slate-400 hover:text-red-500 dark:hover:text-red-400 font-medium transition-colors cursor-pointer"
+                >
+                  Clear all
+                </button>
+              </div>
+
+              <div className="space-y-0.5 mt-1">
+                {recentSearches.map((item, index) => (
+                  <div
+                    key={`recent-${item}-${index}`}
+                    onClick={() => {
+                      setQuery(item);
+                      handleSubmit(undefined, item);
+                    }}
+                    className="flex items-center justify-between px-3 py-2 rounded-xl text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/70 transition-colors cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Clock size={13} className="text-slate-400 shrink-0" />
+                      <span className="font-medium truncate text-xs">{item}</span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={(e) => handleDeleteRecentItem(e, item)}
+                      aria-label={`Remove ${item} from search history`}
+                      className="p-1 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shrink-0"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {trendingSearches.length > 0 && (
+            <div className={recentSearches.length > 0 ? "pt-2 border-t border-slate-100 dark:border-slate-800" : ""}>
+              <div className="px-2 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                <TrendingUp size={11} className="text-indigo-500" />
+                Trending Searches
+              </div>
+
+              <div className="flex flex-wrap gap-1.5 px-2 py-1.5">
+                {trendingSearches.map((trend, idx) => (
+                  <button
+                    key={`trend-${trend}-${idx}`}
+                    type="button"
+                    onClick={() => {
+                      setQuery(trend);
+                      handleSubmit(undefined, trend);
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-950/60 dark:hover:text-indigo-300 text-[11px] font-medium transition-colors cursor-pointer"
+                  >
+                    {trend}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
