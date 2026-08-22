@@ -55,6 +55,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
   const isDark = resolvedTheme === "dark";
 
   return (
+    <>
     <header
       className={`sticky top-0 z-50 w-full transition-colors duration-200 ${isDark
         ? "bg-slate-950/95 backdrop-blur-md text-white border-b border-slate-800/80 shadow-md"
@@ -237,6 +238,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
         </div>
 
       </div>
+    </header>
 
       {/* Mobile Menu Overlay & Drawer */}
       {isMobileMenuOpen && (
@@ -393,6 +395,6 @@ export function AppHeader({ className = "", variant = "application", user }: App
         </div>
         </>
       )}
-    </header>
+    </>
   );
 }
