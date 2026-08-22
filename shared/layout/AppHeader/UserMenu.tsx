@@ -102,7 +102,7 @@ export function UserMenu({ user }: UserMenuProps) {
           {/* User Profile Header Card */}
           <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800/80">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-tr from-indigo-600 to-purple-600 text-white font-bold text-sm flex items-center justify-center shrink-0 border border-indigo-400/30">
+              <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gradient-to-tr from-indigo-600 to-purple-600 text-white font-bold text-sm flex items-center justify-center shrink-0 border border-indigo-400/30">
                 {user.avatarUrl ? (
                   <Image
                     src={user.avatarUrl}
