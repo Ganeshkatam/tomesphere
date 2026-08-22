@@ -15,7 +15,7 @@ export function AnnotationCard({ annotation }: AnnotationCardProps) {
         <div className="relative mb-4 pb-4 border-b border-[var(--border-default)]">
           <div className="absolute -left-1 top-1 bottom-1 w-1 rounded-full bg-yellow-400"></div>
           <p className="text-sm italic text-slate-700 dark:text-slate-300 pl-3 line-clamp-3">
-            "{annotation.highlightText}"
+            &quot;{annotation.highlightText}&quot;
           </p>
         </div>
       )}

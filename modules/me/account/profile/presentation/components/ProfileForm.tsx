@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { showError, showSuccess } from "@/lib/toast";
 import {
   updateProfileAction,
@@ -23,7 +24,7 @@ import {
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
-/*  Types                                                              */
+/*  Types                                                             */
 /* ------------------------------------------------------------------ */
 
 interface ProfileFormDto {
@@ -256,7 +257,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
           <div className="w-28 h-28 rounded-full p-[3px] bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
             <div className="w-full h-full rounded-full overflow-hidden bg-[var(--surface-raised)] flex items-center justify-center">
               {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                <Image src={avatarUrl} alt="Avatar" className="object-cover" fill sizes="112px" />
               ) : (
                 <span className="text-3xl font-bold bg-gradient-to-br from-indigo-400 to-purple-400 bg-clip-text text-transparent">
                   {getInitials(formData.displayName)}
@@ -401,9 +402,8 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
                     className="w-full text-left pl-9 disabled:cursor-default"
                   >
                     <p
-                      className={`text-sm font-medium leading-relaxed ${
-                        value ? "text-slate-100" : "text-slate-600 italic"
-                      }`}
+                      className={`text-sm font-medium leading-relaxed ${value ? "text-slate-100" : "text-slate-600 italic"
+                        }`}
                     >
                       {value || "Not set"}
                     </p>

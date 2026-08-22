@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   User,
@@ -81,10 +82,12 @@ export function UserMenu({ user }: UserMenuProps) {
         aria-expanded={isOpen}
       >
         {user.avatarUrl ? (
-          <img
+          <Image
             src={user.avatarUrl}
             alt={user.name || "User avatar"}
-            className="w-full h-full object-cover rounded-full"
+            className="object-cover rounded-full"
+            fill
+            sizes="40px"
           />
         ) : (
           <span className="group-hover:scale-110 transition-transform">
@@ -101,10 +104,12 @@ export function UserMenu({ user }: UserMenuProps) {
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-tr from-indigo-600 to-purple-600 text-white font-bold text-sm flex items-center justify-center shrink-0 border border-indigo-400/30">
                 {user.avatarUrl ? (
-                  <img
+                  <Image
                     src={user.avatarUrl}
                     alt={user.name || "Avatar"}
-                    className="w-full h-full object-cover"
+                    className="object-cover"
+                    fill
+                    sizes="40px"
                   />
                 ) : (
                   getInitials()

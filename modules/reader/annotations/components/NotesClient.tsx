@@ -23,7 +23,7 @@ export function NotesClient({ initialData }: NotesClientProps) {
             My Notes
           </h1>
           <p className="text-slate-500 mt-2">
-            Standalone notes you've written across your library.
+            Standalone notes you&apos;ve written across your library.
           </p>
         </div>
 
@@ -34,7 +34,7 @@ export function NotesClient({ initialData }: NotesClientProps) {
             </div>
             <h3 className="text-2xl font-bold mb-2">No notes yet</h3>
             <p className="text-slate-500 max-w-sm">
-              When you create standalone notes in the reader, they'll appear here.
+              When you create standalone notes in the reader, they&apos;ll appear here.
             </p>
           </div>
         ) : (

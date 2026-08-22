@@ -156,7 +156,7 @@ export default function ShelvesClient({ initialData }: ShelvesClientProps) {
           </div>
         ) : filteredShelves.length === 0 ? (
           <div className="py-24 text-center text-slate-500">
-            No shelves match your search for "{searchQuery}".
+            No shelves match your search for &quot;{searchQuery}&quot;.
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
