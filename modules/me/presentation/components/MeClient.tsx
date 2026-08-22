@@ -32,7 +32,6 @@ import { CurrentReadingDto } from "@/modules/library/application/queries/GetCurr
 import { DiscoveryOverviewPageDto } from "@/modules/discovery/application/facades/DiscoveryFacade";
 import BookCard from "@/modules/books/components/BookCard";
 import MeHeroSection from "./MeHeroSection";
-import UserStatisticsWidget from "./UserStatisticsWidget";
 
 interface MeClientProps {
   data: MePageDto;
@@ -146,11 +145,6 @@ export function MeClient({ data }: MeClientProps) {
           Explore curated public domain archives, resume your reading, and discover timeless literature.
         </p>
       </section>
-
-      {/* User Statistics Widget */}
-      <Suspense fallback={null}>
-        <UserStatisticsWidget promise={data.userStatistics} />
-      </Suspense>
 
       {/* 2. Billboard Spotlight Hero & Top Trending Carousel Showcase (Initial) */}
       <Suspense fallback={<NetflixTrendingSkeleton />}>
@@ -635,7 +629,7 @@ function PersonalizedRecommendationsSection({
       <div className="relative">
         <div
           ref={scrollRef}
-          className="flex gap-5 overflow-x-auto py-2 px-1 no-scrollbar scroll-smooth snap-x snap-mandatory"
+          className="flex items-stretch gap-5 overflow-x-auto pt-3 pb-4 px-1.5 no-scrollbar scroll-smooth snap-x snap-mandatory"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {recommendedItems.map((item: any, idx: number) => (
@@ -738,7 +732,7 @@ function PublicSizedShelfSection({
       <div className="relative">
         <div
           ref={scrollRef}
-          className="flex gap-5 overflow-x-auto py-2 px-1 no-scrollbar scroll-smooth snap-x snap-mandatory"
+          className="flex items-stretch gap-5 overflow-x-auto pt-3 pb-4 px-1.5 no-scrollbar scroll-smooth snap-x snap-mandatory"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {items.slice(0, 10).map((item: any, idx: number) => (
@@ -752,17 +746,31 @@ function PublicSizedShelfSection({
           <div className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col">
             <Link
               href={viewAllHref}
-              className="w-full h-full min-h-[220px] sm:min-h-[260px] rounded-xl sm:rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 flex flex-col items-center justify-center p-4 sm:p-6 text-center group transition-all duration-300 hover:scale-[1.03] hover:shadow-lg cursor-pointer bg-slate-50/50 dark:bg-slate-900/50"
+              className="w-full h-full rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500/60 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer flex flex-col transition-all duration-300 group select-none"
             >
-              <div className="w-12 h-12 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/60 dark:border-indigo-800/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform mb-3">
-                <ArrowRight size={20} />
+              {/* Top Banner aspect-[2/3] matching BookCard cover */}
+              <div className="relative aspect-[2/3] w-full shrink-0 overflow-hidden bg-gradient-to-br from-indigo-50/80 via-slate-50 to-purple-50/40 dark:from-slate-900 dark:via-indigo-950/30 dark:to-slate-900 flex flex-col items-center justify-center p-4 text-center border-b border-slate-100 dark:border-slate-800/80">
+                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-white dark:bg-slate-800 border border-indigo-100 dark:border-indigo-900/60 shadow-md flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 mb-2.5">
+                  <ArrowRight size={18} />
+                </div>
+                <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
+                  View All
+                </span>
+                <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1 font-medium">
+                  {title}
+                </span>
               </div>
-              <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                View All {title}
-              </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Explore entire archive
-              </span>
+
+              {/* Bottom Details matching BookCard details */}
+              <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between bg-white dark:bg-slate-900">
+                <p className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center justify-center gap-1">
+                  <span>Explore Archive</span>
+                  <span>→</span>
+                </p>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium text-center truncate">
+                  Complete Catalog
+                </p>
+              </div>
             </Link>
           </div>
         </div>
@@ -877,7 +885,7 @@ function CuratedDisciplineShelfSection({
       <div className="relative">
         <div
           ref={scrollRef}
-          className="flex gap-5 overflow-x-auto py-2 px-1 no-scrollbar scroll-smooth snap-x snap-mandatory"
+          className="flex items-stretch gap-5 overflow-x-auto pt-3 pb-4 px-1.5 no-scrollbar scroll-smooth snap-x snap-mandatory"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {disciplineBooks.map((item: any, i: number) => (

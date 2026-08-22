@@ -164,6 +164,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     this.observer?.disconnect();
     this.observer = new IntersectionObserver(
       (entries) => {
+        let hasNewIntersections = false;
         for (const entry of entries) {
           const pageNumber = Number((entry.target as HTMLElement).dataset.pageNumber);
           if (!Number.isInteger(pageNumber)) continue;
@@ -172,10 +173,12 @@ export class PdfJsRenderer implements ReaderRenderer {
           if (state) state.isIntersecting = entry.isIntersecting;
 
           if (entry.isIntersecting) {
+            hasNewIntersections = true;
             void this.ensurePageRendered(pageNumber);
-          } else {
-            void this.unloadPage(pageNumber);
           }
+        }
+        if (hasNewIntersections && !this.isNavigating) {
+          this.enforceRenderBudget(this.currentPageNum);
         }
       },
       {
@@ -503,6 +506,9 @@ export class PdfJsRenderer implements ReaderRenderer {
     const targetPage = Number.parseInt(rawPage, 10);
     if (!Number.isInteger(targetPage) || targetPage < 1 || targetPage > this.totalPages) return;
 
+    const pageDiff = Math.abs(targetPage - this.currentPageNum);
+    const scrollBehavior: ScrollBehavior = pageDiff <= 1 ? "smooth" : "auto";
+
     this.isNavigating = true;
     if (this.navigatingTimer) clearTimeout(this.navigatingTimer);
 
@@ -512,17 +518,23 @@ export class PdfJsRenderer implements ReaderRenderer {
     const state = this.pageStates.get(targetPage);
     if (!state) return;
 
-    // Pre-render target page and immediate neighbors before scroll to eliminate white flashes
+    // Pre-render target page and immediate neighbors before scroll to eliminate flashes
     await this.ensurePageRendered(targetPage);
     if (targetPage + 1 <= this.totalPages) void this.ensurePageRendered(targetPage + 1);
     if (targetPage - 1 >= 1) void this.ensurePageRendered(targetPage - 1);
 
-    state.wrapper.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    // Scroll directly to target position
+    const container = this.container;
+    const targetTop = state.wrapper.offsetTop;
+    container.scrollTo({
+      top: Math.max(0, targetTop - 12),
+      behavior: scrollBehavior,
+    });
 
     this.navigatingTimer = setTimeout(() => {
       this.isNavigating = false;
       this.enforceRenderBudget(targetPage);
-    }, 450);
+    }, pageDiff <= 1 ? 400 : 150);
   }
 
   async next(): Promise<void> {

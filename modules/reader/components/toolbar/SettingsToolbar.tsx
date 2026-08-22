@@ -4,6 +4,7 @@ import { useReaderStore } from "@/modules/reader/state/reader-store";
 import { ReaderService } from "@/modules/reader/application/ReaderService";
 import { Settings, Maximize, Search, List } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "@/shared/providers/theme-context";
 
 interface SettingsToolbarProps {
   service: ReaderService | null;
@@ -12,6 +13,7 @@ interface SettingsToolbarProps {
 export function SettingsToolbar({ service }: SettingsToolbarProps) {
   const { preferences, updatePreference, sidebarOpen, sidebarTab, setSidebarOpen, setSidebarTab } =
     useReaderStore();
+  const { theme: appTheme, setTheme: setAppTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const theme = preferences.theme || "light";
@@ -149,6 +151,49 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
         <div
           className={`absolute top-12 right-0 w-64 border rounded-2xl p-4 flex flex-col gap-4 z-50 animate-in fade-in slide-in-from-top-2 ${themeStyles.menuBg}`}
         >
+          {/* App Theme (Global system / light / dark) */}
+          <div>
+            <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+              App Theme
+            </span>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setAppTheme("system")}
+                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  appTheme === "system"
+                    ? themeStyles.pillActive
+                    : themeStyles.pillInactive
+                }`}
+              >
+                System
+              </button>
+              <button
+                type="button"
+                onClick={() => setAppTheme("light")}
+                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  appTheme === "light"
+                    ? themeStyles.pillActive
+                    : themeStyles.pillInactive
+                }`}
+              >
+                Light
+              </button>
+              <button
+                type="button"
+                onClick={() => setAppTheme("dark")}
+                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  appTheme === "dark"
+                    ? themeStyles.pillActive
+                    : themeStyles.pillInactive
+                }`}
+              >
+                Dark
+              </button>
+            </div>
+          </div>
+
+          {/* Reader Theme (Document & reading canvas color) */}
           <div>
             <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
               Reader Theme

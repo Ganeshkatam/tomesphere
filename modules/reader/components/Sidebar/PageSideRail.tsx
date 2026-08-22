@@ -116,10 +116,12 @@ function PageThumbnailItem({
   }, [theme]);
 
   return (
-    <div
+    <button
+      type="button"
       ref={isActive ? (activeRef as any) : null}
       onClick={() => onClick(pageNum)}
-      className="flex flex-col items-center cursor-pointer group select-none py-1 w-full shrink-0"
+      className="flex flex-col items-center cursor-pointer group select-none py-1 w-full shrink-0 focus:outline-none"
+      title={`Jump to Page ${pageNum}`}
     >
       {/* Sized precisely so 5 pages fit viewable vertically at a time */}
       <div
@@ -161,7 +163,7 @@ function PageThumbnailItem({
       <span className={`text-xs font-semibold mt-1 font-mono transition-colors ${pageNumClass}`}>
         {pageNum}
       </span>
-    </div>
+    </button>
   );
 }
 

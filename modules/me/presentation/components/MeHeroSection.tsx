@@ -203,7 +203,7 @@ export default function MeHeroSection({ promise }: MeHeroSectionProps) {
         {/* Horizontal Carousel Row */}
         <div
           ref={scrollRef}
-          className="flex gap-4 sm:gap-5 overflow-x-auto py-2 px-1 no-scrollbar scroll-smooth snap-x snap-mandatory"
+          className="flex items-stretch gap-4 sm:gap-5 overflow-x-auto pt-3 pb-4 px-1.5 no-scrollbar scroll-smooth snap-x snap-mandatory"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {trendingBooks.slice(0, 10).map((book: any, idx: number) => {

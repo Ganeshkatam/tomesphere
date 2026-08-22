@@ -83,7 +83,7 @@ export default function BookCard({
         className="w-full h-full rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500/60 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer flex flex-col transition-all duration-300"
       >
         {/* Cover Aspect [2/3] with Quick Hover Action Overlay */}
-        <div className="relative aspect-[2/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-950">
+        <div className="relative aspect-[2/3] w-full shrink-0 overflow-hidden bg-slate-100 dark:bg-slate-950">
           {!imageLoaded && book.coverUrl && !hasError && (
             <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse z-0" />
           )}
