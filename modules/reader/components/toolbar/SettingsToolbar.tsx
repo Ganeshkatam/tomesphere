@@ -10,8 +10,11 @@ interface SettingsToolbarProps {
 }
 
 export function SettingsToolbar({ service }: SettingsToolbarProps) {
-  const { preferences, updatePreference } = useReaderStore();
+  const { preferences, updatePreference, sidebarOpen, sidebarTab, setSidebarOpen, setSidebarTab } =
+    useReaderStore();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const theme = preferences.theme || "light";
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -21,10 +24,10 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
     }
   };
 
-  const handleThemeChange = (theme: "light" | "dark" | "sepia") => {
-    updatePreference("theme", theme);
+  const handleThemeChange = (newTheme: "light" | "dark" | "sepia") => {
+    updatePreference("theme", newTheme);
     if (service) {
-      service.applyPreferences({ ...preferences, theme });
+      service.applyPreferences({ ...preferences, theme: newTheme });
     }
   };
 
@@ -37,75 +40,150 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
   };
 
   const adjustZoom = (delta: number) => {
-    const newZoom = Math.max(50, Math.min(270, preferences.zoom + delta));
+    const newZoom = Math.max(100, Math.min(240, (preferences.zoom || 100) + delta));
     updatePreference("zoom", newZoom);
     if (service) {
       service.applyPreferences({ ...preferences, zoom: newZoom });
     }
   };
 
+  const themeStyles = {
+    light: {
+      btn: "text-slate-700 hover:text-slate-900 hover:bg-slate-100",
+      activeBtn: "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-500/20",
+      settingsActive: "bg-slate-200 text-slate-900",
+      menuBg: "bg-white border-slate-200 text-slate-800 shadow-2xl",
+      sectionHeader: "text-slate-500",
+      pillInactive: "bg-slate-100 text-slate-700 hover:bg-slate-200",
+      pillActive: "bg-indigo-600 text-white shadow-xs",
+      stepBtn: "bg-slate-100 text-slate-700 hover:bg-slate-200",
+      valueText: "text-slate-900",
+    },
+    dark: {
+      btn: "text-slate-200 hover:text-white hover:bg-white/10",
+      activeBtn: "bg-indigo-950/60 text-indigo-400 ring-1 ring-indigo-500/30",
+      settingsActive: "bg-white/20 text-white",
+      menuBg: "bg-[#28292c] border-[#3c4043] text-slate-100 shadow-2xl",
+      sectionHeader: "text-slate-400",
+      pillInactive: "bg-[#1c1d1f] text-slate-300 hover:bg-[#323338]",
+      pillActive: "bg-indigo-600 text-white shadow-xs",
+      stepBtn: "bg-[#1c1d1f] text-slate-200 hover:bg-[#323338]",
+      valueText: "text-slate-100",
+    },
+    sepia: {
+      btn: "text-[#5b4636] hover:text-[#382b21] hover:bg-[#ede3cc]",
+      activeBtn: "bg-[#ede3cc] text-[#8b5a2b] ring-1 ring-[#c87a32]/30",
+      settingsActive: "bg-[#ede3cc] text-[#5b4636]",
+      menuBg: "bg-[#fbf0d9] border-[#dfd3b9] text-[#5b4636] shadow-xl",
+      sectionHeader: "text-[#8a725b]",
+      pillInactive: "bg-[#ede3cc] text-[#5b4636] hover:bg-[#e4d9bf]",
+      pillActive: "bg-[#8b5a2b] text-[#fbf0d9] shadow-xs",
+      stepBtn: "bg-[#ede3cc] text-[#5b4636] hover:bg-[#e4d9bf]",
+      valueText: "text-[#5b4636]",
+    },
+  }[theme];
+
   return (
-    <div className="flex items-center gap-2 relative">
+    <div className="flex items-center gap-1 relative">
       <button
+        type="button"
         onClick={() => {
-          useReaderStore.getState().setSidebarTab("search");
-          useReaderStore.getState().setSidebarOpen(true);
+          if (sidebarOpen && sidebarTab === "search") {
+            setSidebarOpen(false);
+          } else {
+            setSidebarTab("search");
+            setSidebarOpen(true);
+          }
         }}
-        className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-colors"
-        title="Search"
+        className={`p-2 rounded-xl transition-colors cursor-pointer ${
+          sidebarOpen && sidebarTab === "search"
+            ? themeStyles.activeBtn
+            : themeStyles.btn
+        }`}
+        title="Search in Volume"
       >
-        <Search size={20} />
+        <Search size={18} />
       </button>
 
       <button
+        type="button"
         onClick={() => {
-          useReaderStore.getState().setSidebarTab("toc");
-          useReaderStore.getState().setSidebarOpen(true);
+          if (sidebarOpen && sidebarTab === "toc") {
+            setSidebarOpen(false);
+          } else {
+            setSidebarTab("toc");
+            setSidebarOpen(true);
+          }
         }}
-        className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-colors"
+        className={`p-2 rounded-xl transition-colors cursor-pointer ${
+          sidebarOpen && sidebarTab === "toc"
+            ? themeStyles.activeBtn
+            : themeStyles.btn
+        }`}
         title="Table of Contents"
       >
-        <List size={20} />
+        <List size={18} />
       </button>
 
       <button
+        type="button"
         onClick={toggleFullscreen}
-        className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-colors"
-        title="Fullscreen"
+        className={`p-2 rounded-xl transition-colors cursor-pointer ${themeStyles.btn}`}
+        title="Fullscreen Mode"
       >
-        <Maximize size={20} />
+        <Maximize size={18} />
       </button>
 
       <button
+        type="button"
         onClick={() => setMenuOpen(!menuOpen)}
-        className={`p-2 rounded-lg transition-colors ${menuOpen ? "bg-white/10 text-white" : "hover:bg-white/5 text-slate-400 hover:text-white"}`}
-        title="Settings"
+        className={`p-2 rounded-xl transition-colors cursor-pointer ${
+          menuOpen ? themeStyles.settingsActive : themeStyles.btn
+        }`}
+        title="Reader Settings"
       >
-        <Settings size={20} />
+        <Settings size={18} />
       </button>
 
       {menuOpen && (
-        <div className="absolute top-12 right-0 w-64 bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-lg shadow-xl p-4 flex flex-col gap-4 z-50">
+        <div
+          className={`absolute top-12 right-0 w-64 border rounded-2xl p-4 flex flex-col gap-4 z-50 animate-in fade-in slide-in-from-top-2 ${themeStyles.menuBg}`}
+        >
           <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">
-              Theme
+            <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+              Reader Theme
             </span>
             <div className="flex gap-2">
               <button
+                type="button"
                 onClick={() => handleThemeChange("light")}
-                className={`flex-1 py-1 px-2 rounded text-sm ${preferences.theme === "light" ? "bg-indigo-600 text-white" : "bg-slate-700 text-slate-300"}`}
+                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  preferences.theme === "light"
+                    ? themeStyles.pillActive
+                    : themeStyles.pillInactive
+                }`}
               >
                 Light
               </button>
               <button
+                type="button"
                 onClick={() => handleThemeChange("dark")}
-                className={`flex-1 py-1 px-2 rounded text-sm ${preferences.theme === "dark" ? "bg-indigo-600 text-white" : "bg-slate-700 text-slate-300"}`}
+                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  preferences.theme === "dark"
+                    ? themeStyles.pillActive
+                    : themeStyles.pillInactive
+                }`}
               >
                 Dark
               </button>
               <button
+                type="button"
                 onClick={() => handleThemeChange("sepia")}
-                className={`flex-1 py-1 px-2 rounded text-sm ${preferences.theme === "sepia" ? "bg-indigo-600 text-white" : "bg-slate-700 text-slate-300"}`}
+                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  preferences.theme === "sepia"
+                    ? themeStyles.pillActive
+                    : themeStyles.pillInactive
+                }`}
               >
                 Sepia
               </button>
@@ -113,22 +191,26 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
           </div>
 
           <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">
+            <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
               Text Size (EPUB)
             </span>
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={() => adjustFontSize(-2)}
-                className="w-8 h-8 rounded bg-slate-700 text-slate-300 hover:bg-slate-600"
+                disabled={preferences.fontSize <= 12}
+                className={`w-8 h-8 rounded-xl disabled:opacity-30 font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
               >
                 -
               </button>
-              <span className="flex-1 text-center text-sm">
+              <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
                 {preferences.fontSize}px
               </span>
               <button
+                type="button"
                 onClick={() => adjustFontSize(2)}
-                className="w-8 h-8 rounded bg-slate-700 text-slate-300 hover:bg-slate-600"
+                disabled={preferences.fontSize >= 32}
+                className={`w-8 h-8 rounded-xl disabled:opacity-30 font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
               >
                 +
               </button>
@@ -136,22 +218,28 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
           </div>
 
           <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">
+            <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
               Zoom (PDF)
             </span>
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={() => adjustZoom(-10)}
-                className="w-8 h-8 rounded bg-slate-700 text-slate-300 hover:bg-slate-600"
+                disabled={(preferences.zoom || 100) <= 100}
+                className={`w-8 h-8 rounded-xl disabled:opacity-30 font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                title="Zoom Out (Minimum 100%)"
               >
                 -
               </button>
-              <span className="flex-1 text-center text-sm">
-                {preferences.zoom}%
+              <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
+                {preferences.zoom || 100}%
               </span>
               <button
+                type="button"
                 onClick={() => adjustZoom(10)}
-                className="w-8 h-8 rounded bg-slate-700 text-slate-300 hover:bg-slate-600"
+                disabled={(preferences.zoom || 100) >= 240}
+                className={`w-8 h-8 rounded-xl disabled:opacity-30 font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                title="Zoom In (Max 240%)"
               >
                 +
               </button>
@@ -162,3 +250,5 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
     </div>
   );
 }
+
+export default SettingsToolbar;

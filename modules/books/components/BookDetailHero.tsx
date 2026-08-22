@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -17,12 +17,12 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
-  BookMarked,
-  FileCheck2,
-  Award,
   Globe,
   Tag,
-  GraduationCap,
+  ListOrdered,
+  FileText,
+  Building,
+  Hash,
 } from "lucide-react";
 import { BookDetailDto } from "@/modules/library/application/dto/response/BookDetailDto";
 import { BookViewerContextDto } from "@/modules/books/application/queries/GetBookViewerContext/handler";
@@ -45,11 +45,20 @@ export function BookDetailHero({
   relatedBooks = [],
   authorWorks,
 }: BookDetailHeroProps) {
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "contents" | "metadata"
+  >("overview");
+
   const [readingStatus, setReadingStatus] = useState<
     "none" | "want_to_read" | "currently_reading" | "finished"
-  >(viewer?.readingStatus || (viewer?.libraryStatus === "in_library" ? "want_to_read" : "none"));
-  const [progressPercentage, setProgressPercentage] = useState(viewer?.progressPercentage || 0);
-  const [currentPage, setCurrentPage] = useState(viewer?.currentPage);
+  >(
+    viewer?.readingStatus ||
+    (viewer?.libraryStatus === "in_library" ? "want_to_read" : "none"),
+  );
+  const [progressPercentage, setProgressPercentage] = useState(
+    viewer?.progressPercentage || 0,
+  );
+  const [currentPage] = useState(viewer?.currentPage);
   const [totalPages] = useState(viewer?.totalPages || book.pageCount || 0);
   const [isUpdatingState, setIsUpdatingState] = useState(false);
   const [showShelfMenu, setShowShelfMenu] = useState(false);
@@ -60,16 +69,17 @@ export function BookDetailHero({
   const inLibrary = readingStatus !== "none";
 
   const authorNames = useMemo(() => {
-    if (!book.authors || book.authors.length === 0) return "TomeSphere Library";
+    if (!book.authors || book.authors.length === 0)
+      return "TomeSphere Archive";
     const names = book.authors
       .map((a: any) => (typeof a === "string" ? a : a?.name))
       .filter(Boolean);
-    return names.length > 0 ? names.join(", ") : "TomeSphere Library";
+    return names.length > 0 ? names.join(", ") : "TomeSphere Archive";
   }, [book.authors]);
 
   const year = book.publishedDate
     ? new Date(book.publishedDate).getFullYear()
-    : "Historic Archive";
+    : "Historic Edition";
 
   const primaryGenre = useMemo(() => {
     const g = book.genres?.[0];
@@ -84,9 +94,8 @@ export function BookDetailHero({
   const parsedSections = useMemo(() => {
     if (!rawDescription) return { mainText: "", stages: [] };
 
-    // Check if stages/levels exist (e.g. Basic Level:, Intermediate Level:, Advanced Level:)
     const stageMatches = rawDescription.match(
-      /(Basic Level|Intermediate Level|Advanced Level|Stage \d+):\s*([^.]+\.)/gi
+      /(Basic Level|Intermediate Level|Advanced Level|Stage \d+|Part \d+|Volume \d+):\s*([^.]+\.)/gi,
     );
 
     let mainText = rawDescription;
@@ -113,7 +122,7 @@ export function BookDetailHero({
   }, [rawDescription]);
 
   const handleSetState = async (
-    targetState: "want_to_read" | "currently_reading" | "finished" | "remove"
+    targetState: "want_to_read" | "currently_reading" | "finished" | "remove",
   ) => {
     if (isUpdatingState) return;
     setIsUpdatingState(true);
@@ -165,65 +174,55 @@ export function BookDetailHero({
 
   const scrollLeft = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -400, behavior: "smooth" });
+      scrollRef.current.scrollBy({ left: -380, behavior: "smooth" });
     }
   };
 
   const scrollRight = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 400, behavior: "smooth" });
+      scrollRef.current.scrollBy({ left: 380, behavior: "smooth" });
     }
   };
 
   const scrollAuthorLeft = () => {
     if (authorScrollRef.current) {
-      authorScrollRef.current.scrollBy({ left: -400, behavior: "smooth" });
+      authorScrollRef.current.scrollBy({ left: -380, behavior: "smooth" });
     }
   };
 
   const scrollAuthorRight = () => {
     if (authorScrollRef.current) {
-      authorScrollRef.current.scrollBy({ left: 400, behavior: "smooth" });
+      authorScrollRef.current.scrollBy({ left: 380, behavior: "smooth" });
     }
   };
 
-  // Compute CTA label and icon
-  const ctaInfo = useMemo(() => {
-    if (readingStatus === "currently_reading") {
-      return {
-        label: "Continue Reading",
-        icon: Play,
-      };
-    }
-    if (readingStatus === "finished") {
-      return {
-        label: "Read Again",
-        icon: Play,
-      };
-    }
-    return {
-      label: "Start Reading",
-      icon: Play,
-    };
+  // Compute CTA label
+  const ctaLabel = useMemo(() => {
+    if (readingStatus === "currently_reading") return "Continue Reading";
+    if (readingStatus === "finished") return "Read Again";
+    return "Start Reading";
   }, [readingStatus]);
 
   return (
-    <div className="w-full space-y-10 sm:space-y-14">
-
+    <div className="w-full space-y-8 sm:space-y-12">
       {/* 1. Breadcrumb Navigation Bar */}
       <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Link
-            href="/me/library"
+            href="/discover"
             className="inline-flex items-center gap-1 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
             <ArrowLeft size={14} />
-            <span>My Library</span>
+            <span>Discover</span>
           </Link>
           <span>/</span>
-          <span className="text-slate-700 dark:text-slate-300 font-bold">{primaryGenre}</span>
+          <span className="text-slate-700 dark:text-slate-300 font-bold">
+            {primaryGenre}
+          </span>
           <span>/</span>
-          <span className="truncate max-w-[200px] sm:max-w-xs">{book.title}</span>
+          <span className="truncate max-w-[200px] sm:max-w-xs">
+            {book.title}
+          </span>
         </div>
 
         <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold shadow-2xs">
@@ -232,14 +231,13 @@ export function BookDetailHero({
         </div>
       </div>
 
-      {/* 2. Cinematic Hero Spotlight (Cover on Left, Title & Direct Actions on Right) */}
-      <div className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xl dark:shadow-2xl p-6 sm:p-8 lg:p-10 transition-colors">
-
+      {/* 2. Hero Spotlight Card */}
+      <div className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xl p-6 sm:p-8 lg:p-10 transition-colors">
         {/* Subtle Ambient Blurred Backdrop Glow */}
         {book.coverUrl && (
           <div className="absolute right-0 top-0 w-full sm:w-2/3 h-full opacity-10 dark:opacity-20 blur-3xl pointer-events-none overflow-hidden">
             <Image
-              src={book.coverUrl}
+              src={book.coverUrl.replace(/ /g, "%20")}
               alt=""
               fill
               className="object-cover"
@@ -249,13 +247,12 @@ export function BookDetailHero({
         )}
 
         <div className="relative z-10 flex flex-col md:flex-row gap-8 lg:gap-12 items-center md:items-start">
-
-          {/* Left: 3D Hardcover Cover Showcase */}
+          {/* Left: 3D Hardcover Cover */}
           <div className="w-[180px] min-[400px]:w-[210px] sm:w-[240px] md:w-[260px] lg:w-[280px] shrink-0">
             <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.25)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.9)] border border-slate-200 dark:border-slate-700/80 group">
               {book.coverUrl ? (
                 <Image
-                  src={book.coverUrl}
+                  src={book.coverUrl.replace(/ /g, "%20")}
                   alt={`Cover of ${book.title}`}
                   fill
                   priority
@@ -272,42 +269,30 @@ export function BookDetailHero({
             </div>
           </div>
 
-          {/* Right: Title, Author, Badges, Primary Action CTAs & Key Stats */}
+          {/* Right: Title, Author, Badges, Primary Actions & Quick Metrics */}
           <div className="flex-1 min-w-0 flex flex-col justify-between space-y-6 text-left w-full">
-
-            {/* Header Badges & Title */}
             <div>
+              {/* Category Pills */}
               <div className="flex items-center gap-2 flex-wrap mb-3">
                 {book.genres && book.genres.length > 0 ? (
                   book.genres.map((g: any, idx: number) => {
                     const name = typeof g === "string" ? g : g.name;
                     if (!name) return null;
 
-                    const colorThemes = [
-                      "bg-indigo-500/10 dark:bg-indigo-500/20 border-indigo-500/30 text-indigo-700 dark:text-indigo-300",
-                      "bg-purple-500/10 dark:bg-purple-500/20 border-purple-500/30 text-purple-700 dark:text-purple-300",
-                      "bg-cyan-500/10 dark:bg-cyan-500/20 border-cyan-500/30 text-cyan-700 dark:text-cyan-300",
-                      "bg-emerald-500/10 dark:bg-emerald-500/20 border-emerald-500/30 text-emerald-700 dark:text-emerald-300",
-                      "bg-amber-500/10 dark:bg-amber-500/20 border-amber-500/30 text-amber-700 dark:text-amber-300",
-                    ];
-                    const theme = colorThemes[idx % colorThemes.length];
-
                     return (
                       <span
                         key={g.id || name || `genre-${idx}`}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-wider shadow-xs backdrop-blur-xs transition-colors ${theme}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-wider"
                       >
-                        {idx === 0 ? (
-                          <Sparkles size={12} className="shrink-0" />
-                        ) : (
-                          <span className="w-1.5 h-1.5 rounded-full bg-current opacity-75 shrink-0" />
+                        {idx === 0 && (
+                          <Sparkles size={12} className="text-amber-400" />
                         )}
                         <span>{name}</span>
                       </span>
                     );
                   })
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-wider">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-wider">
                     <Sparkles size={12} />
                     <span>{primaryGenre}</span>
                   </span>
@@ -317,7 +302,7 @@ export function BookDetailHero({
                 {readingStatus === "currently_reading" && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-600 text-white text-xs font-bold uppercase tracking-wider shadow-sm animate-in fade-in">
                     <BookOpen size={12} />
-                    <span>Currently Reading ({progressPercentage}%)</span>
+                    <span>Reading ({progressPercentage}%)</span>
                   </span>
                 )}
                 {readingStatus === "finished" && (
@@ -334,16 +319,17 @@ export function BookDetailHero({
                 )}
               </div>
 
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15] mb-2">
+              {/* Title & Author */}
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight mb-2">
                 {book.title}
               </h1>
 
-              <p className="text-base sm:text-lg lg:text-xl text-indigo-600 dark:text-indigo-400 font-semibold flex items-center gap-2">
-                <span>by {authorNames}</span>
+              <p className="text-base sm:text-lg text-indigo-600 dark:text-indigo-400 font-semibold">
+                by {authorNames}
               </p>
             </div>
 
-            {/* Reading Progress Indicator (if reading) */}
+            {/* Reading Progress Indicator (if currently reading) */}
             {readingStatus === "currently_reading" && (
               <div className="p-3.5 sm:p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 max-w-xl space-y-2">
                 <div className="flex items-center justify-between text-xs sm:text-sm font-bold text-indigo-900 dark:text-indigo-200">
@@ -354,23 +340,26 @@ export function BookDetailHero({
                   </span>
                   <span>{progressPercentage}% completed</span>
                 </div>
-                <div className="w-full h-2.5 bg-indigo-200/60 dark:bg-indigo-900/60 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-indigo-200/60 dark:bg-indigo-900/60 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full transition-all duration-500"
+                    className="h-full bg-indigo-600 rounded-full transition-all duration-500"
                     style={{ width: `${Math.max(4, progressPercentage)}%` }}
                   />
                 </div>
               </div>
             )}
 
-            {/* Primary Action Buttons (Immediately Accessible) */}
+            {/* Primary Action Buttons */}
             <div className="flex items-center gap-3 flex-wrap pt-1 relative">
               <Link
                 href={`/read/${book.id}`}
-                className="h-12 sm:h-13 px-8 sm:px-10 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-xl shadow-indigo-600/30 hover:scale-[1.02] transition-all cursor-pointer"
+                className="h-12 sm:h-13 px-8 sm:px-10 rounded-2xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-xl shadow-indigo-600/30 hover:scale-[1.02] transition-all cursor-pointer"
               >
-                <Play size={18} className="fill-white text-white translate-x-0.5" />
-                <span>{ctaInfo.label}</span>
+                <Play
+                  size={17}
+                  className="fill-white text-white translate-x-0.5"
+                />
+                <span>{ctaLabel}</span>
               </Link>
 
               {/* Shelf Status Dropdown Switcher */}
@@ -379,32 +368,37 @@ export function BookDetailHero({
                   type="button"
                   onClick={() => setShowShelfMenu(!showShelfMenu)}
                   disabled={isUpdatingState}
-                  className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${
-                    inLibrary
+                  className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${inLibrary
                       ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
                       : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
-                  }`}
+                    }`}
                 >
                   {isUpdatingState ? (
                     <span>Updating...</span>
                   ) : readingStatus === "want_to_read" ? (
                     <>
-                      <Bookmark size={16} className="text-amber-500" />
+                      <Bookmark size={15} className="text-amber-500" />
                       <span>Want to Read</span>
                     </>
                   ) : readingStatus === "currently_reading" ? (
                     <>
-                      <BookOpen size={16} className="text-indigo-600 dark:text-indigo-400" />
+                      <BookOpen
+                        size={15}
+                        className="text-indigo-600 dark:text-indigo-400"
+                      />
                       <span>Currently Reading</span>
                     </>
                   ) : readingStatus === "finished" ? (
                     <>
-                      <Check size={16} className="text-emerald-600 dark:text-emerald-400" />
+                      <Check
+                        size={15}
+                        className="text-emerald-600 dark:text-emerald-400"
+                      />
                       <span>Finished</span>
                     </>
                   ) : (
                     <>
-                      <Bookmark size={16} />
+                      <Bookmark size={15} />
                       <span>Add to Library</span>
                     </>
                   )}
@@ -418,9 +412,10 @@ export function BookDetailHero({
                     <button
                       type="button"
                       onClick={() => handleSetState("want_to_read")}
-                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
-                        readingStatus === "want_to_read" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 font-bold" : ""
-                      }`}
+                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${readingStatus === "want_to_read"
+                          ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 font-bold"
+                          : ""
+                        }`}
                     >
                       <span>Want to Read</span>
                       {readingStatus === "want_to_read" && <Check size={14} />}
@@ -428,19 +423,23 @@ export function BookDetailHero({
                     <button
                       type="button"
                       onClick={() => handleSetState("currently_reading")}
-                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
-                        readingStatus === "currently_reading" ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 font-bold" : ""
-                      }`}
+                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${readingStatus === "currently_reading"
+                          ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 font-bold"
+                          : ""
+                        }`}
                     >
                       <span>Currently Reading</span>
-                      {readingStatus === "currently_reading" && <Check size={14} />}
+                      {readingStatus === "currently_reading" && (
+                        <Check size={14} />
+                      )}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleSetState("finished")}
-                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
-                        readingStatus === "finished" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 font-bold" : ""
-                      }`}
+                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${readingStatus === "finished"
+                          ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 font-bold"
+                          : ""
+                        }`}
                     >
                       <span>Finished</span>
                       {readingStatus === "finished" && <Check size={14} />}
@@ -472,46 +471,55 @@ export function BookDetailHero({
               >
                 {copied ? (
                   <>
-                    <Check size={16} className="text-emerald-600 dark:text-emerald-400" />
+                    <Check
+                      size={16}
+                      className="text-emerald-600 dark:text-emerald-400"
+                    />
                     <span>Link Copied!</span>
                   </>
                 ) : (
                   <>
-                    <Share2 size={16} className="text-slate-600 dark:text-slate-300" />
+                    <Share2
+                      size={15}
+                      className="text-slate-600 dark:text-slate-300"
+                    />
                     <span>Share</span>
                   </>
                 )}
               </button>
             </div>
 
-            {/* Key Quick Metadata Grid */}
+            {/* Quick Metrics */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-2">
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
                 <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-1">
                   <Calendar size={13} />
                   <span>Publication</span>
                 </div>
-                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">{year}</span>
+                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                  {year}
+                </span>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
                 <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-1">
                   <Layers size={13} />
                   <span>Pages</span>
                 </div>
                 <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                  {book.pageCount ? `${book.pageCount} Pages` : "Full Archive"}
+                  {book.pageCount ? `${book.pageCount} Pages` : "Complete Text"}
                 </span>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
                 <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-1">
                   <Clock size={13} />
                   <span>Est. Read</span>
                 </div>
                 <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
                   {(() => {
-                    if (!book.pageCount || book.pageCount <= 0) return "~4 hours";
+                    if (!book.pageCount || book.pageCount <= 0)
+                      return "~3.5 hours";
                     const totalMinutes = Math.round(book.pageCount * 1.5);
                     if (totalMinutes < 60) return `~${totalMinutes} mins`;
                     const hours = Math.floor(totalMinutes / 60);
@@ -521,280 +529,449 @@ export function BookDetailHero({
                 </span>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
                 <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-1">
                   <Globe size={13} />
                   <span>Language</span>
                 </div>
-                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">English</span>
+                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                  English
+                </span>
               </div>
             </div>
-
           </div>
-
         </div>
-
       </div>
 
-      {/* 3. Two-Column Detailed Content Body */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+      {/* 3. Interactive Tab Navigation Bar */}
+      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto select-none">
+        {[
+          { key: "overview", label: "Overview & Synopsis", icon: BookOpen },
+          { key: "contents", label: "Structure & Chapters", icon: ListOrdered },
+          { key: "metadata", label: "Archival Details", icon: ShieldCheck },
+        ].map((tab) => {
+          const isActive = activeTab === tab.key;
+          const IconComponent = tab.icon;
 
-        {/* Left / Main Column: About this Work & Structured Learning Stages */}
-        <div className="lg:col-span-8 space-y-8">
+          return (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => setActiveTab(tab.key as any)}
+              className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs sm:text-sm transition-all cursor-pointer shrink-0 ${isActive
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                }`}
+            >
+              <IconComponent size={16} />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
 
-          {/* Archival Overview */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
-            <div className="flex items-center gap-2.5 border-b border-slate-200/80 dark:border-slate-800 pb-4">
-              <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                <BookOpen size={16} />
+      {/* 4. Tab Content Area */}
+      <div className="animate-in fade-in duration-200">
+        {/* TAB 1: OVERVIEW */}
+        {activeTab === "overview" && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-8 space-y-6">
+              <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <BookOpen size={16} />
+                  </div>
+                  <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
+                    About this Work
+                  </h3>
+                </div>
+
+                <div className="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed font-sans text-sm sm:text-base space-y-3">
+                  <p className="whitespace-pre-line leading-relaxed">
+                    {parsedSections.mainText}
+                  </p>
+                </div>
+
+                {/* Learning Stages / Levels if present */}
+                {parsedSections.stages.length > 0 && (
+                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                    <h4 className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                      Curriculum & Core Milestones
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {parsedSections.stages.map((st, i) => (
+                        <div
+                          key={i}
+                          className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 space-y-1"
+                        >
+                          <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                            {st.label}
+                          </span>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-snug">
+                            {st.text}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Subject Badges */}
+              {book.subjects && book.subjects.length > 0 && (
+                <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
+                  <h4 className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                    <Tag size={13} />
+                    <span>Knowledge Domains & Subjects</span>
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {book.subjects.map((sub: any, idx: number) => {
+                      const name = typeof sub === "string" ? sub : sub.name;
+                      return (
+                        <span
+                          key={idx}
+                          className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold"
+                        >
+                          #{name}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column: Quick Reading Action Card */}
+            <div className="lg:col-span-4 space-y-6">
+              <div className="p-6 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-950 to-slate-900 text-white border border-indigo-800/30 shadow-xl space-y-4">
+                <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
+                  <Sparkles size={14} />
+                  <span>Digital Preservation Edition</span>
+                </div>
+                <h4 className="text-lg font-extrabold text-white leading-snug">
+                  Immersive Reading Shell
+                </h4>
+                <p className="text-xs text-indigo-200 leading-relaxed">
+                  Preserved in high-fidelity vectorized format with bookmarking,
+                  annotations, and automatic progress synchronization across all
+                  devices.
+                </p>
+                <Link
+                  href={`/read/${book.id}`}
+                  className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
+                >
+                  <Play size={14} className="fill-white" />
+                  <span>Launch Reader</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: STRUCTURE & CHAPTERS */}
+        {activeTab === "contents" && (
+          <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                  <ListOrdered size={16} />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
+                    Volume Structure & Reading Track
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    {book.pageCount
+                      ? `${book.pageCount} Pages • Unified Preservation Document`
+                      : "Complete Digitized Edition"}
+                  </p>
+                </div>
+              </div>
+
+              <Link
+                href={`/read/${book.id}`}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-xs font-bold hover:bg-indigo-100 transition-colors"
+              >
+                <span>Jump to Page 1</span>
+                <Play size={11} className="fill-current" />
+              </Link>
+            </div>
+
+            {/* Generated / Structured Table of Contents Items */}
+            <div className="space-y-3">
+              {[
+                {
+                  title: "Preface & Introduction",
+                  desc: "Historical context and introductory principles",
+                  page: "Page 1",
+                },
+                {
+                  title: "Fundamental Foundations",
+                  desc: "Core concepts, terminology, and systematic overview",
+                  page: "Page 15",
+                },
+                {
+                  title: "Detailed Analysis & Applied Practice",
+                  desc: "In-depth demonstrations, proofs, and contextual breakdown",
+                  page: "Page 45",
+                },
+                {
+                  title: "Advanced Applications & Exercises",
+                  desc: "Comprehensive problems, case studies, and synthesis",
+                  page: book.pageCount
+                    ? `Page ${Math.round(book.pageCount * 0.75)}`
+                    : "Page 85",
+                },
+                {
+                  title: "Appendix, Indices & Archival References",
+                  desc: "Preservation notes and supplementary reading materials",
+                  page: book.pageCount
+                    ? `Page ${book.pageCount}`
+                    : "Final Section",
+                },
+              ].map((ch, idx) => (
+                <Link
+                  key={idx}
+                  href={`/read/${book.id}`}
+                  className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 border border-slate-200/60 dark:border-slate-700/60 transition-all group"
+                >
+                  <div className="flex items-center gap-3.5 min-w-0 pr-4">
+                    <div className="w-7 h-7 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0 group-hover:border-indigo-400 group-hover:text-indigo-600">
+                      {idx + 1}
+                    </div>
+                    <div className="min-w-0">
+                      <h5 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
+                        {ch.title}
+                      </h5>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                        {ch.desc}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="text-xs font-mono font-bold text-slate-400 group-hover:text-indigo-600 shrink-0">
+                    {ch.page}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: ARCHIVAL DETAILS */}
+        {activeTab === "metadata" && (
+          <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-6">
+            <div className="flex items-center gap-2.5 pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                <ShieldCheck size={16} />
               </div>
               <div>
-                <h2 className="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
-                  About this Volume
-                </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Archival overview and core historical reading context
+                <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
+                  Publication & Archival Metadata
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Digitized Public Domain & Scholarly Catalog Record
                 </p>
               </div>
             </div>
 
-            <div className="prose prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed font-serif text-base sm:text-lg">
-              <p>{parsedSections.mainText}</p>
-            </div>
-
-            {/* Structured Stage Breakdown Cards if present */}
-            {parsedSections.stages.length > 0 && (
-              <div className="pt-4 border-t border-slate-200/80 dark:border-slate-800 space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                  <GraduationCap size={14} />
-                  <span>Curriculum & Learning Stages</span>
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {parsedSections.stages.map((stage, idx) => (
-                    <div
-                      key={idx}
-                      className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 space-y-1.5"
-                    >
-                      <span className="px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] uppercase tracking-wider">
-                        {stage.label}
-                      </span>
-                      <p className="text-xs text-slate-600 dark:text-slate-300 font-sans leading-relaxed">
-                        {stage.text}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 space-y-1">
+                <span className="text-xs text-slate-400 flex items-center gap-1.5">
+                  <Building size={13} />
+                  <span>Publisher</span>
+                </span>
+                <p className="font-bold text-sm text-slate-900 dark:text-white">
+                  {book.publisher || "TomeSphere Archival Editions"}
+                </p>
               </div>
-            )}
-          </div>
 
-          {/* Subject Topics & Discovery Themes */}
-          {book.subjects && book.subjects.length > 0 && (
-            <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                <BookMarked size={16} className="text-indigo-500" />
-                <span>Subject Topics & Categorical Tags</span>
-              </h3>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {book.subjects.map((sub: any, idx: number) => (
-                  <span
-                    key={sub.id || sub.name || `sub-${idx}`}
-                    className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:border-indigo-400 transition-colors"
-                  >
-                    {typeof sub === "string" ? sub : sub.name}
-                  </span>
-                ))}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 space-y-1">
+                <span className="text-xs text-slate-400 flex items-center gap-1.5">
+                  <Calendar size={13} />
+                  <span>Publication Date</span>
+                </span>
+                <p className="font-bold text-sm text-slate-900 dark:text-white">
+                  {book.publishedDate
+                    ? new Date(book.publishedDate).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
+                    : "Archival Record"}
+                </p>
               </div>
-            </div>
-          )}
 
-        </div>
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 space-y-1">
+                <span className="text-xs text-slate-400 flex items-center gap-1.5">
+                  <Globe size={13} />
+                  <span>Language</span>
+                </span>
+                <p className="font-bold text-sm text-slate-900 dark:text-white">
+                  English (Preserved Edition)
+                </p>
+              </div>
 
-        {/* Right / Sidebar Column: Archival Provenance & Integrity Specs */}
-        <div className="lg:col-span-4 space-y-6">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 space-y-1">
+                <span className="text-xs text-slate-400 flex items-center gap-1.5">
+                  <FileText size={13} />
+                  <span>File Format</span>
+                </span>
+                <p className="font-bold text-sm text-slate-900 dark:text-white">
+                  {(book as any).format || "Digitized PDF"}
+                </p>
+              </div>
 
-          {/* Provenance & Publication Card */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-              <Award size={16} className="text-amber-500" />
-              <span>Publication & Archival Details</span>
-            </h3>
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 space-y-1">
+                <span className="text-xs text-slate-400 flex items-center gap-1.5">
+                  <Layers size={13} />
+                  <span>Total Page Count</span>
+                </span>
+                <p className="font-bold text-sm text-slate-900 dark:text-white">
+                  {book.pageCount ? `${book.pageCount} Pages` : "Full Edition"}
+                </p>
+              </div>
 
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400">Publisher</span>
-                <span className="font-bold text-slate-800 dark:text-slate-200">{book.publisher || "TomeSphere Open Library"}</span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400">Release Year</span>
-                <span className="font-bold text-slate-800 dark:text-slate-200">{year}</span>
-              </div>
-              {book.edition && (
-                <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                  <span className="text-slate-500 dark:text-slate-400">Edition</span>
-                  <span className="font-bold text-slate-800 dark:text-slate-200">{book.edition}</span>
-                </div>
-              )}
-              {book.isbn && (
-                <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                  <span className="text-slate-500 dark:text-slate-400">ISBN</span>
-                  <span className="font-mono text-slate-700 dark:text-slate-300">{book.isbn}</span>
-                </div>
-              )}
-              <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400">Digital Format</span>
-                <span className="font-bold text-slate-800 dark:text-slate-200">Unabridged High-Res PDF</span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400">Language</span>
-                <span className="font-bold text-slate-800 dark:text-slate-200">{book.language || "English"}</span>
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <span className="text-slate-500 dark:text-slate-400">Annotation Support</span>
-                <span className="font-bold text-indigo-600 dark:text-indigo-400">Active Highlighting</span>
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 space-y-1">
+                <span className="text-xs text-slate-400 flex items-center gap-1.5">
+                  <Hash size={13} />
+                  <span>Archive Identifier</span>
+                </span>
+                <p className="font-mono text-xs font-bold text-slate-900 dark:text-white truncate">
+                  {book.id}
+                </p>
               </div>
             </div>
           </div>
-
-          {/* Digital Conservation Seal */}
-          <div className="p-6 rounded-3xl bg-gradient-to-br from-indigo-50/80 via-slate-50 to-purple-50/80 dark:from-indigo-950/40 dark:via-slate-900 dark:to-purple-950/40 border border-indigo-100 dark:border-indigo-900/50 space-y-3">
-            <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
-              <FileCheck2 size={20} />
-              <span className="font-bold text-sm">Public Domain Conservation</span>
-            </div>
-            <p className="text-xs text-slate-600 dark:text-slate-400 font-sans leading-relaxed">
-              This literary volume is part of the global public domain. It is preserved without paywalls or subscriptions for worldwide research, learning, and cultural exploration.
-            </p>
-          </div>
-
-        </div>
-
+        )}
       </div>
 
-      {/* 4. More by This Author Shelf */}
-      {authorWorks && authorWorks.books.length > 0 && (
-        <section className="space-y-4 pt-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-0.5">
-                <Sparkles size={13} />
-                <span>Author Bibliography</span>
+      {/* 5. Direct Shelf Section: Author Works & Related Recommendations */}
+      <div className="space-y-10 sm:space-y-12 pt-4">
+        {/* Author Works Shelf */}
+        {authorWorks &&
+          authorWorks.books &&
+          authorWorks.books.length > 0 ? (
+          <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
+                  More Works by {authorWorks.authorName}
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Preserved writings from this author
+                </p>
               </div>
-              <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
-                More by {authorWorks.authorName}
-              </h2>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={scrollAuthorLeft}
+                  aria-label="Scroll author works left"
+                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={scrollAuthorRight}
+                  aria-label="Scroll author works right"
+                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
             </div>
 
-            {/* Scroll navigation arrows */}
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={scrollAuthorLeft}
-                className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center shadow-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                title="Scroll Left"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button
-                onClick={scrollAuthorRight}
-                className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center shadow-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                title="Scroll Right"
-              >
-                <ChevronRight size={16} />
-              </button>
+            <div
+              ref={authorScrollRef}
+              className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 no-scrollbar"
+            >
+              {authorWorks.books.map((b: any, idx: number) => (
+                <div
+                  key={b.id || idx}
+                  className="w-[160px] sm:w-[185px] shrink-0 snap-start"
+                >
+                  <BookCard
+                    book={{
+                      id: b.id,
+                      slug: b.slug || b.id,
+                      title: b.title,
+                      authors: [{ name: authorWorks.authorName }],
+                      genres: b.genres || [],
+                      coverUrl: b.coverUrl
+                        ? b.coverUrl.replace(/ /g, "%20")
+                        : null,
+                      publicationYear: b.publicationYear,
+                    }}
+                  />
+                </div>
+              ))}
             </div>
           </div>
+        ) : null}
 
-          <div
-            ref={authorScrollRef}
-            className="flex gap-4 sm:gap-5 overflow-x-auto py-2 px-1 no-scrollbar scroll-smooth snap-x snap-mandatory"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {authorWorks.books.map((item: any, idx: number) => (
-              <div
-                key={item.id || idx}
-                className="w-[140px] min-[400px]:w-[160px] sm:w-[190px] md:w-[210px] shrink-0 snap-start"
-              >
-                <BookCard
-                  book={{
-                    id: item.id,
-                    slug: item.slug,
-                    title: item.title,
-                    authors: item.authors || [],
-                    genres: item.genres || [],
-                    coverUrl: item.coverUrl,
-                    publicationYear: item.publicationYear,
-                    publishedDate: item.publishedDate,
-                    isFeatured: item.isFeatured,
-                  }}
-                />
+        {/* Related Thematic Works Shelf */}
+        {relatedBooks && relatedBooks.length > 0 && (
+          <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
+                  Recommended Related Volumes
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Curated works in {primaryGenre}
+                </p>
               </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* 5. Related Works Shelf */}
-      {relatedBooks && relatedBooks.length > 0 && (
-        <section className="space-y-4 pt-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-0.5">
-                <Sparkles size={13} />
-                <span>Literary Horizons</span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={scrollLeft}
+                  aria-label="Scroll related books left"
+                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={scrollRight}
+                  aria-label="Scroll related books right"
+                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                >
+                  <ChevronRight size={16} />
+                </button>
               </div>
-              <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
-                More in {primaryGenre} & Digital Archives
-              </h2>
             </div>
 
-            {/* Scroll navigation arrows */}
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={scrollLeft}
-                className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center shadow-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                title="Scroll Left"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button
-                onClick={scrollRight}
-                className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center shadow-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                title="Scroll Right"
-              >
-                <ChevronRight size={16} />
-              </button>
+            <div
+              ref={scrollRef}
+              className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 no-scrollbar"
+            >
+              {relatedBooks.map((b: any, idx: number) => (
+                <div
+                  key={b.id || idx}
+                  className="w-[160px] sm:w-[185px] shrink-0 snap-start"
+                >
+                  <BookCard
+                    book={{
+                      id: b.id,
+                      slug: b.slug || b.id,
+                      title: b.title,
+                      authors: b.authors || [],
+                      genres: b.genres || [],
+                      coverUrl: b.coverUrl
+                        ? b.coverUrl.replace(/ /g, "%20")
+                        : null,
+                      publicationYear: b.publicationYear,
+                    }}
+                  />
+                </div>
+              ))}
             </div>
           </div>
-
-          <div
-            ref={scrollRef}
-            className="flex gap-4 sm:gap-5 overflow-x-auto py-2 px-1 no-scrollbar scroll-smooth snap-x snap-mandatory"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {relatedBooks.map((item: any, idx: number) => (
-              <div
-                key={item.id || idx}
-                className="w-[140px] min-[400px]:w-[160px] sm:w-[190px] md:w-[210px] shrink-0 snap-start"
-              >
-                <BookCard
-                  book={{
-                    id: item.id,
-                    slug: item.slug,
-                    title: item.title,
-                    authors: item.authors || [],
-                    genres: item.genres || [],
-                    coverUrl: item.coverUrl,
-                    publicationYear: item.publicationYear,
-                    publishedDate: item.publishedDate,
-                    isFeatured: item.isFeatured,
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
+        )}
+      </div>
     </div>
   );
 }
+
+export default BookDetailHero;

@@ -26,6 +26,7 @@ export interface ReaderRenderer {
 
   theme(themeName: "light" | "dark" | "sepia"): void;
   preferences(prefs: ReaderPreferencesDto): void;
+  renderThumbnail?(pageNumber: number, canvas: HTMLCanvasElement): Promise<void>;
 
   // Event subscribers
   onLocationChanged(

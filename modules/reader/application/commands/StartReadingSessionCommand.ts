@@ -27,44 +27,59 @@ export async function executeStartReadingSession(
 ): Promise<StartReadingSessionResponse> {
   const supabase = await createSupabaseServerClient();
   const now = new Date().toISOString();
-  const fourHoursAgo = new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString();
-
-  // 1. Check for existing active session (idempotency against refreshes, multiple tabs)
+  // 1. Check for existing session for this user and book (reading_sessions has a unique constraint on user_id, book_id)
   const { data: existingSession } = await supabase
     .from("reading_sessions")
     .select("id")
     .eq("user_id", request.userId)
     .eq("book_id", request.bookId)
-    .is("finished_at", null)
-    .gte("started_at", fourHoursAgo)
-    .order("started_at", { ascending: false })
-    .limit(1)
     .maybeSingle();
 
   let sessionId = existingSession?.id;
   let status: "existing" | "created" = "existing";
 
-  if (!sessionId) {
+  if (existingSession) {
+    sessionId = existingSession.id;
+    status = "existing";
+    await supabase
+      .from("reading_sessions")
+      .update({
+        last_read_at: now,
+        finished_at: null,
+      })
+      .eq("id", sessionId);
+  } else {
     status = "created";
     const { data: newSession, error: sessionErr } = await supabase
       .from("reading_sessions")
-      .insert({
-        user_id: request.userId,
-        book_id: request.bookId,
-        started_at: now,
-        last_read_at: now,
-        current_page: request.initialPage || 1,
-        percentage: 0,
-        reading_time_minutes: 0,
-        pages: 0,
-      })
+      .upsert(
+        {
+          user_id: request.userId,
+          book_id: request.bookId,
+          started_at: now,
+          last_read_at: now,
+          current_page: request.initialPage || 1,
+          percentage: 0,
+          reading_time_minutes: 0,
+          pages: 0,
+        },
+        { onConflict: "user_id,book_id" }
+      )
       .select("id")
       .single();
 
     if (sessionErr) {
       console.error("Failed to insert reading_session:", sessionErr);
+      const { data: fallback } = await supabase
+        .from("reading_sessions")
+        .select("id")
+        .eq("user_id", request.userId)
+        .eq("book_id", request.bookId)
+        .maybeSingle();
+      sessionId = fallback?.id || "";
+    } else {
+      sessionId = newSession?.id || "";
     }
-    sessionId = newSession?.id || "";
   }
 
   // 2. Manage library_books lifecycle transition

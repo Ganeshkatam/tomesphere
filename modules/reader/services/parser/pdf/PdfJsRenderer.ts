@@ -6,6 +6,7 @@ import {
   ReaderHighlight,
 } from "@/shared/core/events/types";
 import { ReaderPreferencesDto } from "../../../application/dto/ReaderPageDto";
+import { useReaderStore } from "../../../state/reader-store";
 
 if (typeof window !== "undefined" && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
   pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
@@ -25,7 +26,7 @@ type PageState = {
 const PAGE_CLASS = "tomesphere-pdf-page";
 const PAGE_PLACEHOLDER_CLASS = "tomesphere-pdf-page-placeholder";
 const VIRTUALIZATION_ROOT_MARGIN = "100% 0px";
-const MAX_RENDERED_PAGES = 5;
+const MAX_RENDERED_PAGES = 10;
 const MAX_DEVICE_PIXEL_RATIO = 2;
 
 export class PdfJsRenderer implements ReaderRenderer {
@@ -41,6 +42,8 @@ export class PdfJsRenderer implements ReaderRenderer {
   private currentZoom = 1;
   private initialized = false;
   private destroyed = false;
+  private isNavigating = false;
+  private navigatingTimer: any = null;
   private lastEmittedPage = 0;
   private documentGeneration = 0;
   private placeholderRatio = 8.5 / 11;
@@ -87,6 +90,7 @@ export class PdfJsRenderer implements ReaderRenderer {
 
     this.pdfDocument = pdfDocument;
     this.totalPages = Math.max(1, pdfDocument.numPages);
+    useReaderStore.getState().setTotalPages(this.totalPages);
 
     await this.createPageScaffolding(generation);
     if (generation !== this.documentGeneration || this.destroyed) return;
@@ -186,13 +190,101 @@ export class PdfJsRenderer implements ReaderRenderer {
     }
 
     container.addEventListener("scroll", this.handleScroll, { passive: true });
+    container.addEventListener("wheel", this.handleWheel, { passive: false });
+    container.addEventListener("touchstart", this.handleTouchStart, { passive: true });
+    container.addEventListener("touchmove", this.handleTouchMove, { passive: false });
+    container.addEventListener("touchend", this.handleTouchEnd, { passive: true });
+    container.addEventListener("touchcancel", this.handleTouchEnd, { passive: true });
   }
 
+  private initialPinchDistance = 0;
+  private initialPinchZoom = 100;
+  private isPinching = false;
+  private pinchRaf: number | null = null;
+
+  private readonly handleWheel = (e: WheelEvent): void => {
+    // Detect trackpad pinch-to-zoom (dispatches ctrlKey + wheel event)
+    if (e.ctrlKey) {
+      e.preventDefault();
+      const currentPct = Math.round(this.currentZoom * 100);
+      const step = e.deltaY < 0 ? 5 : -5;
+      const targetZoom = Math.min(240, Math.max(100, currentPct + step));
+      if (targetZoom !== currentPct) {
+        useReaderStore.getState().updatePreference("zoom", targetZoom);
+        this.preferences({
+          ...useReaderStore.getState().preferences,
+          zoom: targetZoom,
+        });
+      }
+    }
+  };
+
+  private readonly handleTouchStart = (e: TouchEvent): void => {
+    if (e.touches.length === 2) {
+      this.isPinching = true;
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      this.initialPinchDistance = Math.hypot(
+        touch1.clientX - touch2.clientX,
+        touch1.clientY - touch2.clientY,
+      );
+      this.initialPinchZoom = Math.round(this.currentZoom * 100);
+    }
+  };
+
+  private readonly handleTouchMove = (e: TouchEvent): void => {
+    if (!this.isPinching || e.touches.length !== 2) return;
+    if (e.cancelable) e.preventDefault();
+
+    const touch1 = e.touches[0];
+    const touch2 = e.touches[1];
+    const currentDistance = Math.hypot(
+      touch1.clientX - touch2.clientX,
+      touch1.clientY - touch2.clientY,
+    );
+
+    if (this.initialPinchDistance > 0) {
+      const scaleFactor = currentDistance / this.initialPinchDistance;
+      const rawTarget = Math.round(this.initialPinchZoom * scaleFactor);
+      const targetZoom = Math.min(240, Math.max(100, rawTarget));
+
+      if (this.pinchRaf !== null) {
+        window.cancelAnimationFrame(this.pinchRaf);
+      }
+
+      this.pinchRaf = window.requestAnimationFrame(() => {
+        this.pinchRaf = null;
+        const currentPct = Math.round(this.currentZoom * 100);
+        if (Math.abs(targetZoom - currentPct) >= 2) {
+          useReaderStore.getState().updatePreference("zoom", targetZoom);
+          this.preferences({
+            ...useReaderStore.getState().preferences,
+            zoom: targetZoom,
+          });
+        }
+      });
+    }
+  };
+
+  private readonly handleTouchEnd = (e: TouchEvent): void => {
+    if (e.touches.length < 2) {
+      this.isPinching = false;
+      this.initialPinchDistance = 0;
+      if (this.pinchRaf !== null) {
+        window.cancelAnimationFrame(this.pinchRaf);
+        this.pinchRaf = null;
+      }
+    }
+  };
+
   private readonly handleScroll = (): void => {
+    if (this.isNavigating) return;
     if (this.scrollRaf !== null) return;
     this.scrollRaf = window.requestAnimationFrame(() => {
       this.scrollRaf = null;
-      this.updateCurrentPageFromViewport();
+      if (!this.isNavigating) {
+        this.updateCurrentPageFromViewport();
+      }
     });
   };
 
@@ -271,8 +363,19 @@ export class PdfJsRenderer implements ReaderRenderer {
       page.cleanup();
       return;
     }
+    const unscaledViewport = page.getViewport({ scale: 1 });
+    const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth) - 48);
+    const containerHeight = Math.max(300, (this.container?.clientHeight || window.innerHeight) - 48);
 
-    const viewport = page.getViewport({ scale: zoom });
+    // Compute fit-to-viewport base scale so the page is always neatly framed
+    const fitScale = Math.min(
+      containerWidth / Math.max(1, unscaledViewport.width),
+      (containerHeight * 1.25) / Math.max(1, unscaledViewport.height),
+    );
+
+    const effectiveScale = Math.max(0.5, fitScale * Math.max(1.0, zoom));
+    const viewport = page.getViewport({ scale: effectiveScale });
+
     const outputScale = Math.min(
       typeof window === "undefined" ? 1 : window.devicePixelRatio || 1,
       MAX_DEVICE_PIXEL_RATIO,
@@ -281,16 +384,22 @@ export class PdfJsRenderer implements ReaderRenderer {
     canvas.className = "tomesphere-pdf-canvas";
     canvas.width = Math.max(1, Math.floor(viewport.width * outputScale));
     canvas.height = Math.max(1, Math.floor(viewport.height * outputScale));
-    canvas.style.display = "inline-block";
+    canvas.style.display = "block";
     canvas.style.margin = "0 auto";
     canvas.style.width = `${viewport.width}px`;
     canvas.style.height = `${viewport.height}px`;
-    canvas.style.maxWidth = "none";
+    canvas.style.maxWidth = "100%";
+    canvas.style.boxSizing = "border-box";
     canvas.style.backgroundColor = "white";
     canvas.style.boxShadow = "0 25px 50px -12px rgb(0 0 0 / 0.25)";
     canvas.style.objectFit = "contain";
     canvas.style.userSelect = "text";
     canvas.setAttribute("aria-label", `Rendered PDF page ${pageNumber}`);
+
+    state.wrapper.style.display = "flex";
+    state.wrapper.style.justifyContent = "center";
+    state.wrapper.style.maxWidth = "100%";
+    state.wrapper.style.overflow = "hidden";
 
     const context = canvas.getContext("2d", { alpha: false });
     if (!context) {
@@ -370,6 +479,8 @@ export class PdfJsRenderer implements ReaderRenderer {
   }
 
   private enforceRenderBudget(centerPage: number): void {
+    if (this.isNavigating) return;
+
     const rendered = [...this.pageStates.entries()]
       .filter(([, state]) => state.canvas !== null || state.loadPromise !== null)
       .sort(([pageA], [pageB]) => {
@@ -379,7 +490,8 @@ export class PdfJsRenderer implements ReaderRenderer {
       });
 
     for (const [pageNumber] of rendered.slice(MAX_RENDERED_PAGES)) {
-      if (pageNumber === centerPage) continue;
+      // Never unload immediate neighboring pages (+/- 2 pages)
+      if (Math.abs(pageNumber - centerPage) <= 2) continue;
       void this.unloadPage(pageNumber);
     }
   }
@@ -391,15 +503,26 @@ export class PdfJsRenderer implements ReaderRenderer {
     const targetPage = Number.parseInt(rawPage, 10);
     if (!Number.isInteger(targetPage) || targetPage < 1 || targetPage > this.totalPages) return;
 
+    this.isNavigating = true;
+    if (this.navigatingTimer) clearTimeout(this.navigatingTimer);
+
     this.currentPageNum = targetPage;
     this.emitLocation(targetPage);
-    this.enforceRenderBudget(targetPage);
 
     const state = this.pageStates.get(targetPage);
     if (!state) return;
 
+    // Pre-render target page and immediate neighbors before scroll to eliminate white flashes
     await this.ensurePageRendered(targetPage);
+    if (targetPage + 1 <= this.totalPages) void this.ensurePageRendered(targetPage + 1);
+    if (targetPage - 1 >= 1) void this.ensurePageRendered(targetPage - 1);
+
     state.wrapper.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+
+    this.navigatingTimer = setTimeout(() => {
+      this.isNavigating = false;
+      this.enforceRenderBudget(targetPage);
+    }, 450);
   }
 
   async next(): Promise<void> {
@@ -420,6 +543,85 @@ export class PdfJsRenderer implements ReaderRenderer {
       percentage: (page / Math.max(1, this.totalPages)) * 100,
       anchor: { type: "pdf", value: String(page) },
     };
+  }
+
+  async renderThumbnail(
+    pageNumber: number,
+    canvas: HTMLCanvasElement,
+  ): Promise<void> {
+    if (!this.pdfDocument || this.destroyed || pageNumber < 1 || pageNumber > this.totalPages)
+      return;
+
+    let page: pdfjsLib.PDFPageProxy | null = null;
+
+    try {
+      page = await this.pdfDocument.getPage(pageNumber);
+      if (this.destroyed || !this.pdfDocument) {
+        page.cleanup();
+        return;
+      }
+
+      const unscaledViewport = page.getViewport({ scale: 1 });
+      const targetWidth = 220;
+      const scale = targetWidth / Math.max(1, unscaledViewport.width);
+      const viewport = page.getViewport({ scale });
+
+      const dpr =
+        typeof window !== "undefined"
+          ? Math.min(window.devicePixelRatio || 1, 2)
+          : 1;
+      canvas.width = Math.max(1, Math.floor(viewport.width * dpr));
+      canvas.height = Math.max(1, Math.floor(viewport.height * dpr));
+
+      const context = canvas.getContext("2d", { alpha: false });
+      if (!context) {
+        page.cleanup();
+        return;
+      }
+
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      await page.render({
+        canvasContext: context,
+        viewport,
+      } as any).promise;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "";
+      const isExpectedCancellation =
+        /cancel/i.test(message) ||
+        /worker was destroyed/i.test(message) ||
+        this.destroyed;
+
+      if (!isExpectedCancellation && process.env.NODE_ENV === "development") {
+        console.warn(
+          `[PdfJsRenderer] Handled thumbnail rendering error gracefully on page ${pageNumber}:`,
+          message || err,
+        );
+      }
+
+      // Draw a clean fallback representation on the canvas
+      try {
+        const context = canvas.getContext("2d");
+        if (context && canvas.width > 0 && canvas.height > 0) {
+          context.fillStyle = "#1e293b";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          context.fillStyle = "#94a3b8";
+          context.font = "bold 10px monospace";
+          context.textAlign = "center";
+          context.textBaseline = "middle";
+          context.fillText(`P.${pageNumber}`, canvas.width / 2, canvas.height / 2);
+        }
+      } catch {
+        // Fallback canvas drawing failed silently
+      }
+    } finally {
+      if (page) {
+        try {
+          page.cleanup();
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
+    }
   }
 
   onLocationChanged(
@@ -479,8 +681,13 @@ export class PdfJsRenderer implements ReaderRenderer {
     }
   }
 
+  private getMinZoom(): number {
+    return 1.0; // Never allow zooming out smaller than 100% / viewport fit
+  }
+
   preferences(prefs: ReaderPreferencesDto): void {
-    const newZoom = Math.max(0.25, Math.min(2.7, prefs.zoom / 100));
+    const minZoom = this.getMinZoom();
+    const newZoom = Math.max(minZoom, Math.min(2.4, (prefs.zoom || 100) / 100));
     if (this.currentZoom === newZoom) return;
 
     this.currentZoom = newZoom;
@@ -517,12 +724,28 @@ export class PdfJsRenderer implements ReaderRenderer {
     this.destroyed = true;
     this.documentGeneration += 1;
 
+    if (this.navigatingTimer) {
+      clearTimeout(this.navigatingTimer);
+      this.navigatingTimer = null;
+    }
+    this.isNavigating = false;
+
     if (this.scrollRaf !== null && typeof window !== "undefined") {
       window.cancelAnimationFrame(this.scrollRaf);
       this.scrollRaf = null;
     }
 
+    if (this.pinchRaf !== null && typeof window !== "undefined") {
+      window.cancelAnimationFrame(this.pinchRaf);
+      this.pinchRaf = null;
+    }
+
     this.container?.removeEventListener("scroll", this.handleScroll);
+    this.container?.removeEventListener("wheel", this.handleWheel);
+    this.container?.removeEventListener("touchstart", this.handleTouchStart);
+    this.container?.removeEventListener("touchmove", this.handleTouchMove);
+    this.container?.removeEventListener("touchend", this.handleTouchEnd);
+    this.container?.removeEventListener("touchcancel", this.handleTouchEnd);
     this.observer?.disconnect();
     this.observer = null;
 

@@ -9,77 +9,126 @@ interface ProgressToolbarProps {
 }
 
 export function ProgressToolbar({ service }: ProgressToolbarProps) {
-  const { sessionState, rendererReady, isReading, currentAnchor, preferences, updatePreference } = useReaderStore();
+  const {
+    sessionState,
+    rendererReady,
+    isReading,
+    currentAnchor,
+    preferences,
+    updatePreference,
+  } = useReaderStore();
 
+  const theme = preferences.theme || "light";
   const currentPage = currentAnchor?.value || "1";
 
+  const themeStyles = {
+    light: {
+      btn: "text-slate-700 hover:text-slate-900 hover:bg-slate-100",
+      pageText: "text-slate-800",
+      zoomText: "text-slate-600",
+      divider: "bg-slate-200",
+      statusText: "text-slate-500",
+      readingDot: "bg-emerald-500",
+      idleDot: "bg-slate-400",
+    },
+    dark: {
+      btn: "text-slate-200 hover:text-white hover:bg-white/10",
+      pageText: "text-slate-100",
+      zoomText: "text-slate-300",
+      divider: "bg-[#3c4043]",
+      statusText: "text-slate-400",
+      readingDot: "bg-emerald-400",
+      idleDot: "bg-slate-500",
+    },
+    sepia: {
+      btn: "text-[#5b4636] hover:text-[#382b21] hover:bg-[#ede3cc]",
+      pageText: "text-[#5b4636]",
+      zoomText: "text-[#8a725b]",
+      divider: "bg-[#dfd3b9]",
+      statusText: "text-[#8a725b]",
+      readingDot: "bg-emerald-600",
+      idleDot: "bg-[#8a725b]",
+    },
+  }[theme];
+
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex items-center gap-4 sm:gap-6">
       <div className="flex items-center gap-1">
         <button
+          type="button"
           onClick={() => service?.previous()}
           disabled={!rendererReady || !service}
-          className="p-1.5 rounded hover:bg-white/10 text-slate-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent ${themeStyles.btn}`}
           title="Previous Page (Left Arrow)"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={18} />
         </button>
-        <span className="text-sm font-medium text-slate-300 min-w-[60px] text-center">
+        <span className={`text-xs sm:text-sm font-bold min-w-[56px] text-center font-mono ${themeStyles.pageText}`}>
           Page {currentPage}
         </span>
         <button
+          type="button"
           onClick={() => service?.next()}
           disabled={!rendererReady || !service}
-          className="p-1.5 rounded hover:bg-white/10 text-slate-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent ${themeStyles.btn}`}
           title="Next Page (Right Arrow or Space)"
         >
-          <ChevronRight size={20} />
+          <ChevronRight size={18} />
         </button>
 
-        <div className="w-px h-5 bg-slate-700 mx-2" />
+        <div className={`w-px h-4 mx-1.5 sm:mx-2 ${themeStyles.divider}`} />
 
         <button
+          type="button"
           onClick={() => {
-            const newZoom = Math.max(50, preferences.zoom - 10);
+            const newZoom = Math.max(100, (preferences.zoom || 100) - 10);
             updatePreference("zoom", newZoom);
             service?.applyPreferences({ ...preferences, zoom: newZoom });
           }}
-          disabled={!rendererReady || !service}
-          className="p-1.5 rounded hover:bg-white/10 text-slate-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          title="Zoom Out"
+          disabled={!rendererReady || !service || (preferences.zoom || 100) <= 100}
+          className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent ${themeStyles.btn}`}
+          title="Zoom Out (Min 100% / Viewport Fit)"
         >
-          <ZoomOut size={18} />
+          <ZoomOut size={16} />
         </button>
-        <span className="text-xs font-medium text-slate-400 w-10 text-center">
-          {preferences.zoom}%
+        <span className={`text-xs font-semibold w-10 text-center font-mono ${themeStyles.zoomText}`}>
+          {preferences.zoom || 100}%
         </span>
         <button
+          type="button"
           onClick={() => {
-            const newZoom = Math.min(270, preferences.zoom + 10);
+            const newZoom = Math.min(240, (preferences.zoom || 100) + 10);
             updatePreference("zoom", newZoom);
             service?.applyPreferences({ ...preferences, zoom: newZoom });
           }}
-          disabled={!rendererReady || !service}
-          className="p-1.5 rounded hover:bg-white/10 text-slate-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          title="Zoom In"
+          disabled={!rendererReady || !service || (preferences.zoom || 100) >= 240}
+          className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent ${themeStyles.btn}`}
+          title="Zoom In (Max 240%)"
         >
-          <ZoomIn size={18} />
+          <ZoomIn size={16} />
         </button>
       </div>
 
-      <div className="text-xs font-medium text-slate-500 hidden sm:block">
+      <div className={`text-xs font-semibold hidden md:block ${themeStyles.statusText}`}>
         {!rendererReady ? (
           <span>Loading...</span>
         ) : (
-          <span>
-            {isReading
-              ? "Reading"
-              : sessionState === "paused"
-                ? "Paused"
-                : "Ready"}
+          <span className="inline-flex items-center gap-1.5">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${isReading ? `${themeStyles.readingDot} animate-pulse` : themeStyles.idleDot}`}
+            />
+            <span>
+              {isReading
+                ? "Reading"
+                : sessionState === "paused"
+                  ? "Paused"
+                  : "Ready"}
+            </span>
           </span>
         )}
       </div>
     </div>
   );
 }
+
+export default ProgressToolbar;

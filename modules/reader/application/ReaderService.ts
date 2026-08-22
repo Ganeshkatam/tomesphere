@@ -511,6 +511,55 @@ export class ReaderService {
     await this.renderer.previous();
   }
 
+  public async renderThumbnail(
+    pageNumber: number,
+    canvas: HTMLCanvasElement,
+  ): Promise<void> {
+    if (!this.renderer?.renderThumbnail) return;
+    await this.renderer.renderThumbnail(pageNumber, canvas);
+  }
+
+  public zoomIn(): void {
+    const prefs = useReaderStore.getState().preferences;
+    const currentZoom = prefs.zoom || 100;
+    const targetZoom = Math.min(240, currentZoom + 15);
+    const newPrefs = {
+      ...prefs,
+      zoom: targetZoom,
+      fontSize: Math.min(32, prefs.fontSize + 2),
+    };
+    useReaderStore.getState().setPreferences(newPrefs);
+    this.renderer?.preferences(newPrefs);
+  }
+
+  public zoomOut(): void {
+    const prefs = useReaderStore.getState().preferences;
+    const currentZoom = prefs.zoom || 100;
+    const targetZoom = Math.max(100, currentZoom - 15);
+    const newPrefs = {
+      ...prefs,
+      zoom: targetZoom,
+      fontSize: Math.max(10, prefs.fontSize - 2),
+    };
+    useReaderStore.getState().setPreferences(newPrefs);
+    this.renderer?.preferences(newPrefs);
+  }
+
+  public resetZoom(): void {
+    const prefs = useReaderStore.getState().preferences;
+    const newPrefs = { ...prefs, zoom: 100, fontSize: 16 };
+    useReaderStore.getState().setPreferences(newPrefs);
+    this.renderer?.preferences(newPrefs);
+  }
+
+  public setZoom(zoomPercentage: number): void {
+    const prefs = useReaderStore.getState().preferences;
+    const clamped = Math.min(240, Math.max(100, zoomPercentage));
+    const newPrefs = { ...prefs, zoom: clamped };
+    useReaderStore.getState().setPreferences(newPrefs);
+    this.renderer?.preferences(newPrefs);
+  }
+
   public startSession(initialPage: number = 1): void {
     const store = useReaderStore.getState();
     if (store.sessionState === "active") return;

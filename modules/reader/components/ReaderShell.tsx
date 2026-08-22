@@ -9,6 +9,7 @@ import { HighlightContextMenu } from "./HighlightContextMenu";
 import { NoteEditor } from "./NoteEditor";
 import { useReaderStore } from "../state/reader-store";
 import { AnnotationSidebar } from "./Sidebar/AnnotationSidebar";
+import { PageSideRail } from "./Sidebar/PageSideRail";
 import { ReaderPageDto } from "../application/dto/ReaderPageDto";
 import { RendererFactory } from "../services/parser/RendererFactory";
 
@@ -105,6 +106,38 @@ export function ReaderShell({ data }: ReaderShellProps) {
 
       if (!serviceRef.current) return;
 
+      // Handle Zoom shortcuts (Ctrl/Cmd +/-/0 or bare +/-/0)
+      if (
+        e.key === "+" ||
+        e.key === "=" ||
+        e.key === "Add" ||
+        ((e.ctrlKey || e.metaKey) && (e.key === "=" || e.key === "+"))
+      ) {
+        e.preventDefault();
+        serviceRef.current.zoomIn();
+        return;
+      }
+
+      if (
+        e.key === "-" ||
+        e.key === "_" ||
+        e.key === "Subtract" ||
+        ((e.ctrlKey || e.metaKey) && (e.key === "-" || e.key === "_"))
+      ) {
+        e.preventDefault();
+        serviceRef.current.zoomOut();
+        return;
+      }
+
+      if (
+        e.key === "0" ||
+        ((e.ctrlKey || e.metaKey) && e.key === "0")
+      ) {
+        e.preventDefault();
+        serviceRef.current.resetZoom();
+        return;
+      }
+
       switch (e.key) {
         case "ArrowRight":
         case "Space":
@@ -149,8 +182,40 @@ export function ReaderShell({ data }: ReaderShellProps) {
       }
     };
 
+    const handleWheelZoom = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        if (!serviceRef.current) return;
+        if (e.deltaY < 0) {
+          serviceRef.current.zoomIn();
+        } else {
+          serviceRef.current.zoomOut();
+        }
+      }
+    };
+
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("wheel", handleWheelZoom, { passive: false });
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("wheel", handleWheelZoom);
+    };
+  }, []);
+
+  // ─── Double Click / Tap to Zoom Toggle ────────────────────────────
+  const handleDoubleClickViewer = useCallback((e: React.MouseEvent) => {
+    // Only double click if not selecting text or clicking buttons
+    if (window.getSelection()?.toString()) return;
+    const target = e.target as HTMLElement;
+    if (target.closest("button") || target.closest("input") || target.closest("a")) return;
+
+    if (!serviceRef.current) return;
+    const currentZoom = useReaderStore.getState().preferences.zoom || 100;
+    if (currentZoom >= 140) {
+      serviceRef.current.resetZoom();
+    } else {
+      serviceRef.current.setZoom(150);
+    }
   }, []);
 
   // ─── Highlight callbacks ─────────────────────────────────────────
@@ -181,11 +246,22 @@ export function ReaderShell({ data }: ReaderShellProps) {
     useReaderStore.getState().setActiveNote(null);
   }, []);
 
+  const theme = useReaderStore((state) => state.preferences.theme) || "light";
+
+  const shellThemeClass = {
+    light: "bg-slate-100 text-slate-800",
+    dark: "bg-[#18191c] text-slate-100",
+    sepia: "bg-[#f4ecd8] text-[#5b4636]",
+  }[theme];
+
   return (
-    <div className="flex flex-col h-screen w-full bg-[var(--surface-canvas)] overflow-hidden text-slate-200">
+    <div className={`flex flex-col h-screen w-full overflow-hidden transition-colors ${shellThemeClass}`}>
       <Toolbar service={service} />
       <div className="flex flex-1 overflow-hidden relative">
-        <main className="flex-1 relative">
+        {/* Collapsible Left Page Side Rail */}
+        <PageSideRail service={service} />
+
+        <main className="flex-1 relative" onDoubleClick={handleDoubleClickViewer}>
           <Viewer ref={viewerRef} />
           <HighlightPopup
             onCreateHighlight={handleCreateHighlight}
