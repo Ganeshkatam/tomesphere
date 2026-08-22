@@ -130,7 +130,7 @@ export default function SignupClient() {
       {/* ══════════════════════════════════════
                 Centralized Workspace Card
             ══════════════════════════════════════ */}
-      <div className="w-full max-w-6xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] overflow-hidden flex flex-col lg:flex-row shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 relative z-10">
+      <div className="w-full max-w-md lg:max-w-6xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] overflow-hidden flex flex-col lg:flex-row shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 relative z-10">
         {/* ── Left Info Pane (60%) ── */}
         <div className="hidden lg:flex w-full lg:w-[60%] bg-slate-50/80 dark:bg-slate-950/60 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 relative p-8 sm:p-10 lg:p-12 flex-col justify-between gap-8 overflow-hidden">
           {/* Soft ambient glow on brand panel */}
