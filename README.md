@@ -64,7 +64,7 @@ tomesphere-app/
 │   ├── (app)/                        # Public application routes (/discover, /search, /book)
 │   ├── (public)/                     # Informational & Auth routes (/about, /support, /login)
 │   ├── (reader)/                     # Standalone reader shell (/read/[id])
-│   ├── (workspace)/                  # Authenticated workspace (/library, /me, /me/account)
+│   ├── (workspace)/                  # Authenticated workspace (/me, /me/library, /me/shelves, /me/notes, /me/annotations)
 │   └── api/                          # API route handlers & background cron endpoints
 ├── modules/                          # Bounded Contexts (Clean Architecture)
 │   ├── me/                           # Dashboard & Account Subdomains
@@ -74,6 +74,7 @@ tomesphere-app/
 │   ├── discovery/                    # Search documents, autocomplete & facet services
 │   ├── library/                      # Personal shelves, reading progress & bookmarks
 │   ├── reader/                       # Reader presentation components & toolbar
+│   │   └── annotations/              # Annotations, highlights, and standalone notes context
 │   └── support/                      # Knowledge base & FAQ read models
 ├── shared/                           # Shared infrastructure & presentation utilities
 │   ├── core/                         # Supabase clients, database types, and domain primitives
