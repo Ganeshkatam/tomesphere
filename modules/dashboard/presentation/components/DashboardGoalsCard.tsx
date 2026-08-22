@@ -55,7 +55,6 @@ export default function DashboardGoalsCard({ goals }: DashboardGoalsCardProps) {
           <Zap size={14} />
           <span>94% Consistency Rating</span>
         </div>
-        <span>Target Sync Active</span>
       </div>
     </div>
   );

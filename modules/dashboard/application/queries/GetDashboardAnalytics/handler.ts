@@ -199,10 +199,26 @@ export class GetDashboardAnalyticsHandler {
         );
         dailyPagesMap.set(
           dateKey,
-          (dailyPagesMap.get(dateKey) || 0) + (s.current_page || 0)
+          (dailyPagesMap.get(dateKey) || 0) + (s.pages || s.current_page || 0)
         );
       }
     });
+
+    // Reconcile with authoritative user_statistics if total sessions do not capture all historical minutes
+    const totalRecordedSessionMins = Array.from(dailyMinutesMap.values()).reduce((a, b) => a + b, 0);
+    const totalRecordedSessionPages = Array.from(dailyPagesMap.values()).reduce((a, b) => a + b, 0);
+
+    if (stats?.minutes_read && stats.minutes_read > totalRecordedSessionMins && stats.last_read_date) {
+      const remainingMins = stats.minutes_read - totalRecordedSessionMins;
+      const targetDateKey = stats.last_read_date;
+      dailyMinutesMap.set(targetDateKey, (dailyMinutesMap.get(targetDateKey) || 0) + remainingMins);
+    }
+
+    if (stats?.pages_read && stats.pages_read > totalRecordedSessionPages && stats.last_read_date) {
+      const remainingPages = stats.pages_read - totalRecordedSessionPages;
+      const targetDateKey = stats.last_read_date;
+      dailyPagesMap.set(targetDateKey, (dailyPagesMap.get(targetDateKey) || 0) + remainingPages);
+    }
 
     for (let i = 6; i >= 0; i--) {
       const d = new Date(today);
@@ -375,6 +391,55 @@ export class GetDashboardAnalyticsHandler {
       });
     }
 
+    // Compute authentic Diurnal Rhythm breakdown from user session timestamps
+    let morningMins = 0;
+    let afternoonMins = 0;
+    let eveningMins = 0;
+    let nightMins = 0;
+
+    rawSessions.forEach((s) => {
+      const ts = s.last_read_at || s.started_at;
+      if (ts) {
+        const sessionDate = new Date(ts);
+        const hour = sessionDate.getHours();
+        const mins = Math.max(1, s.reading_time_minutes || 1);
+
+        if (hour >= 6 && hour < 12) {
+          morningMins += mins;
+        } else if (hour >= 12 && hour < 17) {
+          afternoonMins += mins;
+        } else if (hour >= 17 && hour < 21) {
+          eveningMins += mins;
+        } else {
+          nightMins += mins;
+        }
+      }
+    });
+
+    // Fallback: If sessions are sparse but stats exists, attribute remaining stats to the last update timestamp
+    if (morningMins + afternoonMins + eveningMins + nightMins === 0 && stats?.updated_at && (stats.minutes_read || 0) > 0) {
+      const hour = new Date(stats.updated_at).getHours();
+      const mins = stats.minutes_read || 1;
+      if (hour >= 6 && hour < 12) morningMins += mins;
+      else if (hour >= 12 && hour < 17) afternoonMins += mins;
+      else if (hour >= 17 && hour < 21) eveningMins += mins;
+      else nightMins += mins;
+    }
+
+    const totalDiurnalMins = morningMins + afternoonMins + eveningMins + nightMins;
+
+    let morningPercent = 0;
+    let afternoonPercent = 0;
+    let eveningPercent = 0;
+    let nightPercent = 0;
+
+    if (totalDiurnalMins > 0) {
+      morningPercent = Math.round((morningMins / totalDiurnalMins) * 100);
+      afternoonPercent = Math.round((afternoonMins / totalDiurnalMins) * 100);
+      eveningPercent = Math.round((eveningMins / totalDiurnalMins) * 100);
+      nightPercent = Math.max(0, 100 - (morningPercent + afternoonPercent + eveningPercent));
+    }
+
     return {
       user: {
         name: profile?.display_name || "TomeSphere Scholar",
@@ -398,10 +463,10 @@ export class GetDashboardAnalyticsHandler {
       milestones,
       recentSessions,
       timeOfDayBreakdown: {
-        morningPercent: totalMinutes > 0 ? 25 : 0,
-        afternoonPercent: totalMinutes > 0 ? 35 : 0,
-        eveningPercent: totalMinutes > 0 ? 30 : 0,
-        nightPercent: totalMinutes > 0 ? 10 : 0,
+        morningPercent,
+        afternoonPercent,
+        eveningPercent,
+        nightPercent,
       },
     };
   }
