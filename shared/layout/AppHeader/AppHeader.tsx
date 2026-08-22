@@ -241,10 +241,11 @@ export function AppHeader({ className = "", variant = "application", user }: App
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
         <div
-          className={`md:hidden absolute top-full left-0 w-full border-b shadow-lg flex flex-col ${isDark ? "bg-slate-950 border-slate-800" : "bg-white border-slate-200"
-            }`}
+          className={`md:hidden absolute top-full left-0 w-full border-b shadow-2xl backdrop-blur-xl flex flex-col origin-top animate-in slide-in-from-top-2 fade-in duration-200 ${
+            isDark ? "bg-slate-950/85 border-slate-800/80 shadow-black/50" : "bg-white/90 border-slate-200/80 shadow-slate-200/50"
+          }`}
         >
-          <div className="px-4 pt-2 pb-6 flex flex-col gap-2">
+          <div className="px-4 py-5 flex flex-col gap-1.5">
             <div className="relative flex items-center w-full mb-4 sm:hidden">
               <SearchBar size="sm" placeholder="Search digital archives..." />
             </div>
@@ -299,31 +300,34 @@ export function AppHeader({ className = "", variant = "application", user }: App
                 <Link
                   href="/discover"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-base font-medium px-4 py-3 rounded-xl transition-all ${isDark
+                  className={`text-base font-medium px-4 py-3 rounded-xl transition-all flex items-center gap-3 ${isDark
                     ? "text-slate-300 hover:text-white hover:bg-white/10"
                     : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
+                  <Search size={18} className="opacity-70" />
                   Discover
                 </Link>
                 <Link
                   href="/discover/collections"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-base font-medium px-4 py-3 rounded-xl transition-all ${isDark
+                  className={`text-base font-medium px-4 py-3 rounded-xl transition-all flex items-center gap-3 ${isDark
                     ? "text-slate-300 hover:text-white hover:bg-white/10"
                     : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
+                  <BookOpen size={18} className="opacity-70" />
                   Collections
                 </Link>
                 <Link
                   href="/about"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-base font-medium px-4 py-3 rounded-xl transition-all ${isDark
+                  className={`text-base font-medium px-4 py-3 rounded-xl transition-all flex items-center gap-3 ${isDark
                     ? "text-slate-300 hover:text-white hover:bg-white/10"
                     : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
+                  <User size={18} className="opacity-70" />
                   About
                 </Link>
               </>
