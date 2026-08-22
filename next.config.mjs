@@ -49,33 +49,13 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: "/analytics",
-        destination: "/me/progress",
-        permanent: true,
-      },
-      {
         source: "/profile",
         destination: "/me/profile",
         permanent: true,
       },
       {
-        source: "/notes/:path*",
-        destination: "/me/learning/notes/:path*",
-        permanent: true,
-      },
-      {
-        source: "/citations",
-        destination: "/me/learning/citations",
-        permanent: true,
-      },
-      {
-        source: "/academic",
-        destination: "/me/learning",
-        permanent: true,
-      },
-      {
-        source: "/exam-prep",
-        destination: "/me/study/exam-prep",
+        source: "/help",
+        destination: "/support",
         permanent: true,
       },
     ];

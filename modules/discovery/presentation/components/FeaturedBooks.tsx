@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { BookSummaryDto } from "../../application/dto/BookSummaryDto";
@@ -28,9 +28,11 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
   const [showShelfMenu, setShowShelfMenu] = useState(false);
   const [shelfSuccess, setShelfSuccess] = useState<string | null>(null);
 
-  const validItems = (items || []).filter(
-    (item): item is BookSummaryDto => Boolean(item && item.id && item.title),
-  );
+  const validItems = useMemo(() => {
+    return (items || []).filter(
+      (item): item is BookSummaryDto => Boolean(item && item.id && item.title),
+    );
+  }, [items]);
 
   // Auto-rotate featured selection every 8 seconds when not hovered or interacting
   useEffect(() => {
@@ -60,7 +62,9 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
         : (primary.genres[0] as any)?.name
       : null) || "Literature";
 
-  const description = generateSimpleDescription(primary.title, primaryAuthors);
+  const description = useMemo(() => {
+    return generateSimpleDescription(primary.title, primaryAuthors);
+  }, [primary.title, primaryAuthors]);
 
   const prevSlide = () => {
     setSelectedIndex(
@@ -86,13 +90,15 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
   };
 
   // Pick up to 3 secondary items from the remaining books
-  const secondaryItems = validItems
-    .map((item, originalIndex) => ({ item, originalIndex }))
-    .filter(
-      ({ originalIndex }) =>
-        originalIndex !== selectedIndex % validItems.length,
-    )
-    .slice(0, 3);
+  const secondaryItems = useMemo(() => {
+    return validItems
+      .map((item, originalIndex) => ({ item, originalIndex }))
+      .filter(
+        ({ originalIndex }) =>
+          originalIndex !== selectedIndex % validItems.length,
+      )
+      .slice(0, 3);
+  }, [validItems, selectedIndex]);
 
   return (
     <div
@@ -100,8 +106,8 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Primary Spotlight Banner (8 Cols on LG) */}
-      <div className="lg:col-span-8 flex flex-col justify-between p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-950 to-slate-900 text-white border border-indigo-800/30 shadow-xl relative overflow-hidden group transition-all duration-500 min-h-[360px]">
+      {/* Primary Spotlight Banner */}
+      <div className={`${secondaryItems.length > 0 ? 'lg:col-span-8' : 'lg:col-span-12'} flex flex-col justify-between p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-950 to-slate-900 text-white border border-indigo-800/30 shadow-xl relative overflow-hidden group transition-all duration-500 min-h-[360px]`}>
         {/* Glow Effects */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -287,9 +293,9 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
         )}
       </div>
 
-      {/* Secondary Featured List (4 Cols on LG) */}
+      {/* Secondary Featured List */}
       {secondaryItems.length > 0 && (
-        <div className="lg:col-span-4 flex flex-col justify-between p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+        <div className="lg:col-span-4 flex flex-col h-full p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md">
           <div>
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
               <h4 className="font-display font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
@@ -365,7 +371,7 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
 
           <Link
             href="/discover/featured"
-            className="inline-flex items-center justify-center gap-1.5 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="inline-flex items-center justify-center gap-1.5 mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
           >
             <span>View All Curated Collections</span>
             <ArrowRight size={13} />

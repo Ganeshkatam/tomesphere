@@ -17,11 +17,27 @@ export function BookCarousel({ items, priority = false }: BookCarouselProps) {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
+  const rafRef = useRef<number | null>(null);
+
   const checkScrollability = useCallback(() => {
     if (!scrollRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setCanScrollLeft(scrollLeft > 10);
-    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10);
+    
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+    }
+    
+    rafRef.current = requestAnimationFrame(() => {
+      if (!scrollRef.current) return;
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      
+      const nextCanLeft = scrollLeft > 10;
+      const nextCanRight = scrollLeft + clientWidth < scrollWidth - 10;
+      
+      setCanScrollLeft(prev => prev !== nextCanLeft ? nextCanLeft : prev);
+      setCanScrollRight(prev => prev !== nextCanRight ? nextCanRight : prev);
+      
+      rafRef.current = null;
+    });
   }, []);
 
   useEffect(() => {
@@ -35,6 +51,9 @@ export function BookCarousel({ items, priority = false }: BookCarouselProps) {
     return () => {
       el.removeEventListener("scroll", checkScrollability);
       window.removeEventListener("resize", checkScrollability);
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
   }, [checkScrollability, items]);
 

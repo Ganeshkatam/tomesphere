@@ -1085,6 +1085,42 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_reports: {
+        Row: {
+          created_at: string
+          description: string
+          email: string | null
+          id: string
+          status: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          email?: string | null
+          id?: string
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          email?: string | null
+          id?: string
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       processed_events: {
         Row: {
           duration_ms: number | null
@@ -1673,6 +1709,14 @@ export type Database = {
       }
     }
     Views: {
+      trending_searches: {
+        Row: {
+          last_searched_at: string | null
+          normalized_query: string | null
+          search_count: number | null
+        }
+        Relationships: []
+      }
       trending_searches_v1: {
         Row: {
           last_searched_at: string | null
@@ -1710,20 +1754,21 @@ export type Database = {
       cleanup_expired_rate_limits: { Args: never; Returns: undefined }
       execute_book_search_v1: {
         Args: {
-          p_genres: string[]
-          p_include_unavailable: boolean
-          p_languages: string[]
-          p_page: number
-          p_page_size: number
-          p_publication_years: number[]
-          p_query: string
-          p_sort: string
-          p_subjects: string[]
+          p_genres?: string[]
+          p_include_unavailable?: boolean
+          p_languages?: string[]
+          p_page?: number
+          p_page_size?: number
+          p_publication_years?: number[]
+          p_query?: string
+          p_sort?: string
+          p_subjects?: string[]
         }
         Returns: {
           authors: string[]
           average_rating: number
           book_id: string
+          cover_url: string
           genres: string[]
           is_typo_fallback: boolean
           language: string
@@ -1849,10 +1894,6 @@ export type Database = {
       }
       increment_analytics_monthly_pages: {
         Args: { p_month: string; p_pages: number; p_user_id: string }
-        Returns: undefined
-      }
-      increment_download_count: {
-        Args: { target_book_id: string }
         Returns: undefined
       }
       match_books: {

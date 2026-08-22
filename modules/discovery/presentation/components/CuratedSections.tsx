@@ -61,16 +61,22 @@ export default function HomeCuratedSections({
     return ["All", ...unique];
   }, [allBooks]);
 
+  const subjectCounts = useMemo(() => {
+    const counts: Record<string, number> = { All: allBooks.length };
+    allBooks.forEach(b => {
+      const tags = new Set<string>();
+      b.subjects?.forEach(s => tags.add(s.name.toLowerCase()));
+      b.genres?.forEach(g => tags.add(g.name.toLowerCase()));
+      
+      tags.forEach(t => {
+        counts[t] = (counts[t] || 0) + 1;
+      });
+    });
+    return counts;
+  }, [allBooks]);
+
   const getCount = (sub: string) =>
-    sub === "All"
-      ? allBooks.length
-      : allBooks.filter(
-          (b) =>
-            b.subjects?.some(
-              (s) => s.name.toLowerCase() === sub.toLowerCase(),
-            ) ||
-            b.genres?.some((g) => g.name.toLowerCase() === sub.toLowerCase()),
-        ).length;
+    sub === "All" ? subjectCounts.All : (subjectCounts[sub.toLowerCase()] || 0);
 
   const subjectBooks = useMemo(() => {
     if (activeSubject === "All") return allBooks.slice(0, 6);

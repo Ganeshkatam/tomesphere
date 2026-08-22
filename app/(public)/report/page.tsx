@@ -3,19 +3,38 @@
 import { useState } from "react";
 import { ShieldAlert, Send, CheckCircle2, ArrowLeft, MessageSquareWarning } from "lucide-react";
 import Link from "next/link";
+import { submitReportAction } from "@/modules/support/presentation/actions/reportActions";
+
+const REPORT_TYPES = [
+  { label: 'Bug / Glitch', value: 'BUG' },
+  { label: 'Abuse / Spam', value: 'ABUSE' },
+  { label: 'Security Vulnerability', value: 'SECURITY' }
+];
 
 export default function ReportPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Mock network request
-    setTimeout(() => {
+    setErrorMsg(null);
+    
+    try {
+      const formData = new FormData(e.currentTarget);
+      const result = await submitReportAction(formData);
+      
+      if (result.success) {
+        setIsSubmitted(true);
+      } else {
+        setErrorMsg(result.error || "An unexpected error occurred.");
+      }
+    } catch (err) {
+      setErrorMsg("Failed to connect to the server.");
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 1500);
+    }
   };
 
   return (
@@ -38,40 +57,51 @@ export default function ReportPage() {
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-slate-900 dark:text-white mb-4 tracking-tight">
             Report an Issue
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
-            Found a bug, encountered abusive content, or discovered a security vulnerability? Let us know so we can fix it immediately.
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl">
+            Help us keep Tomesphere safe and running smoothly. Our Trust & Safety team reviews all submissions promptly.
           </p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xl shadow-slate-200/50 dark:shadow-black/40 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 fill-mode-both">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 shadow-xl shadow-slate-200/40 dark:shadow-black/40 border border-slate-200/50 dark:border-slate-800/50 relative overflow-hidden">
           {isSubmitted ? (
-            <div className="text-center py-12 animate-in zoom-in-95 duration-500">
-              <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="py-12 flex flex-col items-center justify-center text-center animate-in fade-in zoom-in-95 duration-500">
+              <div className="w-20 h-20 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 mb-6">
                 <CheckCircle2 size={40} />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Report Submitted</h2>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Report Submitted</h2>
               <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto mb-8">
-                Thank you for helping keep TomeSphere safe and reliable. Our team will review your report shortly.
+                Thank you for your report. Our team has received the information and will investigate it shortly.
               </p>
-              <button
-                onClick={() => setIsSubmitted(false)}
-                className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-medium px-6 py-3 rounded-xl transition-colors"
+              <button 
+                onClick={() => {
+                  setIsSubmitted(false);
+                  setErrorMsg(null);
+                }}
+                className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
               >
                 Submit Another Report
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
+              
+              {errorMsg && (
+                <div className="p-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 flex gap-3 text-red-600 dark:text-red-400 text-sm">
+                  <MessageSquareWarning className="shrink-0" size={18} />
+                  <p>{errorMsg}</p>
+                </div>
+              )}
+
               <div className="space-y-4">
                 <label className="block text-sm font-semibold text-slate-900 dark:text-white">
                   What are you reporting?
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {['Bug / Glitch', 'Abuse / Spam', 'Security Vulnerability'].map((type, i) => (
-                    <label key={type} className="relative flex cursor-pointer rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-4 hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors">
-                      <input type="radio" name="reportType" value={type} className="peer sr-only" defaultChecked={i === 0} />
+                  {REPORT_TYPES.map((type, i) => (
+                    <label key={type.value} className="relative flex cursor-pointer rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-4 hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors">
+                      <input type="radio" name="type" value={type.value} className="peer sr-only" defaultChecked={i === 0} />
                       <div className="text-sm font-medium text-slate-600 dark:text-slate-300 peer-checked:text-indigo-600 dark:peer-checked:text-indigo-400">
-                        {type}
+                        {type.label}
                       </div>
                       <div className="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-indigo-600 dark:peer-checked:border-indigo-500 pointer-events-none" />
                     </label>
@@ -86,6 +116,7 @@ export default function ReportPage() {
                 <input
                   type="text"
                   id="title"
+                  name="title"
                   required
                   placeholder="Brief summary of the issue"
                   className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
@@ -98,6 +129,7 @@ export default function ReportPage() {
                 </label>
                 <textarea
                   id="description"
+                  name="description"
                   required
                   rows={5}
                   placeholder="Please provide as much detail as possible, including steps to reproduce if applicable."
@@ -112,6 +144,7 @@ export default function ReportPage() {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   placeholder="If you'd like us to follow up with you"
                   className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                 />
