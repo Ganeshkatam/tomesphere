@@ -181,7 +181,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className={`p-2.5 rounded-xl transition-colors cursor-pointer ${isDark
+            className={`hidden lg:flex p-2.5 rounded-xl transition-colors cursor-pointer ${isDark
               ? "text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
               }`}
@@ -216,7 +216,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
           ) : variant === "reader" ? null : user ? (
             <UserMenu user={user} />
           ) : (
-            <div className="flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-3">
               <Link
                 href="/login"
                 className={`text-sm font-semibold px-4 py-2 rounded-lg border transition-all ${isDark
@@ -328,6 +328,43 @@ export function AppHeader({ className = "", variant = "application", user }: App
                 </Link>
               </>
             )}
+
+            {/* Mobile Auth & Utilities */}
+            {!user && variant !== "reader" && (
+              <div className="border-t border-slate-100 dark:border-slate-800 mt-2 pt-4 px-4 flex flex-col gap-3">
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`text-center text-sm font-semibold px-4 py-2.5 rounded-lg border transition-all ${isDark
+                    ? "text-slate-200 border-slate-800 hover:bg-white/10"
+                    : "text-slate-700 border-slate-300 hover:bg-slate-100"
+                    }`}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg shadow-sm transition-all"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
+            
+            <div className="border-t border-slate-100 dark:border-slate-800 mt-2 pt-4 px-4 flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Theme</span>
+              <button
+                onClick={toggleTheme}
+                aria-label="Toggle theme"
+                className={`p-2 rounded-lg transition-colors cursor-pointer flex items-center justify-center ${isDark
+                  ? "text-slate-300 hover:text-white hover:bg-slate-800"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  }`}
+              >
+                {isDark ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+            </div>
           </div>
         </div>
       )}
