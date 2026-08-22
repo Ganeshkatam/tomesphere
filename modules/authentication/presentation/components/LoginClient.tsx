@@ -724,19 +724,21 @@ export default function EnhancedLoginPage() {
               </Link>
             </div>
 
-            <div className="flex items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400">
-              <Link
-                href="/privacy"
-                className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
-              >
+            <div className="flex items-center justify-center gap-3 sm:gap-4 text-xs text-slate-500 dark:text-slate-400">
+              <Link href="/privacy" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
                 Privacy
               </Link>
               <span>•</span>
-              <Link
-                href="/terms"
-                className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
-              >
+              <Link href="/terms" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
                 Terms
+              </Link>
+              <span>•</span>
+              <Link href="/security" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                Security
+              </Link>
+              <span>•</span>
+              <Link href="/contact" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                Contact
               </Link>
             </div>
           </div>
