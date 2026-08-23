@@ -178,13 +178,34 @@ export class EpubJsRenderer implements ReaderRenderer {
     if (!this.rendition) return;
     const themes = this.rendition.themes;
     themes.register("light", {
-      body: { background: "#ffffff", color: "#000000" },
+      body: {
+        background: "#ffffff",
+        color: "#000000",
+        padding: "36px 48px !important",
+        "max-width": "860px !important",
+        margin: "0 auto !important",
+        "box-sizing": "border-box !important",
+      },
     });
     themes.register("dark", {
-      body: { background: "#0f172a", color: "#e2e8f0" },
+      body: {
+        background: "#0f172a",
+        color: "#e2e8f0",
+        padding: "36px 48px !important",
+        "max-width": "860px !important",
+        margin: "0 auto !important",
+        "box-sizing": "border-box !important",
+      },
     });
     themes.register("sepia", {
-      body: { background: "#f4ecd8", color: "#5b4636" },
+      body: {
+        background: "#f4ecd8",
+        color: "#5b4636",
+        padding: "36px 48px !important",
+        "max-width": "860px !important",
+        margin: "0 auto !important",
+        "box-sizing": "border-box !important",
+      },
     });
     themes.select(themeName);
   }

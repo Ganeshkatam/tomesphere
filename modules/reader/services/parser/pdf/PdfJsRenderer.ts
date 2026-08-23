@@ -76,7 +76,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.style.display = "block";
     container.style.width = "100%";
     container.style.height = "100%";
-    container.style.padding = "24px";
+    container.style.padding = "48px 32px 80px 32px";
     container.style.boxSizing = "border-box";
     container.style.scrollBehavior = "auto";
     container.style.overscrollBehavior = "contain";
@@ -211,9 +211,9 @@ export class PdfJsRenderer implements ReaderRenderer {
       wrapper.style.display = "block";
       wrapper.style.textAlign = "center";
       wrapper.style.boxSizing = "border-box";
-      wrapper.style.margin = "0 auto 24px auto";
+      wrapper.style.margin = "0 auto 36px auto";
       wrapper.style.contain = "layout style";
-      wrapper.style.scrollMarginBlock = "12px";
+      wrapper.style.scrollMarginBlock = "16px";
       wrapper.classList.add(PAGE_PLACEHOLDER_CLASS);
 
       const state: PageState = {
@@ -493,13 +493,15 @@ export class PdfJsRenderer implements ReaderRenderer {
       return;
     }
     const unscaledViewport = page.getViewport({ scale: 1 });
-    const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth) - 48);
-    const containerHeight = Math.max(300, (this.container?.clientHeight || window.innerHeight) - 48);
+    const horizontalMargin = 64;
+    const verticalMargin = 96;
+    const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth) - horizontalMargin);
+    const containerHeight = Math.max(300, (this.container?.clientHeight || window.innerHeight) - verticalMargin);
 
-    // Compute fit-to-viewport base scale so the page is always neatly framed
+    // Compute fit-to-viewport base scale so the page is always neatly framed with ample padding
     const fitScale = Math.min(
-      containerWidth / Math.max(1, unscaledViewport.width),
-      (containerHeight * 1.25) / Math.max(1, unscaledViewport.height),
+      (containerWidth * 0.90) / Math.max(1, unscaledViewport.width),
+      (containerHeight * 0.92) / Math.max(1, unscaledViewport.height),
     );
 
     const effectiveScale = Math.max(0.5, fitScale * Math.max(1.0, zoom));
@@ -520,7 +522,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     canvas.style.maxWidth = "none";
     canvas.style.boxSizing = "border-box";
     canvas.style.backgroundColor = "white";
-    canvas.style.boxShadow = "0 25px 50px -12px rgb(0 0 0 / 0.25)";
+    canvas.style.borderRadius = "4px";
     canvas.style.objectFit = "contain";
     canvas.style.userSelect = "text";
     canvas.setAttribute("aria-label", `Rendered PDF page ${pageNumber}`);
@@ -566,7 +568,8 @@ export class PdfJsRenderer implements ReaderRenderer {
     pageContainer.style.width = `${viewport.width}px`;
     pageContainer.style.height = `${viewport.height}px`;
     pageContainer.style.margin = "0 auto";
-    pageContainer.style.boxShadow = "0 25px 50px -12px rgb(0 0 0 / 0.25)";
+    pageContainer.style.borderRadius = "4px";
+    pageContainer.style.boxShadow = "0 15px 35px -10px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.08)";
     pageContainer.style.backgroundColor = "white";
 
     canvas.style.boxShadow = "none";
