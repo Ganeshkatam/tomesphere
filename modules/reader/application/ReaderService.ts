@@ -20,6 +20,7 @@ import {
   deleteNoteAction,
   createBookmarkAction,
   deleteBookmarkAction,
+  getReaderPositionAction,
 } from "../presentation/actions/reader";
 import { useReaderStore } from "../state/reader-store";
 import { ReaderSessionFacade } from "./facades/ReaderSessionFacade";
@@ -28,6 +29,7 @@ export class ReaderService {
   private renderer: ReaderRenderer | null = null;
   private userId: string;
   private bookId: string;
+  private storageKey: string;
 
   // Session state
   private sessionFacade: ReaderSessionFacade;
@@ -37,7 +39,7 @@ export class ReaderService {
 
   // Auto-save debounce & Heartbeat
   private autoSaveTimer: NodeJS.Timeout | null = null;
-  private readonly AUTO_SAVE_DELAY_MS = 30000;
+  private readonly AUTO_SAVE_DELAY_MS = 2500;
   private pendingSaveAnchor: LocationAnchor | null = null;
   private heartbeatTimer: NodeJS.Timeout | null = null;
   private readonly HEARTBEAT_INTERVAL_MS = 30000;
@@ -51,6 +53,7 @@ export class ReaderService {
   constructor(userId: string, bookId: string) {
     this.userId = userId;
     this.bookId = bookId;
+    this.storageKey = `tomesphere_reader_pos_${bookId}`;
     this.sessionFacade = new ReaderSessionFacade(bookId);
   }
 
@@ -67,10 +70,60 @@ export class ReaderService {
     store.setSessionState("opening");
     store.setBook(this.bookId);
 
+    // 1. Resolve last read position from local cache and backend
+    let initialAnchor: LocationAnchor | null = null;
+    let initialPageNumber = 1;
+
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem(this.storageKey);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed?.anchor && parsed?.page) {
+            initialAnchor = parsed.anchor;
+            initialPageNumber = parseInt(parsed.page, 10) || 1;
+          }
+        }
+      } catch (err) {
+        console.warn("Could not read position from cache:", err);
+      }
+    }
+
+    try {
+      const res = await getReaderPositionAction(this.bookId);
+      if (res.success && res.data?.locationAnchor) {
+        const remoteAnchor = res.data.locationAnchor;
+        const remotePage = parseInt(remoteAnchor.value, 10);
+        if (Number.isInteger(remotePage) && remotePage > 0) {
+          // If remote position is available, use it or prioritize newer
+          initialAnchor = remoteAnchor;
+          initialPageNumber = remotePage;
+        }
+      }
+    } catch (err) {
+      console.warn("Could not fetch remote reading position:", err);
+    }
+
     // Listen for location changes
     this.renderer.onLocationChanged((anchor: LocationAnchor, percentage: number) => {
       useReaderStore.getState().setAnchor(anchor);
       this.uniquePagesVisited.add(anchor.value);
+
+      // Instant local persistence on every position update
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem(
+            this.storageKey,
+            JSON.stringify({
+              page: anchor.value,
+              anchor,
+              percentage,
+              updatedAt: Date.now(),
+            }),
+          );
+        } catch {}
+      }
+
       this.scheduleAutoSave(anchor);
 
       if (percentage === 100) {
@@ -96,7 +149,12 @@ export class ReaderService {
     // If destroy was called during async initialize (e.g. React Strict Mode), abort
     if (!this.renderer) return;
     
-    await this.renderer.display();
+    // Display document starting directly at last saved reading position
+    if (initialAnchor && initialPageNumber > 1) {
+      await this.renderer.goTo(initialAnchor);
+    } else {
+      await this.renderer.display();
+    }
 
     // Load annotations in order: highlights first, then notes, then bookmarks
     await this.loadHighlights();
@@ -111,7 +169,7 @@ export class ReaderService {
 
     if (!this.renderer) return; // one last check
     store.setRendererReady(true);
-    this.startSession();
+    this.startSession(initialPageNumber);
   }
 
   private setupAutoSaveListeners() {

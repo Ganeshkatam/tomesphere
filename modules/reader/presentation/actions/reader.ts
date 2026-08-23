@@ -258,6 +258,29 @@ export async function completeReadingSessionAction(
   }
 }
 
+export async function getReaderPositionAction(
+  bookId: string,
+): Promise<ServerActionResult<any>> {
+  try {
+    const user = await requireAuth();
+    const supabase = await createSupabaseServerClient();
+    const repository = new SupabaseReaderPositionRepository(supabase);
+    const { executeGetReaderPosition } = await import(
+      "../../application/queries/GetReaderPositionQuery"
+    );
+    const data = await executeGetReaderPosition(repository, {
+      userId: user.id,
+      bookId,
+    });
+    return { success: true, data };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred" },
+    };
+  }
+}
+
 export async function completeBookAction(
   payload: { bookId: string },
 ): Promise<ServerActionResult<any>> {

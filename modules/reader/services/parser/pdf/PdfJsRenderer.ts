@@ -644,13 +644,6 @@ export class PdfJsRenderer implements ReaderRenderer {
       console.warn(`Could not render text layer on page ${pageNumber}:`, err);
     }
 
-    // Re-apply any existing highlights for this page on the text layer
-    for (const h of this.highlightsMap.values()) {
-      if (h.selectionAnchor?.start?.value === String(pageNumber)) {
-        this.renderHighlightOnPage(h);
-      }
-    }
-
     // Interactive PDF Hyperlinks & TOC Destinations Layer
     const linkLayer = document.createElement("div");
     linkLayer.className = "tomesphere-pdf-link-layer";
@@ -724,6 +717,14 @@ export class PdfJsRenderer implements ReaderRenderer {
     state.page = page;
     state.renderedZoom = zoom;
     state.renderTask = null;
+
+    // Re-apply any existing highlights for this page on the text layer
+    for (const h of this.highlightsMap.values()) {
+      if (h.selectionAnchor?.start?.value === String(pageNumber)) {
+        this.renderHighlightOnPage(h);
+      }
+    }
+
     this.enforceRenderBudget(this.currentPageNum);
   }
 
@@ -949,28 +950,12 @@ export class PdfJsRenderer implements ReaderRenderer {
       el.removeAttribute("data-highlight-id");
     });
 
-    const targetText = (highlight.selectedText || "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, " ");
-    if (!targetText) return;
+    const rawTarget = (highlight.selectedText || "").trim();
+    if (!rawTarget) return;
 
     const spans = Array.from(textLayer.querySelectorAll<HTMLElement>("span"));
     if (spans.length === 0) return;
 
-    let accumulated = "";
-    const spanOffsets: Array<{ span: HTMLElement; start: number; end: number; text: string }> = [];
-
-    for (const span of spans) {
-      const text = (span.textContent || "").toLowerCase().replace(/\s+/g, " ");
-      if (!text) continue;
-      const start = accumulated.length;
-      accumulated += (accumulated.length > 0 ? " " : "") + text;
-      const end = accumulated.length;
-      spanOffsets.push({ span, start, end, text });
-    }
-
-    const matchIdx = accumulated.indexOf(targetText);
     const highlightBg = highlight.color.startsWith("#")
       ? `${highlight.color}66`
       : "rgba(253, 224, 71, 0.45)";
@@ -978,42 +963,73 @@ export class PdfJsRenderer implements ReaderRenderer {
       ? highlight.color
       : "rgba(253, 224, 71, 0.8)";
 
-    if (matchIdx !== -1) {
-      const matchEnd = matchIdx + targetText.length;
-      for (const item of spanOffsets) {
-        if (item.end > matchIdx && item.start < matchEnd) {
-          item.span.dataset.highlightId = highlight.id;
-          item.span.style.backgroundColor = highlightBg;
-          item.span.style.borderRadius = "3px";
-          item.span.style.boxShadow = `0 0 0 1px ${highlightBorder}`;
-          item.span.style.cursor = "pointer";
-          item.span.onclick = (e) => {
-            e.stopPropagation();
-            this.highlightClickListeners.forEach((listener) =>
-              listener(highlight.id),
-            );
-          };
+    const applyStyleToSpan = (span: HTMLElement) => {
+      span.dataset.highlightId = highlight.id;
+      span.style.backgroundColor = highlightBg;
+      span.style.borderRadius = "3px";
+      span.style.boxShadow = `0 0 0 1px ${highlightBorder}`;
+      span.style.cursor = "pointer";
+      span.onclick = (e) => {
+        e.stopPropagation();
+        this.highlightClickListeners.forEach((listener) =>
+          listener(highlight.id),
+        );
+      };
+    };
+
+    const clean = (s: string) =>
+      s
+        .toLowerCase()
+        .replace(/[\u2018\u2019`']/g, "")
+        .replace(/[\u201C\u201D"']/g, "")
+        .replace(/[\u2013\u2014–—]/g, "")
+        .replace(/[^a-z0-9]/gi, "")
+        .trim();
+
+    const targetClean = clean(rawTarget);
+    if (!targetClean) return;
+
+    const words = rawTarget.split(/\s+/).filter((w) => w.length > 1);
+    const startPhraseClean = clean(words.slice(0, Math.min(4, words.length)).join(""));
+    const endPhraseClean = clean(words.slice(Math.max(0, words.length - 4)).join(""));
+
+    // Find start span and end span indices among the page's spans
+    let startIdx = -1;
+    let endIdx = -1;
+
+    for (let i = 0; i < spans.length; i++) {
+      const spanClean = clean(spans[i].textContent || "");
+      if (!spanClean) continue;
+
+      if (startIdx === -1) {
+        // Look ahead 3 spans to match the start sequence
+        const forwardClean = clean(
+          spans.slice(i, i + 3).map((s) => s.textContent || "").join("")
+        );
+        if (forwardClean.includes(startPhraseClean) || (words[0] && spanClean.includes(clean(words[0])))) {
+          startIdx = i;
         }
       }
-    } else {
-      // Fallback: match spans containing key words from targetText
-      const targetWords = targetText.split(/\s+/).filter((w) => w.length > 3);
-      if (targetWords.length > 0) {
-        for (const item of spanOffsets) {
-          const hasWord = targetWords.some((w) => item.text.includes(w));
-          if (hasWord) {
-            item.span.dataset.highlightId = highlight.id;
-            item.span.style.backgroundColor = highlightBg;
-            item.span.style.borderRadius = "3px";
-            item.span.style.boxShadow = `0 0 0 1px ${highlightBorder}`;
-            item.span.style.cursor = "pointer";
-            item.span.onclick = (e) => {
-              e.stopPropagation();
-              this.highlightClickListeners.forEach((listener) =>
-                listener(highlight.id),
-              );
-            };
-          }
+
+      if (startIdx !== -1) {
+        const backwardClean = clean(
+          spans.slice(Math.max(startIdx, i - 2), i + 1).map((s) => s.textContent || "").join("")
+        );
+        if (backwardClean.includes(endPhraseClean) || (words[words.length - 1] && spanClean.includes(clean(words[words.length - 1])))) {
+          endIdx = i;
+        }
+      }
+    }
+
+    // If both start and end spans found, highlight EVERY span in between without skipping
+    if (startIdx !== -1) {
+      const finalEnd = endIdx !== -1 && endIdx >= startIdx
+        ? endIdx
+        : Math.min(startIdx + Math.max(1, Math.ceil(words.length / 3)), spans.length - 1);
+
+      for (let i = startIdx; i <= finalEnd; i++) {
+        if (spans[i].textContent && spans[i].textContent.trim().length > 0) {
+          applyStyleToSpan(spans[i]);
         }
       }
     }

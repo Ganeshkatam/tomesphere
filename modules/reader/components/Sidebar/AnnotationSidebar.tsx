@@ -11,8 +11,14 @@ import {
   ChevronRight,
   Search,
   List,
+  Copy,
+  Check,
+  Pencil,
+  MessageSquarePlus,
+  ExternalLink,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
 
 interface AnnotationSidebarProps {
   service: ReaderService | null;
@@ -29,11 +35,21 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
     totalPages,
   } = useReaderStore();
   const theme = preferences.theme || "light";
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [colorPickerId, setColorPickerId] = useState<string | null>(null);
 
   if (!sidebarOpen || !service) return null;
 
   const annotations = service.getAnnotations();
   const bookmarkViews = service.getBookmarkViews();
+
+  const handleCopy = (text: string, id: string) => {
+    if (text) {
+      navigator.clipboard.writeText(text);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 1600);
+    }
+  };
 
   const handleTabChange = (
     tab: "annotations" | "bookmarks" | "toc" | "search",
@@ -225,46 +241,129 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
           annotations.map(({ highlight, note }) => (
             <div
               key={highlight.id}
-              className={`rounded-xl p-3 transition-all cursor-pointer group ${themeStyles.card}`}
-              onClick={() =>
-                service.goToLocation(highlight.selectionAnchor.start)
-              }
+              className={`rounded-2xl p-3.5 transition-all group relative border ${themeStyles.card}`}
             >
-              {/* Header: Color & Date */}
-              <div className="flex items-center justify-between mb-2">
+              {/* Header: Color, Page Badge, Timestamp & Action Buttons */}
+              <div className="flex items-center justify-between mb-2.5">
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-3 h-3 rounded-full shrink-0 shadow-xs"
+                    className="w-3.5 h-3.5 rounded-full shrink-0 shadow-xs ring-1 ring-black/10"
                     style={{ backgroundColor: highlight.color }}
                   />
+                  <span className="text-[11px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-500 dark:text-slate-400">
+                    p. {highlight.selectionAnchor?.start?.value || "1"}
+                  </span>
                   {note && (
-                    <MessageSquare size={13} className="text-indigo-500" />
+                    <span className="flex items-center gap-1 text-[11px] font-medium text-indigo-600 dark:text-indigo-400">
+                      <MessageSquare size={12} />
+                      Note
+                    </span>
                   )}
                 </div>
-                <div className={`flex items-center gap-1 text-[11px] ${themeStyles.textSecondary}`}>
-                  <Clock size={11} />
-                  {note
-                    ? formatDistanceToNow(new Date(note.updatedAt), {
-                        addSuffix: true,
-                      })
-                    : "Just now"}
+
+                {/* Options Toolbar on each Note card */}
+                <div className="flex items-center gap-0.5">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCopy(highlight.selectedText, highlight.id);
+                    }}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                    title={copiedId === highlight.id ? "Copied!" : "Copy quote"}
+                  >
+                    {copiedId === highlight.id ? (
+                      <Check size={13} className="text-emerald-500" />
+                    ) : (
+                      <Copy size={13} />
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      service.openNoteForHighlight(highlight.id);
+                    }}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                    title={note ? "Edit attached note" : "Add note"}
+                  >
+                    {note ? <Pencil size={13} /> : <MessageSquarePlus size={13} />}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      service.goToLocation(highlight.selectionAnchor.start);
+                    }}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                    title="Jump to location"
+                  >
+                    <ExternalLink size={13} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      service.deleteHighlight(highlight.id);
+                    }}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                    title="Delete highlight"
+                  >
+                    <Trash2 size={13} />
+                  </button>
                 </div>
               </div>
 
-              {/* Highlight Text Preview */}
-              <p
-                className={`text-xs sm:text-sm line-clamp-3 mb-2 italic border-l-2 pl-2.5 font-serif ${themeStyles.textPrimary}`}
-                style={{ borderColor: highlight.color }}
+              {/* Highlight Quote Text */}
+              <div
+                className="cursor-pointer"
+                onClick={() =>
+                  service.goToLocation(highlight.selectionAnchor.start)
+                }
               >
-                {highlight.selectedText}
-              </p>
-
-              {/* Note Preview */}
-              {note && (
-                <p className={`text-xs line-clamp-2 mt-1 ${themeStyles.textSecondary}`}>
-                  {note.bodyMarkdown}
+                <p
+                  className={`text-xs sm:text-sm line-clamp-3 mb-2 italic border-l-2 pl-2.5 font-serif transition-colors ${themeStyles.textPrimary}`}
+                  style={{ borderColor: highlight.color }}
+                >
+                  {highlight.selectedText}
                 </p>
-              )}
+
+                {/* Attached Note Box */}
+                {note ? (
+                  <div className="mt-2.5 p-2.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+                        <MessageSquare size={11} /> Note
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        {formatDistanceToNow(new Date(note.updatedAt), {
+                          addSuffix: true,
+                        })}
+                      </span>
+                    </div>
+                    <p
+                      className={`text-xs whitespace-pre-wrap ${themeStyles.textPrimary}`}
+                    >
+                      {note.bodyMarkdown}
+                    </p>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      service.openNoteForHighlight(highlight.id);
+                    }}
+                    className="mt-1 text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <MessageSquarePlus size={12} />
+                    Add note to this highlight
+                  </button>
+                )}
+              </div>
             </div>
           ))}
 

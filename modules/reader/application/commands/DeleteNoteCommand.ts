@@ -16,7 +16,16 @@ export async function executeDeleteNote(
     .match({ id: request.noteId, user_id: request.userId });
 
   if (error) {
-    console.error("Failed to delete note:", error);
+    console.error("Failed to delete note in annotations:", error);
     throw new Error("Failed to delete note");
+  }
+
+  try {
+    await supabase
+      .from("notes")
+      .delete()
+      .match({ id: request.noteId, user_id: request.userId });
+  } catch (notesDeleteErr) {
+    console.warn("Could not sync note deletion to notes table:", notesDeleteErr);
   }
 }
