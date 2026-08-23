@@ -11,7 +11,6 @@ export default function ProfileSetupPage({
   params: { id: string };
 }) {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: "",
     favoriteGenres: [] as string[],
@@ -81,7 +80,7 @@ export default function ProfileSetupPage({
       showSuccess("Profile setup complete!");
 
       setTimeout(() => {
-        router.push("/home");
+        router.push("/me");
       }, 1000);
     } catch (error: any) {
       console.error("Error:", error);
@@ -192,7 +191,7 @@ export default function ProfileSetupPage({
             ) : (
               <>
                 <span>Complete Setup</span>
-                <span>→</span>
+                <span>&rarr;</span>
               </>
             )}
           </button>

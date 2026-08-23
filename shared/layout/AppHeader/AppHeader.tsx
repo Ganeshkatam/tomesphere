@@ -104,8 +104,8 @@ export function AppHeader({ className = "", variant = "application", user }: App
                   Discover
                 </Link>
                 <Link
-                  href="/dashboard"
-                  className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${pathname && pathname.startsWith("/dashboard")
+                  href="/me/dashboard"
+                  className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${pathname && pathname.startsWith("/me/dashboard")
                     ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                     }`}
@@ -307,14 +307,14 @@ export function AppHeader({ className = "", variant = "application", user }: App
                     <span className="text-[17px] font-semibold">Discover</span>
                   </Link>
                   <Link
-                    href="/dashboard"
+                    href="/me/dashboard"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 active:scale-[0.98] ${pathname?.startsWith("/dashboard")
+                    className={`group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 active:scale-[0.98] ${pathname?.startsWith("/me/dashboard")
                       ? "bg-indigo-600/10 text-indigo-600 dark:text-indigo-400"
                       : isDark ? "text-slate-300 hover:text-white hover:bg-slate-800/60" : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                       }`}
                   >
-                    <div className={`p-2 rounded-xl transition-colors ${pathname?.startsWith("/dashboard") ? "bg-indigo-600/20" : isDark ? "bg-slate-800/80 group-hover:bg-indigo-500/20 group-hover:text-indigo-400" : "bg-slate-200/60 group-hover:bg-indigo-100 group-hover:text-indigo-600"}`}>
+                    <div className={`p-2 rounded-xl transition-colors ${pathname?.startsWith("/me/dashboard") ? "bg-indigo-600/20" : isDark ? "bg-slate-800/80 group-hover:bg-indigo-500/20 group-hover:text-indigo-400" : "bg-slate-200/60 group-hover:bg-indigo-100 group-hover:text-indigo-600"}`}>
                       <User size={20} />
                     </div>
                     <span className="text-[17px] font-semibold">Dashboard</span>

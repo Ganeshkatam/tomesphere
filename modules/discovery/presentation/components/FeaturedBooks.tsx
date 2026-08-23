@@ -43,28 +43,25 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
     return () => clearInterval(interval);
   }, [validItems.length, isPaused, showShelfMenu]);
 
-  if (validItems.length === 0) {
-    return null;
-  }
-
-  const primary = validItems[selectedIndex % validItems.length];
+  const primary = validItems.length > 0 ? validItems[selectedIndex % validItems.length] : null;
   const primaryAuthors =
-    primary.authors && primary.authors.length > 0
+    primary?.authors && primary.authors.length > 0
       ? primary.authors.map((a) => a.name).join(", ")
       : "TomeSphere Library";
 
-  const primaryLanguage = (primary.language || "English").toUpperCase();
-  const primaryYear = primary.publicationYear || null;
+  const primaryLanguage = (primary?.language || "English").toUpperCase();
+  const primaryYear = primary?.publicationYear || null;
   const primaryGenre =
-    (primary.genres && primary.genres.length > 0
+    (primary?.genres && primary.genres.length > 0
       ? typeof primary.genres[0] === "string"
         ? primary.genres[0]
         : (primary.genres[0] as any)?.name
       : null) || "Literature";
 
   const description = useMemo(() => {
+    if (!primary) return "";
     return generateSimpleDescription(primary.title, primaryAuthors);
-  }, [primary.title, primaryAuthors]);
+  }, [primary, primaryAuthors]);
 
   const prevSlide = () => {
     setSelectedIndex(
@@ -79,6 +76,7 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
   const handleAddToShelf = async (
     status: "want_to_read" | "currently_reading" | "finished",
   ) => {
+    if (!primary) return;
     try {
       await addBookToLibraryAction(primary.id, status);
       setShelfSuccess(status);
@@ -99,6 +97,8 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
       )
       .slice(0, 3);
   }, [validItems, selectedIndex]);
+
+  if (!primary || validItems.length === 0) return null;
 
   return (
     <div
@@ -262,8 +262,8 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
                     onClick={() => setSelectedIndex(idx)}
                     aria-label={`Jump to featured title ${idx + 1}`}
                     className={`h-1.5 rounded-full transition-all cursor-pointer ${idx === selectedIndex % validItems.length
-                        ? "w-6 bg-indigo-500"
-                        : "w-1.5 bg-white/20 hover:bg-white/40"
+                      ? "w-6 bg-indigo-500"
+                      : "w-1.5 bg-white/20 hover:bg-white/40"
                       }`}
                   />
                 ))}

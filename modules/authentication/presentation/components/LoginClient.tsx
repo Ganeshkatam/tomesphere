@@ -766,7 +766,7 @@ export default function EnhancedLoginPage() {
                   Check your email
                 </h3>
                 <p className="text-slate-600 dark:text-slate-400 text-sm max-w-[280px] mx-auto leading-relaxed">
-                  We've sent a magic link to <span className="text-slate-900 dark:text-white font-semibold">{input}</span>. Click the link to instantly log in.
+                  We&apos;ve sent a magic link to <span className="text-slate-900 dark:text-white font-semibold">{input}</span>. Click the link to instantly log in.
                 </p>
                 <div className="pt-4 space-y-4">
                   <button

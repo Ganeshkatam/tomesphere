@@ -132,7 +132,7 @@ export function UserMenu({ user }: UserMenuProps) {
               Workspace
             </p>
             <Link
-              href="/dashboard"
+              href="/me/dashboard"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
             >

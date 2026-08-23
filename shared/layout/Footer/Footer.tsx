@@ -34,7 +34,7 @@ const HIDE_FOOTER_ROUTES = [
   "/read",
   "/account",
   "/me",
-  "/onboarding",
+  "/me/onboarding",
 ];
 
 export default function Footer() {

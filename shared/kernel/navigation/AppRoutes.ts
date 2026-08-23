@@ -1,7 +1,7 @@
 export const AppRoutes = {
   home: "/",
   me: "/me",
-  dashboard: "/dashboard",
+  dashboard: "/me/dashboard",
   discover: "/discover",
   library: "/me/mylibrary",
 } as const;

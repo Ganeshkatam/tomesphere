@@ -11,10 +11,8 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // Routes that require authentication
 const PROTECTED_PREFIXES = [
-  "/dashboard",
   "/me",
   "/read",
-  "/onboarding",
 ];
 
 // Routes that authenticated users should NOT see
