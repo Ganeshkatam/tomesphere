@@ -35,12 +35,15 @@ export function SearchBar({
   const [trendingSearches, setTrendingSearches] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Sync with URL query parameter
+  // Sync with URL query parameter & close popup on route change
   useEffect(() => {
+    setIsOpen(false);
+    setIsFocused(false);
     const q = searchParams.get("q");
     if (q !== null) {
       setQuery(q);
@@ -77,7 +80,7 @@ export function SearchBar({
     }
   }, []);
 
-  // Debounced autocomplete fetcher
+  // Debounced autocomplete fetcher - ONLY open if currently focused
   useEffect(() => {
     if (!query || query.trim().length < 2) {
       setSuggestions([]);
@@ -93,7 +96,9 @@ export function SearchBar({
         const results = await autocompleteAction(query.trim());
         if (!isCancelled) {
           setSuggestions(results || []);
-          setIsOpen(true);
+          if (isFocused) {
+            setIsOpen(true);
+          }
         }
       } catch (err) {
         console.error("Autocomplete error:", err);
@@ -106,7 +111,7 @@ export function SearchBar({
       isCancelled = true;
       clearTimeout(timer);
     };
-  }, [query]);
+  }, [query, isFocused]);
 
   // Handle outside click to close suggestions
   useEffect(() => {
@@ -116,6 +121,7 @@ export function SearchBar({
         !containerRef.current.contains(e.target as Node)
       ) {
         setIsOpen(false);
+        setIsFocused(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -125,8 +131,10 @@ export function SearchBar({
   const handleSubmit = (e?: React.FormEvent, customQuery?: string) => {
     if (e) e.preventDefault();
     const targetQuery = (customQuery !== undefined ? customQuery : query).trim();
+    setIsOpen(false);
+    setIsFocused(false);
+    inputRef.current?.blur();
     if (targetQuery) {
-      setIsOpen(false);
       router.push(`/search?q=${encodeURIComponent(targetQuery)}`);
     }
   };
@@ -218,6 +226,7 @@ export function SearchBar({
               setHighlightedIndex(-1);
             }}
             onFocus={() => {
+              setIsFocused(true);
               setIsOpen(true);
               if (!query || query.trim().length < 2) {
                 fetchRecentAndTrending();
@@ -234,8 +243,8 @@ export function SearchBar({
               onClick={() => {
                 setQuery("");
                 setSuggestions([]);
-                setIsOpen(true);
-                fetchRecentAndTrending();
+                setIsOpen(false);
+                setIsFocused(false);
                 inputRef.current?.focus();
               }}
               aria-label="Clear search input"
@@ -256,7 +265,7 @@ export function SearchBar({
       </form>
 
       {/* Autocomplete Suggestions Popup */}
-      {isOpen && query.trim().length >= 2 && suggestions.length > 0 && (
+      {isOpen && isFocused && query.trim().length >= 2 && suggestions.length > 0 && (
         <div className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in duration-150 p-1.5 text-xs">
           <div className="px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center justify-between">
             <span>Catalogue Suggestions</span>
@@ -271,7 +280,10 @@ export function SearchBar({
                 <Link
                   key={`${item.title}-${index}`}
                   href={item.url || `/search?q=${encodeURIComponent(item.title)}`}
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsFocused(false);
+                  }}
                   onMouseEnter={() => setHighlightedIndex(index)}
                   className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors cursor-pointer ${isHighlighted
                       ? "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-950 dark:text-indigo-200"

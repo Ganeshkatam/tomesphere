@@ -43,9 +43,9 @@ export default async function SearchPage({
     return Array.isArray(val) ? val : [val];
   };
 
-  const genres = getArrayParam("facet.genres");
-  const subjects = getArrayParam("facet.subjects");
-  const language = getArrayParam("facet.languages");
+  const genres = Array.from(new Set([...getArrayParam("facet.genres"), ...getArrayParam("genre")]));
+  const subjects = Array.from(new Set([...getArrayParam("facet.subjects"), ...getArrayParam("subject")]));
+  const language = Array.from(new Set([...getArrayParam("facet.languages"), ...getArrayParam("language")]));
   const publicationYear = getArrayParam("facet.publicationYears")
     .map((y) => parseInt(y, 10))
     .filter((y) => !isNaN(y));
@@ -63,17 +63,60 @@ export default async function SearchPage({
     },
   };
 
-  const results = await searchAction(request);
+  let results;
+  try {
+    results = await searchAction(request);
+  } catch (err) {
+    console.error("[SearchPage] Search action failed:", err);
+    results = {
+      results: [],
+      totalCount: 0,
+      totalPages: 0,
+      facets: [],
+      page: request.page,
+      pageSize: request.pageSize,
+      executionTimeMs: 0,
+      isTypoFallback: false,
+    };
+  }
 
   const activeFilterCount =
     genres.length + subjects.length + language.length + publicationYear.length;
 
   // Only show facets that can actually filter something (more than 1 option, or already selected)
-  const usefulFacets = results.facets.filter(
+  const usefulFacets = (results?.facets || []).filter(
     (f) => f.values && (f.values.length > 1 || f.values.some((v) => v.selected))
   );
 
   const showSidebar = usefulFacets.length > 0 || activeFilterCount > 0;
+
+  const displayTitle = query ? (
+    <>
+      Results for &ldquo;
+      <span className="text-indigo-600 dark:text-indigo-400">
+        {query}
+      </span>
+      &rdquo;
+    </>
+  ) : genres.length > 0 ? (
+    <>
+      Explore{" "}
+      <span className="text-indigo-600 dark:text-indigo-400 capitalize">
+        {genres.join(", ")}
+      </span>{" "}
+      Volumes
+    </>
+  ) : subjects.length > 0 ? (
+    <>
+      Explore{" "}
+      <span className="text-indigo-600 dark:text-indigo-400 capitalize">
+        {subjects.join(", ")}
+      </span>{" "}
+      Volumes
+    </>
+  ) : (
+    "Explore All Archive Volumes"
+  );
 
   return (
     <div className="min-h-screen bg-[var(--surface-canvas)] py-6 sm:py-10 px-4 sm:px-6 lg:px-8 xl:px-12 w-full">
@@ -96,17 +139,7 @@ export default async function SearchPage({
               </div>
 
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                {query ? (
-                  <>
-                    Results for &ldquo;
-                    <span className="text-indigo-600 dark:text-indigo-400">
-                      {query}
-                    </span>
-                    &rdquo;
-                  </>
-                ) : (
-                  "Explore All Archive Volumes"
-                )}
+                {displayTitle}
               </h1>
 
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
@@ -215,9 +248,16 @@ export default async function SearchPage({
                   No volumes match your search
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md">
-                  We could not find any books matching &ldquo;{query}&rdquo;. Try
-                  checking your spelling, removing filters, or browsing by
-                  subject.
+                  {query ? (
+                    <>We could not find any books matching &ldquo;{query}&rdquo;.</>
+                  ) : genres.length > 0 ? (
+                    <>We could not find any books in &ldquo;{genres.join(", ")}&rdquo;.</>
+                  ) : subjects.length > 0 ? (
+                    <>We could not find any books in &ldquo;{subjects.join(", ")}&rdquo;.</>
+                  ) : (
+                    <>We could not find any volumes matching your filter criteria.</>
+                  )}{" "}
+                  Try checking your spelling, removing active filters, or exploring all catalogue genres.
                 </p>
                 <div className="pt-2">
                   <Link

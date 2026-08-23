@@ -32,7 +32,7 @@ export default function GenreBrowserSection({
         {genres.map((genre) => (
           <Link
             key={genre}
-            href={`/discover/search?genre=${encodeURIComponent(genre)}`}
+            href={`/search?genre=${encodeURIComponent(genre)}`}
             className="px-5 py-2.5 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-default)] hover:border-indigo-500 hover:text-indigo-500 transition-colors text-[var(--text-primary)] text-sm font-medium shadow-xs"
           >
             {genre}

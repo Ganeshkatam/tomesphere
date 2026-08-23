@@ -15,17 +15,34 @@ export class SupabaseBookRepository implements BookRepository {
   constructor(private readonly client: SupabaseClient<Database>) {}
 
   async findById(id: BookId): Promise<Book | null> {
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        id.value,
+      );
+    let targetId = id.value;
+
+    if (!isUuid) {
+      const { data: doc } = await this.client
+        .from("discovery_search_documents")
+        .select("book_id")
+        .eq("slug", id.value)
+        .maybeSingle();
+
+      if (!doc?.book_id) {
+        return null;
+      }
+      targetId = doc.book_id;
+    }
+
     const { data, error } = await this.client
       .from("books")
       .select(
         "*, book_authors(authors(name)), book_genres(genres(name)), book_subjects(subjects(name)), book_files(*)",
       )
-      .eq("id", id.value)
-      .single();
+      .eq("id", targetId)
+      .maybeSingle();
 
     if (error || !data) {
-      // Depending on the domain, we might throw a custom DomainError here,
-      // but returning null is acceptable for 'not found'.
       return null;
     }
 

@@ -230,7 +230,7 @@ export function ReaderShell({ data }: ReaderShellProps) {
   const handleHighlightAndNote = useCallback(async (color: string) => {
     const service = serviceRef.current;
     if (!service) return;
-    await service.createHighlight(color);
+    await service.highlightSelectionAndOpenNote(color);
   }, []);
 
   // ─── Note callbacks ──────────────────────────────────────────────

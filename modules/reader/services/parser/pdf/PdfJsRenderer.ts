@@ -56,6 +56,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     (anchor: SelectionAnchor, text: string) => void
   > = new Set();
   private highlightClickListeners: Set<(id: string) => void> = new Set();
+  private highlightsMap: Map<string, ReaderHighlight> = new Map();
 
   async initialize(bookUrl: string, container: HTMLElement): Promise<void> {
     await this.destroy();
@@ -79,7 +80,16 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.style.overscrollBehavior = "contain";
     container.classList.add("tomesphere-pdf-scroll-container");
 
-    const loadingTask = pdfjsLib.getDocument(bookUrl);
+    const safeUrl = bookUrl.startsWith("http")
+      ? encodeURI(decodeURI(bookUrl.trim()))
+      : bookUrl.trim();
+
+    const loadingTask = pdfjsLib.getDocument({
+      url: safeUrl,
+      cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/cmaps/`,
+      cMapPacked: true,
+      standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/standard_fonts/`,
+    });
     this.loadingTask = loadingTask;
     const pdfDocument = await loadingTask.promise;
 
@@ -92,6 +102,13 @@ export class PdfJsRenderer implements ReaderRenderer {
     this.totalPages = Math.max(1, pdfDocument.numPages);
     useReaderStore.getState().setTotalPages(this.totalPages);
 
+    // Extract authentic embedded Table of Contents
+    void this.extractTableOfContents(pdfDocument).then((toc) => {
+      if (!this.destroyed) {
+        useReaderStore.getState().setTableOfContents(toc);
+      }
+    });
+
     await this.createPageScaffolding(generation);
     if (generation !== this.documentGeneration || this.destroyed) return;
 
@@ -99,6 +116,60 @@ export class PdfJsRenderer implements ReaderRenderer {
     this.initialized = true;
     await this.ensurePageRendered(1);
     this.emitLocation(1);
+  }
+
+  private async extractTableOfContents(
+    pdfDocument: pdfjsLib.PDFDocumentProxy,
+  ): Promise<any[]> {
+    try {
+      const outline = await pdfDocument.getOutline();
+      if (!outline || outline.length === 0) {
+        return [];
+      }
+
+      const resolveItem = async (item: any): Promise<any | null> => {
+        let pageNumber = 1;
+        try {
+          let dest = item.dest;
+          if (typeof dest === "string") {
+            dest = await pdfDocument.getDestination(dest);
+          }
+          if (Array.isArray(dest) && dest[0]) {
+            const pageIndex = await pdfDocument.getPageIndex(dest[0]);
+            pageNumber = pageIndex + 1;
+          } else if (typeof dest === "number") {
+            pageNumber = dest + 1;
+          }
+        } catch {
+          pageNumber = 1;
+        }
+
+        const subItems: any[] = [];
+        if (Array.isArray(item.items) && item.items.length > 0) {
+          for (const sub of item.items) {
+            const resolvedSub = await resolveItem(sub);
+            if (resolvedSub) subItems.push(resolvedSub);
+          }
+        }
+
+        return {
+          id: Math.random().toString(36).substring(2, 9),
+          title: (item.title || "Section").trim(),
+          pageNumber: Math.max(1, Math.min(pageNumber, this.totalPages)),
+          items: subItems.length > 0 ? subItems : undefined,
+        };
+      };
+
+      const results: any[] = [];
+      for (const item of outline) {
+        const resolved = await resolveItem(item);
+        if (resolved) results.push(resolved);
+      }
+      return results;
+    } catch (err) {
+      console.warn("Could not extract PDF outline:", err);
+      return [];
+    }
   }
 
   async display(): Promise<void> {
@@ -198,6 +269,40 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.addEventListener("touchmove", this.handleTouchMove, { passive: false });
     container.addEventListener("touchend", this.handleTouchEnd, { passive: true });
     container.addEventListener("touchcancel", this.handleTouchEnd, { passive: true });
+
+    // Listen for text selections on rendered PDF pages
+    const handleTextSelection = (): void => {
+      setTimeout(() => {
+        const sel = window.getSelection();
+        if (!sel || sel.isCollapsed) return;
+
+        const selectedText = sel.toString().trim();
+        if (selectedText.length === 0) return;
+
+        const anchorNode = sel.anchorNode;
+        const wrapper =
+          anchorNode instanceof Element
+            ? anchorNode.closest<HTMLElement>(`.${PAGE_CLASS}`)
+            : anchorNode?.parentElement?.closest<HTMLElement>(`.${PAGE_CLASS}`);
+
+        const pageNumber = wrapper?.dataset.pageNumber
+          ? Number(wrapper.dataset.pageNumber)
+          : this.currentPageNum;
+
+        const anchor: SelectionAnchor = {
+          version: 1,
+          start: { type: "pdf", value: String(pageNumber) },
+          end: { type: "pdf", value: String(pageNumber) },
+        };
+
+        this.selectionListeners.forEach((listener) =>
+          listener(anchor, selectedText),
+        );
+      }, 30);
+    };
+
+    container.addEventListener("mouseup", handleTextSelection);
+    container.addEventListener("touchend", handleTextSelection);
   }
 
   private initialPinchDistance = 0;
@@ -295,20 +400,37 @@ export class PdfJsRenderer implements ReaderRenderer {
     const container = this.container;
     if (!container || this.pageStates.size === 0) return;
 
-    const containerRect = container.getBoundingClientRect();
-    const centerX = containerRect.left + container.clientWidth / 2;
-    const centerY = containerRect.top + container.clientHeight / 2;
-    const centerElement = document.elementFromPoint(centerX, centerY);
-    const wrapper = centerElement?.closest<HTMLElement>(`.${PAGE_CLASS}`);
-    const candidatePage = wrapper?.dataset.pageNumber;
-    const nearestPage = candidatePage ? Number(candidatePage) : this.currentPageNum;
+    const scrollTop = container.scrollTop;
+    const viewportHeight = container.clientHeight;
+    // Focus reading line at 35% from the top of the viewport
+    const targetLine = scrollTop + viewportHeight * 0.35;
 
-    if (!Number.isInteger(nearestPage) || nearestPage < 1 || nearestPage > this.totalPages) return;
-    if (nearestPage === this.currentPageNum) return;
+    let closestPage = this.currentPageNum;
+    let closestDistance = Infinity;
 
-    this.currentPageNum = nearestPage;
-    this.emitLocation(nearestPage);
-    this.enforceRenderBudget(nearestPage);
+    for (const [pageNumber, state] of this.pageStates) {
+      const top = state.wrapper.offsetTop;
+      const height = state.wrapper.offsetHeight || 320;
+
+      if (targetLine >= top && targetLine <= top + height) {
+        closestPage = pageNumber;
+        break;
+      }
+
+      const middle = top + height / 2;
+      const dist = Math.abs(middle - targetLine);
+      if (dist < closestDistance) {
+        closestDistance = dist;
+        closestPage = pageNumber;
+      }
+    }
+
+    if (!Number.isInteger(closestPage) || closestPage < 1 || closestPage > this.totalPages) return;
+    if (closestPage === this.currentPageNum) return;
+
+    this.currentPageNum = closestPage;
+    this.emitLocation(closestPage);
+    this.enforceRenderBudget(closestPage);
   }
 
   private emitLocation(pageNumber: number): void {
@@ -432,7 +554,169 @@ export class PdfJsRenderer implements ReaderRenderer {
       return;
     }
 
-    state.wrapper.replaceChildren(canvas);
+    const pageContainer = document.createElement("div");
+    pageContainer.className = "tomesphere-pdf-page-container";
+    pageContainer.style.position = "relative";
+    pageContainer.style.width = `${viewport.width}px`;
+    pageContainer.style.height = `${viewport.height}px`;
+    pageContainer.style.margin = "0 auto";
+    pageContainer.style.boxShadow = "0 25px 50px -12px rgb(0 0 0 / 0.25)";
+    pageContainer.style.backgroundColor = "white";
+
+    canvas.style.boxShadow = "none";
+    pageContainer.appendChild(canvas);
+
+    // Interactive Text Layer for selectable text, highlights, and note creation
+    const textLayerDiv = document.createElement("div");
+    textLayerDiv.className = "tomesphere-pdf-text-layer textLayer";
+    textLayerDiv.style.position = "absolute";
+    textLayerDiv.style.inset = "0";
+    textLayerDiv.style.width = `${viewport.width}px`;
+    textLayerDiv.style.height = `${viewport.height}px`;
+    textLayerDiv.style.overflow = "hidden";
+    textLayerDiv.style.pointerEvents = "auto";
+    textLayerDiv.style.userSelect = "text";
+    textLayerDiv.style.zIndex = "5";
+    textLayerDiv.style.setProperty("--scale-factor", String(viewport.scale));
+    textLayerDiv.style.setProperty("--total-scale-factor", String(viewport.scale));
+    pageContainer.appendChild(textLayerDiv);
+
+    try {
+      const textContent = await page.getTextContent();
+      let rendered = false;
+
+      if (typeof (pdfjsLib as any).TextLayer === "function") {
+        try {
+          const textLayer = new (pdfjsLib as any).TextLayer({
+            textContentSource: textContent,
+            container: textLayerDiv,
+            viewport,
+          });
+          await textLayer.render();
+          rendered = textLayerDiv.children.length > 0;
+        } catch (tlErr) {
+          console.warn("pdfjs TextLayer error, falling back to calibrated glyph layer:", tlErr);
+        }
+      }
+
+      if (!rendered) {
+        textLayerDiv.innerHTML = "";
+        const items = (textContent.items as any[]) || [];
+        for (const item of items) {
+          if (!item.str) continue;
+          const span = document.createElement("span");
+          span.textContent = item.str;
+
+          const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
+          const fontHeight = Math.hypot(tx[2], tx[3]);
+          const targetWidth = (item.width || 0) * viewport.scale;
+          const angle = Math.atan2(tx[1], tx[0]);
+
+          span.style.position = "absolute";
+          span.style.left = `${tx[4]}px`;
+          span.style.top = `${tx[5] - fontHeight}px`;
+          span.style.fontSize = `${fontHeight}px`;
+          span.style.lineHeight = "1";
+          span.style.fontFamily = item.fontName ? `"${item.fontName}", sans-serif` : "sans-serif";
+          span.style.transformOrigin = "0% 0%";
+          span.style.whiteSpace = "pre";
+          span.style.color = "transparent";
+          span.style.pointerEvents = "auto";
+          span.style.userSelect = "text";
+          span.style.webkitUserSelect = "text";
+
+          textLayerDiv.appendChild(span);
+
+          if (targetWidth > 0) {
+            const actualWidth = span.getBoundingClientRect().width;
+            if (actualWidth > 0) {
+              const scaleX = targetWidth / actualWidth;
+              if (Math.abs(scaleX - 1) > 0.01) {
+                span.style.transform = angle !== 0
+                  ? `rotate(${angle}rad) scaleX(${scaleX})`
+                  : `scaleX(${scaleX})`;
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn(`Could not render text layer on page ${pageNumber}:`, err);
+    }
+
+    // Re-apply any existing highlights for this page on the text layer
+    for (const h of this.highlightsMap.values()) {
+      if (h.selectionAnchor?.start?.value === String(pageNumber)) {
+        this.renderHighlightOnPage(h);
+      }
+    }
+
+    // Interactive PDF Hyperlinks & TOC Destinations Layer
+    const linkLayer = document.createElement("div");
+    linkLayer.className = "tomesphere-pdf-link-layer";
+    linkLayer.style.position = "absolute";
+    linkLayer.style.left = "0";
+    linkLayer.style.top = "0";
+    linkLayer.style.width = "100%";
+    linkLayer.style.height = "100%";
+    linkLayer.style.pointerEvents = "none";
+    linkLayer.style.zIndex = "10";
+
+    try {
+      const annotations = await page.getAnnotations({ intent: "display" });
+      for (const annot of annotations) {
+        if (annot.subtype === "Link" && annot.rect) {
+          const rect = viewport.convertToViewportRectangle(annot.rect);
+          const left = Math.min(rect[0], rect[2]);
+          const top = Math.min(rect[1], rect[3]);
+          const width = Math.abs(rect[2] - rect[0]);
+          const height = Math.abs(rect[3] - rect[1]);
+
+          const linkEl = document.createElement("a");
+          linkEl.style.position = "absolute";
+          linkEl.style.left = `${left}px`;
+          linkEl.style.top = `${top}px`;
+          linkEl.style.width = `${width}px`;
+          linkEl.style.height = `${height}px`;
+          linkEl.style.pointerEvents = "auto";
+          linkEl.style.cursor = "pointer";
+          linkEl.style.borderRadius = "2px";
+          linkEl.className = "tomesphere-pdf-link hover:bg-indigo-500/15 hover:ring-1 hover:ring-indigo-500/30 transition-all";
+
+          if (annot.url) {
+            linkEl.href = annot.url;
+            linkEl.target = "_blank";
+            linkEl.rel = "noopener noreferrer";
+            linkEl.title = annot.url;
+          } else if (annot.dest) {
+            linkEl.href = "#";
+            linkEl.title = "Jump to section";
+            linkEl.onclick = async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              try {
+                let dest = annot.dest;
+                if (typeof dest === "string") {
+                  dest = await pdfDocument.getDestination(dest);
+                }
+                if (Array.isArray(dest) && dest[0]) {
+                  const pageIndex = await pdfDocument.getPageIndex(dest[0]);
+                  await this.goTo(String(pageIndex + 1));
+                }
+              } catch (err) {
+                console.error("Failed to navigate to internal PDF destination:", err);
+              }
+            };
+          }
+          linkLayer.appendChild(linkEl);
+        }
+      }
+    } catch (err) {
+      console.warn("Could not load page annotations:", err);
+    }
+
+    pageContainer.appendChild(linkLayer);
+    state.wrapper.replaceChildren(pageContainer);
     state.wrapper.style.aspectRatio = "auto";
     state.wrapper.style.minHeight = "0";
     state.wrapper.classList.remove(PAGE_PLACEHOLDER_CLASS);
@@ -643,15 +927,111 @@ export class PdfJsRenderer implements ReaderRenderer {
     return () => this.locationListeners.delete(callback);
   }
 
-  async highlight(highlight: ReaderHighlight): Promise<void> {
-    console.warn(
-      "PDF highlighting requires a text layer and is not implemented by the canvas renderer",
-      highlight,
+  private renderHighlightOnPage(highlight: ReaderHighlight): void {
+    const pageNum = Number(highlight.selectionAnchor?.start?.value);
+    if (!Number.isInteger(pageNum)) return;
+
+    const state = this.pageStates.get(pageNum);
+    if (!state?.wrapper) return;
+
+    const textLayer = state.wrapper.querySelector<HTMLDivElement>(
+      ".tomesphere-pdf-text-layer",
     );
+    if (!textLayer) return;
+
+    // Clear any previous highlights with this ID on this page
+    const existing = textLayer.querySelectorAll(
+      `[data-highlight-id="${highlight.id}"]`,
+    );
+    existing.forEach((el) => {
+      (el as HTMLElement).style.backgroundColor = "transparent";
+      (el as HTMLElement).style.boxShadow = "none";
+      el.removeAttribute("data-highlight-id");
+    });
+
+    const targetText = (highlight.selectedText || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ");
+    if (!targetText) return;
+
+    const spans = Array.from(textLayer.querySelectorAll<HTMLElement>("span"));
+    if (spans.length === 0) return;
+
+    let accumulated = "";
+    const spanOffsets: Array<{ span: HTMLElement; start: number; end: number; text: string }> = [];
+
+    for (const span of spans) {
+      const text = (span.textContent || "").toLowerCase().replace(/\s+/g, " ");
+      if (!text) continue;
+      const start = accumulated.length;
+      accumulated += (accumulated.length > 0 ? " " : "") + text;
+      const end = accumulated.length;
+      spanOffsets.push({ span, start, end, text });
+    }
+
+    const matchIdx = accumulated.indexOf(targetText);
+    const highlightBg = highlight.color.startsWith("#")
+      ? `${highlight.color}66`
+      : "rgba(253, 224, 71, 0.45)";
+    const highlightBorder = highlight.color.startsWith("#")
+      ? highlight.color
+      : "rgba(253, 224, 71, 0.8)";
+
+    if (matchIdx !== -1) {
+      const matchEnd = matchIdx + targetText.length;
+      for (const item of spanOffsets) {
+        if (item.end > matchIdx && item.start < matchEnd) {
+          item.span.dataset.highlightId = highlight.id;
+          item.span.style.backgroundColor = highlightBg;
+          item.span.style.borderRadius = "3px";
+          item.span.style.boxShadow = `0 0 0 1px ${highlightBorder}`;
+          item.span.style.cursor = "pointer";
+          item.span.onclick = (e) => {
+            e.stopPropagation();
+            this.highlightClickListeners.forEach((listener) =>
+              listener(highlight.id),
+            );
+          };
+        }
+      }
+    } else {
+      // Fallback: match spans containing key words from targetText
+      const targetWords = targetText.split(/\s+/).filter((w) => w.length > 3);
+      if (targetWords.length > 0) {
+        for (const item of spanOffsets) {
+          const hasWord = targetWords.some((w) => item.text.includes(w));
+          if (hasWord) {
+            item.span.dataset.highlightId = highlight.id;
+            item.span.style.backgroundColor = highlightBg;
+            item.span.style.borderRadius = "3px";
+            item.span.style.boxShadow = `0 0 0 1px ${highlightBorder}`;
+            item.span.style.cursor = "pointer";
+            item.span.onclick = (e) => {
+              e.stopPropagation();
+              this.highlightClickListeners.forEach((listener) =>
+                listener(highlight.id),
+              );
+            };
+          }
+        }
+      }
+    }
+  }
+
+  async highlight(highlight: ReaderHighlight): Promise<void> {
+    this.highlightsMap.set(highlight.id, highlight);
+    this.renderHighlightOnPage(highlight);
   }
 
   async removeHighlight(id: string): Promise<void> {
-    void id;
+    this.highlightsMap.delete(id);
+    const elements = document.querySelectorAll(`[data-highlight-id="${id}"]`);
+    elements.forEach((el) => {
+      (el as HTMLElement).style.backgroundColor = "transparent";
+      (el as HTMLElement).style.boxShadow = "none";
+      el.removeAttribute("data-highlight-id");
+    });
   }
 
   onTextSelected(
@@ -764,6 +1144,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     const unloads = [...this.pageStates.keys()].map((pageNumber) => this.unloadPage(pageNumber));
     await Promise.all(unloads);
     this.pageStates.clear();
+    this.highlightsMap.clear();
 
     if (this.loadingTask) {
       await this.loadingTask.destroy();

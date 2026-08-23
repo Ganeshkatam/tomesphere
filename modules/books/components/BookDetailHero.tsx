@@ -22,7 +22,6 @@ import {
   ListOrdered,
   FileText,
   Building,
-  Hash,
 } from "lucide-react";
 import { BookDetailDto } from "@/modules/library/application/dto/response/BookDetailDto";
 import { BookViewerContextDto } from "@/modules/books/application/queries/GetBookViewerContext/handler";
@@ -678,82 +677,60 @@ export function BookDetailHero({
                 </div>
                 <div>
                   <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
-                    Volume Structure & Reading Track
+                    Document Structure & Navigation
                   </h3>
                   <p className="text-xs text-slate-400">
                     {book.pageCount
-                      ? `${book.pageCount} Pages • Unified Preservation Document`
-                      : "Complete Digitized Edition"}
+                      ? `${book.pageCount} Pages • Complete Digitized Edition`
+                      : "Preserved Full-Text Volume"}
                   </p>
                 </div>
               </div>
 
               <Link
                 href={`/read/${book.id}`}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-xs font-bold hover:bg-indigo-100 transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 shadow-sm transition-all"
               >
-                <span>Jump to Page 1</span>
+                <span>Open in Reader</span>
                 <Play size={11} className="fill-current" />
               </Link>
             </div>
 
-            {/* Generated / Structured Table of Contents Items */}
-            <div className="space-y-3">
-              {[
-                {
-                  title: "Preface & Introduction",
-                  desc: "Historical context and introductory principles",
-                  page: "Page 1",
-                },
-                {
-                  title: "Fundamental Foundations",
-                  desc: "Core concepts, terminology, and systematic overview",
-                  page: "Page 15",
-                },
-                {
-                  title: "Detailed Analysis & Applied Practice",
-                  desc: "In-depth demonstrations, proofs, and contextual breakdown",
-                  page: "Page 45",
-                },
-                {
-                  title: "Advanced Applications & Exercises",
-                  desc: "Comprehensive problems, case studies, and synthesis",
-                  page: book.pageCount
-                    ? `Page ${Math.round(book.pageCount * 0.75)}`
-                    : "Page 85",
-                },
-                {
-                  title: "Appendix, Indices & Archival References",
-                  desc: "Preservation notes and supplementary reading materials",
-                  page: book.pageCount
-                    ? `Page ${book.pageCount}`
-                    : "Final Section",
-                },
-              ].map((ch, idx) => (
-                <Link
-                  key={idx}
-                  href={`/read/${book.id}`}
-                  className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 border border-slate-200/60 dark:border-slate-700/60 transition-all group"
-                >
-                  <div className="flex items-center gap-3.5 min-w-0 pr-4">
-                    <div className="w-7 h-7 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0 group-hover:border-indigo-400 group-hover:text-indigo-600">
-                      {idx + 1}
-                    </div>
-                    <div className="min-w-0">
-                      <h5 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
-                        {ch.title}
-                      </h5>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                        {ch.desc}
-                      </p>
-                    </div>
-                  </div>
+            {/* Document Structure Overview */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 space-y-1">
+                <span className="text-xs text-slate-400 font-medium">Document Format</span>
+                <p className="font-bold text-sm text-slate-900 dark:text-white uppercase">
+                  PDF Preservation Edition
+                </p>
+              </div>
 
-                  <span className="text-xs font-mono font-bold text-slate-400 group-hover:text-indigo-600 shrink-0">
-                    {ch.page}
-                  </span>
-                </Link>
-              ))}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 space-y-1">
+                <span className="text-xs text-slate-400 font-medium">Pagination</span>
+                <p className="font-bold text-sm text-slate-900 dark:text-white">
+                  {book.pageCount ? `${book.pageCount} Sequential Pages` : "Continuous Document"}
+                </p>
+              </div>
+            </div>
+
+            {/* Interactive TOC Notice */}
+            <div className="p-5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/40 flex items-center justify-between gap-4">
+              <div className="space-y-1">
+                <h5 className="font-bold text-sm text-slate-900 dark:text-white">
+                  Interactive Table of Contents
+                </h5>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Open the reader to explore the full native outline, jump to chapters, and search the document.
+                </p>
+              </div>
+
+              <Link
+                href={`/read/${book.id}`}
+                className="h-9 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition-colors"
+              >
+                <span>View Outline</span>
+                <Play size={11} className="fill-current" />
+              </Link>
             </div>
           </div>
         )}
@@ -829,16 +806,6 @@ export function BookDetailHero({
                 </span>
                 <p className="font-bold text-sm text-slate-900 dark:text-white">
                   {book.pageCount ? `${book.pageCount} Pages` : "Full Edition"}
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 space-y-1">
-                <span className="text-xs text-slate-400 flex items-center gap-1.5">
-                  <Hash size={13} />
-                  <span>Archive Identifier</span>
-                </span>
-                <p className="font-mono text-xs font-bold text-slate-900 dark:text-white truncate">
-                  {book.id}
                 </p>
               </div>
             </div>

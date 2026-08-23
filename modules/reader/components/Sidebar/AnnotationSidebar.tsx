@@ -19,8 +19,15 @@ interface AnnotationSidebarProps {
 }
 
 export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
-  const { sidebarOpen, setSidebarOpen, sidebarTab, setSidebarTab, preferences } =
-    useReaderStore();
+  const {
+    sidebarOpen,
+    setSidebarOpen,
+    sidebarTab,
+    setSidebarTab,
+    preferences,
+    tableOfContents,
+    totalPages,
+  } = useReaderStore();
   const theme = preferences.theme || "light";
 
   if (!sidebarOpen || !service) return null;
@@ -43,39 +50,39 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
       tabInactive: "text-slate-500 hover:text-slate-900",
       card: "bg-slate-50 border border-slate-200 hover:border-slate-300 hover:bg-slate-100/80 shadow-xs",
       cardActive: "ring-2 ring-indigo-500 border-indigo-500 bg-indigo-50/50",
-      textPrimary: "text-slate-800",
+      textPrimary: "text-slate-900",
       textSecondary: "text-slate-500",
       emptyText: "text-slate-400",
     },
     dark: {
-      sidebar: "bg-slate-900 border-l border-slate-800 text-slate-100 shadow-2xl",
-      headerBorder: "border-slate-800 bg-slate-950/40",
+      sidebar: "bg-[#1e2227] border-l border-[#2e3440] text-slate-200 shadow-2xl",
+      headerBorder: "border-[#2e3440] bg-[#1a1d21]",
       closeBtn: "text-slate-400 hover:text-white hover:bg-slate-800",
-      tabActive: "text-white border-b-2 border-indigo-500 font-bold",
+      tabActive: "text-indigo-400 border-b-2 border-indigo-400 font-bold",
       tabInactive: "text-slate-400 hover:text-slate-200",
-      card: "bg-slate-800/60 border border-slate-700/60 hover:bg-slate-800 hover:border-slate-600",
-      cardActive: "ring-2 ring-indigo-500 border-indigo-500 bg-indigo-950/40",
-      textPrimary: "text-slate-200",
+      card: "bg-[#252930] border border-[#333a46] hover:border-slate-600 hover:bg-[#2b3039] shadow-xs",
+      cardActive: "ring-2 ring-indigo-400 border-indigo-400 bg-indigo-950/30",
+      textPrimary: "text-slate-100",
       textSecondary: "text-slate-400",
       emptyText: "text-slate-500",
     },
     sepia: {
-      sidebar: "bg-[#fbf0d9] border-l border-[#dfd3b9] text-[#5b4636] shadow-xl",
-      headerBorder: "border-[#dfd3b9] bg-[#ede3cc]/40",
-      closeBtn: "text-[#8a725b] hover:text-[#5b4636] hover:bg-[#ede3cc]",
+      sidebar: "bg-[#f4ecd8] border-l border-[#e4d7b8] text-[#5b4636] shadow-xl",
+      headerBorder: "border-[#e4d7b8] bg-[#ebdcb8]",
+      closeBtn: "text-[#8a725b] hover:text-[#382b21] hover:bg-[#e4d7b8]",
       tabActive: "text-[#8b5a2b] border-b-2 border-[#8b5a2b] font-bold",
       tabInactive: "text-[#8a725b] hover:text-[#5b4636]",
-      card: "bg-[#ede3cc] border border-[#dfd3b9] hover:bg-[#e4d9bf] hover:border-[#c87a32]/50 shadow-xs",
-      cardActive: "ring-2 ring-[#c87a32] border-[#c87a32] bg-[#f4ecd8]",
-      textPrimary: "text-[#5b4636]",
-      textSecondary: "text-[#8a725b]",
+      card: "bg-[#ebdcb8] border border-[#ddcaa1] hover:border-[#8b5a2b] hover:bg-[#e2d0a7] shadow-xs",
+      cardActive: "ring-2 ring-[#8b5a2b] border-[#8b5a2b] bg-[#e4d7b8]",
+      textPrimary: "text-[#382b21]",
+      textSecondary: "text-[#755c48]",
       emptyText: "text-[#8a725b]",
     },
   }[theme];
 
   return (
     <div
-      className={`w-80 flex flex-col h-full z-40 shrink-0 select-none animate-in slide-in-from-right duration-200 transition-colors ${themeStyles.sidebar}`}
+      className={`fixed right-0 top-0 bottom-0 w-80 sm:w-96 z-40 flex flex-col transition-all duration-300 transform translate-x-0 ${themeStyles.sidebar}`}
     >
       {/* Top Header with Title and Close Button */}
       <div
@@ -84,7 +91,7 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
         <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider">
           {sidebarTab === "annotations" && `Annotations (${annotations.length})`}
           {sidebarTab === "bookmarks" && `Bookmarks (${bookmarkViews.length})`}
-          {sidebarTab === "toc" && "Table of Contents"}
+          {sidebarTab === "toc" && `Table of Contents (${tableOfContents.length || totalPages})`}
           {sidebarTab === "search" && "Search Volume"}
         </h3>
 
@@ -100,6 +107,17 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
 
       {/* Tabs */}
       <div className={`flex border-b transition-colors ${themeStyles.headerBorder}`}>
+        <button
+          type="button"
+          onClick={() => handleTabChange("toc")}
+          className={`flex-1 py-2.5 text-xs font-semibold transition-colors cursor-pointer text-center ${
+            sidebarTab === "toc"
+              ? themeStyles.tabActive
+              : themeStyles.tabInactive
+          }`}
+        >
+          Contents
+        </button>
         <button
           type="button"
           onClick={() => handleTabChange("annotations")}
@@ -126,6 +144,77 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+        {/* TAB: Table of Contents */}
+        {sidebarTab === "toc" && (
+          <div className="space-y-1.5">
+            {tableOfContents.length > 0 ? (
+              tableOfContents.map((item) => (
+                <div key={item.id} className="space-y-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      service.goToLocation({ type: "pdf", value: String(item.pageNumber) });
+                    }}
+                    className={`w-full text-left p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-between text-xs group ${themeStyles.card}`}
+                  >
+                    <span className={`font-semibold truncate pr-2 ${themeStyles.textPrimary}`}>
+                      {item.title}
+                    </span>
+                    <span className="text-[11px] font-mono text-slate-400 shrink-0">
+                      p. {item.pageNumber}
+                    </span>
+                  </button>
+
+                  {item.items && item.items.length > 0 && (
+                    <div className="pl-3 space-y-1 border-l border-slate-200 dark:border-slate-800 ml-2">
+                      {item.items.map((sub) => (
+                        <button
+                          key={sub.id}
+                          type="button"
+                          onClick={() => {
+                            service.goToLocation({ type: "pdf", value: String(sub.pageNumber) });
+                          }}
+                          className={`w-full text-left p-2 rounded-lg transition-all cursor-pointer flex items-center justify-between text-[11px] ${themeStyles.card}`}
+                        >
+                          <span className={`truncate pr-2 ${themeStyles.textSecondary}`}>
+                            {sub.title}
+                          </span>
+                          <span className="text-[10px] font-mono text-slate-400 shrink-0">
+                            p. {sub.pageNumber}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="space-y-1.5">
+                <p className={`text-xs ${themeStyles.emptyText} mb-2`}>
+                  No embedded outline found. Quick page navigation:
+                </p>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    type="button"
+                    onClick={() => {
+                      service.goToLocation({ type: "pdf", value: String(pageNum) });
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-between text-xs ${themeStyles.card}`}
+                  >
+                    <span className={`font-medium ${themeStyles.textPrimary}`}>
+                      {pageNum === 1 ? "Page 1 • Cover & Title" : `Page ${pageNum}`}
+                    </span>
+                    <span className="text-[11px] font-mono text-slate-400 shrink-0">
+                      p. {pageNum}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        
         {sidebarTab === "annotations" && annotations.length === 0 && (
           <div className={`text-center mt-12 text-xs sm:text-sm ${themeStyles.emptyText}`}>
             No highlights or notes yet.

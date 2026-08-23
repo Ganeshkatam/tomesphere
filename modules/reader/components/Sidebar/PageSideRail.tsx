@@ -168,8 +168,14 @@ function PageThumbnailItem({
 }
 
 export function PageSideRail({ service }: PageSideRailProps) {
-  const { sideRailOpen, currentAnchor, totalPages, bookmarks, preferences } =
-    useReaderStore();
+  const {
+    sideRailOpen,
+    currentAnchor,
+    totalPages,
+    bookmarks,
+    preferences,
+    tableOfContents,
+  } = useReaderStore();
   const theme = preferences.theme || "light";
   const [activeTab, setActiveTab] = useState<"thumbnails" | "outline">("thumbnails");
   const activePageRef = useRef<HTMLDivElement | null>(null);
@@ -313,38 +319,99 @@ export function PageSideRail({ service }: PageSideRailProps) {
             ))}
           </div>
         ) : (
-          /* Document Outline View */
-          <div className="flex-1 overflow-y-auto p-3 text-xs space-y-1.5 custom-scrollbar">
+          /* Authentic Document Outline / Table of Contents View */
+          <div className="flex-1 overflow-y-auto p-3 text-xs space-y-1 custom-scrollbar">
             <div
-              className={`text-xs font-bold uppercase tracking-wider px-1.5 py-1 mb-1 ${railThemeStyles.tocHeader}`}
+              className={`text-xs font-bold uppercase tracking-wider px-1.5 py-1 mb-2 ${railThemeStyles.tocHeader}`}
             >
-              Table of Contents ({totalPages} Pages)
+              Table of Contents {tableOfContents.length > 0 ? `(${tableOfContents.length} Sections)` : `(${totalPages} Pages)`}
             </div>
-            {pagesArray
-              .filter((p) => p % 10 === 1)
-              .map((pageNum, idx) => (
-                <button
-                  key={pageNum}
-                  type="button"
-                  onClick={() => handlePageClick(pageNum)}
-                  className={`w-full text-left px-2.5 py-2 rounded-lg flex items-center justify-between transition-colors cursor-pointer text-xs ${
-                    currentPage >= pageNum && currentPage < pageNum + 10
-                      ? railThemeStyles.tocActive
-                      : railThemeStyles.tocInactive
-                  }`}
-                >
-                  <span className="truncate">
-                    {pageNum === 1
-                      ? "Cover & Title Page"
-                      : `Section ${idx + 1}`}
-                  </span>
-                  <span
-                    className={`text-[11px] font-mono shrink-0 ml-1.5 ${railThemeStyles.tocPageNum}`}
+
+            {tableOfContents.length > 0 ? (
+              <div className="space-y-1">
+                {tableOfContents.map((item) => {
+                  const isCurrent = currentPage === item.pageNumber;
+
+                  return (
+                    <div key={item.id} className="space-y-1">
+                      <button
+                        type="button"
+                        onClick={() => handlePageClick(item.pageNumber)}
+                        className={`w-full text-left px-2.5 py-2 rounded-lg flex items-center justify-between transition-colors cursor-pointer text-xs ${
+                          isCurrent
+                            ? railThemeStyles.tocActive
+                            : railThemeStyles.tocInactive
+                        }`}
+                      >
+                        <span className="truncate font-medium">{item.title}</span>
+                        <span
+                          className={`text-[11px] font-mono shrink-0 ml-1.5 ${railThemeStyles.tocPageNum}`}
+                        >
+                          p. {item.pageNumber}
+                        </span>
+                      </button>
+
+                      {/* Nested sub-items */}
+                      {item.items && item.items.length > 0 && (
+                        <div className="pl-3 space-y-0.5 border-l border-slate-200/50 dark:border-slate-800 ml-2">
+                          {item.items.map((sub) => {
+                            const isSubCurrent = currentPage === sub.pageNumber;
+
+                            return (
+                              <button
+                                key={sub.id}
+                                type="button"
+                                onClick={() => handlePageClick(sub.pageNumber)}
+                                className={`w-full text-left px-2 py-1.5 rounded-md flex items-center justify-between transition-colors cursor-pointer text-[11px] ${
+                                  isSubCurrent
+                                    ? railThemeStyles.tocActive
+                                    : railThemeStyles.tocInactive
+                                }`}
+                              >
+                                <span className="truncate">{sub.title}</span>
+                                <span
+                                  className={`text-[10px] font-mono shrink-0 ml-1.5 ${railThemeStyles.tocPageNum}`}
+                                >
+                                  p. {sub.pageNumber}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              /* If PDF has no embedded metadata outline, show accurate page index markers */
+              <div className="space-y-1">
+                <div className="px-2 py-2 text-slate-400 dark:text-slate-500 text-[11px] italic mb-1">
+                  This edition does not contain an embedded structural outline. Direct page navigation is enabled:
+                </div>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    type="button"
+                    onClick={() => handlePageClick(pageNum)}
+                    className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer text-xs ${
+                      currentPage === pageNum
+                        ? railThemeStyles.tocActive
+                        : railThemeStyles.tocInactive
+                    }`}
                   >
-                    p. {pageNum}
-                  </span>
-                </button>
-              ))}
+                    <span className="truncate">
+                      {pageNum === 1 ? "Page 1 • Cover / Title" : `Page ${pageNum}`}
+                    </span>
+                    <span
+                      className={`text-[11px] font-mono shrink-0 ml-1.5 ${railThemeStyles.tocPageNum}`}
+                    >
+                      p. {pageNum}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

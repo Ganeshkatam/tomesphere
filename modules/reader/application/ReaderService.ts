@@ -230,6 +230,40 @@ export class ReaderService {
     }
   }
 
+  public async highlightSelectionAndOpenNote(color: string = "yellow"): Promise<void> {
+    const store = useReaderStore.getState();
+    const selection = store.activeSelection;
+    if (!selection || !this.renderer) return;
+
+    try {
+      const res = await createHighlightAction({
+        bookId: this.bookId,
+        selectionAnchor: selection.anchor,
+        selectedText: selection.text,
+        color,
+      });
+
+      if (res.success) {
+        const highlight: ReaderHighlight = {
+          id: res.data.id,
+          userId: this.userId,
+          bookId: this.bookId,
+          selectionAnchor: selection.anchor,
+          selectedText: selection.text,
+          color,
+          hasNote: false,
+        };
+
+        this.highlights.push(highlight);
+        await this.renderer.highlight(highlight);
+        store.setActiveSelection(null);
+        this.openNoteForHighlight(highlight.id);
+      }
+    } catch (error) {
+      console.error("Failed to create highlight and open note", error);
+    }
+  }
+
   public async deleteHighlight(highlightId: string): Promise<void> {
     if (!this.renderer) return;
 

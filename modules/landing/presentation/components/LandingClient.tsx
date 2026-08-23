@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import HeroSection from "./HeroSection";
 import FeaturedBooksSection from "./FeaturedBooksSection";
 import TrendingBooksSection from "./TrendingBooksSection";
@@ -9,7 +8,6 @@ import FeaturedCollectionsSection from "./FeaturedCollectionsSection";
 import GenreBrowserSection from "./GenreBrowserSection";
 import PopularAuthorsSection from "./PopularAuthorsSection";
 import AnnouncementSection from "./AnnouncementSection";
-import SlowScrollBooksSection from "./SlowScrollBooksSection";
 
 export interface LandingClientProps {
   model?: any;
@@ -17,10 +15,6 @@ export interface LandingClientProps {
 }
 
 export default function LandingClient({ model, overview }: LandingClientProps) {
-  useEffect(() => {
-    // Smooth initial load reveal
-  }, []);
-
   // Correctly unwrap LandingViewModel { landing: { overview, statistics, announcements } }
   const landingData = model?.landing || model || {};
   const overviewData = landingData.overview || model?.overview || overview || landingData;
@@ -30,11 +24,6 @@ export default function LandingClient({ model, overview }: LandingClientProps) {
     featuredBooks = [],
     trendingBooks = [],
     newBooks = [],
-    curatedBooks = [],
-    classicsBooks = [],
-    philosophyBooks = [],
-    scienceBooks = [],
-    historyBooks = [],
     featuredCollections = [],
     genres = [],
     authors = [],
@@ -55,15 +44,6 @@ export default function LandingClient({ model, overview }: LandingClientProps) {
         <GenreBrowserSection genres={genres} />
         <PopularAuthorsSection authors={authors} />
         <AnnouncementSection announcements={announcementsData} />
-
-        {/* Dedicated On-Demand Scroll Container: 5 Guaranteed Specialized Shelves */}
-        <SlowScrollBooksSection
-          curatedBooks={curatedBooks.length > 0 ? curatedBooks : featuredBooks}
-          classicsBooks={classicsBooks.length > 0 ? classicsBooks : featuredBooks}
-          philosophyBooks={philosophyBooks.length > 0 ? philosophyBooks : trendingBooks}
-          scienceBooks={scienceBooks.length > 0 ? scienceBooks : newBooks}
-          historyBooks={historyBooks.length > 0 ? historyBooks : curatedBooks}
-        />
       </div>
     </div>
   );

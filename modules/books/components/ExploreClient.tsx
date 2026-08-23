@@ -28,7 +28,7 @@ export default function ExploreClient({
     e.preventDefault();
     if (searchTerm.trim()) {
       router.push(
-        `/discover/search?q=${encodeURIComponent(searchTerm.trim())}`,
+        `/search?q=${encodeURIComponent(searchTerm.trim())}`,
       );
     }
   };

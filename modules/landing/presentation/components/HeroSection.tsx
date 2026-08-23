@@ -42,7 +42,7 @@ export default function HeroSection({
   const handleSearch = () => {
     if (searchQuery.trim()) {
       router.push(
-        `/discover/search?q=${encodeURIComponent(searchQuery.trim())}`,
+        `/search?q=${encodeURIComponent(searchQuery.trim())}`,
       );
     }
   };
@@ -326,7 +326,7 @@ export default function HeroSection({
                         router.push(`/book/${id}`);
                       } else {
                         setSearchQuery(text);
-                        router.push(`/discover/search?q=${text}`);
+                        router.push(`/search?q=${encodeURIComponent(text)}`);
                       }
                     }}
                   />
@@ -365,7 +365,7 @@ export default function HeroSection({
                   onClick={() => {
                     setSearchQuery(name);
                     router.push(
-                      `/discover/search?q=${encodeURIComponent(name)}`,
+                      `/search?q=${encodeURIComponent(name)}`,
                     );
                   }}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer group ${

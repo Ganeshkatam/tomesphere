@@ -32,7 +32,7 @@ export default function PopularAuthorsSection({
         {authors.map((author) => (
           <Link
             key={author}
-            href={`/discover/search?q=${encodeURIComponent(author)}`}
+            href={`/search?q=${encodeURIComponent(author)}`}
             className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--surface-raised)] border border-[var(--border-default)] hover:border-indigo-500 hover:text-indigo-500 transition-colors text-[var(--text-primary)] text-sm font-medium shadow-xs"
           >
             <div className="w-5 h-5 rounded-full bg-indigo-500/10 text-indigo-500 flex items-center justify-center">

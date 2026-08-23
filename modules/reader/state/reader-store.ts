@@ -26,6 +26,13 @@ export interface ActiveNoteEditor {
   initialBody?: string;
 }
 
+export interface TocItem {
+  id: string;
+  title: string;
+  pageNumber: number;
+  items?: TocItem[];
+}
+
 interface ReaderSessionState {
   currentBookId: string | null;
   currentAnchor: LocationAnchor | null;
@@ -46,6 +53,9 @@ interface ReaderSessionState {
   // Loaded notes for the current book
   notes: ReaderNote[];
   bookmarks: ReaderBookmark[];
+
+  // Real document Table of Contents outline
+  tableOfContents: TocItem[];
 
   // Sidebar state
   sidebarOpen: boolean;
@@ -69,6 +79,7 @@ interface ReaderSessionState {
   setActiveNote: (note: ActiveNoteEditor | null) => void;
   setNotes: (notes: ReaderNote[]) => void;
   setBookmarks: (bookmarks: ReaderBookmark[]) => void;
+  setTableOfContents: (toc: TocItem[]) => void;
   setSidebarOpen: (open: boolean) => void;
   setSidebarTab: (tab: "annotations" | "bookmarks" | "toc" | "search") => void;
   setSideRailOpen: (open: boolean) => void;
@@ -92,6 +103,7 @@ export const useReaderStore = create<ReaderSessionState>((set) => ({
   activeNote: null,
   notes: [],
   bookmarks: [],
+  tableOfContents: [],
   sidebarOpen: false,
   sidebarTab: "annotations",
   sideRailOpen: true,
@@ -118,6 +130,7 @@ export const useReaderStore = create<ReaderSessionState>((set) => ({
   setActiveNote: (note) => set({ activeNote: note }),
   setNotes: (notes) => set({ notes }),
   setBookmarks: (bookmarks) => set({ bookmarks }),
+  setTableOfContents: (toc) => set({ tableOfContents: toc }),
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
   setSidebarTab: (tab) => set({ sidebarTab: tab }),
   setSideRailOpen: (open) => set({ sideRailOpen: open }),
