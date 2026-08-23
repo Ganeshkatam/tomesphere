@@ -92,7 +92,33 @@ export class SupabaseBookRepository implements BookRepository {
   }
 
   async getTrending(query: TrendingQuery): Promise<Book[]> {
-    const { data: books } = await this.client
+    // Read from precomputed windowed trending projection
+    const { data: trendingRows } = await this.client
+      .from("trending_books_projection")
+      .select("book_id, daily_rank, all_time_rank")
+      .order("daily_rank", { ascending: true })
+      .limit(query.limit);
+
+    if (trendingRows && trendingRows.length > 0) {
+      const bookIds = trendingRows.map((t) => t.book_id);
+      const { data: books } = await this.client
+        .from("books")
+        .select(
+          "*, book_authors(authors(name)), book_genres(genres(name)), book_subjects(subjects(name)), book_files(*)",
+        )
+        .in("id", bookIds);
+
+      if (books) {
+        const bookMap = new Map((books as BookRow[]).map((b) => [b.id, b]));
+        const sorted = bookIds
+          .map((id) => bookMap.get(id))
+          .filter((b): b is BookRow => Boolean(b));
+        return sorted.map(BookMapper.toDomain);
+      }
+    }
+
+    // Fallback if projection has not yet run
+    const { data: fallbackBooks } = await this.client
       .from("books")
       .select(
         "*, book_authors(authors(name)), book_genres(genres(name)), book_subjects(subjects(name)), book_files(*)",
@@ -100,7 +126,7 @@ export class SupabaseBookRepository implements BookRepository {
       .limit(query.limit)
       .order("view_count", { ascending: false, nullsFirst: false });
 
-    return ((books as BookRow[]) || []).map(BookMapper.toDomain);
+    return ((fallbackBooks as BookRow[]) || []).map(BookMapper.toDomain);
   }
 
   async save(book: Book): Promise<void> {
