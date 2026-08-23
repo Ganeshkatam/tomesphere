@@ -238,27 +238,50 @@
   position: absolute;
   text-align: initial;
   inset: 0;
-  overflow: hidden;
+  overflow: clip;
   opacity: 1;
   line-height: 1;
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
   text-size-adjust: none;
   forced-color-adjust: none;
   transform-origin: 0 0;
+  caret-color: CanvasText;
   z-index: 5;
   user-select: text;
   -webkit-user-select: text;
   pointer-events: auto;
+
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
 }
 
-.tomesphere-pdf-text-layer > span,
-.textLayer > span,
-.textLayer > br {
+.tomesphere-pdf-text-layer :is(span, br),
+.textLayer :is(span, br) {
   color: transparent !important;
   position: absolute;
   white-space: pre;
   cursor: text;
   transform-origin: 0% 0%;
   pointer-events: auto;
+}
+
+.tomesphere-pdf-text-layer > :not(.markedContent),
+.tomesphere-pdf-text-layer .markedContent span:not(.markedContent),
+.textLayer > :not(.markedContent),
+.textLayer .markedContent span:not(.markedContent) {
+  z-index: 1;
+  --font-height: 0;
+  font-size: calc(var(--text-scale-factor) * var(--font-height));
+  --scale-x: 1;
+  --rotate: 0deg;
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+}
+
+.tomesphere-pdf-text-layer .markedContent,
+.textLayer .markedContent {
+  display: contents;
 }
 
 .tomesphere-pdf-text-layer span::selection,

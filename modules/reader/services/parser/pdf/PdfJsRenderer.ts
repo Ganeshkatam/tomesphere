@@ -25,8 +25,8 @@ type PageState = {
 
 const PAGE_CLASS = "tomesphere-pdf-page";
 const PAGE_PLACEHOLDER_CLASS = "tomesphere-pdf-page-placeholder";
-const VIRTUALIZATION_ROOT_MARGIN = "100% 0px";
-const MAX_RENDERED_PAGES = 10;
+const VIRTUALIZATION_ROOT_MARGIN = "250% 0px";
+const MAX_RENDERED_PAGES = 18;
 const MAX_DEVICE_PIXEL_RATIO = 2;
 
 export class PdfJsRenderer implements ReaderRenderer {
@@ -35,6 +35,7 @@ export class PdfJsRenderer implements ReaderRenderer {
   private container: HTMLElement | null = null;
   private observer: IntersectionObserver | null = null;
   private scrollRaf: number | null = null;
+  private budgetTimer: any = null;
   private pageStates = new Map<number, PageState>();
 
   private currentPageNum = 1;
@@ -70,14 +71,17 @@ export class PdfJsRenderer implements ReaderRenderer {
     this.lastEmittedPage = 0;
 
     container.replaceChildren();
-    container.style.overflow = "auto";
+    container.style.overflowY = "auto";
+    container.style.overflowX = "auto";
     container.style.display = "block";
     container.style.width = "100%";
     container.style.height = "100%";
     container.style.padding = "24px";
     container.style.boxSizing = "border-box";
-    container.style.scrollBehavior = "smooth";
+    container.style.scrollBehavior = "auto";
     container.style.overscrollBehavior = "contain";
+    container.style.touchAction = "pan-y";
+    (container.style as any).webkitOverflowScrolling = "touch";
     container.classList.add("tomesphere-pdf-scroll-container");
 
     const safeUrl = bookUrl.startsWith("http")
@@ -249,7 +253,7 @@ export class PdfJsRenderer implements ReaderRenderer {
           }
         }
         if (hasNewIntersections && !this.isNavigating) {
-          this.enforceRenderBudget(this.currentPageNum);
+          this.scheduleEnforceBudget(this.currentPageNum);
         }
       },
       {
@@ -264,9 +268,9 @@ export class PdfJsRenderer implements ReaderRenderer {
     }
 
     container.addEventListener("scroll", this.handleScroll, { passive: true });
-    container.addEventListener("wheel", this.handleWheel, { passive: false });
+    container.addEventListener("wheel", this.handleWheel, { passive: true });
     container.addEventListener("touchstart", this.handleTouchStart, { passive: true });
-    container.addEventListener("touchmove", this.handleTouchMove, { passive: false });
+    container.addEventListener("touchmove", this.handleTouchMove, { passive: true });
     container.addEventListener("touchend", this.handleTouchEnd, { passive: true });
     container.addEventListener("touchcancel", this.handleTouchEnd, { passive: true });
 
@@ -430,7 +434,7 @@ export class PdfJsRenderer implements ReaderRenderer {
 
     this.currentPageNum = closestPage;
     this.emitLocation(closestPage);
-    this.enforceRenderBudget(closestPage);
+    this.scheduleEnforceBudget(closestPage);
   }
 
   private emitLocation(pageNumber: number): void {
@@ -513,7 +517,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     canvas.style.margin = "0 auto";
     canvas.style.width = `${viewport.width}px`;
     canvas.style.height = `${viewport.height}px`;
-    canvas.style.maxWidth = "100%";
+    canvas.style.maxWidth = "none";
     canvas.style.boxSizing = "border-box";
     canvas.style.backgroundColor = "white";
     canvas.style.boxShadow = "0 25px 50px -12px rgb(0 0 0 / 0.25)";
@@ -523,8 +527,10 @@ export class PdfJsRenderer implements ReaderRenderer {
 
     state.wrapper.style.display = "flex";
     state.wrapper.style.justifyContent = "center";
-    state.wrapper.style.maxWidth = "100%";
-    state.wrapper.style.overflow = "hidden";
+    state.wrapper.style.width = "100%";
+    state.wrapper.style.minWidth = `${viewport.width}px`;
+    state.wrapper.style.maxWidth = "none";
+    state.wrapper.style.overflow = "visible";
 
     const context = canvas.getContext("2d", { alpha: false });
     if (!context) {
@@ -565,6 +571,16 @@ export class PdfJsRenderer implements ReaderRenderer {
 
     canvas.style.boxShadow = "none";
     pageContainer.appendChild(canvas);
+
+    // Highlight overlay layer -- sits between canvas and text layer
+    const highlightLayer = document.createElement("div");
+    highlightLayer.className = "tomesphere-pdf-highlight-layer";
+    highlightLayer.style.position = "absolute";
+    highlightLayer.style.inset = "0";
+    highlightLayer.style.pointerEvents = "none";
+    highlightLayer.style.zIndex = "3";
+    highlightLayer.style.overflow = "hidden";
+    pageContainer.appendChild(highlightLayer);
 
     // Interactive Text Layer for selectable text, highlights, and note creation
     const textLayerDiv = document.createElement("div");
@@ -762,8 +778,18 @@ export class PdfJsRenderer implements ReaderRenderer {
 
   private restorePlaceholder(state: PageState): void {
     state.wrapper.classList.add(PAGE_PLACEHOLDER_CLASS);
-    state.wrapper.style.aspectRatio = `${this.placeholderRatio}`;
-    state.wrapper.style.minHeight = "320px";
+    // Keep wrapper minHeight fixed to prevent scrollbar collapse and layout shift
+    if (!state.wrapper.style.minHeight || state.wrapper.style.minHeight === "0px" || state.wrapper.style.minHeight === "0") {
+      state.wrapper.style.aspectRatio = `${this.placeholderRatio}`;
+      state.wrapper.style.minHeight = "320px";
+    }
+  }
+
+  private scheduleEnforceBudget(centerPage: number): void {
+    if (this.budgetTimer) clearTimeout(this.budgetTimer);
+    this.budgetTimer = setTimeout(() => {
+      this.enforceRenderBudget(centerPage);
+    }, 450);
   }
 
   private enforceRenderBudget(centerPage: number): void {
@@ -778,8 +804,8 @@ export class PdfJsRenderer implements ReaderRenderer {
       });
 
     for (const [pageNumber] of rendered.slice(MAX_RENDERED_PAGES)) {
-      // Never unload immediate neighboring pages (+/- 2 pages)
-      if (Math.abs(pageNumber - centerPage) <= 2) continue;
+      // Keep generous warm safety zone around active page (centerPage +/- 4 pages)
+      if (Math.abs(pageNumber - centerPage) <= 4) continue;
       void this.unloadPage(pageNumber);
     }
   }
@@ -935,20 +961,28 @@ export class PdfJsRenderer implements ReaderRenderer {
     const state = this.pageStates.get(pageNum);
     if (!state?.wrapper) return;
 
-    const textLayer = state.wrapper.querySelector<HTMLDivElement>(
+    const pageContainer = state.wrapper.querySelector<HTMLDivElement>(
+      ".tomesphere-pdf-page-container",
+    );
+    if (!pageContainer) return;
+
+    const highlightLayer = pageContainer.querySelector<HTMLDivElement>(
+      ".tomesphere-pdf-highlight-layer",
+    );
+    const textLayer = pageContainer.querySelector<HTMLDivElement>(
       ".tomesphere-pdf-text-layer",
     );
-    if (!textLayer) return;
+    if (!highlightLayer || !textLayer) return;
 
-    // Clear any previous highlights with this ID on this page
-    const existing = textLayer.querySelectorAll(
-      `[data-highlight-id="${highlight.id}"]`,
-    );
-    existing.forEach((el) => {
-      (el as HTMLElement).style.backgroundColor = "transparent";
-      (el as HTMLElement).style.boxShadow = "none";
-      el.removeAttribute("data-highlight-id");
-    });
+    // Clear previous overlay rects and span click handlers for this highlight
+    highlightLayer.querySelectorAll(`[data-highlight-id="${highlight.id}"]`)
+      .forEach((el) => el.remove());
+    textLayer.querySelectorAll(`[data-highlight-id="${highlight.id}"]`)
+      .forEach((el) => {
+        el.removeAttribute("data-highlight-id");
+        (el as HTMLElement).style.cursor = "";
+        (el as HTMLElement).onclick = null;
+      });
 
     const rawTarget = (highlight.selectedText || "").trim();
     if (!rawTarget) return;
@@ -957,17 +991,76 @@ export class PdfJsRenderer implements ReaderRenderer {
     if (spans.length === 0) return;
 
     const highlightBg = highlight.color.startsWith("#")
-      ? `${highlight.color}66`
-      : "rgba(253, 224, 71, 0.45)";
-    const highlightBorder = highlight.color.startsWith("#")
-      ? highlight.color
-      : "rgba(253, 224, 71, 0.8)";
+      ? `${highlight.color}A0`
+      : "rgba(253, 224, 71, 0.63)";
 
-    const applyStyleToSpan = (span: HTMLElement) => {
+    // Normalize text for fuzzy matching: lowercase, decompose ligatures/accents, strip punctuation and whitespace
+    const normalize = (s: string) =>
+      s
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/[\u2018\u2019`'\u201C\u201D"'\u2013\u2014\-–—]/g, "")
+        .replace(/[^a-z0-9]/gi, "");
+
+    const targetNorm = normalize(rawTarget);
+    if (!targetNorm || targetNorm.length < 2) return;
+
+    // Build a concatenated normalized string from all spans,
+    // tracking which span each character belongs to
+    const spanCharMap: number[] = []; // charIndex -> spanIndex
+    let concat = "";
+
+    for (let si = 0; si < spans.length; si++) {
+      const raw = spans[si].textContent || "";
+      const norm = normalize(raw);
+      for (let ci = 0; ci < norm.length; ci++) {
+        spanCharMap.push(si);
+      }
+      concat += norm;
+    }
+
+    // Find the target text within the concatenated span text
+    let matchPos = concat.indexOf(targetNorm);
+    let matchEnd = -1;
+
+    if (matchPos !== -1) {
+      matchEnd = matchPos + targetNorm.length - 1;
+    } else {
+      // Fallback: match by prefix and suffix for resilient paragraph matching
+      const prefixLen = Math.min(20, targetNorm.length);
+      const suffixLen = Math.min(20, targetNorm.length);
+      const prefix = targetNorm.slice(0, prefixLen);
+      const suffix = targetNorm.slice(Math.max(0, targetNorm.length - suffixLen));
+      const pIdx = concat.indexOf(prefix);
+      if (pIdx !== -1) {
+        const sIdx = concat.lastIndexOf(suffix);
+        if (sIdx !== -1 && sIdx + suffixLen > pIdx) {
+          matchPos = pIdx;
+          matchEnd = sIdx + suffixLen - 1;
+        }
+      }
+    }
+
+    if (matchPos === -1 || matchEnd === -1) return;
+
+    const startIdx = spanCharMap[matchPos];
+    const endIdx = spanCharMap[matchEnd];
+
+    if (startIdx === undefined || endIdx === undefined) return;
+
+    // Get the page container's bounding rect as coordinate origin
+    const containerRect = pageContainer.getBoundingClientRect();
+
+    // Collect bounding rects for all matched spans and tag them for click handling
+    type SpanRect = { left: number; top: number; right: number; bottom: number };
+    const rects: SpanRect[] = [];
+
+    for (let i = startIdx; i <= endIdx; i++) {
+      const span = spans[i];
+      if (!span.textContent || span.textContent.trim().length === 0) continue;
+
+      // Tag the span for click handling only (no visual styling)
       span.dataset.highlightId = highlight.id;
-      span.style.backgroundColor = highlightBg;
-      span.style.borderRadius = "3px";
-      span.style.boxShadow = `0 0 0 1px ${highlightBorder}`;
       span.style.cursor = "pointer";
       span.onclick = (e) => {
         e.stopPropagation();
@@ -975,63 +1068,65 @@ export class PdfJsRenderer implements ReaderRenderer {
           listener(highlight.id),
         );
       };
-    };
 
-    const clean = (s: string) =>
-      s
-        .toLowerCase()
-        .replace(/[\u2018\u2019`']/g, "")
-        .replace(/[\u201C\u201D"']/g, "")
-        .replace(/[\u2013\u2014–—]/g, "")
-        .replace(/[^a-z0-9]/gi, "")
-        .trim();
-
-    const targetClean = clean(rawTarget);
-    if (!targetClean) return;
-
-    const words = rawTarget.split(/\s+/).filter((w) => w.length > 1);
-    const startPhraseClean = clean(words.slice(0, Math.min(4, words.length)).join(""));
-    const endPhraseClean = clean(words.slice(Math.max(0, words.length - 4)).join(""));
-
-    // Find start span and end span indices among the page's spans
-    let startIdx = -1;
-    let endIdx = -1;
-
-    for (let i = 0; i < spans.length; i++) {
-      const spanClean = clean(spans[i].textContent || "");
-      if (!spanClean) continue;
-
-      if (startIdx === -1) {
-        // Look ahead 3 spans to match the start sequence
-        const forwardClean = clean(
-          spans.slice(i, i + 3).map((s) => s.textContent || "").join("")
-        );
-        if (forwardClean.includes(startPhraseClean) || (words[0] && spanClean.includes(clean(words[0])))) {
-          startIdx = i;
-        }
-      }
-
-      if (startIdx !== -1) {
-        const backwardClean = clean(
-          spans.slice(Math.max(startIdx, i - 2), i + 1).map((s) => s.textContent || "").join("")
-        );
-        if (backwardClean.includes(endPhraseClean) || (words[words.length - 1] && spanClean.includes(clean(words[words.length - 1])))) {
-          endIdx = i;
-        }
+      const sr = span.getBoundingClientRect();
+      if (sr.width > 0 && sr.height > 0) {
+        rects.push({
+          left: sr.left - containerRect.left,
+          top: sr.top - containerRect.top,
+          right: sr.right - containerRect.left,
+          bottom: sr.bottom - containerRect.top,
+        });
       }
     }
 
-    // If both start and end spans found, highlight EVERY span in between without skipping
-    if (startIdx !== -1) {
-      const finalEnd = endIdx !== -1 && endIdx >= startIdx
-        ? endIdx
-        : Math.min(startIdx + Math.max(1, Math.ceil(words.length / 3)), spans.length - 1);
+    if (rects.length === 0) return;
 
-      for (let i = startIdx; i <= finalEnd; i++) {
-        if (spans[i].textContent && spans[i].textContent.trim().length > 0) {
-          applyStyleToSpan(spans[i]);
-        }
+    // Merge rects that are on the same line into single continuous highlight bars.
+    // Use the median rect height as tolerance since spans on the same line have similar heights.
+    const sortedHeights = rects.map((r) => r.bottom - r.top).sort((a, b) => a - b);
+    const medianHeight = sortedHeights[Math.floor(sortedHeights.length / 2)] || 16;
+    const LINE_TOLERANCE = medianHeight * 0.6;
+    const VERTICAL_PAD = 2;
+
+    // Sort by top then left
+    rects.sort((a, b) => a.top - b.top || a.left - b.left);
+
+    const merged: SpanRect[] = [];
+    let current = { ...rects[0] };
+
+    for (let i = 1; i < rects.length; i++) {
+      const r = rects[i];
+      // Same line if vertical centers are close
+      const currentMid = (current.top + current.bottom) / 2;
+      const rMid = (r.top + r.bottom) / 2;
+      if (Math.abs(currentMid - rMid) < LINE_TOLERANCE) {
+        // Extend current line rect
+        current.left = Math.min(current.left, r.left);
+        current.right = Math.max(current.right, r.right);
+        current.top = Math.min(current.top, r.top);
+        current.bottom = Math.max(current.bottom, r.bottom);
+      } else {
+        merged.push(current);
+        current = { ...r };
       }
+    }
+    merged.push(current);
+
+    // Create one overlay div per merged line
+    for (const rect of merged) {
+      const overlay = document.createElement("div");
+      overlay.dataset.highlightId = highlight.id;
+      overlay.style.position = "absolute";
+      overlay.style.left = `${rect.left}px`;
+      overlay.style.top = `${rect.top - VERTICAL_PAD}px`;
+      overlay.style.width = `${rect.right - rect.left}px`;
+      overlay.style.height = `${rect.bottom - rect.top + VERTICAL_PAD * 2}px`;
+      overlay.style.backgroundColor = highlightBg;
+      overlay.style.borderRadius = "3px";
+      overlay.style.pointerEvents = "none";
+
+      highlightLayer.appendChild(overlay);
     }
   }
 
@@ -1042,12 +1137,16 @@ export class PdfJsRenderer implements ReaderRenderer {
 
   async removeHighlight(id: string): Promise<void> {
     this.highlightsMap.delete(id);
-    const elements = document.querySelectorAll(`[data-highlight-id="${id}"]`);
-    elements.forEach((el) => {
-      (el as HTMLElement).style.backgroundColor = "transparent";
-      (el as HTMLElement).style.boxShadow = "none";
-      el.removeAttribute("data-highlight-id");
-    });
+    // Remove overlay rectangles
+    document.querySelectorAll(`.tomesphere-pdf-highlight-layer [data-highlight-id="${id}"]`)
+      .forEach((el) => el.remove());
+    // Remove click handlers from text spans
+    document.querySelectorAll(`.tomesphere-pdf-text-layer [data-highlight-id="${id}"]`)
+      .forEach((el) => {
+        el.removeAttribute("data-highlight-id");
+        (el as HTMLElement).style.cursor = "";
+        (el as HTMLElement).onclick = null;
+      });
   }
 
   onTextSelected(

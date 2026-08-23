@@ -7,6 +7,7 @@ import { ReaderService } from "@/modules/reader/application/ReaderService";
 import { HighlightPopup } from "./HighlightPopup";
 import { HighlightContextMenu } from "./HighlightContextMenu";
 import { NoteEditor } from "./NoteEditor";
+import { NoteHoverTooltip } from "./NoteHoverTooltip";
 import { useReaderStore } from "../state/reader-store";
 import { AnnotationSidebar } from "./Sidebar/AnnotationSidebar";
 import { PageSideRail } from "./Sidebar/PageSideRail";
@@ -271,6 +272,7 @@ export function ReaderShell({ data }: ReaderShellProps) {
             onAddNote={handleAddNote}
             onDeleteHighlight={handleDeleteHighlight}
           />
+          <NoteHoverTooltip onEditNote={handleAddNote} />
           <NoteEditor onSave={handleSaveNote} onCancel={handleCancelNote} />
         </main>
         <AnnotationSidebar service={service} />
