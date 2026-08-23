@@ -506,18 +506,8 @@ export function BookDetailHero({
               </div>
             )}
 
-            {/* Quick Metrics & Archival Details */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 pt-2">
-              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
-                <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-1">
-                  <Calendar size={13} />
-                  <span>Publication</span>
-                </div>
-                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate block">
-                  {year}
-                </span>
-              </div>
-
+            {/* Essential Reading Metrics */}
+            <div className="grid grid-cols-3 gap-2.5 sm:gap-4 pt-1 max-w-lg">
               <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
                 <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-1">
                   <Layers size={13} />
@@ -548,56 +538,14 @@ export function BookDetailHero({
 
               <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
                 <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-1">
-                  <Globe size={13} />
-                  <span>Language</span>
+                  <Calendar size={13} />
+                  <span>Published</span>
                 </div>
                 <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate block">
-                  {book.language || "English"}
-                </span>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
-                <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-1">
-                  <Building size={13} />
-                  <span>Publisher</span>
-                </div>
-                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate block" title={book.publisher || "Public Domain"}>
-                  {book.publisher || "Open Archive"}
-                </span>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
-                <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-1">
-                  <ShieldCheck size={13} />
-                  <span>Rights</span>
-                </div>
-                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate block">
-                  {book.isPublicDomain ? "Public Domain" : "Open Access"}
+                  {year}
                 </span>
               </div>
             </div>
-
-            {/* Topics & Subject Badges if present */}
-            {book.subjects && book.subjects.length > 0 && (
-              <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mr-1 flex items-center gap-1">
-                  <Tag size={11} />
-                  <span>Topics:</span>
-                </span>
-                {book.subjects.slice(0, 6).map((sub, idx) => {
-                  const name = typeof sub === "string" ? sub : (sub as any)?.name;
-                  if (!name) return null;
-                  return (
-                    <span
-                      key={idx}
-                      className="px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/60"
-                    >
-                      {name}
-                    </span>
-                  );
-                })}
-              </div>
-            )}
           </div>
         </div>
       </div>
