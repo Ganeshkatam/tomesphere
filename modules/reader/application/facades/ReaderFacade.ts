@@ -78,7 +78,6 @@ export class ReaderFacade {
       canHighlight: true,
       canBookmark: true,
       canAnnotate: true,
-      canDownload: false,
       canSearch: true,
     };
 

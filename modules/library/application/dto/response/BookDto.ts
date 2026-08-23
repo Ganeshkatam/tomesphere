@@ -33,4 +33,5 @@ export interface BookDto {
   isbn?: string | null;
   pageCount?: number | null;
   averageRating?: number;
+  viewCount?: number;
 }

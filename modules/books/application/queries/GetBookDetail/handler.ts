@@ -18,6 +18,7 @@ export async function getBookDetail(id: string): Promise<BookDetailDto | null> {
       isbn,
       edition,
       language,
+      view_count,
       is_textbook,
       book_authors ( authors ( name ) ),
       book_genres ( genres ( name ) )
@@ -48,5 +49,6 @@ export async function getBookDetail(id: string): Promise<BookDetailDto | null> {
     language: raw.language || "English",
     isTextbook: raw.is_textbook || false,
     isPublicDomain: false, // Could compute this from release_date if needed
+    viewCount: typeof raw.view_count === "number" ? raw.view_count : 0,
   };
 }

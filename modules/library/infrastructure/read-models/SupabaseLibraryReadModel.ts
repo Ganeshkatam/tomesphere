@@ -174,7 +174,6 @@ export class SupabaseLibraryReadModel implements LibraryReadModel {
       wantToRead:
         libraryData?.filter((d) => d.status === "want_to_read").length || 0,
       finished: libraryData?.filter((d) => d.status === "finished").length || 0,
-      downloaded: 0,
       pagesRead,
       hoursRead,
       lastOpened: statsData?.updated_at || null,
@@ -290,7 +289,6 @@ export class SupabaseLibraryReadModel implements LibraryReadModel {
       collections: [],
       dateAdded: row.added_at || new Date().toISOString(),
       lastOpened: canonicalProgress.lastReadAt || row.updated_at || null,
-      downloaded: false,
       favorite: false,
       format: canonicalProgress.format || "pdf",
     };

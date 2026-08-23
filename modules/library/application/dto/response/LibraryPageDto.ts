@@ -7,7 +7,6 @@ export interface LibrarySummaryDto {
   currentlyReading: number;
   wantToRead: number;
   finished: number;
-  downloaded: number;
   pagesRead: number;
   hoursRead: number;
   lastOpened: string | null;

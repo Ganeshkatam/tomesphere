@@ -12,7 +12,6 @@ export interface BookViewerContextDto {
   collections: string[];
   permissions: {
     read: boolean;
-    download: boolean;
     bookmark: boolean;
     highlight: boolean;
     addToLibrary: boolean;
@@ -37,7 +36,6 @@ export async function getBookViewerContext(
       collections: [],
       permissions: {
         read: false,
-        download: false,
         bookmark: false,
         highlight: false,
         addToLibrary: false,
@@ -96,7 +94,6 @@ export async function getBookViewerContext(
     collections: [],
     permissions: {
       read: true,
-      download: true,
       bookmark: true,
       highlight: true,
       addToLibrary: true,

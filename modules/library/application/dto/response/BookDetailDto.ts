@@ -20,4 +20,5 @@ export interface BookDetailDto {
   language?: string | null;
   isTextbook: boolean;
   isPublicDomain: boolean;
+  viewCount?: number;
 }

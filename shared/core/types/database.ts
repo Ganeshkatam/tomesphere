@@ -1962,6 +1962,10 @@ export type Database = {
         Args: { p_month: string; p_pages: number; p_user_id: string }
         Returns: undefined
       }
+      increment_book_view_count: {
+        Args: { p_book_id: string }
+        Returns: number
+      }
       log_search_analytics: {
         Args: {
           p_execution_time_ms: number
@@ -1996,6 +2000,10 @@ export type Database = {
       prune_system_logs: { Args: never; Returns: undefined }
       recalculate_analytics_book_rating: {
         Args: { p_book_id: string }
+        Returns: undefined
+      }
+      recalculate_user_statistics: {
+        Args: { p_user_id: string }
         Returns: undefined
       }
       refresh_category_document: {

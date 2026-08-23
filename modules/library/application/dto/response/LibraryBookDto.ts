@@ -8,7 +8,6 @@ export interface LibraryBookDto {
   collections: string[]; // Array of collection IDs
   dateAdded: string;
   lastOpened: string | null;
-  downloaded: boolean;
   favorite: boolean;
   format?: string; // e.g., "epub" | "pdf"
   currentPage?: number;

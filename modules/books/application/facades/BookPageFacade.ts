@@ -5,6 +5,7 @@ import {
 } from "../queries/GetBookViewerContext/handler";
 import { getRelatedBooks, RelatedBookDto } from "../queries/GetRelatedBooks/handler";
 import { getBooksByAuthor, AuthorBooksDto } from "../queries/GetBooksByAuthor/handler";
+import { incrementBookViewCount } from "../commands/IncrementBookViewCountCommand";
 import { BookDetailDto } from "@/modules/library/application/dto/response/BookDetailDto";
 
 export interface BookPageDto {
@@ -24,6 +25,11 @@ export class BookPageFacade {
       getRelatedBooks(bookIdStr),
       getBooksByAuthor(bookIdStr),
     ]);
+
+    // Record view asynchronously without blocking page rendering TTFB
+    if (book) {
+      void incrementBookViewCount(bookIdStr);
+    }
 
     return {
       book,

@@ -29,7 +29,6 @@ export interface ReaderCapabilitiesDto {
   canHighlight: boolean;
   canBookmark: boolean;
   canAnnotate: boolean;
-  canDownload: boolean;
   canSearch: boolean;
 }
 

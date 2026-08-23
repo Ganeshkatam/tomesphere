@@ -8,3 +8,4 @@ export * from "./ReplaceBookFilesCommand";
 
 export * from "./UploadBookFileCommand";
 export * from "./DeleteBookFileCommand";
+export * from "./IncrementBookViewCountCommand";
