@@ -7,6 +7,7 @@ export interface UpdateCollectionRequest {
   name?: string;
   description?: string;
   isPublic?: boolean;
+  coverImage?: string | null;
 }
 
 export async function updateCollection(
@@ -17,5 +18,6 @@ export async function updateCollection(
     name: request.name,
     description: request.description,
     isPublic: request.isPublic,
+    coverImage: request.coverImage,
   });
 }

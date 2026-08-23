@@ -22,7 +22,7 @@ export function QuickActionsWidget() {
     {
       label: "My Library",
       description: "View saved and finished titles",
-      href: "/me/mylibrary",
+      href: "/me/library",
       icon: Bookmark,
       color: "text-emerald-600 dark:text-emerald-400",
       bg: "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200/60 dark:border-emerald-800/60",

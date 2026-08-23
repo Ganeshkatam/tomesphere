@@ -113,13 +113,13 @@ export function AppHeader({ className = "", variant = "application", user }: App
                   MyDashboard
                 </Link>
                 <Link
-                  href="/me/mylibrary"
-                  className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${pathname && pathname.startsWith("/me/mylibrary")
+                  href="/me/library"
+                  className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${pathname && pathname.startsWith("/me/library")
                     ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                     }`}
                 >
-                  MyLibrary
+                  Library
                 </Link>
               </nav>
             )}

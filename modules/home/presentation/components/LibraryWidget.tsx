@@ -40,7 +40,7 @@ export async function LibraryWidget({ promise }: LibraryWidgetProps) {
           </div>
 
           <Link
-            href="/me/mylibrary"
+            href="/me/library"
             className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
           >
             <span>My Library</span>

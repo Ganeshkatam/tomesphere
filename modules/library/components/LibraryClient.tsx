@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { LibraryPageDto } from "../application/dto/response/LibraryPageDto";
 import { useLibraryStore } from "../store/library-store";
-import { getLibraryPageAction } from "@/app/(workspace)/me/mylibrary/actions";
+import { getLibraryPageAction } from "../presentation/actions/library";
 
 import LibraryOverview from "./LibraryOverview";
 import LibraryToolbar from "./LibraryToolbar";

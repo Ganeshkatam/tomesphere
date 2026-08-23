@@ -1,11 +1,22 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ShelvesPageDto, ShelfSummaryDto } from "../application/dto/response/ShelvesPageDto";
-import { Plus, Library, Search, Loader2 } from "lucide-react";
+import { Plus, Library, Search, Loader2, Upload, ImageIcon, Sparkles } from "lucide-react";
 import ShelfCard from "./ShelfCard";
 import { createShelfAction, updateShelfAction, deleteShelfAction } from "@/app/(workspace)/me/shelves/actions";
+import { uploadFileToStorage } from "@/modules/storage/presentation/actions/storage";
+import { showSuccess, showError } from "@/lib/toast";
+
+const PRESET_COVERS = [
+  { label: "Sanctuary", url: "/hero_sanctuary_bg.jpg" },
+  { label: "Archival", url: "/hero_library_bg.jpg" },
+  { label: "Vintage", url: "/default_book_cover.jpg" },
+  { label: "Study", url: "/library_bg.png" },
+  { label: "Midnight", url: "/about_cta_banner.jpg" },
+];
 
 interface ShelvesClientProps {
   initialData: ShelvesPageDto;
@@ -21,11 +32,40 @@ export default function ShelvesClient({ initialData }: ShelvesClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingShelf, setEditingShelf] = useState<ShelfSummaryDto | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Form State
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [coverImage, setCoverImage] = useState<string>("");
   const [isPublic, setIsPublic] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      showError("Image must be smaller than 5MB");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await uploadFileToStorage("user-images", formData);
+      if (res.success) {
+        setCoverImage(res.data.url);
+        showSuccess("Cover image uploaded");
+      } else {
+        showError(res.error.message || "Failed to upload image");
+      }
+    } catch (err: any) {
+      showError(err.message || "Failed to upload image");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const filteredShelves = data.shelves.filter(s => 
     s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -36,6 +76,7 @@ export default function ShelvesClient({ initialData }: ShelvesClientProps) {
     setEditingShelf(null);
     setName("");
     setDescription("");
+    setCoverImage("");
     setIsPublic(false);
     setIsModalOpen(true);
   };
@@ -44,6 +85,7 @@ export default function ShelvesClient({ initialData }: ShelvesClientProps) {
     setEditingShelf(shelf);
     setName(shelf.name);
     setDescription(shelf.description || "");
+    setCoverImage(shelf.coverImage || "");
     setIsPublic(shelf.isPublic);
     setIsModalOpen(true);
   };
@@ -59,19 +101,61 @@ export default function ShelvesClient({ initialData }: ShelvesClientProps) {
     setIsSaving(true);
     try {
       if (editingShelf) {
-        await updateShelfAction(editingShelf.id, { name, description, isPublic });
+        await updateShelfAction(editingShelf.id, {
+          name: name.trim(),
+          description: description.trim() || undefined,
+          isPublic,
+          coverImage: coverImage.trim() || null,
+        });
+        setData((prev) => ({
+          ...prev,
+          shelves: prev.shelves.map((s) =>
+            s.id === editingShelf.id
+              ? {
+                  ...s,
+                  name: name.trim(),
+                  description: description.trim() || null,
+                  coverImage: coverImage.trim() || null,
+                  isPublic,
+                }
+              : s,
+          ),
+        }));
+        showSuccess("Shelf updated");
       } else {
-        await createShelfAction({ name, description, isPublic });
+        const created = await createShelfAction({
+          name: name.trim(),
+          description: description.trim() || undefined,
+          isPublic,
+          coverImage: coverImage.trim() || null,
+        });
+        if (created) {
+          setData((prev) => ({
+            ...prev,
+            shelves: [
+              {
+                id: created.id,
+                name: created.name,
+                description: created.description || null,
+                coverImage: created.coverImage || null,
+                isPublic: created.isPublic,
+                bookCount: 0,
+                previewBooks: [],
+              },
+              ...prev.shelves.filter((s) => s.id !== created.id),
+            ],
+          }));
+        }
+        showSuccess("Shelf created");
       }
       
-      // We can either fetch data again or refresh the page
+      closeModal();
       startTransition(() => {
         router.refresh();
       });
-      closeModal();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to save shelf", error);
-      alert("Failed to save shelf. Please try again.");
+      showError(error.message || "Failed to save shelf. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -83,13 +167,22 @@ export default function ShelvesClient({ initialData }: ShelvesClientProps) {
     }
 
     try {
+      // Optimistically remove from state instantly
+      setData((prev) => ({
+        ...prev,
+        shelves: prev.shelves.filter((s) => s.id !== shelf.id),
+      }));
       await deleteShelfAction(shelf.id);
+      showSuccess("Shelf deleted");
       startTransition(() => {
         router.refresh();
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete shelf", error);
-      alert("Failed to delete shelf.");
+      showError("Failed to delete shelf.");
+      startTransition(() => {
+        router.refresh();
+      });
     }
   };
 
@@ -204,9 +297,84 @@ export default function ShelvesClient({ initialData }: ShelvesClientProps) {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="What kind of books belong here?"
-                    rows={3}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-[var(--border-default)] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                    rows={2}
+                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-[var(--border-default)] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none text-sm"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300 flex items-center justify-between">
+                    <span>Cover Artwork</span>
+                    {coverImage && (
+                      <button
+                        type="button"
+                        onClick={() => setCoverImage("")}
+                        className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer font-medium"
+                      >
+                        Reset to default
+                      </button>
+                    )}
+                  </label>
+                  
+                  {/* Preset Swatches */}
+                  <p className="text-xs text-slate-500 mb-2">Select a theme or upload your own image</p>
+                  <div className="grid grid-cols-5 gap-2 mb-3">
+                    {PRESET_COVERS.map((preset) => {
+                      const isSelected = coverImage === preset.url;
+                      return (
+                        <button
+                          key={preset.url}
+                          type="button"
+                          onClick={() => setCoverImage(preset.url)}
+                          className={`relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                            isSelected ? "border-indigo-600 ring-2 ring-indigo-500/30 scale-105" : "border-slate-200 dark:border-slate-700 opacity-70 hover:opacity-100"
+                          }`}
+                          title={preset.label}
+                        >
+                          <Image src={preset.url} alt={preset.label} fill className="object-cover" sizes="80px" />
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Upload Image Button */}
+                  <label className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-400 bg-slate-50 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 text-xs font-semibold cursor-pointer transition-colors">
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+                        <span>Uploading image...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                        <span>{coverImage && !PRESET_COVERS.some(p => p.url === coverImage) ? "Change Custom Image" : "Upload Custom Image"}</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      disabled={isUploading}
+                      className="hidden"
+                    />
+                  </label>
+
+                  {/* Active Custom Preview if uploaded */}
+                  {coverImage && !PRESET_COVERS.some(p => p.url === coverImage) && (
+                    <div className="mt-2.5 relative h-16 rounded-xl overflow-hidden border border-indigo-500/40">
+                      <Image src={coverImage} alt="Selected Cover" fill className="object-cover" />
+                      <div className="absolute inset-0 bg-black/35 flex items-center justify-between px-3">
+                        <span className="text-[11px] font-semibold text-white">Custom Upload Active</span>
+                        <button
+                          type="button"
+                          onClick={() => setCoverImage("")}
+                          className="text-[11px] bg-rose-600 hover:bg-rose-700 text-white px-2 py-0.5 rounded-md font-medium cursor-pointer"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-3 p-4 border border-[var(--border-default)] rounded-xl bg-slate-50 dark:bg-slate-900/50">

@@ -30,14 +30,9 @@ async function getFacade() {
 
 export async function searchAction(request: SearchRequest) {
   const { facade, supabase } = await getFacade();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const userPromise = supabase.auth.getUser();
 
-  return facade.search({
-    ...request,
-    userId: user?.id,
-  });
+  return facade.search(request, userPromise);
 }
 
 export async function autocompleteAction(query: string) {

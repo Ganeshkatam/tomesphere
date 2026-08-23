@@ -206,6 +206,7 @@ export class SupabaseLibraryReadModel implements LibraryReadModel {
       name: row.name,
       description: row.description,
       isPublic: row.is_public,
+      coverImage: row.cover_image || null,
       bookCount: row.shelf_items?.[0]?.count ?? 0,
       previewBooks: [] as any[],
     }));

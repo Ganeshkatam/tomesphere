@@ -24,14 +24,33 @@ export class ApplicationSearchFacade implements SearchFacade {
     private readonly analyticsHandler?: SearchAnalyticsHandler,
   ) {}
 
-  async search(request: SearchRequest): Promise<SearchResponse> {
-    const response = await this.searchResultsHandler.handle(request);
+  async search(
+    request: SearchRequest,
+    userPromise?: Promise<any>,
+  ): Promise<SearchResponse> {
+    const searchPromise = this.searchResultsHandler.handle(request);
+
+    let resolvedUserId = request.userId;
+    let response: SearchResponse;
+
+    if (userPromise) {
+      const [res, userResult] = await Promise.all([
+        searchPromise,
+        userPromise.catch(() => null),
+      ]);
+      response = res;
+      if (!resolvedUserId && userResult?.data?.user?.id) {
+        resolvedUserId = userResult.data.user.id;
+      }
+    } else {
+      response = await searchPromise;
+    }
 
     // Prepare search analytics payload
     const searchId = randomUUID();
     const payload = {
       searchId,
-      userId: request.userId,
+      userId: resolvedUserId,
       query: request.query,
       executionTimeMs: response.executionTimeMs,
       resultCount: response.totalCount,

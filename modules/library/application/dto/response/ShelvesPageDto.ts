@@ -8,6 +8,7 @@ export interface ShelfSummaryDto {
   id: string;
   name: string;
   description: string | null;
+  coverImage?: string | null;
   isPublic: boolean;
   bookCount: number;
   previewBooks: ShelfBookPreviewDto[];

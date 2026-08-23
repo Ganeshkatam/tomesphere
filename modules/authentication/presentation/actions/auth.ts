@@ -314,24 +314,52 @@ export async function sendMagicLinkServer(
 
 export async function verifyTokenHashServer(
   tokenHash: string,
-  type: any, // "magiclink" | "signup" | "invite" | "recovery" | "email_change"
+  type?: any, // "magiclink" | "signup" | "invite" | "recovery" | "email_change" | "email"
 ): Promise<ServerActionResult<void>> {
   try {
     const supabase = await createSupabaseServerClient();
-    const result = await supabase.auth.verifyOtp({
-      token_hash: tokenHash,
-      type,
-    });
-
-    if (result.error) {
-      console.error("[verifyTokenHashServer] Verify Error:", result.error);
-      return {
-        success: false,
-        error: { message: result.error.message || "Invalid or expired link.Please consider requesting a new one." },
-      };
+    const cleanToken = tokenHash?.trim();
+    if (!cleanToken) {
+      return { success: false, error: { message: "Invalid or missing verification token." } };
     }
 
-    return { success: true, data: undefined };
+    // 1. If it's a PKCE authorization code (starts with pkce_ or code-like structure)
+    if (cleanToken.startsWith("pkce_") || cleanToken.length < 50) {
+      const { error: codeErr } = await supabase.auth.exchangeCodeForSession(cleanToken);
+      if (!codeErr) {
+        return { success: true, data: undefined };
+      }
+    }
+
+    // 2. Try verifyOtp with the provided type or clean default
+    const primaryType = type && typeof type === "string" && type.trim() !== "" ? type.trim() : null;
+    const typesToTry: string[] = primaryType
+      ? [primaryType, "magiclink", "email", "signup", "recovery", "invite"]
+      : ["magiclink", "email", "signup", "recovery", "invite"];
+
+    let lastError: any = null;
+    for (const t of typesToTry) {
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: cleanToken,
+        type: t as any,
+      });
+      if (!error) {
+        return { success: true, data: undefined };
+      }
+      lastError = error;
+    }
+
+    // 3. Fallback: try exchangeCodeForSession in case token was an authorization code
+    const { error: fallbackCodeErr } = await supabase.auth.exchangeCodeForSession(cleanToken);
+    if (!fallbackCodeErr) {
+      return { success: true, data: undefined };
+    }
+
+    console.error("[verifyTokenHashServer] Verify Error:", lastError || fallbackCodeErr);
+    return {
+      success: false,
+      error: { message: lastError?.message || "Invalid or expired link. Please request a new one." },
+    };
   } catch (error: any) {
     return {
       success: false,

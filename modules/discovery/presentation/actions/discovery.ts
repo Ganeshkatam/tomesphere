@@ -37,7 +37,7 @@ export async function addBookToLibraryAction(
       revalidatePath("/discover");
       revalidatePath(`/book/${bookId}`);
       revalidatePath("/me/library");
-      revalidatePath("/me/mylibrary");
+      revalidatePath("/me/shelves");
       return { success: true, data: output };
     }
 
@@ -50,7 +50,7 @@ export async function addBookToLibraryAction(
     revalidatePath("/discover");
     revalidatePath(`/book/${bookId}`);
     revalidatePath("/me/library");
-    revalidatePath("/me/mylibrary");
+    revalidatePath("/me/shelves");
 
     return { success: true, data: output };
   } catch (error: any) {

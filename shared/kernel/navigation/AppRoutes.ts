@@ -3,7 +3,8 @@ export const AppRoutes = {
   me: "/me",
   dashboard: "/me/dashboard",
   discover: "/discover",
-  library: "/me/mylibrary",
+  library: "/me/library",
+  shelves: "/me/shelves",
 } as const;
 
 export type AppRoute = (typeof AppRoutes)[keyof typeof AppRoutes];

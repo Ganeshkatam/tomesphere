@@ -17,7 +17,7 @@ export default function LibraryGrid({ books }: LibraryGridProps) {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 sm:gap-8">
-      {books.map((item) => {
+      {books.map((item, idx) => {
         const isSelected = selection.includes(item.bookId);
 
         return (
@@ -27,6 +27,7 @@ export default function LibraryGrid({ books }: LibraryGridProps) {
               className={`h-full transition-transform ${isSelected ? "scale-95 ring-2 ring-primary rounded-xl" : ""}`}
             >
               <BookCard
+                priority={idx < 6}
                 book={{
                   id: item.bookId,
                   title: item.title,

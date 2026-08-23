@@ -12,11 +12,26 @@ function ConfirmAuthContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  const tokenHash = searchParams.get("token_hash");
-  const type = searchParams.get("type") || "magiclink";
-  const next = searchParams.get("next") ?? "/discover";
+  const tokenHash = searchParams.get("token_hash") || searchParams.get("code");
+  const rawType = searchParams.get("type");
+  const type = rawType && rawType.trim() !== "" ? rawType.trim() : "magiclink";
+  const rawNext = searchParams.get("next") ?? "/me";
+
+  // Sanitize next to a relative path on current origin to prevent cross-origin redirect errors
+  let nextPath = "/me";
+  try {
+    if (rawNext.startsWith("http")) {
+      const parsed = new URL(rawNext);
+      nextPath = parsed.pathname + parsed.search;
+    } else {
+      nextPath = rawNext.startsWith("/") ? rawNext : `/${rawNext}`;
+    }
+  } catch {
+    nextPath = "/me";
+  }
 
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!tokenHash) {
@@ -28,21 +43,26 @@ function ConfirmAuthContent() {
   const handleConfirm = async () => {
     if (!tokenHash) return;
     setLoading(true);
+    setErrorMessage(null);
 
     try {
       const res = await verifyTokenHashServer(tokenHash, type as any);
       
       if (!res.success) {
-        showError(res.error?.message || "Link is invalid or has expired.");
-        router.push("/login?error=Invalid_or_expired_link");
+        const msg = res.error?.message || "Link is invalid or has expired.";
+        setErrorMessage(msg);
+        showError(msg);
+        setLoading(false);
         return;
       }
 
       showSuccess("Successfully verified!");
-      // We must force a hard refresh or router push to establish the session in the client context
-      window.location.href = next;
+      // Hard navigation to establish cookies and session state
+      window.location.href = nextPath;
     } catch (err: any) {
-      showError(err.message || "Failed to verify.");
+      const msg = err.message || "Failed to verify.";
+      setErrorMessage(msg);
+      showError(msg);
       setLoading(false);
     }
   };
@@ -74,6 +94,17 @@ function ConfirmAuthContent() {
         <p className="text-slate-600 dark:text-slate-400 text-sm mb-8">
           To protect your account from automated scanners, please click the button below to confirm your login.
         </p>
+
+        {errorMessage && (
+          <div className="mb-6 p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold leading-relaxed text-left">
+            <p>{errorMessage}</p>
+            <div className="mt-2">
+              <a href="/login" className="text-indigo-600 dark:text-indigo-400 underline font-bold">
+                Return to Login &rarr;
+              </a>
+            </div>
+          </div>
+        )}
 
         <button
           onClick={handleConfirm}

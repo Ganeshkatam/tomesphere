@@ -3,7 +3,7 @@ import { SearchResponse } from "../dto/SearchResultDto";
 import { SearchSuggestionDto } from "../dto/SearchSuggestionDto";
 
 export interface SearchFacade {
-  search(request: SearchRequest): Promise<SearchResponse>;
+  search(request: SearchRequest, userPromise?: Promise<any>): Promise<SearchResponse>;
   autocomplete(query: string): Promise<SearchSuggestionDto[]>;
   recentSearches(userId: string): Promise<string[]>;
   trendingSearches(): Promise<string[]>;

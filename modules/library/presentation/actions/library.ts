@@ -18,6 +18,12 @@ import { getAllLibraryBooks } from "../../application/queries/GetAllLibraryBooks
 import { SupabaseLibraryRepository } from "../../infrastructure/SupabaseLibraryRepository";
 import { SupabaseBookRepository } from "../../../books/infrastructure/SupabaseBookRepository";
 
+import { SupabaseLibraryReadModel } from "../../infrastructure/read-models/SupabaseLibraryReadModel";
+import { SupabaseCollectionRepository } from "../../infrastructure/repositories/SupabaseCollectionRepository";
+import { LibraryPageFacade } from "../../application/facades/LibraryPageFacade";
+import { LibraryQueryParams } from "../../application/ports/read-models/LibraryReadModel";
+import { LibraryPageDto } from "../../application/dto/response/LibraryPageDto";
+
 // Outputs
 import {
   LibraryEntryDto,
@@ -50,8 +56,7 @@ const UpdateProgressInputSchema = z.object({
 function revalidateLibraryPaths(bookId?: string) {
   revalidatePath("/me");
   revalidatePath("/me/library");
-  revalidatePath("/me/mylibrary");
-  revalidatePath("/me/mydashboard");
+  revalidatePath("/me/shelves");
   if (bookId) {
     revalidatePath(`/book/${bookId}`);
   }
@@ -261,3 +266,22 @@ export async function getAllLibraryBooksAction(): Promise<
     };
   }
 }
+
+export async function getLibraryPageAction(
+  params: LibraryQueryParams,
+): Promise<LibraryPageDto> {
+  const supabase = await createSupabaseServerClient();
+  const identityProvider = new SupabaseIdentityProvider(supabase);
+  const user = await identityProvider.currentUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const readModel = new SupabaseLibraryReadModel(supabase);
+  const collectionRepo = new SupabaseCollectionRepository(supabase);
+  const facade = new LibraryPageFacade(readModel, collectionRepo);
+
+  return facade.get(user.id, params);
+}
+

@@ -85,6 +85,7 @@ export async function proxy(request: NextRequest) {
   if (user && (isAuthRoute(pathname) || pathname === "/")) {
     const url = request.nextUrl.clone();
     url.pathname = "/me";
+    url.search = ""; // Clear error or auth query params when sending to /me
     return NextResponse.redirect(url);
   }
 

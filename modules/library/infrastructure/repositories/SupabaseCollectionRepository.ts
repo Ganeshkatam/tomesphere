@@ -45,7 +45,7 @@ export class SupabaseCollectionRepository implements CollectionRepository {
 
   async createCollection(
     userId: string,
-    data: { name: string; description?: string; isPublic?: boolean },
+    data: { name: string; description?: string; isPublic?: boolean; coverImage?: string | null },
   ): Promise<CollectionDto> {
     const { data: result, error } = await this.supabase
       .from("shelves")
@@ -54,6 +54,7 @@ export class SupabaseCollectionRepository implements CollectionRepository {
         name: data.name,
         description: data.description,
         is_public: data.isPublic ?? false,
+        cover_image: data.coverImage || null,
       })
       .select(
         `
@@ -73,12 +74,13 @@ export class SupabaseCollectionRepository implements CollectionRepository {
   async updateCollection(
     id: string,
     userId: string,
-    data: { name?: string; description?: string; isPublic?: boolean },
+    data: { name?: string; description?: string; isPublic?: boolean; coverImage?: string | null },
   ): Promise<CollectionDto | null> {
     const updates: any = {};
     if (data.name !== undefined) updates.name = data.name;
     if (data.description !== undefined) updates.description = data.description;
     if (data.isPublic !== undefined) updates.is_public = data.isPublic;
+    if (data.coverImage !== undefined) updates.cover_image = data.coverImage || null;
 
     const { data: result, error } = await this.supabase
       .from("shelves")

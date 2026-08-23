@@ -39,7 +39,7 @@ export default function SitemapPage() {
                 </li>
                 <li>
                   <Link
-                    href="/me/mylibrary"
+                    href="/me/library"
                     className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                   >
                     My Library

@@ -6,6 +6,7 @@ export interface CreateCollectionRequest {
   name: string;
   description?: string;
   isPublic?: boolean;
+  coverImage?: string | null;
 }
 
 export async function createCollection(
@@ -16,5 +17,6 @@ export async function createCollection(
     name: request.name,
     description: request.description,
     isPublic: request.isPublic,
+    coverImage: request.coverImage,
   });
 }

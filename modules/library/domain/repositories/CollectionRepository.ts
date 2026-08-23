@@ -5,12 +5,12 @@ export interface CollectionRepository {
   getCollection(id: string, userId: string): Promise<CollectionRecord | null>;
   createCollection(
     userId: string,
-    data: { name: string; description?: string; isPublic?: boolean },
+    data: { name: string; description?: string; isPublic?: boolean; coverImage?: string | null },
   ): Promise<CollectionRecord>;
   updateCollection(
     id: string,
     userId: string,
-    data: { name?: string; description?: string; isPublic?: boolean },
+    data: { name?: string; description?: string; isPublic?: boolean; coverImage?: string | null },
   ): Promise<CollectionRecord | null>;
   deleteCollection(id: string, userId: string): Promise<boolean>;
 
