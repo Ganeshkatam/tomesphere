@@ -63,6 +63,7 @@ export function BookDetailHero({
   const [isUpdatingState, setIsUpdatingState] = useState(false);
   const [showShelfMenu, setShowShelfMenu] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const authorScrollRef = useRef<HTMLDivElement>(null);
 
@@ -496,14 +497,23 @@ export function BookDetailHero({
               </button>
             </div>
 
-            {/* Quick Metrics */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-2">
+            {/* Book Description / Synopsis */}
+            {rawDescription && (
+              <div className="pt-1 text-slate-700 dark:text-slate-300">
+                <p className="text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-300 font-sans">
+                  {parsedSections.mainText || rawDescription}
+                </p>
+              </div>
+            )}
+
+            {/* Quick Metrics & Archival Details */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 pt-2">
               <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
                 <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-1">
                   <Calendar size={13} />
                   <span>Publication</span>
                 </div>
-                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate block">
                   {year}
                 </span>
               </div>
@@ -513,7 +523,7 @@ export function BookDetailHero({
                   <Layers size={13} />
                   <span>Pages</span>
                 </div>
-                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate block">
                   {book.pageCount ? `${book.pageCount} Pages` : "Complete Text"}
                 </span>
               </div>
@@ -523,7 +533,7 @@ export function BookDetailHero({
                   <Clock size={13} />
                   <span>Est. Read</span>
                 </div>
-                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate block">
                   {(() => {
                     if (!book.pageCount || book.pageCount <= 0)
                       return "~3.5 hours";
@@ -541,11 +551,53 @@ export function BookDetailHero({
                   <Globe size={13} />
                   <span>Language</span>
                 </div>
-                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                  English
+                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate block">
+                  {book.language || "English"}
+                </span>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
+                <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-1">
+                  <Building size={13} />
+                  <span>Publisher</span>
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate block" title={book.publisher || "Public Domain"}>
+                  {book.publisher || "Open Archive"}
+                </span>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
+                <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-1">
+                  <ShieldCheck size={13} />
+                  <span>Rights</span>
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate block">
+                  {book.isPublicDomain ? "Public Domain" : "Open Access"}
                 </span>
               </div>
             </div>
+
+            {/* Topics & Subject Badges if present */}
+            {book.subjects && book.subjects.length > 0 && (
+              <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mr-1 flex items-center gap-1">
+                  <Tag size={11} />
+                  <span>Topics:</span>
+                </span>
+                {book.subjects.slice(0, 6).map((sub, idx) => {
+                  const name = typeof sub === "string" ? sub : (sub as any)?.name;
+                  if (!name) return null;
+                  return (
+                    <span
+                      key={idx}
+                      className="px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/60"
+                    >
+                      {name}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -553,7 +605,7 @@ export function BookDetailHero({
       {/* 3. Interactive Tab Navigation Bar */}
       <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto select-none">
         {[
-          { key: "overview", label: "Overview & Synopsis", icon: BookOpen },
+          { key: "overview", label: "Curriculum & Themes", icon: Sparkles },
           { key: "contents", label: "Structure & Chapters", icon: ListOrdered },
           { key: "metadata", label: "Archival Details", icon: ShieldCheck },
         ].map((tab) => {
@@ -565,10 +617,11 @@ export function BookDetailHero({
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key as any)}
-              className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs sm:text-sm transition-all cursor-pointer shrink-0 ${isActive
+              className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs sm:text-sm transition-all cursor-pointer shrink-0 ${
+                isActive
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
-                }`}
+              }`}
             >
               <IconComponent size={16} />
               <span>{tab.label}</span>
@@ -579,50 +632,52 @@ export function BookDetailHero({
 
       {/* 4. Tab Content Area */}
       <div className="animate-in fade-in duration-200">
-        {/* TAB 1: OVERVIEW */}
+        {/* TAB 1: CURRICULUM & THEMES */}
         {activeTab === "overview" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-8 space-y-6">
-              <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
-                <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
-                  <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                    <BookOpen size={16} />
+              {/* Learning Stages / Levels if present */}
+              {parsedSections.stages.length > 0 ? (
+                <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                  <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                      <Sparkles size={16} />
+                    </div>
+                    <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
+                      Curriculum & Core Milestones
+                    </h3>
                   </div>
-                  <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
-                    About this Work
-                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {parsedSections.stages.map((st, i) => (
+                      <div
+                        key={i}
+                        className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 space-y-1.5"
+                      >
+                        <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                          {st.label}
+                        </span>
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-snug">
+                          {st.text}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-
-                <div className="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed font-sans text-sm sm:text-base space-y-3">
-                  <p className="whitespace-pre-line leading-relaxed">
-                    {parsedSections.mainText}
+              ) : (
+                <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
+                  <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                      <BookOpen size={16} />
+                    </div>
+                    <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
+                      Archival Preservation Summary
+                    </h3>
+                  </div>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-serif">
+                    This scholarly edition is preserved within the TomeSphere Digital Archive, optimized for in-browser vector reading, cross-device synchronization, and offline study.
                   </p>
                 </div>
-
-                {/* Learning Stages / Levels if present */}
-                {parsedSections.stages.length > 0 && (
-                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
-                    <h4 className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                      Curriculum & Core Milestones
-                    </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {parsedSections.stages.map((st, i) => (
-                        <div
-                          key={i}
-                          className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 space-y-1"
-                        >
-                          <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
-                            {st.label}
-                          </span>
-                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-snug">
-                            {st.text}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+              )}
 
               {/* Subject Badges */}
               {book.subjects && book.subjects.length > 0 && (
