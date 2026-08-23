@@ -24,6 +24,8 @@ import {
 import { updateShelfAction, deleteShelfAction, removeBookFromShelfAction } from "@/app/(workspace)/me/shelves/actions";
 import { uploadFileToStorage } from "@/modules/storage/presentation/actions/storage";
 import { showSuccess, showError } from "@/lib/toast";
+import { PhotoUploadConsentModal } from "@/shared/ui/PhotoUploadConsentModal";
+import { usePhotoUploadPermission } from "@/shared/hooks/usePhotoUploadPermission";
 
 const PRESET_COVERS = [
   { label: "Sanctuary", url: "/hero_sanctuary_bg.jpg" },
@@ -53,16 +55,14 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
   const [isPublic, setIsPublic] = useState(shelf.isPublic);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const {
+    pendingFile: pendingCoverFile,
+    requestPhotoUpload,
+    handleAllow: handleConfirmCoverUpload,
+    handleDeny: handleCancelCoverUpload,
+  } = usePhotoUploadPermission();
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      showError("Image must be smaller than 5MB");
-      return;
-    }
-
+  const performCoverUpload = async (file: File) => {
     setIsUploading(true);
     try {
       const formData = new FormData();
@@ -79,6 +79,18 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      showError("Image must be smaller than 5MB");
+      return;
+    }
+
+    requestPhotoUpload(file, performCoverUpload);
   };
 
   const filteredBooks = books.filter((b) =>
@@ -408,7 +420,7 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={handleFileUpload}
+                      onChange={handleFileSelect}
                       disabled={isUploading}
                       className="hidden"
                     />
@@ -467,6 +479,15 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
           </div>
         </div>
       )}
+
+      <PhotoUploadConsentModal
+        isOpen={!!pendingCoverFile}
+        file={pendingCoverFile}
+        onConfirm={handleConfirmCoverUpload}
+        onCancel={handleCancelCoverUpload}
+        isUploading={isUploading}
+        title="Shelf Cover Photo Permission"
+      />
     </div>
   );
 }

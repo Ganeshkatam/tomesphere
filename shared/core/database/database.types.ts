@@ -962,6 +962,36 @@ export type Database = {
           },
         ]
       }
+      login_notifications_log: {
+        Row: {
+          attempts: number
+          created_at: string
+          last_error: string | null
+          processed_at: string | null
+          session_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          last_error?: string | null
+          processed_at?: string | null
+          session_id: string
+          status: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          last_error?: string | null
+          processed_at?: string | null
+          session_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           book_id: string | null
@@ -1581,6 +1611,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_permissions: {
+        Row: {
+          created_at: string
+          file_name: string | null
+          file_size: number | null
+          granted: boolean
+          id: string
+          mime_type: string | null
+          permission_type: string
+          resource_url: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name?: string | null
+          file_size?: number | null
+          granted?: boolean
+          id?: string
+          mime_type?: string | null
+          permission_type: string
+          resource_url?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string | null
+          file_size?: number | null
+          granted?: boolean
+          id?: string
+          mime_type?: string | null
+          permission_type?: string
+          resource_url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           content_languages: string[]
@@ -1814,12 +1880,12 @@ export type Database = {
       }
       get_search_facets_v1: {
         Args: {
-          p_genres: string[]
-          p_include_unavailable: boolean
-          p_languages: string[]
-          p_publication_years: number[]
-          p_query: string
-          p_subjects: string[]
+          p_genres?: string[]
+          p_include_unavailable?: boolean
+          p_languages?: string[]
+          p_publication_years?: number[]
+          p_query?: string
+          p_subjects?: string[]
         }
         Returns: {
           facet_key: string
@@ -1894,6 +1960,22 @@ export type Database = {
       }
       increment_analytics_monthly_pages: {
         Args: { p_month: string; p_pages: number; p_user_id: string }
+        Returns: undefined
+      }
+      log_search_analytics: {
+        Args: {
+          p_execution_time_ms: number
+          p_filters: Json
+          p_id: string
+          p_is_slow_query: boolean
+          p_is_zero_result: boolean
+          p_normalized_query: string
+          p_query: string
+          p_result_count: number
+          p_searched_at: string
+          p_sort_strategy: string
+          p_user_id: string
+        }
         Returns: undefined
       }
       match_books: {

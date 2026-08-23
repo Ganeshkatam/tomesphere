@@ -2,9 +2,11 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { Upload, File, X, CheckCircle, AlertCircle } from "lucide-react";
+import { Upload, File, X, CheckCircle, AlertCircle, FileText, Image as ImageIcon } from "lucide-react";
 import { uploadFileToStorage } from "@/modules/storage/presentation/actions/storage";
 import { showError, showSuccess } from "@/lib/toast";
+import { PhotoUploadConsentModal } from "@/shared/ui/PhotoUploadConsentModal";
+import { usePhotoUploadPermission } from "@/shared/hooks/usePhotoUploadPermission";
 
 interface UniversalFileUploadProps {
   onFileUploaded: (url: string, fileName: string, fileType: string) => void;
@@ -34,6 +36,12 @@ export default function UniversalFileUpload({
   const [error, setError] = useState<string | null>(null);
   const [uploadMode, setUploadMode] = useState<"file" | "url">("file");
   const [urlInput, setUrlInput] = useState<string>("");
+  const {
+    pendingFile: pendingImageFile,
+    requestPhotoUpload,
+    handleAllow: handleAllowUpload,
+    handleDeny: handleDenyUpload,
+  } = usePhotoUploadPermission();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const formatFileSize = (bytes: number): string => {
@@ -44,38 +52,7 @@ export default function UniversalFileUpload({
     return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
   };
 
-  const getFileIcon = (type: string): string => {
-    if (type.startsWith("image/")) return "️";
-    if (type.startsWith("video/")) return "";
-    if (type.startsWith("audio/")) return "";
-    if (type.includes("pdf")) return "";
-    if (type.includes("word") || type.includes("doc")) return "";
-    if (type.includes("excel") || type.includes("sheet")) return "";
-    if (type.includes("powerpoint") || type.includes("presentation"))
-      return "️";
-    if (type.includes("zip") || type.includes("rar")) return "️";
-    if (type.includes("text")) return "";
-    return "";
-  };
-
-  const handleFileSelect = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setError(null);
-
-    // Check file size
-    const fileSizeMB = file.size / (1024 * 1024);
-    if (fileSizeMB > maxSizeMB) {
-      setError(
-        `File size (${formatFileSize(file.size)}) exceeds ${maxSizeMB}MB limit`,
-      );
-      showError(`File too large! Maximum size is ${maxSizeMB}MB`);
-      return;
-    }
-
+  const processUpload = async (file: File) => {
     setUploading(true);
     setFileName(file.name);
     setFileType(file.type || "application/octet-stream");
@@ -101,6 +78,32 @@ export default function UniversalFileUpload({
       showError(error.message || "Upload failed");
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setError(null);
+
+    // Check file size
+    const fileSizeMB = file.size / (1024 * 1024);
+    if (fileSizeMB > maxSizeMB) {
+      setError(
+        `File size (${formatFileSize(file.size)}) exceeds ${maxSizeMB}MB limit`,
+      );
+      showError(`File too large! Maximum size is ${maxSizeMB}MB`);
+      return;
+    }
+
+    // If file is an image, verify / request permission
+    if (file.type.startsWith("image/")) {
+      requestPhotoUpload(file, processUpload);
+    } else {
+      await processUpload(file);
     }
   };
 
@@ -243,8 +246,14 @@ export default function UniversalFileUpload({
         <div className="bg-white/5 border border-[var(--border-default)] rounded-xl p-4">
           <div className="flex items-center gap-4">
             {/* File Icon */}
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-600 to-emerald-600 flex items-center justify-center text-2xl flex-shrink-0">
-              {getFileIcon(fileType)}
+            <div className="w-12 h-12 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center flex-shrink-0">
+              {fileType.startsWith("image/") ? (
+                <ImageIcon size={22} />
+              ) : fileType.includes("pdf") || fileType.includes("text") ? (
+                <FileText size={22} />
+              ) : (
+                <File size={22} />
+              )}
             </div>
 
             {/* File Info */}
@@ -264,7 +273,7 @@ export default function UniversalFileUpload({
             {/* Remove Button */}
             <button
               onClick={handleRemove}
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0 cursor-pointer"
               title="Remove file"
             >
               <X size={18} className="text-slate-400" />
@@ -284,6 +293,15 @@ export default function UniversalFileUpload({
           )}
         </div>
       )}
+
+      <PhotoUploadConsentModal
+        isOpen={!!pendingImageFile}
+        file={pendingImageFile}
+        onConfirm={handleAllowUpload}
+        onCancel={handleDenyUpload}
+        isUploading={uploading}
+        title="Upload Photo Permission"
+      />
     </div>
   );
 }

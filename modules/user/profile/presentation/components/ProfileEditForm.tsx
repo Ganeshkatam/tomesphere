@@ -6,6 +6,8 @@ import { uploadFileToStorage } from "@/modules/storage/presentation/actions/stor
 import { showError, showSuccess } from "@/lib/toast";
 import Image from "next/image";
 import { updateProfileAction } from "../actions/profile";
+import { PhotoUploadConsentModal } from "@/shared/ui/PhotoUploadConsentModal";
+import { usePhotoUploadPermission } from "@/shared/hooks/usePhotoUploadPermission";
 
 interface ProfileEditFormProps {
   profile: any;
@@ -21,17 +23,15 @@ export function ProfileEditForm({ profile, userEmail }: ProfileEditFormProps) {
   });
 
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const {
+    pendingFile: pendingAvatarFile,
+    requestPhotoUpload,
+    handleAllow: handleConfirmAvatarUpload,
+    handleDeny: handleCancelAvatarUpload,
+  } = usePhotoUploadPermission();
   const [isPending, startTransition] = useTransition();
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      showError("Image must be smaller than 5MB");
-      return;
-    }
-
+  const performAvatarUpload = async (file: File) => {
     setUploadingAvatar(true);
     try {
       const formDataUpload = new FormData();
@@ -49,6 +49,18 @@ export function ProfileEditForm({ profile, userEmail }: ProfileEditFormProps) {
     } finally {
       setUploadingAvatar(false);
     }
+  };
+
+  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      showError("Image must be smaller than 5MB");
+      return;
+    }
+
+    requestPhotoUpload(file, performAvatarUpload);
   };
 
   const handleSave = () => {
@@ -144,7 +156,7 @@ export function ProfileEditForm({ profile, userEmail }: ProfileEditFormProps) {
                   type="file"
                   accept="image/jpeg, image/png, image/webp"
                   className="hidden"
-                  onChange={handleAvatarUpload}
+                  onChange={handleAvatarSelect}
                   disabled={uploadingAvatar}
                 />
               </label>
@@ -182,6 +194,15 @@ export function ProfileEditForm({ profile, userEmail }: ProfileEditFormProps) {
           {isPending ? "Saving..." : "Save Changes"}
         </button>
       </div>
+
+      <PhotoUploadConsentModal
+        isOpen={!!pendingAvatarFile}
+        file={pendingAvatarFile}
+        onConfirm={handleConfirmAvatarUpload}
+        onCancel={handleCancelAvatarUpload}
+        isUploading={uploadingAvatar}
+        title="Profile Photo Permission"
+      />
     </div>
   );
 }

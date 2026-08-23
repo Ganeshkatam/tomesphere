@@ -53,12 +53,98 @@ export async function uploadFileToStorage(
       data: { publicUrl },
     } = supabase.storage.from(bucket).getPublicUrl(fileName);
 
+    // Record user permission grant in database
+    if (file.type && (file.type.startsWith("image/") || bucket === "avatars" || bucket === "user-images")) {
+      try {
+        await supabase.from("user_permissions").insert({
+          user_id: user.id,
+          permission_type: "photo_upload",
+          granted: true,
+          file_name: file.name,
+          file_size: file.size,
+          mime_type: file.type || "image/jpeg",
+          resource_url: publicUrl,
+        });
+      } catch (logErr) {
+        console.warn("Could not log user permission to database:", logErr);
+      }
+    }
+
     return { success: true, data: { url: publicUrl } };
   } catch (error: unknown) {
     return {
       success: false,
       error: {
         message: error instanceof Error ? error.message : "Upload failed",
+      },
+    };
+  }
+}
+
+export async function checkUserPermissionAction(
+  permissionType: string = "photo_upload"
+): Promise<ServerActionResult<{ granted: boolean }>> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const identityProvider = new SupabaseIdentityProvider(supabase);
+    const user = await identityProvider.currentUser();
+
+    if (!user) {
+      return { success: false, error: { message: "Not authenticated" } };
+    }
+
+    const { data, error } = await supabase
+      .from("user_permissions")
+      .select("id, granted")
+      .eq("user_id", user.id)
+      .eq("permission_type", permissionType)
+      .eq("granted", true)
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      return { success: false, error: { message: error.message } };
+    }
+
+    return { success: true, data: { granted: !!data } };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: {
+        message: error instanceof Error ? error.message : "Failed to check permission",
+      },
+    };
+  }
+}
+
+export async function grantUserPermissionAction(
+  permissionType: string = "photo_upload"
+): Promise<ServerActionResult<{ granted: boolean }>> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const identityProvider = new SupabaseIdentityProvider(supabase);
+    const user = await identityProvider.currentUser();
+
+    if (!user) {
+      return { success: false, error: { message: "Not authenticated" } };
+    }
+
+    const { error } = await supabase.from("user_permissions").insert({
+      user_id: user.id,
+      permission_type: permissionType,
+      granted: true,
+    });
+
+    if (error) {
+      return { success: false, error: { message: error.message } };
+    }
+
+    return { success: true, data: { granted: true } };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: {
+        message: error instanceof Error ? error.message : "Failed to grant permission",
       },
     };
   }

@@ -22,6 +22,8 @@ import {
   CloudOff,
   Pencil,
 } from "lucide-react";
+import { PhotoUploadConsentModal } from "@/shared/ui/PhotoUploadConsentModal";
+import { usePhotoUploadPermission } from "@/shared/hooks/usePhotoUploadPermission";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                             */
@@ -109,6 +111,12 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
   const [editingField, setEditingField] = useState<FieldKey | null>(null);
   const [avatarUrl, setAvatarUrl] = useState(initialValues.avatarUrl);
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const {
+    pendingFile: pendingAvatarFile,
+    requestPhotoUpload,
+    handleAllow: handleConfirmAvatarUpload,
+    handleDeny: handleCancelAvatarUpload,
+  } = usePhotoUploadPermission();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastSavedRef = useRef<string>("");
 
@@ -138,20 +146,27 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
       setSaveStatus("saving");
 
       startTransition(async () => {
-        const result = await updateProfileAction(data);
-        if (result.success) {
-          lastSavedRef.current = snapshot;
-          setSaveStatus("saved");
-          router.refresh();
-          setTimeout(() => setSaveStatus((s) => (s === "saved" ? "idle" : s)), 2500);
-        } else {
+        try {
+          const result = await updateProfileAction(data);
+          if (result.success) {
+            lastSavedRef.current = snapshot;
+            setSaveStatus("saved");
+            setTimeout(() => setSaveStatus("idle"), 2500);
+            router.refresh();
+          } else {
+            setSaveStatus("error");
+            showError(result.error?.message || "Failed to save profile");
+          }
+        } catch {
           setSaveStatus("error");
-          showError(result.error?.message || "Failed to update profile.");
+          showError("An unexpected error occurred while saving");
         }
       });
     },
-    [startTransition, router]
+    [router],
   );
+
+  /* --- Inline field editing --- */
 
   const startEditing = (field: FieldKey) => {
     setEditingField(field);
@@ -159,13 +174,18 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
   };
 
   const commitField = (field: FieldKey) => {
-    const updated = { ...formData, [field]: draftValue };
+    const trimmed = draftValue.trim();
+    const updated = { ...formData, [field]: trimmed };
     setFormData(updated);
     setEditingField(null);
+    setDraftValue("");
     doSave(updated);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent, field: FieldKey) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: FieldKey,
+  ) => {
     if (e.key === "Enter" && !FIELD_META[field].multiline) {
       e.preventDefault();
       commitField(field);
@@ -178,10 +198,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
 
   /* --- Avatar handlers --- */
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const performAvatarUpload = async (file: File) => {
     setAvatarUploading(true);
 
     const fd = new FormData();
@@ -197,6 +214,18 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
     }
     setAvatarUploading(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      showError("Image must be smaller than 5MB");
+      return;
+    }
+
+    requestPhotoUpload(file, performAvatarUpload);
   };
 
   const handleAvatarRemove = async () => {
@@ -284,7 +313,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
             ref={fileInputRef}
             type="file"
             accept="image/jpeg,image/png,image/webp"
-            onChange={handleAvatarUpload}
+            onChange={handleAvatarSelect}
             className="hidden"
           />
         </div>
@@ -414,6 +443,15 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
           })}
         </div>
       </div>
+
+      <PhotoUploadConsentModal
+        isOpen={!!pendingAvatarFile}
+        file={pendingAvatarFile}
+        onConfirm={handleConfirmAvatarUpload}
+        onCancel={handleCancelAvatarUpload}
+        isUploading={avatarUploading}
+        title="Profile Photo Permission"
+      />
     </div>
   );
 }

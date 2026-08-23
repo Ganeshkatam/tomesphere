@@ -9,6 +9,8 @@ import ShelfCard from "./ShelfCard";
 import { createShelfAction, updateShelfAction, deleteShelfAction } from "@/app/(workspace)/me/shelves/actions";
 import { uploadFileToStorage } from "@/modules/storage/presentation/actions/storage";
 import { showSuccess, showError } from "@/lib/toast";
+import { PhotoUploadConsentModal } from "@/shared/ui/PhotoUploadConsentModal";
+import { usePhotoUploadPermission } from "@/shared/hooks/usePhotoUploadPermission";
 
 const PRESET_COVERS = [
   { label: "Sanctuary", url: "/hero_sanctuary_bg.jpg" },
@@ -33,6 +35,12 @@ export default function ShelvesClient({ initialData }: ShelvesClientProps) {
   const [editingShelf, setEditingShelf] = useState<ShelfSummaryDto | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const {
+    pendingFile: pendingCoverFile,
+    requestPhotoUpload,
+    handleAllow: handleConfirmCoverUpload,
+    handleDeny: handleCancelCoverUpload,
+  } = usePhotoUploadPermission();
 
   // Form State
   const [name, setName] = useState("");
@@ -40,15 +48,7 @@ export default function ShelvesClient({ initialData }: ShelvesClientProps) {
   const [coverImage, setCoverImage] = useState<string>("");
   const [isPublic, setIsPublic] = useState(false);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      showError("Image must be smaller than 5MB");
-      return;
-    }
-
+  const performCoverUpload = async (file: File) => {
     setIsUploading(true);
     try {
       const formData = new FormData();
@@ -65,6 +65,18 @@ export default function ShelvesClient({ initialData }: ShelvesClientProps) {
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      showError("Image must be smaller than 5MB");
+      return;
+    }
+
+    requestPhotoUpload(file, performCoverUpload);
   };
 
   const filteredShelves = data.shelves.filter(s => 
@@ -353,7 +365,7 @@ export default function ShelvesClient({ initialData }: ShelvesClientProps) {
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={handleFileUpload}
+                      onChange={handleFileSelect}
                       disabled={isUploading}
                       className="hidden"
                     />
@@ -412,6 +424,15 @@ export default function ShelvesClient({ initialData }: ShelvesClientProps) {
           </div>
         </div>
       )}
+
+      <PhotoUploadConsentModal
+        isOpen={!!pendingCoverFile}
+        file={pendingCoverFile}
+        onConfirm={handleConfirmCoverUpload}
+        onCancel={handleCancelCoverUpload}
+        isUploading={isUploading}
+        title="Shelf Cover Photo Permission"
+      />
     </div>
   );
 }
