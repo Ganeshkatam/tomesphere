@@ -101,10 +101,16 @@ export class GetDashboardAnalyticsHandler {
       rawLibrary.filter((lb) => lb.status === "finished").length ||
       0;
 
-    const booksStarted =
-      stats?.books_started ||
-      new Set([...rawSessions.map((s) => s.book_id), ...rawLibrary.map((l) => l.book_id)]).size ||
-      0;
+    const actualDistinctStarted = new Set([
+      ...rawSessions.map((s) => s.book_id),
+      ...rawLibrary.map((l) => l.book_id),
+    ]).size;
+
+    const booksStarted = Math.max(
+      stats?.books_started || 0,
+      actualDistinctStarted,
+      booksCompleted
+    );
 
     const currentStreak = stats?.current_streak || 0;
     const longestStreak = stats?.longest_streak || 0;
@@ -115,7 +121,9 @@ export class GetDashboardAnalyticsHandler {
       hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
 
     const completionRate =
-      booksStarted > 0 ? Math.round((booksCompleted / booksStarted) * 100) : 0;
+      booksStarted > 0
+        ? Math.min(100, Math.round((booksCompleted / booksStarted) * 100))
+        : 0;
     const readingSpeedPPH =
       totalMinutes > 0 ? Math.round(totalPages / (totalMinutes / 60)) : 0;
 
