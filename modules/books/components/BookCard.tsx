@@ -217,7 +217,7 @@ export default function BookCard({
               className="w-7 h-7 rounded-xl bg-black/60 hover:bg-black/90 backdrop-blur-md text-white border border-white/25 flex items-center justify-center transition-colors cursor-pointer shadow-md active:scale-95"
               title="Add to Shelf"
             >
-              <Plus size={13} />
+              <FolderPlus size={13} />
             </button>
           </div>
 

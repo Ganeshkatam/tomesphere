@@ -29,6 +29,7 @@ import { AuthorBooksDto } from "@/modules/books/application/queries/GetBooksByAu
 import { generateSimpleDescription } from "@/modules/storage/services/pdf-description-generator";
 import { addBookToLibraryAction } from "@/modules/library/presentation/actions/library";
 import BookCard from "@/modules/books/components/BookCard";
+import AddToShelfButton from "@/modules/books/components/AddToShelfButton";
 import DefaultBookCover from "./DefaultBookCover";
 
 interface BookDetailHeroProps {
@@ -459,6 +460,13 @@ export function BookDetailHero({
                   </div>
                 )}
               </div>
+
+              {/* Add to Shelf Button */}
+              <AddToShelfButton
+                bookId={book.id}
+                bookTitle={book.title}
+                variant="hero"
+              />
 
               <button
                 onClick={handleShare}
