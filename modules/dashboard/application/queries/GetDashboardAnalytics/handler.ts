@@ -241,27 +241,47 @@ export class GetDashboardAnalyticsHandler {
     // Reading goals derived from user goals or default user targets
     const mappedGoals: ReadingGoalDto[] =
       goals && goals.length > 0
-        ? goals.map((g) => ({
-            id: g.id,
-            type: g.goal_type as any,
-            label:
-              g.goal_type === "daily_minutes"
-                ? "Daily Reading Target"
-                : "Annual Volume Goal",
-            target: g.target_value || 30,
-            current: g.current_value || 0,
-            unit: g.goal_type === "daily_minutes" ? "mins" : "books",
-            percentage: Math.min(
-              100,
-              Math.round(
-                ((g.current_value || 0) / Math.max(1, g.target_value || 1)) * 100
-              )
-            ),
-            status:
-              (g.current_value || 0) >= (g.target_value || 0)
-                ? "ahead"
-                : "on_track",
-          }))
+        ? goals.map((g) => {
+            let label = "Annual Reading Goal";
+            let unit = "books";
+            let current = g.current_value || 0;
+
+            if (g.goal_type === "books_per_year") {
+              label = `${g.year || today.getFullYear()} Reading Challenge`;
+              unit = "books";
+              current = Math.max(g.current_value || 0, booksCompleted);
+            } else if (g.goal_type === "books_per_month") {
+              label = "Monthly Books Target";
+              unit = "books";
+              current = Math.max(g.current_value || 0, booksCompleted);
+            } else if (g.goal_type === "pages_per_day") {
+              label = "Daily Pages Target";
+              unit = "pages";
+              current = weeklyActivity[weeklyActivity.length - 1]?.pages || 0;
+            } else if (g.goal_type === "pages_per_week") {
+              label = "Weekly Pages Quota";
+              unit = "pages";
+              current = weeklyActivity.reduce((sum, d) => sum + d.pages, 0);
+            } else if (g.goal_type === "daily_minutes") {
+              label = "Daily Reading Target";
+              unit = "mins";
+              current = weeklyActivity[weeklyActivity.length - 1]?.minutes || 0;
+            }
+
+            const target = g.target_value || 1;
+            const percentage = Math.min(100, Math.round((current / target) * 100));
+
+            return {
+              id: g.id,
+              type: g.goal_type as any,
+              label,
+              target: g.target_value,
+              current,
+              unit,
+              percentage,
+              status: current >= target ? "ahead" : "on_track",
+            };
+          })
         : [
             {
               id: "daily-habit",
