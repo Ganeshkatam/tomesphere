@@ -8,13 +8,14 @@ import { showError, showSuccess } from "@/lib/toast";
 import AuthTopBar from "@/modules/authentication/presentation/components/AuthTopBar";
 import { Mail, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
 import { sendMagicLinkServer } from "@/modules/authentication/presentation/actions/auth";
+import { createBrowserClient } from "@supabase/ssr";
 
 export function VerifyEmailContent() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [isMagicLink, setIsMagicLink] = useState(false);
   const [resending, setResending] = useState(false);
-  const [resendTimer, setResendTimer] = useState(60);
+  const [resendTimer, setResendTimer] = useState(45);
 
   useEffect(() => {
     if (resendTimer > 0) {
@@ -33,9 +34,12 @@ export function VerifyEmailContent() {
       }
 
       // 2. Perform authoritative server check
-      const res = await fetch("/api/v1/auth/session");
-      const resData = await res.json();
-      const user = resData?.session?.user;
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
 
       if (!user) {
         if (pendingEmail) return; // Keep showing the screen for magic link
@@ -77,7 +81,7 @@ export function VerifyEmailContent() {
       }
 
       showSuccess("Verification email resent! Check your inbox.");
-      setResendTimer(90);
+      setResendTimer(45);
     } catch (error: any) {
       showError(error.message || "Failed to resend email");
     } finally {
@@ -86,7 +90,11 @@ export function VerifyEmailContent() {
   };
 
   const handleSignOut = async () => {
-    await fetch("/api/v1/auth/logout", { method: "POST" });
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    await supabase.auth.signOut();
     router.push("/login");
   };
 

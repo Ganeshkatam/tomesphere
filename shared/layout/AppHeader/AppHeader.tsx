@@ -160,11 +160,16 @@ export function AppHeader({ className = "", variant = "application", user }: App
           {/* Right Side: Search Bar + Utilities + Profile Avatar */}
           <div className="flex items-center gap-3 sm:gap-4">
 
-            {/* Search Button (Opens Overlay) */}
+            {/* Desktop Search Bar */}
+            <div className="hidden md:block w-64 lg:w-80 xl:w-96 mr-2">
+              <SearchBar size="sm" placeholder="Search digital archives, books, authors..." />
+            </div>
+
+            {/* Mobile Search Button (Opens Overlay) */}
             <button
               onClick={() => setIsSearchOpen(true)}
               aria-label="Open search"
-              className={`p-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center ${isDark
+              className={`md:hidden p-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center ${isDark
                 ? "text-slate-300 hover:text-white hover:bg-slate-800"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                 }`}

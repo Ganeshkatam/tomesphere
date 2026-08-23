@@ -225,7 +225,7 @@ export async function signUpWithPassword(
   } catch (error: any) {
     return {
       success: false,
-      error: { message: error.message || "An unexpected error occurred" },
+      error: { message: error.message || "An unexpected error occurred. Please try Again!" },
     };
   }
 }
@@ -272,7 +272,7 @@ export async function signInWithGoogle(
   } catch (error: any) {
     return {
       success: false,
-      error: { message: error.message || "An unexpected error occurred" },
+      error: { message: error.message || "An unexpected error occurred. Please try Again!!" },
     };
   }
 }
@@ -298,7 +298,7 @@ export async function sendMagicLinkServer(
       return {
         success: false,
         error: {
-          message: result.error.message || "Failed to send verification code. Please try again.",
+          message: result.error.message || "Failed to send verification code. Please try again!!",
         },
       };
     }
@@ -307,10 +307,39 @@ export async function sendMagicLinkServer(
   } catch (error: any) {
     return {
       success: false,
-      error: { message: error.message || "An unexpected error occurred" },
+      error: { message: error.message || "An unexpected error occurred.Please try again." },
     };
   }
 }
+
+export async function verifyTokenHashServer(
+  tokenHash: string,
+  type: any, // "magiclink" | "signup" | "invite" | "recovery" | "email_change"
+): Promise<ServerActionResult<void>> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const result = await supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type,
+    });
+
+    if (result.error) {
+      console.error("[verifyTokenHashServer] Verify Error:", result.error);
+      return {
+        success: false,
+        error: { message: result.error.message || "Invalid or expired link.Please consider requesting a new one." },
+      };
+    }
+
+    return { success: true, data: undefined };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: { message: error.message || "An unexpected error occurred. Please try again." },
+    };
+  }
+}
+
 
 export async function verifyMagicLinkServer(
   emailOrPhone: string,
