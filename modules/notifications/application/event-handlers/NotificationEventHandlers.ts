@@ -76,5 +76,77 @@ export class NotificationEventHandlers {
         console.error("[NotificationEventHandlers] Failed to create achievement notification:", error);
       }
     });
+
+    // 4. Book Completed
+    this.eventBus.subscribe("reader.book.completed", async (payload) => {
+      try {
+        await WorkerDatabaseClient.query(
+          `INSERT INTO public.notifications (
+            user_id, event_name, aggregate_id, aggregate_type, type, title, body, metadata
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          ON CONFLICT DO NOTHING;`,
+          [
+            payload.userId,
+            "reader.book.completed",
+            payload.bookId,
+            "book",
+            "SUCCESS",
+            "Book Completed",
+            "You finished a book. Great work!",
+            JSON.stringify({ bookId: payload.bookId }),
+          ]
+        );
+      } catch (error) {
+        console.error("[NotificationEventHandlers] Failed to create book completed notification:", error);
+      }
+    });
+
+    // 5. Account Export Requested
+    this.eventBus.subscribe("account.export.requested", async (payload) => {
+      try {
+        await WorkerDatabaseClient.query(
+          `INSERT INTO public.notifications (
+            user_id, event_name, aggregate_id, aggregate_type, type, title, body, metadata
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          ON CONFLICT DO NOTHING;`,
+          [
+            payload.userId,
+            "account.export.requested",
+            payload.exportRequestId,
+            "export_request",
+            "INFO",
+            "Export Requested",
+            "Your data export is being prepared.",
+            JSON.stringify({ exportRequestId: payload.exportRequestId }),
+          ]
+        );
+      } catch (error) {
+        console.error("[NotificationEventHandlers] Failed to create export requested notification:", error);
+      }
+    });
+
+    // 6. Book Added to Library
+    this.eventBus.subscribe("library.book.added", async (payload) => {
+      try {
+        await WorkerDatabaseClient.query(
+          `INSERT INTO public.notifications (
+            user_id, event_name, aggregate_id, aggregate_type, type, title, body, metadata
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          ON CONFLICT DO NOTHING;`,
+          [
+            payload.userId,
+            "library.book.added",
+            payload.bookId,
+            "library_book",
+            "INFO",
+            "Added to Library",
+            "A new book has been added to your library.",
+            JSON.stringify({ bookId: payload.bookId, status: payload.status }),
+          ]
+        );
+      } catch (error) {
+        console.error("[NotificationEventHandlers] Failed to create library book notification:", error);
+      }
+    });
   }
 }

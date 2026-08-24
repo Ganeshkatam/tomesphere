@@ -8,6 +8,7 @@ import { addBookToLibrary } from "@/modules/library/application/commands/AddBook
 import { changeReadingState } from "@/modules/library/application/commands/ChangeReadingState/handler";
 import { SupabaseLibraryRepository } from "@/modules/library/infrastructure/SupabaseLibraryRepository";
 import { LibraryEntryDto } from "@/modules/library/application/dto/response/LibraryEntryDto";
+import { emitOutboxEvent } from "@/shared/core/infrastructure/outbox/outbox";
 
 export async function addBookToLibraryAction(
   bookId: string,
@@ -41,11 +42,23 @@ export async function addBookToLibraryAction(
       return { success: true, data: output };
     }
 
-    const { output } = await addBookToLibrary(libraryRepo, {
+    const { output, events } = await addBookToLibrary(libraryRepo, {
       userId: user.id,
       bookId,
       initialState: initialState || "want_to_read",
     });
+
+    // Bridge domain events to the platform outbox
+    for (const event of events) {
+      if (event.eventName === "BookAddedToLibrary") {
+        const e = event as any;
+        await emitOutboxEvent(supabase, "library.book.added", {
+          userId: e.userId,
+          bookId: e.bookId,
+          status: e.state,
+        }, "library_book", e.aggregateId);
+      }
+    }
 
     revalidatePath("/discover");
     revalidatePath(`/book/${bookId}`);

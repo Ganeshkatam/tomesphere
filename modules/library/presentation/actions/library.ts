@@ -7,6 +7,7 @@ import { z } from "zod";
 
 // Use Cases
 import { addBookToLibrary } from "../../application/commands/AddBookToLibrary/handler";
+import { emitOutboxEvent } from "@/shared/core/infrastructure/outbox/outbox";
 import { changeReadingState } from "../../application/commands/ChangeReadingState/handler";
 import { updateReadingProgress } from "../../application/commands/UpdateReadingProgress/handler";
 import { getCurrentlyReading } from "../../application/queries/GetCurrentlyReading/handler";
@@ -92,10 +93,22 @@ export async function addBookToLibraryAction(
       return { success: true, data: output };
     }
 
-    const { output } = await addBookToLibrary(libraryRepo, {
+    const { output, events } = await addBookToLibrary(libraryRepo, {
       userId: user.id,
       ...validated,
     });
+
+    // Bridge domain events to the platform outbox
+    for (const event of events) {
+      if (event.eventName === "BookAddedToLibrary") {
+        const e = event as any;
+        await emitOutboxEvent(supabase, "library.book.added", {
+          userId: e.userId,
+          bookId: e.bookId,
+          status: e.state,
+        }, "library_book", e.aggregateId);
+      }
+    }
 
     revalidateLibraryPaths(validated.bookId);
     return { success: true, data: output };
