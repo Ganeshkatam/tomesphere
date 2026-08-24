@@ -76,7 +76,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.style.display = "block";
     container.style.width = "100%";
     container.style.height = "100%";
-    container.style.padding = "0px 0px 32px 0px";
+    container.style.padding = "24px 0px 48px 0px";
     container.style.boxSizing = "border-box";
     container.style.scrollBehavior = "auto";
     container.style.overscrollBehavior = "contain";
@@ -493,10 +493,16 @@ export class PdfJsRenderer implements ReaderRenderer {
       return;
     }
     const unscaledViewport = page.getViewport({ scale: 1 });
-    const containerWidth = Math.max(300, this.container?.clientWidth || window.innerWidth);
+    const horizontalMargin = 20;
+    const verticalMargin = 32;
+    const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth) - horizontalMargin);
+    const containerHeight = Math.max(300, (this.container?.clientHeight || window.innerHeight) - verticalMargin);
 
-    // Scale to fill exact width of the container edge-to-edge
-    const fitScale = containerWidth / Math.max(1, unscaledViewport.width);
+    // Fit cleanly inside the viewport boundaries so the book never overflows the screen at 100%
+    const fitScale = Math.min(
+      containerWidth / Math.max(1, unscaledViewport.width),
+      containerHeight / Math.max(1, unscaledViewport.height),
+    );
 
     const zoomMultiplier = (zoom && zoom > 5) ? zoom / 100 : (zoom || 1.0);
     const effectiveScale = Math.max(0.3, fitScale * Math.max(1.0, zoomMultiplier));
@@ -514,10 +520,11 @@ export class PdfJsRenderer implements ReaderRenderer {
     canvas.style.margin = "0 auto";
     canvas.style.width = `${viewport.width}px`;
     canvas.style.height = `${viewport.height}px`;
-    canvas.style.maxWidth = "none";
+    canvas.style.maxWidth = "100%";
     canvas.style.boxSizing = "border-box";
     canvas.style.backgroundColor = "white";
-    canvas.style.borderRadius = "0px";
+    canvas.style.borderRadius = "4px";
+    canvas.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.08)";
     canvas.style.objectFit = "contain";
     canvas.style.userSelect = "text";
     canvas.setAttribute("aria-label", `Rendered PDF page ${pageNumber}`);
