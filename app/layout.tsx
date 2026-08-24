@@ -27,6 +27,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://tomesphere.in"),
   title: "TomeSphere - Discover Your Next Favorite Book",
   description:
     "A comprehensive book discovery platform with curated recommendations, curated collections, and personalized reading lists.",

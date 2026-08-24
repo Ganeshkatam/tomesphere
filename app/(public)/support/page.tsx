@@ -96,7 +96,7 @@ export default async function SupportPage() {
 
               <div className="space-y-4">
                 <a
-                  href="mailto:support@tomesphere.app"
+                  href="mailto:support@tomesphere.in"
                   className="flex items-center gap-3 p-4 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-default)] hover:border-indigo-500/40 text-[var(--text-primary)] font-medium transition-colors"
                 >
                   <Mail className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />

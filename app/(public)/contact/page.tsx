@@ -14,13 +14,13 @@ export default function ContactPage() {
             </p>
             <ul className="mt-6 space-y-3 pl-4">
               <li>
-                <strong className="text-[var(--text-primary)]">General Support:</strong> support@tomesphere.app
+                <strong className="text-[var(--text-primary)]">General Support:</strong> support@tomesphere.in
               </li>
               <li>
-                <strong className="text-[var(--text-primary)]">Partnerships:</strong> partners@tomesphere.app
+                <strong className="text-[var(--text-primary)]">Partnerships:</strong> partners@tomesphere.in
               </li>
               <li>
-                <strong className="text-[var(--text-primary)]">Feedback:</strong> feedback@tomesphere.app
+                <strong className="text-[var(--text-primary)]">Feedback:</strong> feedback@tomesphere.in
               </li>
             </ul>
           </div>

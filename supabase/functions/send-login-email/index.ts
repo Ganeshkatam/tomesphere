@@ -116,7 +116,7 @@ serve(async (req: Request) => {
 
     // 6. Send Email via Brevo API
     const brevoApiKey = Deno.env.get("BREVO_API_KEY");
-    const senderEmail = Deno.env.get("SENDER_EMAIL") || "no-reply@tomesphere.com";
+    const senderEmail = Deno.env.get("SENDER_EMAIL") || "no-reply@tomesphere.in";
     
     if (!brevoApiKey) {
       console.error("Configuration Error: Missing BREVO_API_KEY");
@@ -166,7 +166,7 @@ serve(async (req: Request) => {
           
           <p style="color: #6b7280; font-size: 14px; line-height: 22px; text-align: center; margin-bottom: 0;">
             If this was you, you can safely ignore this email.<br/><br/>
-            If you don't recognize this activity, please <a href="https://tomesphere.com/security" style="color: #4f46e5; text-decoration: none; font-weight: 600;">secure your account</a> immediately.
+            If you don't recognize this activity, please <a href="https://tomesphere.in/security" style="color: #4f46e5; text-decoration: none; font-weight: 600;">secure your account</a> immediately.
           </p>
           
         </div>

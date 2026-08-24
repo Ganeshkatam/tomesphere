@@ -471,7 +471,7 @@ export class GetDashboardAnalyticsHandler {
     return {
       user: {
         name: profile?.display_name || "TomeSphere Scholar",
-        email: "reader@tomesphere.org",
+        email: "reader@tomesphere.in",
         avatarUrl: profile?.avatar_url || null,
       },
       metrics: {

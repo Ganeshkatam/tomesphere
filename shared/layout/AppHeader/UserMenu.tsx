@@ -120,7 +120,7 @@ export function UserMenu({ user }: UserMenuProps) {
                   {user.name || "TomeSphere Reader"}
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                  {user.email || "reader@tomesphere.org"}
+                  {user.email || "reader@tomesphere.in"}
                 </p>
               </div>
             </div>
