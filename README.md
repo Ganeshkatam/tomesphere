@@ -59,10 +59,9 @@ TomeSphere provides readers, students, and researchers with a focused, distracti
 3. Configure environment variables:
    Create a `.env.local` file in the root directory:
    ```env
-   NEXT_PUBLIC_APP_URL=https://tomesphere.in
+   NEXT_PUBLIC_APP_URL=https://your-domain
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
    ```
 
 4. Run database migrations:
