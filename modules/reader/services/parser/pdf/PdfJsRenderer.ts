@@ -73,7 +73,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     // Reset container DOM tree and configure root scrolling properties
     container.replaceChildren();
     container.style.overflowY = "auto";
-    container.style.overflowX = "auto";
+    container.style.overflowX = "hidden";
     container.style.display = "block";
     container.style.width = "100%";
     container.style.height = "100%";
@@ -503,32 +503,41 @@ export class PdfJsRenderer implements ReaderRenderer {
     }
     // 1. Calculate unscaled PDF page dimensions
     const unscaledViewport = page.getViewport({ scale: 1 });
-    
-    // 2. Base Viewport Dimensions (with comfortable margins)
-    const horizontalMargin = 0;
-    const verticalMargin = 40;
-    const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth) - horizontalMargin);
-    const containerHeight = Math.max(300, (this.container?.clientHeight || window.innerHeight) - verticalMargin);
+    const containerWidth = Math.max(300, this.container?.clientWidth || window.innerWidth);
+    const containerHeight = Math.max(300, (this.container?.clientHeight || window.innerHeight) - 40);
 
-    // 3. Fit Page Scale (fits entire page comfortably inside screen at 100% zoom)
+    // 2. Base Scale (fit vertically inside screen at 100%) & Max Scale (fit 100% of container width at 300%)
     const fitPageScale = Math.min(
       containerWidth / Math.max(1, unscaledViewport.width),
       containerHeight / Math.max(1, unscaledViewport.height),
     );
+    const fitWidthScale = containerWidth / Math.max(1, unscaledViewport.width);
 
-    // 4. Smooth Linear Zoom: Multiplies base scale linearly by zoom percentage (80% to 300%)
+    // 3. Zoom-dependent scaling strictly clamped so it NEVER exceeds the viewport width (fitWidthScale)
     const z = (zoom && zoom > 5) ? zoom / 100 : (zoom || 1.0);
-    const effectiveScale = fitPageScale * Math.max(0.8, Math.min(3.0, z));
+    let effectiveScale: number;
 
-    const viewport = page.getViewport({ scale: Math.max(0.2, effectiveScale) });
+    if (z <= 1.0) {
+      // 80% to 100%: Scales from overview down to 0.8x up to 1.0x fitPageScale
+      effectiveScale = fitPageScale * Math.max(0.8, z);
+    } else {
+      // 100% to 300%: Scales smoothly from fitPageScale up to EXACTLY fitWidthScale
+      const t = Math.min(1.0, (z - 1.0) / 2.0); // 0 at 100%, 1.0 at 300%
+      effectiveScale = fitPageScale + (fitWidthScale - fitPageScale) * t;
+    }
 
-    // 5. Device Pixel Ratio: Sharp high-DPI rendering capped at MAX_DEVICE_PIXEL_RATIO (2.0)
+    // Hard ceiling: Scale can never exceed fitWidthScale under any circumstances
+    effectiveScale = Math.min(fitWidthScale, Math.max(0.2, effectiveScale));
+
+    const viewport = page.getViewport({ scale: effectiveScale });
+
+    // 4. Device Pixel Ratio: Sharp high-DPI rendering capped at MAX_DEVICE_PIXEL_RATIO (2.0)
     const outputScale = Math.min(
       typeof window === "undefined" ? 1 : window.devicePixelRatio || 1,
       MAX_DEVICE_PIXEL_RATIO,
     );
 
-    // 6. Canvas Element Setup: Backing buffer scaled to device pixels without clipping max-width
+    // 5. Canvas Element Setup: Backing buffer scaled to device pixels with strict maxWidth guard
     const canvas = document.createElement("canvas");
     canvas.className = "tomesphere-pdf-canvas";
     canvas.width = Math.max(1, Math.floor(viewport.width * outputScale));
@@ -537,7 +546,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     canvas.style.margin = "0 auto";
     canvas.style.width = `${viewport.width}px`;
     canvas.style.height = `${viewport.height}px`;
-    canvas.style.maxWidth = "none";
+    canvas.style.maxWidth = "100%";
     canvas.style.boxSizing = "border-box";
     canvas.style.backgroundColor = "white";
     canvas.style.borderRadius = "4px";
@@ -545,12 +554,11 @@ export class PdfJsRenderer implements ReaderRenderer {
     canvas.style.userSelect = "text";
     canvas.setAttribute("aria-label", `Rendered PDF page ${pageNumber}`);
 
-    // 7. Wrapper Layout: Display as centered flex container with dynamic minWidth
+    // 6. Wrapper Layout: Display as centered flex container
     state.wrapper.style.display = "flex";
     state.wrapper.style.justifyContent = "center";
     state.wrapper.style.width = "100%";
-    state.wrapper.style.minWidth = `${viewport.width}px`;
-    state.wrapper.style.maxWidth = "none";
+    state.wrapper.style.maxWidth = "100%";
     state.wrapper.style.overflow = "visible";
 
     // 7. Acquire 2D Canvas Context and apply DPI transformation matrix
@@ -589,6 +597,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     pageContainer.style.position = "relative";
     pageContainer.style.width = `${viewport.width}px`;
     pageContainer.style.height = `${viewport.height}px`;
+    pageContainer.style.maxWidth = "100%";
     pageContainer.style.margin = "0 auto";
     pageContainer.style.borderRadius = "4px";
     pageContainer.style.boxShadow = "0 15px 35px -10px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.08)";
