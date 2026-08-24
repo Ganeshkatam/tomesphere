@@ -76,7 +76,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.style.display = "block";
     container.style.width = "100%";
     container.style.height = "100%";
-    container.style.padding = "24px 16px 48px 16px";
+    container.style.padding = "16px 6px 16px 6px";
     container.style.boxSizing = "border-box";
     container.style.scrollBehavior = "auto";
     container.style.overscrollBehavior = "contain";
@@ -493,8 +493,8 @@ export class PdfJsRenderer implements ReaderRenderer {
       return;
     }
     const unscaledViewport = page.getViewport({ scale: 1 });
-    const horizontalMargin = 32;
-    const verticalMargin = 48;
+    const horizontalMargin = 12;
+    const verticalMargin = 6;
     const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth) - horizontalMargin);
     const containerHeight = Math.max(300, (this.container?.clientHeight || window.innerHeight) - verticalMargin);
 
