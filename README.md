@@ -35,63 +35,6 @@ TomeSphere provides readers, students, and researchers with a focused, distracti
 
 ---
 
-## Architectural Principles
-
-The repository adheres to strict architectural decision records:
-
-- **ADR-001 (Application Boundary Rule)**: The frontend is a presentation layer only. Business rules, domain calculations, authorization decisions, and persistence logic execute exclusively in backend Application and Domain services exposed via Server Actions and DTOs.
-- **ADR-002 (Database Authority)**: The live Supabase PostgreSQL database is the authoritative persistence model. Generated database types are synchronized automatically.
-- **ADR-003 (Application Service Authority)**: All business workflows pass through dedicated Command/Query Handlers.
-- **ADR-004 (Architectural Freeze)**: Bounded contexts and layers are structured according to Domain-Driven Design (DDD).
-- **ADR-005 (Route Topology Freeze)**: Public discovery routes, authentication routes, and workspace shells follow a frozen topological hierarchy.
-
----
-
-## Database Architecture Invariants
-
-- **DB-INV-01 (Discovery Projection)**: Search and discovery interfaces consume lightweight projection DTOs and never retrieve raw book file payloads.
-- **DB-INV-02 (Resource Isolation)**: Digital binaries (PDFs/EPUBs) are retrieved only through explicit resource workflows upon opening the reader.
-- **DB-INV-03 (Worker Authorization)**: Background tasks and outbox relays execute via narrowly scoped worker privileges.
-- **DB-INV-04 (Internal Schema Isolation)**: Internal database schemas are never exposed through the public Data API.
-- **DB-INV-07 (DTO Boundary)**: Database rows are mapped through domain mappers before crossing to presentation components.
-- **DB-INV-08 (Canonical Search)**: `execute_book_search_v1` is the canonical discovery search RPC.
-
----
-
-## Project Structure
-
-```
-tomesphere-app/
-├── app/                              # Next.js App Router (Layouts & Routes)
-│   ├── (app)/                        # Public application routes (/discover, /search, /book)
-│   ├── (public)/                     # Informational & Auth routes (/about, /support, /login)
-│   ├── (reader)/                     # Standalone reader shell (/read/[id])
-│   ├── (workspace)/                  # Authenticated workspace (/me, /me/library, /me/shelves, /me/notes, /me/annotations)
-│   └── api/                          # API route handlers & background cron endpoints
-├── modules/                          # Bounded Contexts (Clean Architecture)
-│   ├── me/                           # Dashboard & Account Subdomains
-│   │   └── account/                  # User account preferences, security & profile screens
-│   ├── authentication/               # Auth workflows (Magic links, password, MFA)
-│   ├── books/                        # Book catalog repository, entities & mappers
-│   ├── discovery/                    # Search documents, autocomplete & facet services
-│   ├── library/                      # Personal shelves, reading progress & bookmarks
-│   ├── reader/                       # Reader presentation components & toolbar
-│   │   └── annotations/              # Annotations, highlights, and standalone notes context
-│   └── support/                      # Knowledge base & FAQ read models
-├── shared/                           # Shared infrastructure & presentation utilities
-│   ├── core/                         # Supabase clients, database types, and domain primitives
-│   ├── layout/                       # AppHeader, Footer, and responsive wrappers
-│   ├── providers/                    # Theme, auth, and state providers
-│   └── ui/                           # Base UI atoms, animations, and modals
-├── styles/                           # Global stylesheets & semantic theme tokens
-│   ├── globals.css                   # Tailwind entry & utility definitions
-│   └── themes/                       # light.css & dark.css variables
-└── supabase/                         # Database schema & versioned migrations
-    └── migrations/                   # Sequential version-controlled migrations
-```
-
----
-
 ## Getting Started
 
 ### Prerequisites
@@ -142,23 +85,8 @@ tomesphere-app/
 | `npm run build` | Compiles and optimizes the production build |
 | `npm run start` | Starts the Next.js production server |
 | `npm run lint` | Runs ESLint across all routes, modules, and components |
-| `npm run lint:arch` | Validates Clean Architecture domain and layer isolation via Dependency Cruiser |
 | `npm run test` | Executes domain and application test suites using Jest |
-| `npm run update:tree` | Automatically regenerates the repository project tree in `project_structure.md` |
 | `npx tsc --noEmit` | Validates TypeScript strict mode type checking without emitting files |
-
----
-
-## Continuous Integration
-
-The repository includes an automated GitHub Actions CI workflow (`.github/workflows/ci.yml`) targeting **Node.js 24 LTS**. Every push and pull request to `main` undergoes full quality gate verification:
-
-1. **Dependency Installation**: `npm ci`
-2. **TypeScript Strict Type Check**: `npx tsc --noEmit`
-3. **ESLint Static Code Analysis**: `npm run lint`
-4. **Architecture Enforcement**: `npm run lint:arch` (Dependency Cruiser boundary check)
-5. **Unit Test Verification**: `npm run test` (Jest test suite)
-6. **Next.js Production Build**: `npm run build` (Turbopack compilation & static analysis)
 
 ---
 
