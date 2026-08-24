@@ -1,9 +1,39 @@
 import { executeReaderFacade } from "@/modules/reader/application/facades";
+import { getBookDetail } from "@/modules/books/application/queries/GetBookDetail/handler";
 import { ClientReaderShell } from "@/modules/reader/components/ClientReaderShell";
 import Link from "next/link";
 import { BookOpen, ArrowLeft, LogIn } from "lucide-react";
+import type { Metadata } from "next";
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+interface ReaderPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ReaderPageProps): Promise<Metadata> {
+  const { id } = await params;
+  try {
+    const book = await getBookDetail(id);
+    return {
+      title: book ? `Reading: ${book.title}` : "Reader",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  } catch {
+    return {
+      title: "Reader",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+}
+
+export default async function Page({ params }: ReaderPageProps) {
   const { id } = await params;
   let data: Awaited<ReturnType<typeof executeReaderFacade>> | null = null;
   let errorType: "auth" | "not_found" | null = null;

@@ -4,6 +4,11 @@ import { PreferencesForm } from "@/modules/me/account/preferences/presentation/c
 import { UserId } from "@/shared/kernel/UserId";
 import { redirect } from "next/navigation";
 import { PreferencesDto } from "@/modules/me/account/preferences/application/dto/PreferencesPageDto";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Reading Preferences",
+};
 
 export const dynamic = "force-dynamic";
 

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Security & Trust - TomeSphere",
-  description: "Learn how TomeSphere protects your data, ensures privacy, and maintains enterprise-grade security.",
+  title: "Security, Privacy & Data Protection",
+  description: "Learn how TomeSphere protects your data, ensures privacy, and maintains robust security infrastructure.",
 };
 
 const SECURITY_FEATURES = [

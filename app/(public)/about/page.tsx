@@ -8,10 +8,12 @@ import {
 import { Sparkles, BookOpen, Cpu, Compass } from "lucide-react";
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 
-export const metadata = {
-  title: "About | TomeSphere",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Our Digital Archive",
   description:
-    "Learn more about TomeSphere, the next-generation platform for readers.",
+    "Learn more about TomeSphere, our mission to preserve public domain literature, and our reading platform.",
 };
 
 export const revalidate = 3600; // Cache for 1 hour

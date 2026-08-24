@@ -6,6 +6,11 @@ import {
 } from "@/modules/me/account/notifications/presentation/components/NotificationsForm";
 import { redirect } from "next/navigation";
 import { UserId } from "@/shared/kernel/UserId";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Notification Preferences",
+};
 
 export const dynamic = "force-dynamic";
 

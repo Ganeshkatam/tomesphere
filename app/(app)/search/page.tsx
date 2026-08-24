@@ -11,11 +11,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { SearchBar } from "@/modules/discovery/search/presentation/components/SearchBar";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Search Digital Archive - TomeSphere",
+export const metadata: Metadata = {
+  title: "Search Digital Archive",
   description:
     "Explore digitized volumes, textbooks, and public domain editions across the TomeSphere archive.",
 };

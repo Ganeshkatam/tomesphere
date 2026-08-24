@@ -2,6 +2,11 @@ import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { executeAnnotationsPageFacade } from "@/modules/reader/annotations/application/facades";
 import { AnnotationsClient } from "@/modules/reader/annotations/components/AnnotationsClient";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Annotations Ledger",
+};
 
 export const dynamic = "force-dynamic";
 

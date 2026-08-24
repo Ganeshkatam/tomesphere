@@ -28,13 +28,46 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://tomesphere.in"),
-  title: "TomeSphere - Discover Your Next Favorite Book",
+  title: {
+    default: "TomeSphere - Digital Book Discovery & Reader",
+    template: "%s | TomeSphere",
+  },
   description:
-    "A comprehensive book discovery platform with curated recommendations, curated collections, and personalized reading lists.",
+    "Discover, explore, and read digital books with TomeSphere. A comprehensive platform with curated recommendations, archival collections, and personalized reading streaks.",
+  keywords: [
+    "books",
+    "digital books",
+    "book discovery",
+    "online reading",
+    "TomeSphere",
+    "annotations",
+    "ebooks",
+    "curated collections",
+  ],
+  authors: [{ name: "TomeSphere Editorial Team" }],
+  creator: "TomeSphere",
+  publisher: "TomeSphere",
   icons: {
-    icon: [
-      { url: "/icon.png", type: "image/png" },
-    ],
+    icon: [{ url: "/icon.png", type: "image/png" }],
+  },
+  openGraph: {
+    type: "website",
+    siteName: "TomeSphere",
+    locale: "en_US",
+    title: "TomeSphere - Digital Book Discovery & Reader",
+    description:
+      "Discover, explore, and read digital books with TomeSphere. Curated collections, personalized lists, and rich annotations.",
+    url: "https://tomesphere.in",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TomeSphere - Digital Book Discovery & Reader",
+    description:
+      "Discover, explore, and read digital books with TomeSphere.",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

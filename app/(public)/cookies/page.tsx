@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Cookie Policy",
+  description: "Understand how TomeSphere uses essential cookies for secure authentication and theme preferences.",
+};
+
 export default function CookiesPage() {
   return (
     <div className="min-h-screen bg-[var(--surface-canvas)] overflow-x-hidden">

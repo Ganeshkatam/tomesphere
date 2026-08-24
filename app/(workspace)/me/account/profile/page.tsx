@@ -3,6 +3,11 @@ import { SupabaseProfileRepository } from "@/modules/me/account/profile/infrastr
 import { ProfileForm } from "@/modules/me/account/profile/presentation/components/ProfileForm";
 import { redirect } from "next/navigation";
 import { UserId } from "@/shared/kernel/UserId";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Profile Settings",
+};
 
 export const dynamic = "force-dynamic";
 

@@ -4,11 +4,18 @@ import { SupabaseCollectionRepository } from "@/modules/library/infrastructure/r
 import { SupabaseLibraryReadModel } from "@/modules/library/infrastructure/read-models/SupabaseLibraryReadModel";
 import { getCollection } from "@/modules/library/application/queries/GetCollection/handler";
 import ShelfDetailClient from "@/modules/library/components/ShelfDetailClient";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
 interface ShelfDetailPageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: ShelfDetailPageProps): Promise<Metadata> {
+  return {
+    title: "Shelf Details",
+  };
 }
 
 export default async function ShelfDetailPage({ params }: ShelfDetailPageProps) {

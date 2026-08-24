@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "Read the terms and conditions governing the use of the TomeSphere digital reading platform.",
+};
+
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-[var(--surface-canvas)] overflow-x-hidden">

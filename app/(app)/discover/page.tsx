@@ -27,6 +27,19 @@ import { SubjectGrid } from "@/modules/discovery/presentation/components/Subject
 import { DiscoveryHero } from "@/modules/discovery/presentation/components/DiscoveryHero";
 import { DiscoverThemeHub } from "@/modules/discovery/presentation/components/DiscoverThemeHub";
 import { DiscoverPlatformFeatures } from "@/modules/discovery/presentation/components/DiscoverPlatformFeatures";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Discover Books & Curated Archives",
+  description:
+    "Explore hand-picked masterpieces, trending volumes, knowledge disciplines, and curated public domain collections.",
+  openGraph: {
+    title: "Discover Books & Curated Archives",
+    description:
+      "Explore hand-picked masterpieces, trending volumes, knowledge disciplines, and curated public domain collections.",
+    url: "/discover",
+  },
+};
 
 export const dynamic = "force-dynamic";
 

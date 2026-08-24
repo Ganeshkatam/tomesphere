@@ -2,6 +2,11 @@ import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { executeNotesPageFacade } from "@/modules/reader/annotations/application/facades";
 import { NotesClient } from "@/modules/reader/annotations/components/NotesClient";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Notes & Highlights",
+};
 
 export const dynamic = "force-dynamic";
 

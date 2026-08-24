@@ -1,5 +1,10 @@
 import { MeClient } from "@/modules/me/presentation/components/MeClient";
 import { executeMePageFacade } from "@/modules/me/application/facades";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Workspace",
+};
 
 export const dynamic = "force-dynamic";
 

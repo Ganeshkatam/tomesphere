@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "Learn how TomeSphere handles your personal data, privacy, and encryption standards.",
+};
+
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-[var(--surface-canvas)] overflow-x-hidden">

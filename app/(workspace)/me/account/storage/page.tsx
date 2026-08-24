@@ -4,6 +4,11 @@ import {
   ServerLibraryStatsDto,
 } from "@/modules/me/account/storage/presentation/components/StorageSettingsScreen";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Storage & Data Usage",
+};
 
 export const dynamic = "force-dynamic";
 

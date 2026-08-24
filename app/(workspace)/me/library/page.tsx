@@ -2,6 +2,11 @@ import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { executeLibraryPageFacade } from "@/modules/library/application/facades";
 import LibraryClient from "@/modules/library/components/LibraryClient";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Personal Library",
+};
 
 export const dynamic = "force-dynamic";
 

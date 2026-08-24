@@ -2,6 +2,12 @@ import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { Mail, MessageCircle, HelpCircle } from "lucide-react";
 import { GetFaqsQueryHandler } from "@/modules/support/application/queries/GetFaqs/handler";
 import { SupabaseSupportReadModel } from "@/modules/support/infrastructure/read-models/SupabaseSupportReadModel";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Help Center & Reader Support",
+  description: "Find answers to frequently asked questions, user guides, and contact reader support.",
+};
 
 export const revalidate = 3600; // Cache for 1 hour
 

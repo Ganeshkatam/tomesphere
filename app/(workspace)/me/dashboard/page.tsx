@@ -1,6 +1,11 @@
 import { DashboardPageFacade } from "@/modules/dashboard/application/facades/DashboardPageFacade";
 import DashboardClient from "@/modules/dashboard/presentation/components/DashboardClient";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Reading Dashboard",
+};
 
 export const dynamic = "force-dynamic";
 

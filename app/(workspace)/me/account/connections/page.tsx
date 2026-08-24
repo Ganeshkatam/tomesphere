@@ -4,6 +4,11 @@ import {
   UserIdentityDto,
 } from "@/modules/me/account/connections/presentation/components/ConnectedAccountsScreen";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Connected Accounts",
+};
 
 export const dynamic = "force-dynamic";
 

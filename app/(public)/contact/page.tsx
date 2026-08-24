@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact & Editorial Inquiries",
+  description: "Get in touch with the TomeSphere editorial, technical support, and partnership teams.",
+};
+
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-[var(--surface-canvas)] overflow-x-hidden">

@@ -2,6 +2,11 @@ import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { executeShelvesPageFacade } from "@/modules/library/application/facades";
 import ShelvesClient from "@/modules/library/components/ShelvesClient";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Custom Shelves",
+};
 
 export const dynamic = "force-dynamic";
 
