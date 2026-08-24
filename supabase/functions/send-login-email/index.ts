@@ -25,15 +25,16 @@ serve(async (req: Request) => {
       return new Response("Internal Server Error", { status: 500 });
     }
 
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return new Response("Unauthorized", { status: 401 });
+    // Validate secret via Header OR URL Parameter
+    const url = new URL(req.url);
+    const secretParam = url.searchParams.get("secret");
+    
+    let token = "";
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.replace("Bearer ", "");
     }
     
-    const token = authHeader.replace("Bearer ", "");
-    
-    // Validate secret length and value securely
-    if (token.length !== webhookSecret.length || token !== webhookSecret) {
+    if (token !== webhookSecret && secretParam !== webhookSecret) {
       return new Response("Unauthorized", { status: 401 });
     }
 
