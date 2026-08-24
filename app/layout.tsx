@@ -49,11 +49,12 @@ export const metadata: Metadata = {
   publisher: "TomeSphere",
   icons: {
     icon: [
-      { url: "/icon.png", type: "image/png" },
-      { url: "/favicon.ico" },
+      { url: "/logo.png?v=3", type: "image/png" },
+      { url: "/icon.png?v=3", type: "image/png" },
+      { url: "/favicon.ico?v=3" },
     ],
-    shortcut: "/icon.png",
-    apple: "/apple-icon.png",
+    shortcut: "/logo.png?v=3",
+    apple: "/logo.png?v=3",
   },
   openGraph: {
     type: "website",
@@ -93,6 +94,9 @@ export default function RootLayout({
       className={`${atkinson.variable} ${sourceSerif.variable} ${jetbrainsMono.variable}`}
     >
       <head>
+        <link rel="icon" href="/logo.png?v=3" type="image/png" sizes="any" />
+        <link rel="shortcut icon" href="/logo.png?v=3" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo.png?v=3" />
         <script
           id="theme-init-script"
           dangerouslySetInnerHTML={{
