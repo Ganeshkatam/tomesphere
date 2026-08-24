@@ -116,7 +116,7 @@ serve(async (req: Request) => {
 
     // 6. Send Email via Brevo API
     const brevoApiKey = Deno.env.get("BREVO_API_KEY");
-    const senderEmail = Deno.env.get("SENDER_EMAIL") || "no-reply@tomesphere.in";
+    const senderEmail = Deno.env.get("SENDER_EMAIL") || "noreply@tomesphere.in";
     
     if (!brevoApiKey) {
       console.error("Configuration Error: Missing BREVO_API_KEY");
