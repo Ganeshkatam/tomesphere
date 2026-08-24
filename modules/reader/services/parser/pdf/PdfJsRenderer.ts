@@ -76,7 +76,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.style.display = "block";
     container.style.width = "100%";
     container.style.height = "100%";
-    container.style.padding = "24px 0px 48px 0px";
+    container.style.padding = "12px 0px 24px 0px";
     container.style.boxSizing = "border-box";
     container.style.scrollBehavior = "auto";
     container.style.overscrollBehavior = "contain";
@@ -211,7 +211,7 @@ export class PdfJsRenderer implements ReaderRenderer {
       wrapper.style.display = "block";
       wrapper.style.textAlign = "center";
       wrapper.style.boxSizing = "border-box";
-      wrapper.style.margin = "0 auto 36px auto";
+      wrapper.style.margin = "0 0 24px 0";
       wrapper.style.contain = "layout style";
       wrapper.style.scrollMarginBlock = "16px";
       wrapper.classList.add(PAGE_PLACEHOLDER_CLASS);
@@ -493,16 +493,10 @@ export class PdfJsRenderer implements ReaderRenderer {
       return;
     }
     const unscaledViewport = page.getViewport({ scale: 1 });
-    const horizontalMargin = 20;
-    const verticalMargin = 32;
-    const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth) - horizontalMargin);
-    const containerHeight = Math.max(300, (this.container?.clientHeight || window.innerHeight) - verticalMargin);
+    const containerWidth = Math.max(300, this.container?.clientWidth || window.innerWidth);
 
-    // Fit cleanly inside the viewport boundaries so the book never overflows the screen at 100%
-    const fitScale = Math.min(
-      containerWidth / Math.max(1, unscaledViewport.width),
-      containerHeight / Math.max(1, unscaledViewport.height),
-    );
+    // Scale to exact width of the container so there is zero gap on left or right
+    const fitScale = containerWidth / Math.max(1, unscaledViewport.width);
 
     const zoomMultiplier = (zoom && zoom > 5) ? zoom / 100 : (zoom || 1.0);
     const effectiveScale = Math.max(0.3, fitScale * Math.max(1.0, zoomMultiplier));
@@ -517,22 +511,19 @@ export class PdfJsRenderer implements ReaderRenderer {
     canvas.width = Math.max(1, Math.floor(viewport.width * outputScale));
     canvas.height = Math.max(1, Math.floor(viewport.height * outputScale));
     canvas.style.display = "block";
-    canvas.style.margin = "0 auto";
-    canvas.style.width = `${viewport.width}px`;
-    canvas.style.height = `${viewport.height}px`;
-    canvas.style.maxWidth = "100%";
+    canvas.style.margin = "0";
+    canvas.style.width = "100%";
+    canvas.style.height = "auto";
     canvas.style.boxSizing = "border-box";
     canvas.style.backgroundColor = "white";
-    canvas.style.borderRadius = "4px";
-    canvas.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.08)";
+    canvas.style.borderRadius = "0px";
     canvas.style.objectFit = "contain";
     canvas.style.userSelect = "text";
     canvas.setAttribute("aria-label", `Rendered PDF page ${pageNumber}`);
 
-    state.wrapper.style.display = "flex";
-    state.wrapper.style.justifyContent = "center";
+    state.wrapper.style.display = "block";
     state.wrapper.style.width = "100%";
-    state.wrapper.style.minWidth = `${viewport.width}px`;
+    state.wrapper.style.minWidth = "100%";
     state.wrapper.style.maxWidth = "none";
     state.wrapper.style.overflow = "visible";
 
