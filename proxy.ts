@@ -36,6 +36,16 @@ function isAuthRoute(pathname: string): boolean {
 }
 
 export async function proxy(request: NextRequest) {
+  const { pathname, searchParams } = request.nextUrl;
+
+  // Intercept OAuth auth codes landing outside of /auth/callback (e.g. Supabase fallback to Site URL /?code=...)
+  const code = searchParams.get("code") || searchParams.get("token_hash");
+  if (code && pathname !== "/auth/callback" && pathname !== "/auth/confirm") {
+    const callbackUrl = request.nextUrl.clone();
+    callbackUrl.pathname = "/auth/callback";
+    return NextResponse.redirect(callbackUrl);
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -70,8 +80,6 @@ export async function proxy(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const { pathname } = request.nextUrl;
 
   // Redirect unauthenticated users away from protected routes
   if (!user && isProtectedRoute(pathname)) {
