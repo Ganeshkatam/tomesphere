@@ -1,5 +1,7 @@
 # TomeSphere
 
+[![Website](https://img.shields.io/badge/Website-tomesphere.in-4f46e5?style=flat-square)](https://tomesphere.in)
+
 TomeSphere is a next-generation digital reading platform and knowledge archive built with clean architecture, domain-driven design, and a modern web technology stack.
 
 ---
@@ -114,6 +116,7 @@ tomesphere-app/
 3. Configure environment variables:
    Create a `.env.local` file in the root directory:
    ```env
+   NEXT_PUBLIC_APP_URL=https://tomesphere.in
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
    SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
