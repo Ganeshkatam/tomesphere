@@ -76,7 +76,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.style.display = "block";
     container.style.width = "100%";
     container.style.height = "100%";
-    container.style.padding = "16px 8px 32px 8px";
+    container.style.padding = "24px 16px 48px 16px";
     container.style.boxSizing = "border-box";
     container.style.scrollBehavior = "auto";
     container.style.overscrollBehavior = "contain";
@@ -493,13 +493,19 @@ export class PdfJsRenderer implements ReaderRenderer {
       return;
     }
     const unscaledViewport = page.getViewport({ scale: 1 });
-    const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth));
+    const horizontalMargin = 32;
+    const verticalMargin = 48;
+    const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth) - horizontalMargin);
+    const containerHeight = Math.max(300, (this.container?.clientHeight || window.innerHeight) - verticalMargin);
 
-    // Base scale fits container width with minimal side gutters
-    const targetWidth = Math.max(300, containerWidth - 16);
-    const fitScale = targetWidth / Math.max(1, unscaledViewport.width);
+    // Compute fit-to-screen base scale so the page fits completely inside the screen at 100% zoom
+    const fitScale = Math.min(
+      containerWidth / Math.max(1, unscaledViewport.width),
+      containerHeight / Math.max(1, unscaledViewport.height),
+    );
 
-    const effectiveScale = Math.max(0.3, fitScale * Math.max(1.0, zoom));
+    const zoomMultiplier = (zoom && zoom > 5) ? zoom / 100 : (zoom || 1.0);
+    const effectiveScale = Math.max(0.3, fitScale * Math.max(1.0, zoomMultiplier));
     const viewport = page.getViewport({ scale: effectiveScale });
 
     const outputScale = Math.min(
