@@ -20,6 +20,7 @@ export interface AppHeaderProps {
 
 import { UserMenu } from "./UserMenu";
 import { SearchBar } from "@/modules/discovery/search/presentation/components/SearchBar";
+import NotificationBell from "@/modules/notifications/presentation/components/NotificationBell";
 
 const AUTH_ROUTES = [
   "/login",
@@ -203,15 +204,12 @@ export function AppHeader({ className = "", variant = "application", user }: App
 
             {variant === "application" ? (
               <>
-                <button
-                  aria-label="Notifications"
-                  className={`p-2.5 rounded-xl transition-colors cursor-pointer hidden sm:flex items-center justify-center ${isDark
-                    ? "text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200"
-                    }`}
-                >
-                  <Bell size={20} />
-                </button>
+                <div className={`hidden sm:flex items-center justify-center rounded-xl transition-colors ${isDark
+                  ? "hover:bg-slate-900 border border-transparent hover:border-slate-800"
+                  : "hover:bg-slate-100 border border-transparent hover:border-slate-200"
+                  }`}>
+                  <NotificationBell />
+                </div>
 
                 <div className={`h-6 w-px hidden sm:block ${isDark ? "bg-slate-800" : "bg-slate-200"}`} />
 
