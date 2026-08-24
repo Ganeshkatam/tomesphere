@@ -14,12 +14,6 @@ export abstract class AggregateRoot<T> extends Entity<T> {
 
   protected addDomainEvent(domainEvent: DomainEvent): void {
     this._domainEvents.push(domainEvent);
-    console.log(
-      `[Domain Event Created]:`,
-      this.constructor.name,
-      "==>",
-      domainEvent.eventName,
-    );
   }
 
   public collectDomainEvents(): readonly DomainEvent[] {
