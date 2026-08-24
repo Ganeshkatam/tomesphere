@@ -41,15 +41,7 @@ export default function ShelfCard({ shelf, onEdit, onDelete }: ShelfCardProps) {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
             {/* Ambient Lighting & Vignette */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-slate-900/30" />
-            <div className="relative z-10 flex flex-col items-center gap-1.5 p-4 text-center">
-              <span className="text-[10px] font-mono font-extrabold uppercase tracking-[0.25em] text-amber-300 drop-shadow-md">
-                Curated Shelf
-              </span>
-              <span className="text-xs font-serif font-bold text-white line-clamp-1 max-w-[200px] drop-shadow-lg">
-                {shelf.name}
-              </span>
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent pointer-events-none" />
           </div>
         ) : covers.length === 0 ? (
           /* Premium Default Shelf Artwork */
@@ -71,12 +63,6 @@ export default function ShelfCard({ shelf, onEdit, onDelete }: ShelfCardProps) {
               <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-400/30 backdrop-blur-md flex items-center justify-center text-indigo-300 shadow-lg shadow-indigo-950/60 group-hover:scale-110 group-hover:border-indigo-400/50 transition-all duration-300">
                 <BookMarked className="w-6 h-6" />
               </div>
-              <span className="text-[10px] font-mono font-extrabold uppercase tracking-[0.25em] text-indigo-300/90 drop-shadow-sm">
-                Curated Shelf
-              </span>
-              <span className="text-xs font-serif font-bold text-slate-100 line-clamp-1 max-w-[200px] drop-shadow-md">
-                {shelf.name}
-              </span>
             </div>
           </div>
         ) : (
