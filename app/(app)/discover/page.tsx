@@ -8,6 +8,14 @@ import {
   Compass,
   ChevronRight,
   ShieldCheck,
+  ShieldAlert,
+  Code,
+  Calculator,
+  Activity,
+  HeartHandshake,
+  UserCheck,
+  Palette,
+  GraduationCap,
 } from "lucide-react";
 import { getDiscoveryFacade } from "@/modules/discovery/application/facades";
 import { DiscoverySection } from "@/modules/discovery/presentation/components/DiscoverySection";
@@ -33,10 +41,65 @@ const CATEGORY_TABS = [
 
 export default async function DiscoverOverviewPage() {
   const facade = await getDiscoveryFacade();
-  const data = await facade.getOverview();
+  const [overviewData, fullCatalog] = await Promise.all([
+    facade.getOverview(),
+    facade.getNewArrivals({ limit: 50, page: 1 }),
+  ]);
+
+  const allItems = fullCatalog.items || [];
+
+  // Categorize books into dedicated curated sections
+  const securityBooks = allItems.filter((b) =>
+    (b.genres || []).some((g) => g.name.toLowerCase().includes("security") || g.name.toLowerCase().includes("cyber")) ||
+    b.title.toLowerCase().includes("hacker") ||
+    b.title.toLowerCase().includes("security")
+  );
+
+  const programmingBooks = allItems.filter((b) =>
+    (b.genres || []).some((g) => g.name.toLowerCase().includes("programming") || g.name.toLowerCase().includes("computer science")) ||
+    b.title.toLowerCase().includes("python") ||
+    b.title.toLowerCase().includes("java") ||
+    b.title.toLowerCase().includes("javascript")
+  );
+
+  const mathematicsBooks = allItems.filter((b) =>
+    (b.genres || []).some((g) => g.name.toLowerCase().includes("mathematics") || g.name.toLowerCase().includes("math")) ||
+    b.title.toLowerCase().includes("maths") ||
+    b.title.toLowerCase().includes("vedic")
+  );
+
+  const yogaHealthBooks = allItems.filter((b) =>
+    (b.genres || []).some((g) => g.name.toLowerCase().includes("yoga") || g.name.toLowerCase().includes("health")) ||
+    b.title.toLowerCase().includes("yoga") ||
+    b.title.toLowerCase().includes("asanas")
+  );
+
+  const philosophyBooks = allItems.filter((b) =>
+    (b.genres || []).some((g) => g.name.toLowerCase().includes("motivation") || g.name.toLowerCase().includes("spirituality") || g.name.toLowerCase().includes("fiction")) ||
+    b.title.toLowerCase().includes("ferrari") ||
+    b.title.toLowerCase().includes("silence")
+  );
+
+  const biographyBooks = allItems.filter((b) =>
+    (b.genres || []).some((g) => g.name.toLowerCase().includes("biography") || g.name.toLowerCase().includes("history")) ||
+    b.title.toLowerCase().includes("wings of fire") ||
+    b.title.toLowerCase().includes("autobiography")
+  );
+
+  const artDesignBooks = allItems.filter((b) =>
+    (b.genres || []).some((g) => g.name.toLowerCase().includes("art") || g.name.toLowerCase().includes("drawing")) ||
+    b.title.toLowerCase().includes("figure drawing") ||
+    b.title.toLowerCase().includes("design")
+  );
+
+  const educationalTextbooks = allItems.filter((b) =>
+    (b.genres || []).some((g) => g.name.toLowerCase().includes("education") || g.name.toLowerCase().includes("science")) ||
+    b.title.toLowerCase().includes("science") ||
+    b.title.toLowerCase().includes("fundamentals")
+  );
 
   return (
-    <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-6 sm:py-8 lg:py-10 space-y-10 sm:space-y-14 animate-in fade-in duration-300">
+    <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-6 sm:py-8 lg:py-10 space-y-12 sm:space-y-16 animate-in fade-in duration-300">
       {/* 1. Breadcrumb & Status Pill */}
       <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
         <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-medium">
@@ -97,21 +160,45 @@ export default async function DiscoverOverviewPage() {
         </div>
       </div>
 
-      {/* 4. Main Catalogue Sections */}
-      <div className="flex flex-col gap-12 sm:gap-16 pt-2">
-        {/* Featured Masterpieces */}
-        {data.featured?.items?.length > 0 && (
+      {/* 4. The 10 Rich Book Sections & Curated Shelves */}
+      <div className="flex flex-col gap-14 sm:gap-18 pt-2">
+        {/* Section 1: Featured Masterpieces */}
+        {overviewData.featured?.items?.length > 0 && (
           <DiscoverySection
             title="Featured Masterpieces"
             description="Curated highlights and hand-picked treasures from the archive."
             actionHref="/discover/featured"
             actionLabel="View all picks"
           >
-            <FeaturedBooks items={data.featured.items} />
+            <FeaturedBooks items={overviewData.featured.items} />
           </DiscoverySection>
         )}
 
-        {/* Curated Knowledge Disciplines */}
+        {/* Section 2: Trending Volumes (High Velocity & Engagement) */}
+        {overviewData.trending?.books?.length > 0 && (
+          <DiscoverySection
+            title="Trending Volumes"
+            description="Most active and frequently read works across the digital catalogue."
+            actionHref="/discover/trending"
+            actionLabel="View trending rank"
+          >
+            <BookCarousel items={overviewData.trending.books} priority={true} />
+          </DiscoverySection>
+        )}
+
+        {/* Section 3: Cybersecurity & Offensive Defense */}
+        {securityBooks.length > 0 && (
+          <DiscoverySection
+            title="Cybersecurity & Offensive Defense"
+            description="Practical penetration testing handbooks, vulnerability analysis, and network security foundations."
+            actionHref="/search?q=Cybersecurity"
+            actionLabel="Explore security"
+          >
+            <BookCarousel items={securityBooks} />
+          </DiscoverySection>
+        )}
+
+        {/* Curated Knowledge Disciplines Visual Hub */}
         <DiscoverySection
           title="Curated Knowledge Disciplines"
           description="Explore foundational manuscripts organized by scientific and humanities disciplines."
@@ -119,61 +206,133 @@ export default async function DiscoverOverviewPage() {
           <DiscoverThemeHub />
         </DiscoverySection>
 
-        {/* Trending Volumes */}
-        {data.trending?.books?.length > 0 && (
+        {/* Section 4: Software Engineering & Programming */}
+        {programmingBooks.length > 0 && (
           <DiscoverySection
-            title="Trending Volumes"
-            description="Most active and frequently read works across the digital catalogue."
-            actionHref="/discover/trending"
-            actionLabel="View trending rank"
+            title="Software Engineering & Programming"
+            description="Modern language guides, JVM architecture, scripting paradigms, and beginner-to-advanced software development."
+            actionHref="/search?q=Programming"
+            actionLabel="View programming"
           >
-            <BookCarousel items={data.trending.books} priority={true} />
+            <BookCarousel items={programmingBooks} />
           </DiscoverySection>
         )}
 
-        {/* New Additions */}
-        {data.newArrivals?.items?.length > 0 && (
+        {/* Section 5: Vedic Mathematics & Speed Arithmetic */}
+        {mathematicsBooks.length > 0 && (
           <DiscoverySection
-            title="New Additions"
+            title="Vedic Mathematics & Speed Arithmetic"
+            description="Ancient Indian calculation sutras, rapid mental arithmetic shortcuts, and competitive examination mathematics."
+            actionHref="/search?q=Mathematics"
+            actionLabel="Explore math"
+          >
+            <BookCarousel items={mathematicsBooks} />
+          </DiscoverySection>
+        )}
+
+        {/* Section 6: Yoga, Asanas & Holistic Health */}
+        {yogaHealthBooks.length > 0 && (
+          <DiscoverySection
+            title="Yoga, Asanas & Holistic Health"
+            description="Definitive posture manuals, alignment mechanics, daily breathwork, and transformative mind-body wellness."
+            actionHref="/search?q=Yoga"
+            actionLabel="View yoga guides"
+          >
+            <BookCarousel items={yogaHealthBooks} />
+          </DiscoverySection>
+        )}
+
+        {/* Section 7: Philosophy & Transformative Wisdom */}
+        {philosophyBooks.length > 0 && (
+          <DiscoverySection
+            title="Philosophy & Transformative Wisdom"
+            description="Timeless life philosophies, mindfulness principles, self-discipline, and inspiring literary journeys."
+            actionHref="/search?q=Philosophy"
+            actionLabel="Explore philosophy"
+          >
+            <BookCarousel items={philosophyBooks} />
+          </DiscoverySection>
+        )}
+
+        {/* Section 8: Biographies & Historical Memoirs */}
+        {biographyBooks.length > 0 && (
+          <DiscoverySection
+            title="Biographies & Historical Memoirs"
+            description="Inspirational autobiographical records, scientific visionaries, and historical turning points."
+            actionHref="/search?q=Biography"
+            actionLabel="View memoirs"
+          >
+            <BookCarousel items={biographyBooks} />
+          </DiscoverySection>
+        )}
+
+        {/* Section 9: Visual Arts & Creative Design */}
+        {artDesignBooks.length > 0 && (
+          <DiscoverySection
+            title="Visual Arts & Creative Design"
+            description="Mastery of human anatomy, structural gesture drawing, creative invention, and classical illustration."
+            actionHref="/search?q=Art"
+            actionLabel="Explore art books"
+          >
+            <BookCarousel items={artDesignBooks} />
+          </DiscoverySection>
+        )}
+
+        {/* Section 10: Foundational Educational Textbooks */}
+        {educationalTextbooks.length > 0 && (
+          <DiscoverySection
+            title="Foundational Educational Textbooks"
+            description="Secondary physical sciences, curriculum mathematics, and foundational academic learning."
+            actionHref="/search?q=Science"
+            actionLabel="Explore textbooks"
+          >
+            <BookCarousel items={educationalTextbooks} />
+          </DiscoverySection>
+        )}
+
+        {/* Section 11: Recently Added Ingestions */}
+        {overviewData.newArrivals?.items?.length > 0 && (
+          <DiscoverySection
+            title="Recently Cataloged Editions"
             description="Freshly catalogued and preserved public domain editions."
             actionHref="/discover/new"
             actionLabel="View recent additions"
           >
-            <BookCarousel items={data.newArrivals.items} />
+            <BookCarousel items={overviewData.newArrivals.items} />
           </DiscoverySection>
         )}
 
         {/* Subject Domains */}
-        {data.subjects?.items?.length > 0 && (
+        {overviewData.subjects?.items?.length > 0 && (
           <DiscoverySection
             title="Explore by Knowledge Domain"
             description="Dive into specific disciplines, humanities, and sciences."
           >
-            <SubjectGrid items={data.subjects.items.slice(0, 12)} />
+            <SubjectGrid items={overviewData.subjects.items.slice(0, 12)} />
           </DiscoverySection>
         )}
 
-        {/* Curated Collections */}
-        {data.collections?.items?.length > 0 && (
+        {/* Curated Archival Collections */}
+        {overviewData.collections?.items?.length > 0 && (
           <DiscoverySection
             title="Curated Archival Collections"
             description="Thematic anthologies and structured reading paths."
             actionHref="/discover/collections"
             actionLabel="Explore collections"
           >
-            <CollectionGrid items={data.collections.items.slice(0, 4)} />
+            <CollectionGrid items={overviewData.collections.items.slice(0, 4)} />
           </DiscoverySection>
         )}
 
         {/* Authors */}
-        {data.authors?.items?.length > 0 && (
+        {overviewData.authors?.items?.length > 0 && (
           <DiscoverySection
             title="Prominent Authors & Thinkers"
             description="Discover the prolific minds whose writings shaped history."
             actionHref="/discover/authors"
             actionLabel="Browse all authors"
           >
-            <AuthorGrid items={data.authors.items.slice(0, 12)} />
+            <AuthorGrid items={overviewData.authors.items.slice(0, 12)} />
           </DiscoverySection>
         )}
 

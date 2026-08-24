@@ -47,12 +47,12 @@ export function DiscoveryHero() {
         </div>
 
         {/* Integrated Search Input Hub */}
-        <div className="w-full max-w-2xl pt-2">
+        <div className="w-full max-w-3xl pt-1">
           <DiscoverySearch />
         </div>
 
         {/* Trending Categories Pills */}
-        <div className="flex items-center justify-center gap-2 sm:gap-2.5 flex-wrap text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 pt-1">
+        <div className="flex items-center justify-center gap-2 sm:gap-2.5 flex-wrap text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 pt-2">
           <span className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider text-[11px] mr-1">
             <TrendingUp size={13} className="text-indigo-500" />
             Trending:
@@ -63,7 +63,7 @@ export function DiscoveryHero() {
               <Link
                 key={tag.label}
                 href={tag.href}
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:shadow-xs hover:-translate-y-0.5 transition-all text-xs font-medium cursor-pointer ${tag.color}`}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-950 border border-slate-200/90 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:shadow-xs hover:-translate-y-0.5 transition-all text-xs font-semibold cursor-pointer ${tag.color}`}
               >
                 <Icon size={12} className="text-slate-400" />
                 <span>{tag.label}</span>
