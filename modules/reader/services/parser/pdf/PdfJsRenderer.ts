@@ -76,7 +76,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.style.display = "block";
     container.style.width = "100%";
     container.style.height = "100%";
-    container.style.padding = "48px 32px 80px 32px";
+    container.style.padding = "12px 16px 12px 16px";
     container.style.boxSizing = "border-box";
     container.style.scrollBehavior = "auto";
     container.style.overscrollBehavior = "contain";
