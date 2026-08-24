@@ -70,13 +70,15 @@ export class PdfJsRenderer implements ReaderRenderer {
     this.currentPageNum = 1;
     this.lastEmittedPage = 0;
 
+    // Reset container DOM tree and configure root scrolling properties
     container.replaceChildren();
     container.style.overflowY = "auto";
     container.style.overflowX = "auto";
     container.style.display = "block";
     container.style.width = "100%";
     container.style.height = "100%";
-    container.style.padding = "12px 0px 24px 0px";
+    // Zero left/right padding to allow 100% full-width span with bottom scroll breathing room
+    container.style.padding = "24px 16px 48px 16px";
     container.style.boxSizing = "border-box";
     container.style.scrollBehavior = "auto";
     container.style.overscrollBehavior = "contain";
@@ -492,41 +494,59 @@ export class PdfJsRenderer implements ReaderRenderer {
       page.cleanup();
       return;
     }
+    // 1. Calculate unscaled PDF page dimensions
     const unscaledViewport = page.getViewport({ scale: 1 });
-    const containerWidth = Math.max(300, this.container?.clientWidth || window.innerWidth);
+    
+    // 2. Base Viewport Dimensions (with comfortable margins)
+    const horizontalMargin = 32;
+    const verticalMargin = 40;
+    const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth) - horizontalMargin);
+    const containerHeight = Math.max(300, (this.container?.clientHeight || window.innerHeight) - verticalMargin);
 
-    // Scale to exact width of the container so there is zero gap on left or right
-    const fitScale = containerWidth / Math.max(1, unscaledViewport.width);
+    // 3. Fit Page Scale: Fits the entire page cleanly inside the visible screen at 100% default zoom
+    const fitScale = Math.min(
+      containerWidth / Math.max(1, unscaledViewport.width),
+      containerHeight / Math.max(1, unscaledViewport.height),
+    );
 
+    // 4. Zoom Factor: Multiplies base scale by zoom preference (1.0 = 100% full page fit, up to 3.0 = 300% zoom)
     const zoomMultiplier = (zoom && zoom > 5) ? zoom / 100 : (zoom || 1.0);
     const effectiveScale = Math.max(0.3, fitScale * Math.max(1.0, zoomMultiplier));
     const viewport = page.getViewport({ scale: effectiveScale });
 
+    // 5. Device Pixel Ratio: Sharp high-DPI rendering capped at MAX_DEVICE_PIXEL_RATIO (2.0)
     const outputScale = Math.min(
       typeof window === "undefined" ? 1 : window.devicePixelRatio || 1,
       MAX_DEVICE_PIXEL_RATIO,
     );
+
+    // 6. Canvas Element Setup: Centered presentation with subtle shadow and backing buffer scaled to device pixels
     const canvas = document.createElement("canvas");
     canvas.className = "tomesphere-pdf-canvas";
     canvas.width = Math.max(1, Math.floor(viewport.width * outputScale));
     canvas.height = Math.max(1, Math.floor(viewport.height * outputScale));
     canvas.style.display = "block";
-    canvas.style.margin = "0";
-    canvas.style.width = "100%";
-    canvas.style.height = "auto";
+    canvas.style.margin = "0 auto";
+    canvas.style.width = `${viewport.width}px`;
+    canvas.style.height = `${viewport.height}px`;
+    canvas.style.maxWidth = "100%";
     canvas.style.boxSizing = "border-box";
     canvas.style.backgroundColor = "white";
-    canvas.style.borderRadius = "0px";
+    canvas.style.borderRadius = "4px";
+    canvas.style.boxShadow = "0 4px 24px rgba(0, 0, 0, 0.12)";
     canvas.style.objectFit = "contain";
     canvas.style.userSelect = "text";
     canvas.setAttribute("aria-label", `Rendered PDF page ${pageNumber}`);
 
-    state.wrapper.style.display = "block";
+    // 7. Wrapper Layout: Display as centered flex container
+    state.wrapper.style.display = "flex";
+    state.wrapper.style.justifyContent = "center";
     state.wrapper.style.width = "100%";
     state.wrapper.style.minWidth = "100%";
     state.wrapper.style.maxWidth = "none";
     state.wrapper.style.overflow = "visible";
 
+    // 7. Acquire 2D Canvas Context and apply DPI transformation matrix
     const context = canvas.getContext("2d", { alpha: false });
     if (!context) {
       page.cleanup();
@@ -535,6 +555,8 @@ export class PdfJsRenderer implements ReaderRenderer {
     }
 
     context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
+
+    // 8. Execute PDF.js async rendering pipeline
     const renderTask = page.render({
       canvasContext: context,
       viewport,
