@@ -29,6 +29,7 @@ serve(async (req: Request) => {
     const url = new URL(req.url);
     const secretParam = url.searchParams.get("secret");
     
+    const authHeader = req.headers.get("Authorization");
     let token = "";
     if (authHeader && authHeader.startsWith("Bearer ")) {
       token = authHeader.replace("Bearer ", "");
