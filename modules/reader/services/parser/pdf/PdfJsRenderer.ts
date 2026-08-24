@@ -78,7 +78,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.style.width = "100%";
     container.style.height = "100%";
     // Zero left/right padding to allow 100% full-width span with bottom scroll breathing room
-    container.style.padding = "24px 16px 48px 16px";
+    container.style.padding = "16px 0px 16px 0px";
     container.style.boxSizing = "border-box";
     container.style.scrollBehavior = "auto";
     container.style.overscrollBehavior = "contain";
@@ -322,7 +322,7 @@ export class PdfJsRenderer implements ReaderRenderer {
       e.preventDefault();
       const currentPct = Math.round(this.currentZoom * 100);
       const step = e.deltaY < 0 ? 5 : -5;
-      const targetZoom = Math.min(300, Math.max(100, currentPct + step));
+      const targetZoom = Math.min(300, Math.max(80, currentPct + step));
       if (targetZoom !== currentPct) {
         useReaderStore.getState().updatePreference("zoom", targetZoom);
         this.preferences({
@@ -360,7 +360,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     if (this.initialPinchDistance > 0) {
       const scaleFactor = currentDistance / this.initialPinchDistance;
       const rawTarget = Math.round(this.initialPinchZoom * scaleFactor);
-      const targetZoom = Math.min(300, Math.max(100, rawTarget));
+      const targetZoom = Math.min(300, Math.max(80, rawTarget));
 
       if (this.pinchRaf !== null) {
         window.cancelAnimationFrame(this.pinchRaf);
@@ -489,7 +489,14 @@ export class PdfJsRenderer implements ReaderRenderer {
     const pdfDocument = this.pdfDocument;
     if (!pdfDocument || this.destroyed) return;
 
-    const page = await pdfDocument.getPage(pageNumber);
+    let page: pdfjsLib.PDFPageProxy;
+    try {
+      page = await pdfDocument.getPage(pageNumber);
+    } catch (err: unknown) {
+      if (this.destroyed || this.isCancellationError(err)) return;
+      throw err;
+    }
+
     if (!this.isCurrentPageState(state, generation)) {
       page.cleanup();
       return;
@@ -498,21 +505,22 @@ export class PdfJsRenderer implements ReaderRenderer {
     const unscaledViewport = page.getViewport({ scale: 1 });
     
     // 2. Base Viewport Dimensions (with comfortable margins)
-    const horizontalMargin = 32;
+    const horizontalMargin = 0;
     const verticalMargin = 40;
     const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth) - horizontalMargin);
     const containerHeight = Math.max(300, (this.container?.clientHeight || window.innerHeight) - verticalMargin);
 
-    // 3. Fit Page Scale: Fits the entire page cleanly inside the visible screen at 100% default zoom
-    const fitScale = Math.min(
+    // 3. Fit Page Scale (fits entire page comfortably inside screen at 100% zoom)
+    const fitPageScale = Math.min(
       containerWidth / Math.max(1, unscaledViewport.width),
       containerHeight / Math.max(1, unscaledViewport.height),
     );
 
-    // 4. Zoom Factor: Multiplies base scale by zoom preference (1.0 = 100% full page fit, up to 3.0 = 300% zoom)
-    const zoomMultiplier = (zoom && zoom > 5) ? zoom / 100 : (zoom || 1.0);
-    const effectiveScale = Math.max(0.3, fitScale * Math.max(1.0, zoomMultiplier));
-    const viewport = page.getViewport({ scale: effectiveScale });
+    // 4. Smooth Linear Zoom: Multiplies base scale linearly by zoom percentage (80% to 300%)
+    const z = (zoom && zoom > 5) ? zoom / 100 : (zoom || 1.0);
+    const effectiveScale = fitPageScale * Math.max(0.8, Math.min(3.0, z));
+
+    const viewport = page.getViewport({ scale: Math.max(0.2, effectiveScale) });
 
     // 5. Device Pixel Ratio: Sharp high-DPI rendering capped at MAX_DEVICE_PIXEL_RATIO (2.0)
     const outputScale = Math.min(
@@ -520,7 +528,7 @@ export class PdfJsRenderer implements ReaderRenderer {
       MAX_DEVICE_PIXEL_RATIO,
     );
 
-    // 6. Canvas Element Setup: Centered presentation with subtle shadow and backing buffer scaled to device pixels
+    // 6. Canvas Element Setup: Backing buffer scaled to device pixels without clipping max-width
     const canvas = document.createElement("canvas");
     canvas.className = "tomesphere-pdf-canvas";
     canvas.width = Math.max(1, Math.floor(viewport.width * outputScale));
@@ -529,20 +537,19 @@ export class PdfJsRenderer implements ReaderRenderer {
     canvas.style.margin = "0 auto";
     canvas.style.width = `${viewport.width}px`;
     canvas.style.height = `${viewport.height}px`;
-    canvas.style.maxWidth = "100%";
+    canvas.style.maxWidth = "none";
     canvas.style.boxSizing = "border-box";
     canvas.style.backgroundColor = "white";
     canvas.style.borderRadius = "4px";
-    canvas.style.boxShadow = "0 4px 24px rgba(0, 0, 0, 0.12)";
     canvas.style.objectFit = "contain";
     canvas.style.userSelect = "text";
     canvas.setAttribute("aria-label", `Rendered PDF page ${pageNumber}`);
 
-    // 7. Wrapper Layout: Display as centered flex container
+    // 7. Wrapper Layout: Display as centered flex container with dynamic minWidth
     state.wrapper.style.display = "flex";
     state.wrapper.style.justifyContent = "center";
     state.wrapper.style.width = "100%";
-    state.wrapper.style.minWidth = "100%";
+    state.wrapper.style.minWidth = `${viewport.width}px`;
     state.wrapper.style.maxWidth = "none";
     state.wrapper.style.overflow = "visible";
 
@@ -1207,7 +1214,7 @@ export class PdfJsRenderer implements ReaderRenderer {
   }
 
   private getMinZoom(): number {
-    return 1.0; // Never allow zooming out smaller than 100% / viewport fit
+    return 0.8; // Allow zooming out to 80%
   }
 
   preferences(prefs: ReaderPreferencesDto): void {
@@ -1302,7 +1309,10 @@ export class PdfJsRenderer implements ReaderRenderer {
       return (
         error.name === "RenderingCancelledException" || 
         /cancel/i.test(error.message) ||
-        /worker was destroyed/i.test(error.message)
+        /worker was destroyed/i.test(error.message) ||
+        /transport destroyed/i.test(error.message) ||
+        /document is closed/i.test(error.message) ||
+        /cannot read properties of null/i.test(error.message)
       );
     }
     return false;

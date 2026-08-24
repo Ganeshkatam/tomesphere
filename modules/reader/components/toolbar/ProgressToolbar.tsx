@@ -81,13 +81,13 @@ export function ProgressToolbar({ service }: ProgressToolbarProps) {
         <button
           type="button"
           onClick={() => {
-            const newZoom = Math.max(100, (preferences.zoom || 100) - 10);
+            const newZoom = Math.max(80, (preferences.zoom || 100) - 10);
             updatePreference("zoom", newZoom);
             service?.applyPreferences({ ...preferences, zoom: newZoom });
           }}
-          disabled={!rendererReady || !service || (preferences.zoom || 100) <= 100}
+          disabled={!rendererReady || !service || (preferences.zoom || 100) <= 80}
           className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent ${themeStyles.btn}`}
-          title="Zoom Out (Min 100% / Viewport Fit)"
+          title="Zoom Out (Min 80%)"
         >
           <ZoomOut size={16} />
         </button>

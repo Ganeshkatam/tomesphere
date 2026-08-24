@@ -42,7 +42,7 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
   };
 
   const adjustZoom = (delta: number) => {
-    const newZoom = Math.max(100, Math.min(300, (preferences.zoom || 100) + delta));
+    const newZoom = Math.max(80, Math.min(300, (preferences.zoom || 100) + delta));
     updatePreference("zoom", newZoom);
     if (service) {
       service.applyPreferences({ ...preferences, zoom: newZoom });
@@ -270,9 +270,9 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
               <button
                 type="button"
                 onClick={() => adjustZoom(-10)}
-                disabled={(preferences.zoom || 100) <= 100}
+                disabled={(preferences.zoom || 100) <= 80}
                 className={`w-8 h-8 rounded-xl disabled:opacity-30 font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-                title="Zoom Out (Minimum 100%)"
+                title="Zoom Out (Minimum 80%)"
               >
                 -
               </button>

@@ -652,7 +652,7 @@ export class ReaderService {
   public zoomOut(): void {
     const prefs = useReaderStore.getState().preferences;
     const currentZoom = prefs.zoom || 100;
-    const targetZoom = Math.max(100, currentZoom - 15);
+    const targetZoom = Math.max(80, currentZoom - 15);
     const newPrefs = {
       ...prefs,
       zoom: targetZoom,
@@ -671,7 +671,7 @@ export class ReaderService {
 
   public setZoom(zoomPercentage: number): void {
     const prefs = useReaderStore.getState().preferences;
-    const clamped = Math.min(300, Math.max(100, zoomPercentage));
+    const clamped = Math.min(300, Math.max(80, zoomPercentage));
     const newPrefs = { ...prefs, zoom: clamped };
     useReaderStore.getState().setPreferences(newPrefs);
     this.renderer?.preferences(newPrefs);
