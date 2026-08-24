@@ -1,6 +1,6 @@
 export default function DiscoverLoading() {
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 space-y-8 animate-in fade-in duration-150">
+    <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-6 sm:py-8 lg:py-10 space-y-8 animate-in fade-in duration-150">
       {/* 1. Breadcrumb Skeleton */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">

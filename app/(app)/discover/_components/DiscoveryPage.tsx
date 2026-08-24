@@ -35,7 +35,7 @@ export function DiscoveryPage({ config }: { config: DiscoveryConfiguration }) {
   const IconComponent = activeTab.icon;
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 space-y-8 animate-in fade-in duration-300">
+    <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-6 sm:py-8 lg:py-10 space-y-8 animate-in fade-in duration-300">
       {/* 1. Breadcrumb & Status Pill */}
       <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
         <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-medium">
