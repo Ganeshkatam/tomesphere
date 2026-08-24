@@ -100,7 +100,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     const pdfDocument = await loadingTask.promise;
 
     if (generation !== this.documentGeneration || this.destroyed) {
-      await pdfDocument.destroy();
+      await (pdfDocument as any).destroy?.();
       return;
     }
 
@@ -709,7 +709,7 @@ export class PdfJsRenderer implements ReaderRenderer {
       const annotations = await page.getAnnotations({ intent: "display" });
       for (const annot of annotations) {
         if (annot.subtype === "Link" && annot.rect) {
-          const rect = viewport.convertToViewportRectangle(annot.rect);
+          const rect = (viewport as any).convertToViewportRectangle(annot.rect);
           const left = Math.min(rect[0], rect[2]);
           const top = Math.min(rect[1], rect[3]);
           const width = Math.abs(rect[2] - rect[0]);
@@ -1301,7 +1301,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     }
 
     if (this.pdfDocument) {
-      await this.pdfDocument.destroy();
+      await (this.pdfDocument as any).destroy?.();
       this.pdfDocument = null;
     }
 

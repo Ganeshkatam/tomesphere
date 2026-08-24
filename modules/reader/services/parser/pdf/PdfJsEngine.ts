@@ -144,7 +144,7 @@ export class PdfJsEngine implements DocumentEngine {
     this.renderTasks.clear();
 
     if (this.pdfDocument) {
-      await this.pdfDocument.destroy();
+      await (this.pdfDocument as any).destroy?.();
       this.pdfDocument = null;
     }
     this.pageCount = 0;
