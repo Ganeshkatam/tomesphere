@@ -364,8 +364,15 @@ export default function EnhancedLoginPage() {
             href="/"
             className="flex items-center gap-3 group w-fit relative z-10"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-              <BookOpen size={22} />
+            <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md shadow-indigo-500/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Image
+                src="/logo.png"
+                alt="TomeSphere Logo"
+                width={44}
+                height={44}
+                className="object-contain p-0.5"
+                priority
+              />
             </div>
             <div>
               <span className="text-xl font-display font-bold text-slate-900 dark:text-white">

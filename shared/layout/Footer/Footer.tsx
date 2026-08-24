@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { BookOpen, Check, ArrowUp } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -64,9 +65,15 @@ export default function Footer() {
           {/* Brand Column (2 cols on lg) */}
           <div className="flex flex-col gap-5 lg:col-span-2">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5 group w-fit">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-                <BookOpen size={20} />
+            <Link href="/" className="flex items-center gap-3 group w-fit">
+              <div className="relative w-9 h-9 rounded-xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md shadow-indigo-500/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Image
+                  src="/logo.png"
+                  alt="TomeSphere Logo"
+                  width={36}
+                  height={36}
+                  className="object-contain p-0.5"
+                />
               </div>
               <span className="text-xl font-display font-extrabold text-[var(--text-primary)] tracking-tight">
                 TomeSphere

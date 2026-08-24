@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Sun, Moon, BookOpen } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/shared/providers/theme-context";
 
 interface AuthTopBarProps {
@@ -30,9 +31,15 @@ export default function AuthTopBar({ showLogo = false }: AuthTopBarProps) {
 
       {/* Optional Central Minimal Logo for smaller screens */}
       {showLogo && (
-        <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 sm:hidden">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-xs">
-            <BookOpen size={16} />
+        <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 sm:hidden group">
+          <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-center">
+            <Image
+              src="/logo.png"
+              alt="TomeSphere Logo"
+              width={32}
+              height={32}
+              className="object-contain p-0.5"
+            />
           </div>
         </Link>
       )}

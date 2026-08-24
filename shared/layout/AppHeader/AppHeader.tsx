@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { BookOpen, Search, Bell, User, Sun, Moon, Menu, X } from "lucide-react";
+import { BookOpen, Search, User, Sun, Moon, Menu, X } from "lucide-react";
 import { useTheme } from "@/shared/providers/theme-context";
 
 export type HeaderVariant = "marketing" | "application" | "reader";
@@ -18,6 +18,7 @@ export interface AppHeaderProps {
   } | null;
 }
 
+import Image from "next/image";
 import { UserMenu } from "./UserMenu";
 import { SearchBar } from "@/modules/discovery/search/presentation/components/SearchBar";
 import NotificationBell from "@/modules/notifications/presentation/components/NotificationBell";
@@ -70,10 +71,17 @@ export function AppHeader({ className = "", variant = "application", user }: App
             {/* Logo */}
             <Link
               href={variant === "application" ? "/me" : "/"}
-              className="flex items-center gap-2 lg:gap-3 hover:opacity-90 transition-opacity flex-shrink-0"
+              className="flex items-center gap-2.5 lg:gap-3 hover:opacity-90 transition-opacity flex-shrink-0 group"
             >
-              <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 font-bold shrink-0">
-                <BookOpen size={20} className="lg:w-[22px] lg:h-[22px]" />
+              <div className="relative w-10 h-10 lg:w-11 lg:h-11 rounded-xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md shadow-indigo-500/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Image
+                  src="/logo.png"
+                  alt="TomeSphere Logo"
+                  width={44}
+                  height={44}
+                  className="object-contain p-0.5"
+                  priority
+                />
               </div>
               <span
                 className={`tracking-tight font-display font-extrabold text-lg sm:text-xl lg:text-2xl shrink-0 ${isDark ? "text-white" : "text-slate-900"
