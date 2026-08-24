@@ -76,7 +76,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.style.display = "block";
     container.style.width = "100%";
     container.style.height = "100%";
-    container.style.padding = "12px 16px 12px 16px";
+    container.style.padding = "16px 8px 32px 8px";
     container.style.boxSizing = "border-box";
     container.style.scrollBehavior = "auto";
     container.style.overscrollBehavior = "contain";
@@ -320,7 +320,7 @@ export class PdfJsRenderer implements ReaderRenderer {
       e.preventDefault();
       const currentPct = Math.round(this.currentZoom * 100);
       const step = e.deltaY < 0 ? 5 : -5;
-      const targetZoom = Math.min(240, Math.max(100, currentPct + step));
+      const targetZoom = Math.min(300, Math.max(100, currentPct + step));
       if (targetZoom !== currentPct) {
         useReaderStore.getState().updatePreference("zoom", targetZoom);
         this.preferences({
@@ -358,7 +358,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     if (this.initialPinchDistance > 0) {
       const scaleFactor = currentDistance / this.initialPinchDistance;
       const rawTarget = Math.round(this.initialPinchZoom * scaleFactor);
-      const targetZoom = Math.min(240, Math.max(100, rawTarget));
+      const targetZoom = Math.min(300, Math.max(100, rawTarget));
 
       if (this.pinchRaf !== null) {
         window.cancelAnimationFrame(this.pinchRaf);
@@ -493,18 +493,13 @@ export class PdfJsRenderer implements ReaderRenderer {
       return;
     }
     const unscaledViewport = page.getViewport({ scale: 1 });
-    const horizontalMargin = 64;
-    const verticalMargin = 96;
-    const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth) - horizontalMargin);
-    const containerHeight = Math.max(300, (this.container?.clientHeight || window.innerHeight) - verticalMargin);
+    const containerWidth = Math.max(300, (this.container?.clientWidth || window.innerWidth));
 
-    // Compute fit-to-viewport base scale so the page is always neatly framed with ample padding
-    const fitScale = Math.min(
-      (containerWidth * 0.90) / Math.max(1, unscaledViewport.width),
-      (containerHeight * 0.92) / Math.max(1, unscaledViewport.height),
-    );
+    // Base scale fits container width with minimal side gutters
+    const targetWidth = Math.max(300, containerWidth - 16);
+    const fitScale = targetWidth / Math.max(1, unscaledViewport.width);
 
-    const effectiveScale = Math.max(0.5, fitScale * Math.max(1.0, zoom));
+    const effectiveScale = Math.max(0.3, fitScale * Math.max(1.0, zoom));
     const viewport = page.getViewport({ scale: effectiveScale });
 
     const outputScale = Math.min(
@@ -1197,7 +1192,7 @@ export class PdfJsRenderer implements ReaderRenderer {
 
   preferences(prefs: ReaderPreferencesDto): void {
     const minZoom = this.getMinZoom();
-    const newZoom = Math.max(minZoom, Math.min(2.4, (prefs.zoom || 100) / 100));
+    const newZoom = Math.max(minZoom, Math.min(3.0, (prefs.zoom || 100) / 100));
     if (this.currentZoom === newZoom) return;
 
     this.currentZoom = newZoom;
