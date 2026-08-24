@@ -20,7 +20,7 @@ export function CollectionGrid({ items }: CollectionGridProps) {
             href="/discover/featured"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/20 transition-all cursor-pointer"
           >
-            <span>Explore Editor's Picks</span>
+            <span>Explore Editor&apos;s Picks</span>
             <ArrowRight size={14} />
           </Link>
         }
