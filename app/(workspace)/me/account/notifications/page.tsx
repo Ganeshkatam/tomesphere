@@ -29,6 +29,8 @@ export default async function NotificationsPage() {
     recommendationsEnabled: preferences?.recommendationsEnabled ?? false,
     weeklyDigestEnabled: preferences?.weeklyDigestEnabled ?? false,
     systemAnnouncementsEnabled: preferences?.systemAnnouncementsEnabled ?? false,
+    emailAlertsEnabled: preferences?.emailAlertsEnabled ?? true,
+    pushNotificationsEnabled: preferences?.pushNotificationsEnabled ?? true,
   };
 
   return (

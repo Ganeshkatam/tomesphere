@@ -491,7 +491,10 @@ function ContinueReadingSection({
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        className="flex items-start gap-4 overflow-x-auto pt-1 pb-4 no-scrollbar scroll-smooth snap-x snap-mandatory"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
         {books.map((book) => {
           const progress = Math.min(Math.max(book.progressPercentage || 0, 0), 100);
 
@@ -499,7 +502,7 @@ function ContinueReadingSection({
             <Link
               key={book.bookId}
               href={`/read/${book.bookId}`}
-              className="flex items-center gap-3.5 p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-all duration-300 group shadow-xs hover:shadow-xl hover:scale-[1.02] cursor-pointer"
+              className="w-[85vw] sm:w-[320px] max-w-[340px] shrink-0 snap-start flex items-center gap-3.5 p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-all duration-300 group shadow-xs hover:shadow-xl hover:scale-[1.02] cursor-pointer"
             >
               <div className="w-14 sm:w-16 aspect-[2/3] rounded-lg bg-slate-200 dark:bg-slate-800 overflow-hidden relative flex-shrink-0 shadow-xs border border-slate-200/80 dark:border-slate-700/80">
                 {book.coverUrl ? (
@@ -742,37 +745,38 @@ function PublicSizedShelfSection({
             >
               <BookCard book={item} />
             </div>
-          ))}
-          <div className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col">
-            <Link
-              href={viewAllHref}
-              className="w-full h-full rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500/60 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer flex flex-col transition-all duration-300 group select-none"
-            >
-              {/* Top Banner aspect-[2/3] matching BookCard cover */}
-              <div className="relative aspect-[2/3] w-full shrink-0 overflow-hidden bg-gradient-to-br from-indigo-50/80 via-slate-50 to-purple-50/40 dark:from-slate-900 dark:via-indigo-950/30 dark:to-slate-900 flex flex-col items-center justify-center p-4 text-center border-b border-slate-100 dark:border-slate-800/80">
-                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-white dark:bg-slate-800 border border-indigo-100 dark:border-indigo-900/60 shadow-md flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 mb-2.5">
-                  <ArrowRight size={18} />
+          ))}          {items.length > 10 && (
+            <div className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col">
+              <Link
+                href={viewAllHref}
+                className="w-full h-full rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500/60 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer flex flex-col transition-all duration-300 group select-none"
+              >
+                {/* Top Banner aspect-[2/3] matching BookCard cover */}
+                <div className="relative aspect-[2/3] w-full shrink-0 overflow-hidden bg-gradient-to-br from-indigo-50/80 via-slate-50 to-purple-50/40 dark:from-slate-900 dark:via-indigo-950/30 dark:to-slate-900 flex flex-col items-center justify-center p-4 text-center border-b border-slate-100 dark:border-slate-800/80">
+                  <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-white dark:bg-slate-800 border border-indigo-100 dark:border-indigo-900/60 shadow-md flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 mb-2.5">
+                    <ArrowRight size={18} />
+                  </div>
+                  <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
+                    View All
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1 font-medium">
+                    {title}
+                  </span>
                 </div>
-                <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
-                  View All
-                </span>
-                <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1 font-medium">
-                  {title}
-                </span>
-              </div>
 
-              {/* Bottom Details matching BookCard details */}
-              <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between bg-white dark:bg-slate-900">
-                <p className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center justify-center gap-1">
-                  <span>Explore Archive</span>
-                  <span>→</span>
-                </p>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium text-center truncate">
-                  Complete Catalog
-                </p>
-              </div>
-            </Link>
-          </div>
+                {/* Bottom Details matching BookCard details */}
+                <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between bg-white dark:bg-slate-900">
+                  <p className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center justify-center gap-1">
+                    <span>Explore Archive</span>
+                    <span>→</span>
+                  </p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium text-center truncate">
+                    Complete Catalog
+                  </p>
+                </div>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </section>

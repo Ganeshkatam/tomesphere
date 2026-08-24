@@ -6,19 +6,146 @@ import {
   Monitor,
   Moon,
   Sun,
-  Bell,
-  Mail,
-  Smartphone,
   BookOpen,
-  Settings,
   Type,
   AlignLeft,
+  AlignJustify,
   Expand,
+  Minus,
+  Plus,
+  Palette,
+  Globe,
+  SplitSquareHorizontal,
 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { updatePreferencesAction } from "../actions/preferences";
 import { PreferencesDto } from "../../application/dto/PreferencesPageDto";
+
+// ─── Reusable Primitives ────────────────────────────────────────
+
+function SectionCard({
+  icon: Icon,
+  iconColor,
+  title,
+  description,
+  children,
+}: {
+  icon: React.ElementType;
+  iconColor: string;
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-2xl bg-[var(--surface-raised)] border border-[var(--border-default)] overflow-hidden">
+      <div className="px-6 pt-6 pb-4 border-b border-[var(--border-default)]">
+        <div className="flex items-center gap-3">
+          <div
+            className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${iconColor}`}
+          >
+            <Icon size={18} />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-[var(--text-primary)]">
+              {title}
+            </h3>
+            <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
+              {description}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="px-6 py-5 space-y-6">{children}</div>
+    </section>
+  );
+}
+
+function FieldLabel({
+  icon: Icon,
+  children,
+}: {
+  icon?: React.ElementType;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2.5">
+      {Icon && <Icon size={13} className="opacity-60" />}
+      {children}
+    </label>
+  );
+}
+
+function ToggleSwitch({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (val: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-default)] ${
+        checked ? "bg-indigo-600" : "bg-slate-600"
+      }`}
+    >
+      <span
+        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ${
+          checked ? "translate-x-5" : "translate-x-0"
+        }`}
+      />
+    </button>
+  );
+}
+
+function StepperControl({
+  value,
+  min,
+  max,
+  step,
+  label,
+  onDecrement,
+  onIncrement,
+}: {
+  value: string;
+  min: number;
+  max: number;
+  step: number;
+  label: string;
+  onDecrement: () => void;
+  onIncrement: () => void;
+}) {
+  const numVal = parseFloat(value);
+  return (
+    <div className="flex items-center gap-3">
+      <button
+        type="button"
+        onClick={onDecrement}
+        disabled={numVal <= min}
+        className="w-8 h-8 rounded-lg bg-[var(--surface-overlay)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--surface-default)] hover:border-[var(--border-strong)] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+      >
+        <Minus size={14} />
+      </button>
+      <span className="min-w-[48px] text-center text-sm font-bold font-mono text-[var(--text-primary)]">
+        {label}
+      </span>
+      <button
+        type="button"
+        onClick={onIncrement}
+        disabled={numVal >= max}
+        className="w-8 h-8 rounded-lg bg-[var(--surface-overlay)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--surface-default)] hover:border-[var(--border-strong)] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+      >
+        <Plus size={14} />
+      </button>
+    </div>
+  );
+}
+
+// ─── Main Component ─────────────────────────────────────────────
 
 export function PreferencesForm({
   preferences,
@@ -39,56 +166,58 @@ export function PreferencesForm({
     });
   };
 
-  return (
-    <div className="space-y-10">
-      {/* APPEARANCE SECTION */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2 mb-4 pb-2 border-b border-[var(--border-default)]">
-          <Monitor size={18} className="text-indigo-400" />
-          <h3 className="text-sm font-bold text-slate-50 uppercase tracking-wider">
-            Appearance
-          </h3>
-        </div>
+  const fontSizeNum = parseInt(formData.reader.fontSize) || 16;
 
+  return (
+    <div className="space-y-6">
+      {/* ── APPEARANCE ─────────────────────────────────────── */}
+      <SectionCard
+        icon={Palette}
+        iconColor="bg-indigo-500/15 text-indigo-400"
+        title="Appearance"
+        description="Control the visual theme and language of the application."
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Theme Selector */}
           <div>
-            <label className="block text-xs font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">
-              Theme
-            </label>
+            <FieldLabel>Theme</FieldLabel>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { id: "light", icon: Sun, label: "Light" },
                 { id: "dark", icon: Moon, label: "Dark" },
                 { id: "system", icon: Monitor, label: "System" },
-              ].map((theme) => (
-                <button
-                  key={theme.id}
-                  onClick={() =>
-                    setFormData({
-                      ...formData,
-                      appearance: {
-                        ...formData.appearance,
-                        themeMode: theme.id as any,
-                      },
-                    })
-                  }
-                  className={`flex flex-col items-center gap-2 py-3 rounded-xl border transition-all ${
-                    formData.appearance.themeMode === theme.id
-                      ? "bg-indigo-600/10 border-indigo-500/50 text-indigo-400"
-                      : "bg-[var(--surface-raised)] border-[var(--border-default)] text-slate-400 hover:bg-[var(--surface-overlay)] hover:border-[var(--border-strong)]"
-                  }`}
-                >
-                  <theme.icon size={20} />
-                  <span className="text-xs font-bold">{theme.label}</span>
-                </button>
-              ))}
+              ].map((theme) => {
+                const isSelected = formData.appearance.themeMode === theme.id;
+                return (
+                  <button
+                    key={theme.id}
+                    type="button"
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        appearance: {
+                          ...formData.appearance,
+                          themeMode: theme.id as any,
+                        },
+                      })
+                    }
+                    className={`flex flex-col items-center gap-2.5 py-4 rounded-xl border-2 transition-all cursor-pointer ${
+                      isSelected
+                        ? "bg-indigo-500/10 border-indigo-500/60 text-indigo-400 shadow-sm shadow-indigo-500/10"
+                        : "bg-[var(--surface-overlay)] border-transparent text-[var(--text-tertiary)] hover:border-[var(--border-strong)] hover:text-[var(--text-secondary)]"
+                    }`}
+                  >
+                    <theme.icon size={22} strokeWidth={isSelected ? 2.2 : 1.8} />
+                    <span className="text-xs font-bold">{theme.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
+          {/* Language */}
           <div>
-            <label className="block text-xs font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">
-              App Language
-            </label>
+            <FieldLabel icon={Globe}>App Language</FieldLabel>
             <select
               value={formData.appearance.language}
               onChange={(e) =>
@@ -100,294 +229,269 @@ export function PreferencesForm({
                   },
                 })
               }
-              className="w-full bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-sm font-medium text-slate-50 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all appearance-none"
+              className="w-full bg-[var(--surface-overlay)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-sm font-medium text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-all appearance-none cursor-pointer hover:border-[var(--border-strong)]"
             >
               <option value="en">English (US)</option>
-              <option value="es">Español</option>
-              <option value="fr">Français</option>
+              <option value="es">Espanol</option>
+              <option value="fr">Francais</option>
+              <option value="de">Deutsch</option>
+              <option value="ja">Japanese</option>
+              <option value="hi">Hindi</option>
             </select>
           </div>
         </div>
-      </section>
+      </SectionCard>
 
-      {/* READER DEFAULTS SECTION */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2 mb-4 pb-2 border-b border-[var(--border-default)]">
-          <BookOpen size={18} className="text-emerald-400" />
-          <h3 className="text-sm font-bold text-slate-50 uppercase tracking-wider">
-            Reader Defaults
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider flex items-center gap-1.5">
-                <Type size={14} /> Font Family
-              </label>
-              <select
-                value={formData.reader.fontFamily}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    reader: { ...formData.reader, fontFamily: e.target.value },
-                  })
-                }
-                className="w-full bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 text-sm font-medium text-slate-50 focus:outline-none focus:border-indigo-500 transition-all"
-              >
-                <option value="Inter">Inter (Sans-serif)</option>
-                <option value="Merriweather">Merriweather (Serif)</option>
-                <option value="Fira Code">Fira Code (Monospace)</option>
-                <option value="OpenDyslexic">OpenDyslexic</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider flex items-center gap-1.5">
-                <Settings size={14} /> Reader Theme
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  {
-                    id: "light",
-                    label: "Light",
-                    color: "bg-white text-slate-900 border-slate-200",
-                  },
-                  {
-                    id: "sepia",
-                    label: "Sepia",
-                    color: "bg-[#f4ecd8] text-[#5b4636] border-[#e2d5b8]",
-                  },
-                  {
-                    id: "dark",
-                    label: "Dark",
-                    color: "bg-[var(--surface-default)] text-slate-100 border-[var(--border-default)]",
-                  },
-                ].map((theme) => (
-                  <button
-                    key={theme.id}
-                    onClick={() =>
-                      setFormData({
-                        ...formData,
-                        reader: { ...formData.reader, theme: theme.id as any },
-                      })
-                    }
-                    className={`py-2 rounded-lg border text-xs font-bold transition-all ${theme.color} ${
-                      formData.reader.theme === theme.id
-                        ? "ring-2 ring-indigo-500 ring-offset-2 ring-offset-[var(--surface-default)]"
-                        : "opacity-70 hover:opacity-100"
+      {/* ── READER DEFAULTS ────────────────────────────────── */}
+      <SectionCard
+        icon={BookOpen}
+        iconColor="bg-emerald-500/15 text-emerald-400"
+        title="Reader Defaults"
+        description="Configure how books and documents appear in the reader."
+      >
+        {/* Reader Theme */}
+        <div>
+          <FieldLabel icon={Palette}>Reader Theme</FieldLabel>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              {
+                id: "light",
+                label: "Light",
+                preview: "bg-white border-slate-200",
+                dot: "bg-slate-800",
+                lines: "bg-slate-200",
+              },
+              {
+                id: "sepia",
+                label: "Sepia",
+                preview: "bg-[#f4ecd8] border-[#e2d5b8]",
+                dot: "bg-[#5b4636]",
+                lines: "bg-[#dfd3b9]",
+              },
+              {
+                id: "dark",
+                label: "Dark",
+                preview: "bg-[#1e1e20] border-[#3a3a3f]",
+                dot: "bg-slate-300",
+                lines: "bg-[#333338]",
+              },
+            ].map((theme) => {
+              const isSelected = formData.reader.theme === theme.id;
+              return (
+                <button
+                  key={theme.id}
+                  type="button"
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      reader: { ...formData.reader, theme: theme.id as any },
+                    })
+                  }
+                  className={`group relative rounded-xl border-2 p-2.5 transition-all cursor-pointer ${
+                    isSelected
+                      ? "border-indigo-500/60 shadow-sm shadow-indigo-500/10"
+                      : "border-transparent hover:border-[var(--border-strong)]"
+                  }`}
+                >
+                  {/* Mini page preview */}
+                  <div
+                    className={`w-full h-20 rounded-lg border ${theme.preview} px-3 py-2.5 flex flex-col gap-1 mb-2`}
+                  >
+                    <div className={`h-1 w-3/4 rounded-full ${theme.lines}`} />
+                    <div className={`h-0.5 w-full rounded-full ${theme.lines}`} />
+                    <div className={`h-0.5 w-full rounded-full ${theme.lines}`} />
+                    <div className={`h-0.5 w-5/6 rounded-full ${theme.lines}`} />
+                    <div className={`h-0.5 w-full rounded-full ${theme.lines}`} />
+                    <div className={`h-0.5 w-2/3 rounded-full ${theme.lines}`} />
+                  </div>
+                  <span
+                    className={`text-xs font-bold block text-center ${
+                      isSelected
+                        ? "text-indigo-400"
+                        : "text-[var(--text-tertiary)] group-hover:text-[var(--text-secondary)]"
                     }`}
                   >
                     {theme.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">
-                Font Size
-              </label>
-              <input
-                type="range"
-                min="12"
-                max="24"
-                step="1"
-                value={parseInt(formData.reader.fontSize)}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    reader: {
-                      ...formData.reader,
-                      fontSize: `${e.target.value}px`,
-                    },
-                  })
-                }
-                className="w-full accent-indigo-500"
-              />
-              <div className="flex justify-between text-xs font-medium text-slate-500 mt-1">
-                <span>Small</span>
-                <span>{formData.reader.fontSize}</span>
-                <span>Large</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider flex items-center gap-1.5">
-                <AlignLeft size={14} /> Text Alignment
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() =>
-                    setFormData({
-                      ...formData,
-                      reader: { ...formData.reader, textAlignment: "left" },
-                    })
-                  }
-                  className={`py-2 rounded-lg border text-xs font-bold transition-all ${
-                    formData.reader.textAlignment === "left"
-                      ? "bg-indigo-600/10 border-indigo-500/50 text-indigo-400"
-                      : "bg-[var(--surface-raised)] border-[var(--border-default)] text-slate-400"
-                  }`}
-                >
-                  Left Align
+                  </span>
+                  {isSelected && (
+                    <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center shadow-md">
+                      <svg
+                        viewBox="0 0 12 12"
+                        className="w-3 h-3 text-white fill-current"
+                      >
+                        <path d="M10 3L4.5 8.5 2 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  )}
                 </button>
-                <button
-                  onClick={() =>
-                    setFormData({
-                      ...formData,
-                      reader: { ...formData.reader, textAlignment: "justify" },
-                    })
-                  }
-                  className={`py-2 rounded-lg border text-xs font-bold transition-all ${
-                    formData.reader.textAlignment === "justify"
-                      ? "bg-indigo-600/10 border-indigo-500/50 text-indigo-400"
-                      : "bg-[var(--surface-raised)] border-[var(--border-default)] text-slate-400"
-                  }`}
-                >
-                  Justify
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider flex items-center gap-1.5">
-                <Expand size={14} /> Line Height
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="3"
-                step="0.1"
-                value={formData.reader.lineHeight}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    reader: {
-                      ...formData.reader,
-                      lineHeight: parseFloat(e.target.value),
-                    },
-                  })
-                }
-                className="w-full accent-indigo-500"
-              />
-              <div className="text-xs font-medium text-slate-500 text-center mt-1">
-                {formData.reader.lineHeight}x
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between p-3 bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-xl">
-              <div>
-                <p className="text-sm font-bold text-slate-50">Hyphenation</p>
-                <p className="text-xs text-slate-400">
-                  Break words across lines
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={formData.reader.hyphenation}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      reader: {
-                        ...formData.reader,
-                        hyphenation: e.target.checked,
-                      },
-                    })
-                  }
-                />
-                <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-              </label>
-            </div>
+              );
+            })}
           </div>
         </div>
-      </section>
 
-      {/* NOTIFICATIONS SECTION */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2 mb-4 pb-2 border-b border-[var(--border-default)]">
-          <Bell size={18} className="text-amber-400" />
-          <h3 className="text-sm font-bold text-slate-50 uppercase tracking-wider">
-            Notifications
-          </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Font Family */}
+          <div>
+            <FieldLabel icon={Type}>Font Family</FieldLabel>
+            <select
+              value={formData.reader.fontFamily}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  reader: { ...formData.reader, fontFamily: e.target.value },
+                })
+              }
+              className="w-full bg-[var(--surface-overlay)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-sm font-medium text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-all appearance-none cursor-pointer hover:border-[var(--border-strong)]"
+            >
+              <option value="Inter">Inter (Sans-serif)</option>
+              <option value="Merriweather">Merriweather (Serif)</option>
+              <option value="Fira Code">Fira Code (Monospace)</option>
+              <option value="OpenDyslexic">OpenDyslexic</option>
+            </select>
+          </div>
+
+          {/* Font Size */}
+          <div>
+            <FieldLabel>Font Size</FieldLabel>
+            <StepperControl
+              value={String(fontSizeNum)}
+              min={12}
+              max={24}
+              step={1}
+              label={`${fontSizeNum}px`}
+              onDecrement={() =>
+                setFormData({
+                  ...formData,
+                  reader: {
+                    ...formData.reader,
+                    fontSize: `${Math.max(12, fontSizeNum - 1)}px`,
+                  },
+                })
+              }
+              onIncrement={() =>
+                setFormData({
+                  ...formData,
+                  reader: {
+                    ...formData.reader,
+                    fontSize: `${Math.min(24, fontSizeNum + 1)}px`,
+                  },
+                })
+              }
+            />
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[
-            {
-              id: "emailAlerts",
-              label: "Email Alerts",
-              desc: "Important updates via email",
-              icon: Mail,
-            },
-            {
-              id: "pushNotifications",
-              label: "Push Notifications",
-              desc: "Browser and app notifications",
-              icon: Smartphone,
-            },
-            {
-              id: "weeklyDigest",
-              label: "Weekly Digest",
-              desc: "Summary of your reading progress",
-              icon: BookOpen,
-            },
-          ].map((item) => {
-            const isChecked =
-              formData.notifications[
-                item.id as keyof typeof formData.notifications
-              ];
-            return (
-              <div
-                key={item.id}
-                className="flex items-center justify-between p-4 bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-xl transition-colors hover:border-[var(--border-strong)]"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`p-2 rounded-lg ${isChecked ? "bg-indigo-600/10 text-indigo-400" : "bg-[var(--surface-overlay)] text-slate-500"}`}
-                  >
-                    <item.icon size={18} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-50">
-                      {item.label}
-                    </p>
-                    <p className="text-xs text-slate-400 mt-0.5">{item.desc}</p>
-                  </div>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    checked={isChecked}
-                    onChange={(e) =>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Text Alignment */}
+          <div>
+            <FieldLabel icon={AlignLeft}>Text Alignment</FieldLabel>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { id: "left", icon: AlignLeft, label: "Left Align" },
+                { id: "justify", icon: AlignJustify, label: "Justify" },
+              ].map((opt) => {
+                const isSelected = formData.reader.textAlignment === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() =>
                       setFormData({
                         ...formData,
-                        notifications: {
-                          ...formData.notifications,
-                          [item.id]: e.target.checked,
+                        reader: {
+                          ...formData.reader,
+                          textAlignment: opt.id as any,
                         },
                       })
                     }
-                  />
-                  <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                </label>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+                    className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer ${
+                      isSelected
+                        ? "bg-indigo-500/10 border-indigo-500/60 text-indigo-400"
+                        : "bg-[var(--surface-overlay)] border-transparent text-[var(--text-tertiary)] hover:border-[var(--border-strong)] hover:text-[var(--text-secondary)]"
+                    }`}
+                  >
+                    <opt.icon size={14} />
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-      {/* SAVE ACTIONS */}
-      <div className="flex items-center gap-3 pt-6 border-t border-[var(--border-default)]">
+          {/* Line Height */}
+          <div>
+            <FieldLabel icon={Expand}>Line Height</FieldLabel>
+            <StepperControl
+              value={String(formData.reader.lineHeight)}
+              min={1}
+              max={3}
+              step={0.1}
+              label={`${formData.reader.lineHeight}x`}
+              onDecrement={() =>
+                setFormData({
+                  ...formData,
+                  reader: {
+                    ...formData.reader,
+                    lineHeight: Math.max(
+                      1,
+                      Math.round((formData.reader.lineHeight - 0.1) * 10) / 10
+                    ),
+                  },
+                })
+              }
+              onIncrement={() =>
+                setFormData({
+                  ...formData,
+                  reader: {
+                    ...formData.reader,
+                    lineHeight: Math.min(
+                      3,
+                      Math.round((formData.reader.lineHeight + 0.1) * 10) / 10
+                    ),
+                  },
+                })
+              }
+            />
+          </div>
+        </div>
+
+        {/* Hyphenation Toggle */}
+        <div className="flex items-center justify-between p-4 rounded-xl bg-[var(--surface-overlay)] border border-[var(--border-default)]">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-[var(--surface-default)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)]">
+              <SplitSquareHorizontal size={16} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[var(--text-primary)]">
+                Hyphenation
+              </p>
+              <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
+                Automatically break words across lines for cleaner paragraph edges
+              </p>
+            </div>
+          </div>
+          <ToggleSwitch
+            checked={formData.reader.hyphenation}
+            onChange={(val) =>
+              setFormData({
+                ...formData,
+                reader: { ...formData.reader, hyphenation: val },
+              })
+            }
+          />
+        </div>
+      </SectionCard>
+
+      {/* ── SAVE ACTION ────────────────────────────────────── */}
+      <div className="flex items-center justify-between pt-2">
+        <p className="text-xs text-[var(--text-tertiary)]">
+          Changes are applied after saving.
+        </p>
         <button
+          type="button"
           onClick={handleSave}
           disabled={isPending}
-          className="px-6 py-2.5 text-sm font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-md disabled:opacity-50 flex items-center gap-2"
+          className="px-7 py-2.5 text-sm font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-500 active:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 disabled:opacity-50 disabled:shadow-none flex items-center gap-2 cursor-pointer"
         >
           {isPending ? (
             <Loader2 size={16} className="animate-spin" />

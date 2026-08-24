@@ -41,6 +41,8 @@ export class ReaderService {
   private autoSaveTimer: NodeJS.Timeout | null = null;
   private readonly AUTO_SAVE_DELAY_MS = 2500;
   private pendingSaveAnchor: LocationAnchor | null = null;
+  private lastSavedPositionValue: string | null = null;
+  private lastFlushedPositionValue: string | null = null;
   private heartbeatTimer: NodeJS.Timeout | null = null;
   private readonly HEARTBEAT_INTERVAL_MS = 30000;
   private lastFlushedPagesCount: number = 0;
@@ -103,6 +105,10 @@ export class ReaderService {
     } catch (err) {
       console.warn("Could not fetch remote reading position:", err);
     }
+
+    // Record initial saved position to prevent redundant immediate saves
+    this.lastSavedPositionValue = initialAnchor?.value || String(initialPageNumber);
+    this.lastFlushedPositionValue = this.lastSavedPositionValue;
 
     // Listen for location changes
     this.renderer.onLocationChanged((anchor: LocationAnchor, percentage: number) => {
@@ -202,9 +208,20 @@ export class ReaderService {
         this.lastFlushedPagesCount = currentPages;
 
         const currentAnchor = useReaderStore.getState().currentAnchor;
-        const currentPage = currentAnchor?.value ? parseInt(currentAnchor.value, 10) : undefined;
+        const currentPosValue = currentAnchor?.value;
 
-        await this.sessionFacade.completeSession(elapsed, newPages, currentPage);
+        // Only send position update if the user actually navigated to a new position
+        let pageToSend: number | undefined = undefined;
+        if (currentPosValue && currentPosValue !== this.lastFlushedPositionValue) {
+          const parsed = parseInt(currentPosValue, 10);
+          if (!isNaN(parsed) && parsed > 0) {
+            pageToSend = parsed;
+            this.lastFlushedPositionValue = currentPosValue;
+            this.lastSavedPositionValue = currentPosValue;
+          }
+        }
+
+        await this.sessionFacade.completeSession(elapsed, newPages, pageToSend);
       }
     }
   }
@@ -705,20 +722,29 @@ export class ReaderService {
   }
 
   private scheduleAutoSave(anchor: LocationAnchor): void {
+    // If the reading position has not changed, do not schedule or send updates
+    if (this.lastSavedPositionValue === anchor.value) {
+      return;
+    }
+
     this.pendingSaveAnchor = anchor;
     if (this.autoSaveTimer) {
       clearTimeout(this.autoSaveTimer);
     }
 
     this.autoSaveTimer = setTimeout(async () => {
-      if (this.pendingSaveAnchor) {
-        await this.savePosition(this.pendingSaveAnchor);
+      if (this.pendingSaveAnchor && this.pendingSaveAnchor.value !== this.lastSavedPositionValue) {
+        const anchorToSave = this.pendingSaveAnchor;
+        await this.savePosition(anchorToSave);
         this.pendingSaveAnchor = null;
       }
     }, this.AUTO_SAVE_DELAY_MS);
   }
 
   private async savePosition(anchor: LocationAnchor): Promise<void> {
+    if (this.lastSavedPositionValue === anchor.value) return;
+    this.lastSavedPositionValue = anchor.value;
+    this.lastFlushedPositionValue = anchor.value;
     await this.sessionFacade.saveProgress(anchor);
   }
 

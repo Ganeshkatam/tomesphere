@@ -62,20 +62,20 @@ export function AppHeader({ className = "", variant = "application", user }: App
           } ${className}`}
         id="top-nav"
       >
-        <div className="h-20 sm:h-22 lg:h-24 max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center justify-between gap-4 sm:gap-6">
+        <div className="h-20 sm:h-22 lg:h-24 max-w-[1760px] mx-auto px-2 sm:px-4 lg:px-8 xl:px-12 flex items-center justify-between gap-2 sm:gap-4">
 
           {/* Left Side: Logo + Main Navigation Links */}
-          <div className="flex items-center gap-6 lg:gap-10">
+          <div className="flex items-center gap-2 md:gap-4 lg:gap-10">
             {/* Logo */}
             <Link
               href={variant === "application" ? "/me" : "/"}
-              className="flex items-center gap-3 hover:opacity-90 transition-opacity flex-shrink-0"
+              className="flex items-center gap-2 lg:gap-3 hover:opacity-90 transition-opacity flex-shrink-0"
             >
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 font-bold">
-                <BookOpen size={22} />
+              <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 font-bold shrink-0">
+                <BookOpen size={20} className="lg:w-[22px] lg:h-[22px]" />
               </div>
               <span
-                className={`tracking-tight font-display font-extrabold text-xl sm:text-2xl ${isDark ? "text-white" : "text-slate-900"
+                className={`tracking-tight font-display font-extrabold text-lg sm:text-xl lg:text-2xl shrink-0 ${isDark ? "text-white" : "text-slate-900"
                   }`}
               >
                 TomeSphere
@@ -84,10 +84,10 @@ export function AppHeader({ className = "", variant = "application", user }: App
 
             {/* Primary Navigation Links (Inline next to Logo) */}
             {variant === "application" && (
-              <nav className="hidden md:flex items-center gap-1.5 sm:gap-2.5">
+              <nav className="hidden md:flex items-center gap-0.5 md:gap-1 lg:gap-2.5">
                 <Link
                   href="/me"
-                  className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${pathname === "/me"
+                  className={`text-xs md:text-sm lg:text-base font-semibold px-2 md:px-2.5 lg:px-3.5 py-2 rounded-xl transition-all whitespace-nowrap ${pathname === "/me"
                     ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                     }`}
@@ -96,7 +96,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
                 </Link>
                 <Link
                   href="/discover"
-                  className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${pathname && pathname.startsWith("/discover")
+                  className={`text-xs md:text-sm lg:text-base font-semibold px-2 md:px-2.5 lg:px-3.5 py-2 rounded-xl transition-all whitespace-nowrap ${pathname && pathname.startsWith("/discover")
                     ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                     }`}
@@ -105,7 +105,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
                 </Link>
                 <Link
                   href="/me/dashboard"
-                  className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${pathname && pathname.startsWith("/me/dashboard")
+                  className={`text-xs md:text-sm lg:text-base font-semibold px-2 md:px-2.5 lg:px-3.5 py-2 rounded-xl transition-all whitespace-nowrap ${pathname && pathname.startsWith("/me/dashboard")
                     ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                     }`}
@@ -114,7 +114,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
                 </Link>
                 <Link
                   href="/me/library"
-                  className={`text-sm sm:text-base font-semibold px-3.5 py-2 rounded-xl transition-all ${pathname && pathname.startsWith("/me/library")
+                  className={`text-xs md:text-sm lg:text-base font-semibold px-2 md:px-2.5 lg:px-3.5 py-2 rounded-xl transition-all whitespace-nowrap ${pathname && pathname.startsWith("/me/library")
                     ? "bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 font-bold"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
                     }`}
@@ -125,10 +125,10 @@ export function AppHeader({ className = "", variant = "application", user }: App
             )}
 
             {variant === "marketing" && (
-              <nav className="hidden md:flex items-center gap-1.5 sm:gap-2.5">
+              <nav className="hidden md:flex items-center gap-0.5 md:gap-1 lg:gap-2.5">
                 <Link
                   href="/discover"
-                  className={`text-sm sm:text-base font-medium px-3.5 py-2 rounded-xl transition-all ${isDark
+                  className={`text-xs md:text-sm lg:text-base font-medium px-2 md:px-2.5 lg:px-3.5 py-2 rounded-xl transition-all whitespace-nowrap ${isDark
                     ? "text-slate-300 hover:text-white hover:bg-white/10"
                     : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
@@ -137,7 +137,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
                 </Link>
                 <Link
                   href="/discover/collections"
-                  className={`text-sm sm:text-base font-medium px-3.5 py-2 rounded-xl transition-all ${isDark
+                  className={`text-xs md:text-sm lg:text-base font-medium px-2 md:px-2.5 lg:px-3.5 py-2 rounded-xl transition-all whitespace-nowrap ${isDark
                     ? "text-slate-300 hover:text-white hover:bg-white/10"
                     : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
@@ -146,7 +146,7 @@ export function AppHeader({ className = "", variant = "application", user }: App
                 </Link>
                 <Link
                   href="/about"
-                  className={`text-sm sm:text-base font-medium px-3.5 py-2 rounded-xl transition-all ${isDark
+                  className={`text-xs md:text-sm lg:text-base font-medium px-2 md:px-2.5 lg:px-3.5 py-2 rounded-xl transition-all whitespace-nowrap ${isDark
                     ? "text-slate-300 hover:text-white hover:bg-white/10"
                     : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                     }`}
@@ -158,18 +158,18 @@ export function AppHeader({ className = "", variant = "application", user }: App
           </div>
 
           {/* Right Side: Search Bar + Utilities + Profile Avatar */}
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-1.5 sm:gap-3 lg:gap-4 shrink-0">
 
             {/* Desktop Search Bar */}
-            <div className="hidden md:block w-64 lg:w-80 xl:w-96 mr-2">
-              <SearchBar size="sm" placeholder="Search digital archives, books, authors..." />
+            <div className="hidden md:block w-40 md:w-48 lg:w-80 xl:w-96 mr-1 lg:mr-2 shrink-0">
+              <SearchBar size="sm" placeholder="Search..." />
             </div>
 
             {/* Mobile Search Button (Opens Overlay) */}
             <button
               onClick={() => setIsSearchOpen(true)}
               aria-label="Open search"
-              className={`md:hidden p-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center ${isDark
+              className={`lg:hidden p-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center ${isDark
                 ? "text-slate-300 hover:text-white hover:bg-slate-800"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                 }`}

@@ -30,6 +30,8 @@ export class SupabaseNotificationPreferencesRepository
       recommendationsEnabled: data.recommendations_enabled,
       weeklyDigestEnabled: data.weekly_digest_enabled,
       systemAnnouncementsEnabled: data.system_announcements_enabled,
+      emailAlertsEnabled: data.email_alerts_enabled,
+      pushNotificationsEnabled: data.push_notifications_enabled,
       createdAt: new Date(data.created_at),
       updatedAt: new Date(data.updated_at),
     };
@@ -44,6 +46,8 @@ export class SupabaseNotificationPreferencesRepository
         recommendations_enabled: preferences.recommendationsEnabled,
         weekly_digest_enabled: preferences.weeklyDigestEnabled,
         system_announcements_enabled: preferences.systemAnnouncementsEnabled,
+        email_alerts_enabled: preferences.emailAlertsEnabled,
+        push_notifications_enabled: preferences.pushNotificationsEnabled,
         updated_at: new Date().toISOString(),
       });
 
@@ -54,7 +58,7 @@ export class SupabaseNotificationPreferencesRepository
 
   async updateToggle(
     userId: UserId,
-    field: "readingRemindersEnabled" | "recommendationsEnabled" | "weeklyDigestEnabled" | "systemAnnouncementsEnabled",
+    field: "readingRemindersEnabled" | "recommendationsEnabled" | "weeklyDigestEnabled" | "systemAnnouncementsEnabled" | "emailAlertsEnabled" | "pushNotificationsEnabled",
     value: boolean
   ): Promise<void> {
     const payload: Database["public"]["Tables"]["user_notification_preferences"]["Insert"] = {
@@ -70,6 +74,10 @@ export class SupabaseNotificationPreferencesRepository
       payload.weekly_digest_enabled = value;
     } else if (field === "systemAnnouncementsEnabled") {
       payload.system_announcements_enabled = value;
+    } else if (field === "emailAlertsEnabled") {
+      payload.email_alerts_enabled = value;
+    } else if (field === "pushNotificationsEnabled") {
+      payload.push_notifications_enabled = value;
     }
 
     const { error } = await this.supabase

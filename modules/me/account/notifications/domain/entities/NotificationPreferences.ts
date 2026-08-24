@@ -6,6 +6,8 @@ export interface NotificationPreferences {
   recommendationsEnabled: boolean;
   weeklyDigestEnabled: boolean;
   systemAnnouncementsEnabled: boolean;
+  emailAlertsEnabled: boolean;
+  pushNotificationsEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

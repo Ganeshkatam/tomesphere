@@ -9,9 +9,11 @@ import {
   Sparkles,
   Mail,
   Megaphone,
+  Smartphone,
   CheckCircle2,
   Loader2,
   CloudOff,
+  Send,
 } from "lucide-react";
 
 export interface NotificationPreferencesDto {
@@ -19,6 +21,8 @@ export interface NotificationPreferencesDto {
   recommendationsEnabled: boolean;
   weeklyDigestEnabled: boolean;
   systemAnnouncementsEnabled: boolean;
+  emailAlertsEnabled: boolean;
+  pushNotificationsEnabled: boolean;
 }
 
 interface NotificationsFormProps {
@@ -72,6 +76,27 @@ const TOGGLE_ITEMS: ToggleMeta[] = [
     icon: Megaphone,
     iconColor: "text-sky-400",
     iconBg: "bg-sky-500/10 border-sky-500/20",
+  },
+];
+
+const DELIVERY_CHANNEL_ITEMS: ToggleMeta[] = [
+  {
+    key: "emailAlertsEnabled",
+    label: "Email Alerts",
+    description:
+      "Receive important updates and account activity delivered via email.",
+    icon: Mail,
+    iconColor: "text-rose-400",
+    iconBg: "bg-rose-500/10 border-rose-500/20",
+  },
+  {
+    key: "pushNotificationsEnabled",
+    label: "Push Notifications",
+    description:
+      "Real-time browser and mobile app notifications for immediate alerts.",
+    icon: Smartphone,
+    iconColor: "text-violet-400",
+    iconBg: "bg-violet-500/10 border-violet-500/20",
   },
 ];
 
@@ -194,6 +219,67 @@ export function NotificationsForm({ initialValues }: NotificationsFormProps) {
                 </div>
 
                 {/* Switch Toggle */}
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={isEnabled}
+                  disabled={isItemSaving}
+                  onClick={() => handleToggle(item.key)}
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[var(--surface-default)] disabled:opacity-50 ${
+                    isEnabled ? "bg-indigo-600" : "bg-slate-700/60"
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                      isEnabled ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Delivery Channels Card */}
+      <div className="p-6 bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-2xl">
+        <div className="flex items-center justify-between pb-4 mb-2 border-b border-[var(--border-default)]">
+          <div className="flex items-center gap-2">
+            <Send size={18} className="text-violet-400" />
+            <h3 className="text-sm font-bold text-slate-50 uppercase tracking-wider">
+              Delivery Channels
+            </h3>
+          </div>
+          {renderStatus()}
+        </div>
+
+        <div className="divide-y divide-[var(--border-default)]">
+          {DELIVERY_CHANNEL_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const isEnabled = preferences[item.key];
+            const isItemSaving = savingKey === item.key;
+
+            return (
+              <div
+                key={item.key}
+                className="py-5 first:pt-4 last:pb-0 flex items-center justify-between gap-4 group"
+              >
+                <div className="flex items-start gap-3.5">
+                  <div
+                    className={`p-2 rounded-xl border flex-shrink-0 mt-0.5 ${item.iconBg}`}
+                  >
+                    <Icon size={16} className={item.iconColor} />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-slate-100">
+                      {item.label}
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed max-w-xl">
+                      {item.description}
+                    </p>
+                  </div>
+                </div>
+
                 <button
                   type="button"
                   role="switch"

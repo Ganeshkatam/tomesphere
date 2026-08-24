@@ -284,7 +284,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
       <div className="flex flex-col items-center text-center">
         <div className="relative group mb-5">
           <div className="w-28 h-28 rounded-full p-[3px] bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-            <div className="w-full h-full rounded-full overflow-hidden bg-[var(--surface-raised)] flex items-center justify-center">
+            <div className="w-full h-full relative rounded-full overflow-hidden bg-[var(--surface-raised)] flex items-center justify-center">
               {avatarUrl ? (
                 <Image src={avatarUrl} alt="Avatar" className="object-cover" fill sizes="112px" />
               ) : (

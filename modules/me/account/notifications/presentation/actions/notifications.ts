@@ -12,6 +12,8 @@ const ToggleFieldSchema = z.enum([
   "recommendationsEnabled",
   "weeklyDigestEnabled",
   "systemAnnouncementsEnabled",
+  "emailAlertsEnabled",
+  "pushNotificationsEnabled",
 ]);
 
 const ToggleUpdateSchema = z.object({

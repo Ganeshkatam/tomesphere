@@ -1584,6 +1584,8 @@ export type Database = {
       user_notification_preferences: {
         Row: {
           created_at: string
+          email_alerts_enabled: boolean
+          push_notifications_enabled: boolean
           reading_reminders_enabled: boolean
           recommendations_enabled: boolean
           system_announcements_enabled: boolean
@@ -1593,6 +1595,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          email_alerts_enabled?: boolean
+          push_notifications_enabled?: boolean
           reading_reminders_enabled?: boolean
           recommendations_enabled?: boolean
           system_announcements_enabled?: boolean
@@ -1602,6 +1606,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          email_alerts_enabled?: boolean
+          push_notifications_enabled?: boolean
           reading_reminders_enabled?: boolean
           recommendations_enabled?: boolean
           system_announcements_enabled?: boolean
