@@ -88,6 +88,7 @@ export function UserMenu({ user }: UserMenuProps) {
             className="object-cover rounded-full"
             fill
             sizes="40px"
+            priority
           />
         ) : (
           <span className="group-hover:scale-110 transition-transform">
@@ -110,6 +111,7 @@ export function UserMenu({ user }: UserMenuProps) {
                     className="object-cover"
                     fill
                     sizes="40px"
+                    loading="eager"
                   />
                 ) : (
                   getInitials()

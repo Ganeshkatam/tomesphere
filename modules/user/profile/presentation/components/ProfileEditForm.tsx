@@ -136,6 +136,7 @@ export function ProfileEditForm({ profile, userEmail }: ProfileEditFormProps) {
                     fill
                     className="object-cover"
                     unoptimized
+                    priority
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-500 font-bold text-xl">

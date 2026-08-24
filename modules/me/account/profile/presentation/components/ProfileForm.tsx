@@ -286,7 +286,14 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
           <div className="w-28 h-28 rounded-full p-[3px] bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
             <div className="w-full h-full relative rounded-full overflow-hidden bg-[var(--surface-raised)] flex items-center justify-center">
               {avatarUrl ? (
-                <Image src={avatarUrl} alt="Avatar" className="object-cover" fill sizes="112px" />
+                <Image
+                  src={avatarUrl}
+                  alt="Avatar"
+                  className="object-cover"
+                  fill
+                  sizes="112px"
+                  priority
+                />
               ) : (
                 <span className="text-3xl font-bold bg-gradient-to-br from-indigo-400 to-purple-400 bg-clip-text text-transparent">
                   {getInitials(formData.displayName)}

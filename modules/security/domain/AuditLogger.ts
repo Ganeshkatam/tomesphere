@@ -1,10 +1,10 @@
 import { SecurityAction } from "@/shared/kernel/security/SecurityAction";
 
 export interface AuditContext {
-  actorId: string;
-  ipAddress?: string;
-  userAgent?: string;
-  correlationId?: string;
+  actorId?: string | null;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  correlationId?: string | null;
 }
 
 export interface AuditLogger {

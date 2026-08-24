@@ -24,13 +24,15 @@ const LOCKOUT_DURATION_MS = parseInt(
  */
 async function getAuditContext(userId?: string) {
   const hdrs = await headers();
+  const rawIp =
+    hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    hdrs.get("x-real-ip") ||
+    null;
+
   return {
-    actorId: userId || "anonymous",
-    ipAddress:
-      hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      hdrs.get("x-real-ip") ||
-      "unknown",
-    userAgent: hdrs.get("user-agent") || "unknown",
+    actorId: userId || null,
+    ipAddress: rawIp,
+    userAgent: hdrs.get("user-agent") || null,
   };
 }
 
