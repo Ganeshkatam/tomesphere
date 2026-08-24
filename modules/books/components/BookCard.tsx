@@ -184,6 +184,9 @@ export default function BookCard({
             />
           )}
 
+          {/* Subtle Book Spine Depth Shadow on Left */}
+          <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-r from-black/25 via-white/15 to-transparent pointer-events-none z-10" />
+
           {/* Featured Badge */}
           {book.isFeatured && (
             <div className="absolute top-2 right-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-black px-2 py-0.5 rounded-md text-[9px] font-black shadow-md flex items-center gap-0.5 z-10">
@@ -377,15 +380,15 @@ export default function BookCard({
         {/* Card Details Section Below Cover */}
         <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between bg-white dark:bg-slate-900">
           <div>
-            <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white line-clamp-1 leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+            <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white line-clamp-2 min-h-[2.25rem] leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
               {book.title}
             </h4>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 font-medium">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-1 font-medium">
               by {authorNames}
             </p>
           </div>
 
-          <div className="mt-2 space-y-1.5">
+          <div className="mt-2.5 space-y-1.5 pt-1 border-t border-slate-100 dark:border-slate-800/60">
             {/* Reading Progress Indicator if present */}
             {typeof book.progress === "number" && book.progress > 0 && (
               <div className="space-y-1">
@@ -412,10 +415,11 @@ export default function BookCard({
               </div>
             )}
 
-            {/* Genre & Year */}
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium truncate">
-              {genreName} • {year}
-            </p>
+            {/* Genre & Year Chip */}
+            <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+              <span className="truncate max-w-[90px]">{genreName}</span>
+              <span className="shrink-0">{year}</span>
+            </div>
           </div>
         </div>
       </div>

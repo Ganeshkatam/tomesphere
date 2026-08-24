@@ -16,7 +16,9 @@ export async function getDiscoveryConfiguration(
       return {
         mode: "authors",
         title: "Popular Authors",
-        description: `Explore ${data.total} items in this category.`,
+        subtitle: "Prolific Minds & Canonical Voices",
+        description: "Explore prolific authors, historical scholars, and influential thinkers across the TomeSphere archive.",
+        totalCount: data.total,
         gridContent: <AuthorGrid items={data.items} />,
       };
     }
@@ -25,7 +27,9 @@ export async function getDiscoveryConfiguration(
       return {
         mode: "collections",
         title: "Curated Collections",
-        description: `Explore ${data.total} items in this category.`,
+        subtitle: "Anthologies, Series & Reading Tracks",
+        description: "Expertly curated reading collections categorized by theme, historical era, and academic discipline.",
+        totalCount: data.total,
         gridContent: <CollectionGrid items={data.items} />,
       };
     }
@@ -34,7 +38,9 @@ export async function getDiscoveryConfiguration(
       return {
         mode: "featured",
         title: "Editor's Picks",
-        description: `Explore ${data.total} items in this category.`,
+        subtitle: "Curated Masterpieces & Essential Reading",
+        description: "Hand-picked standout classics, foundational textbooks, and definitive digital editions curated by the TomeSphere editorial team.",
+        totalCount: data.total,
         gridContent: <BookGrid items={data.items} />,
       };
     }
@@ -43,7 +49,9 @@ export async function getDiscoveryConfiguration(
       return {
         mode: "new",
         title: "Recently Added",
-        description: `Explore ${data.total} items in this category.`,
+        subtitle: "Latest Library Ingestions & Catalog Editions",
+        description: "Explore newly ingested and cataloged digital editions, preserved manuscripts, and academic additions.",
+        totalCount: data.total,
         gridContent: <BookGrid items={data.items} />,
       };
     }
@@ -52,7 +60,9 @@ export async function getDiscoveryConfiguration(
       return {
         mode: "trending",
         title: "Popular Now",
-        description: `Explore ${data.totalCount} items in this category.`,
+        subtitle: "High Velocity & Active Reader Trends",
+        description: "Top trending titles experiencing high reader engagement, session volume, and reading velocity across the archive.",
+        totalCount: data.totalCount,
         gridContent: <BookGrid items={data.books} />,
       };
     }

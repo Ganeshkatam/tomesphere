@@ -58,12 +58,7 @@ export function BookCarousel({ items, priority = false }: BookCarouselProps) {
   }, [checkScrollability, items]);
 
   if (!items || items.length === 0) {
-    return (
-      <EmptyState
-        title="No books found"
-        description="There are no books to display right now. Check back soon!"
-      />
-    );
+    return null;
   }
 
   const scroll = (direction: "left" | "right") => {

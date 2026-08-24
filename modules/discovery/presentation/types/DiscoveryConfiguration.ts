@@ -13,6 +13,8 @@ export type DiscoveryCategory = Exclude<DiscoveryMode, "overview">;
 export interface DiscoveryConfiguration {
   mode: DiscoveryMode;
   title: string;
+  subtitle?: string;
   description: string;
+  totalCount?: number;
   gridContent: React.ReactNode;
 }
