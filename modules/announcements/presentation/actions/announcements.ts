@@ -8,7 +8,7 @@ import { SupabaseAnnouncementRepository } from "../../infrastructure/SupabaseAnn
 import { CreateAnnouncementHandler } from "../../application/commands/CreateAnnouncementCommand";
 import { UpdateAnnouncementHandler } from "../../application/commands/UpdateAnnouncementCommand";
 import { DeleteAnnouncementHandler } from "../../application/commands/DeleteAnnouncementCommand";
-import { SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Input Schemas
 const CreateAnnouncementInputSchema = z.object({
