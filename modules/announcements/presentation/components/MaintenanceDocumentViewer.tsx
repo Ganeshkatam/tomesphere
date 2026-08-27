@@ -41,8 +41,7 @@ export function MaintenanceDocumentViewer({
 
 ---
 
-${content}
-${notice.linkUrl ? `\n---\n\n[${notice.linkText || "Reference Link"}](${notice.linkUrl})\n` : ""}`;
+${content}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(rawMarkdown);
@@ -169,21 +168,6 @@ ${notice.linkUrl ? `\n---\n\n[${notice.linkText || "Reference Link"}](${notice.l
               </p>
             </div>
           </div>
-
-          {/* External Reference Link (if defined in database) */}
-          {notice.linkUrl && (
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
-              <a
-                href={notice.linkUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
-              >
-                <span>{notice.linkText || "Reference Link"}</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
-            </div>
-          )}
         </div>
       )}
     </div>
