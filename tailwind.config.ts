@@ -43,7 +43,45 @@ const config: Config = {
       maxWidth: {
         "container-max": "1280px",
       },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
       colors: {
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        primary: {
+          DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)",
+        },
+        secondary: {
+          DEFAULT: "var(--secondary)",
+          foreground: "var(--secondary-foreground)",
+        },
+        destructive: {
+          DEFAULT: "var(--destructive)",
+          foreground: "var(--destructive-foreground)",
+        },
+        muted: {
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
+        },
+        accent: {
+          DEFAULT: "var(--accent)",
+          foreground: "var(--accent-foreground)",
+        },
+        popover: {
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
+        },
+        card: {
+          DEFAULT: "var(--card)",
+          foreground: "var(--card-foreground)",
+        },
         "surface": "#fbf9f8",
         "surface-dim": "#dbd9d9",
         "surface-bright": "#fbf9f8",
@@ -59,12 +97,10 @@ const config: Config = {
         "outline": "#75777e",
         "outline-variant": "#c5c6ce",
         "surface-tint": "#4f5f7b",
-        "primary": "#04162e",
         "on-primary": "#ffffff",
         "primary-container": "#1a2b44",
         "on-primary-container": "#8292b0",
         "inverse-primary": "#b6c7e7",
-        "secondary": "#4b6455",
         "on-secondary": "#ffffff",
         "secondary-container": "#cae6d4",
         "on-secondary-container": "#4f6859",
@@ -88,11 +124,10 @@ const config: Config = {
         "tertiary-fixed-dim": "#c8c6c2",
         "on-tertiary-fixed": "#1b1c19",
         "on-tertiary-fixed-variant": "#474744",
-        "background": "#fbf9f8",
         "on-background": "#1b1c1c",
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };
 export default config;

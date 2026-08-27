@@ -73,4 +73,23 @@ html.dark {
     rgba(15, 23, 42, 0.6) 50%,
     rgba(88, 28, 135, 0.4) 100%
   );
+
+  /* shadcn semantic aliases mapped onto TomeSphere design tokens */
+  --background: var(--surface-canvas);
+  --foreground: var(--text-primary);
+  --card: var(--surface-default);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface-default);
+  --popover-foreground: var(--text-primary);
+  --primary-foreground: #ffffff;
+  --secondary-foreground: var(--slate-50);
+  --muted: var(--surface-raised);
+  --muted-foreground: var(--text-secondary);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--error);
+  --destructive-foreground: #ffffff;
+  --border: var(--border-default);
+  --input: var(--border-default);
+  --ring: var(--primary);
+  --radius: var(--radius-lg);
 }
