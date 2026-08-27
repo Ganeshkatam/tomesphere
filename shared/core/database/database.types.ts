@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -366,12 +366,7 @@ export type Database = {
           download_count: number | null
           edition: string | null
           embedding: string | null
-          epub_url: string | null
-          file_size: number | null
-          file_size_mb: number | null
-          format: string | null
           fts: unknown
-          hash: string | null
           id: string
           is_archived: boolean
           is_featured: boolean | null
@@ -381,7 +376,6 @@ export type Database = {
           language: string | null
           language_id: string | null
           pages: number | null
-          pdf_url: string | null
           publisher: string | null
           release_date: string | null
           series: string | null
@@ -398,12 +392,7 @@ export type Database = {
           download_count?: number | null
           edition?: string | null
           embedding?: string | null
-          epub_url?: string | null
-          file_size?: number | null
-          file_size_mb?: number | null
-          format?: string | null
           fts?: unknown
-          hash?: string | null
           id?: string
           is_archived?: boolean
           is_featured?: boolean | null
@@ -413,7 +402,6 @@ export type Database = {
           language?: string | null
           language_id?: string | null
           pages?: number | null
-          pdf_url?: string | null
           publisher?: string | null
           release_date?: string | null
           series?: string | null
@@ -430,12 +418,7 @@ export type Database = {
           download_count?: number | null
           edition?: string | null
           embedding?: string | null
-          epub_url?: string | null
-          file_size?: number | null
-          file_size_mb?: number | null
-          format?: string | null
           fts?: unknown
-          hash?: string | null
           id?: string
           is_archived?: boolean
           is_featured?: boolean | null
@@ -445,7 +428,6 @@ export type Database = {
           language?: string | null
           language_id?: string | null
           pages?: number | null
-          pdf_url?: string | null
           publisher?: string | null
           release_date?: string | null
           series?: string | null
@@ -531,33 +513,6 @@ export type Database = {
           slug?: string
           title?: string
           updated_at?: string
-        }
-        Relationships: []
-      }
-      discovery_autocomplete_documents: {
-        Row: {
-          id: string
-          indexed_by: string | null
-          query: string
-          score: number | null
-          source_updated_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          indexed_by?: string | null
-          query: string
-          score?: number | null
-          source_updated_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          indexed_by?: string | null
-          query?: string
-          score?: number | null
-          source_updated_at?: string | null
-          updated_at?: string | null
         }
         Relationships: []
       }
@@ -1381,27 +1336,6 @@ export type Database = {
           },
         ]
       }
-      search_synonyms: {
-        Row: {
-          canonical: string
-          created_at: string | null
-          id: string
-          synonym: string
-        }
-        Insert: {
-          canonical: string
-          created_at?: string | null
-          id?: string
-          synonym: string
-        }
-        Update: {
-          canonical?: string
-          created_at?: string | null
-          id?: string
-          synonym?: string
-        }
-        Relationships: []
-      }
       shelf_items: {
         Row: {
           added_at: string | null
@@ -1584,6 +1518,8 @@ export type Database = {
       user_notification_preferences: {
         Row: {
           created_at: string
+          email_alerts_enabled: boolean
+          push_notifications_enabled: boolean
           reading_reminders_enabled: boolean
           recommendations_enabled: boolean
           system_announcements_enabled: boolean
@@ -1593,6 +1529,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          email_alerts_enabled?: boolean
+          push_notifications_enabled?: boolean
           reading_reminders_enabled?: boolean
           recommendations_enabled?: boolean
           system_announcements_enabled?: boolean
@@ -1602,6 +1540,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          email_alerts_enabled?: boolean
+          push_notifications_enabled?: boolean
           reading_reminders_enabled?: boolean
           recommendations_enabled?: boolean
           system_announcements_enabled?: boolean
@@ -1793,6 +1733,22 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_book_popularity_metrics: {
+        Args: { p_book_id?: string; p_window_interval?: string }
+        Returns: {
+          bayesian_rating: number
+          book_id: string
+          completion_signal: number
+          composite_score: number
+          decayed_reading_velocity: number
+          log_views: number
+          raw_average_rating: number
+          raw_completions: number
+          raw_rating_count: number
+          raw_reading_minutes: number
+          raw_views: number
+        }[]
+      }
       claim_outbox_events: {
         Args: { limit_count: number }
         Returns: {
@@ -2002,6 +1958,7 @@ export type Database = {
         Args: { p_book_id: string }
         Returns: undefined
       }
+      recalculate_trending_projections: { Args: never; Returns: number }
       recalculate_user_statistics: {
         Args: { p_user_id: string }
         Returns: undefined
@@ -2009,6 +1966,10 @@ export type Database = {
       refresh_category_document: {
         Args: { target_category: string }
         Returns: undefined
+      }
+      refresh_outdated_discovery_projections: {
+        Args: { batch_limit?: number }
+        Returns: number
       }
       refresh_recommendation_signals: {
         Args: { target_user_id?: string }
