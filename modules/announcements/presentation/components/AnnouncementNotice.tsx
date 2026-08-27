@@ -10,6 +10,7 @@ import {
   X,
   BookOpen,
   Bookmark,
+  Layers,
 } from "lucide-react";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import {
@@ -44,6 +45,7 @@ export interface AnnouncementNoticeProps {
 export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
   const [activeNotices, setActiveNotices] = useState<AnnouncementDto[]>([]);
   const [isClient, setIsClient] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   // Evaluate all unseen eligible notices on initial session mount
   useEffect(() => {
@@ -195,93 +197,129 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
     }
   };
 
+  const hasMultiple = activeNotices.length > 1;
+  const displayedNotices = isHovered ? activeNotices : [activeNotices[0]];
+
   return (
     <aside
       aria-label="Product announcements"
-      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 w-[calc(100vw-32px)] sm:w-[440px] max-w-[460px] space-y-4 pointer-events-none"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 w-[calc(100vw-32px)] sm:w-[440px] max-w-[460px] pointer-events-auto transition-all duration-300"
     >
-      {activeNotices.map((notice) => {
-        const meta = getNoticeMeta(notice.type);
-        return (
-          <Card
-            key={notice.id}
-            className={`bg-slate-950/95 dark:bg-slate-950/95 text-slate-100 border ${meta.borderAccent} shadow-2xl rounded-3xl overflow-hidden backdrop-blur-xl transition-all duration-200 pointer-events-auto animate-in fade-in slide-in-from-bottom-4 relative group`}
-          >
-            {/* 1. Distinct Glowing Top Line */}
-            <div className={`h-[3px] w-full ${meta.topLine}`} />
+      {/* Stack Container */}
+      <div className="relative space-y-4">
+        {/* Decorative stacked cards peek when collapsed */}
+        {!isHovered && hasMultiple && (
+          <>
+            {/* Third card layer peek if 3+ notices */}
+            {activeNotices.length > 2 && (
+              <div className="absolute -top-3.5 inset-x-4 h-12 bg-slate-900/60 border border-slate-800/60 rounded-2xl -z-20 scale-[0.92] transition-transform duration-300" />
+            )}
+            {/* Second card layer peek */}
+            <div className="absolute -top-2 inset-x-2 h-12 bg-slate-900/90 border border-slate-800 rounded-2xl -z-10 scale-[0.96] transition-transform duration-300" />
+          </>
+        )}
 
-            {/* 2. Distinct Radial Glow Background */}
-            <div className={`absolute inset-0 pointer-events-none ${meta.glowBg}`} />
+        {displayedNotices.map((notice) => {
+          const meta = getNoticeMeta(notice.type);
+          return (
+            <Card
+              key={notice.id}
+              className={`bg-slate-950/95 dark:bg-slate-950/95 text-slate-100 border ${meta.borderAccent} shadow-2xl rounded-3xl overflow-hidden backdrop-blur-xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 relative group`}
+            >
+              {/* 1. Distinct Glowing Top Line */}
+              <div className={`h-[3px] w-full ${meta.topLine}`} />
 
-            <div className="p-5 sm:p-6 space-y-3 relative z-10">
-              {/* Header Row: Distinct Kicker Badge & Close Button */}
-              <CardHeader className="p-0 flex flex-row items-center justify-between space-y-0 gap-3">
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className={`w-8 h-8 rounded-xl flex items-center justify-center ${meta.iconPlate} border shadow-xs`}
-                  >
-                    {meta.icon}
+              {/* 2. Distinct Radial Glow Background */}
+              <div className={`absolute inset-0 pointer-events-none ${meta.glowBg}`} />
+
+              <div className="p-5 sm:p-6 space-y-3 relative z-10">
+                {/* Header Row: Distinct Kicker Badge, Stack Counter, & Close Button */}
+                <CardHeader className="p-0 flex flex-row items-center justify-between space-y-0 gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center ${meta.iconPlate} border shadow-xs`}
+                    >
+                      {meta.icon}
+                    </div>
+                    <span
+                      className={`text-[11px] font-mono font-bold uppercase tracking-[0.2em] ${meta.kickerColor}`}
+                    >
+                      {meta.kicker}
+                    </span>
                   </div>
-                  <span
-                    className={`text-[11px] font-mono font-bold uppercase tracking-[0.2em] ${meta.kickerColor}`}
-                  >
-                    {meta.kicker}
-                  </span>
-                </div>
 
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDismiss(notice.id)}
-                  aria-label={`Dismiss announcement: ${notice.title}`}
-                  className="h-8 w-8 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 -mr-1 -mt-1 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </CardHeader>
+                  <div className="flex items-center gap-1.5 -mr-1 -mt-1">
+                    {/* Collapsed Queue Badge */}
+                    {!isHovered && hasMultiple && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700 text-slate-300 shadow-xs">
+                        <Layers className="w-3 h-3 text-indigo-400" />
+                        <span>+{activeNotices.length - 1} more</span>
+                      </span>
+                    )}
 
-              {/* Content Body */}
-              <CardContent className="p-0 space-y-2 pt-1">
-                <CardTitle className="text-lg sm:text-[19px] font-serif font-bold text-white leading-snug tracking-tight">
-                  {notice.title}
-                </CardTitle>
-                <CardDescription className="text-sm text-slate-300 leading-relaxed font-sans font-normal line-clamp-3">
-                  {notice.content}
-                </CardDescription>
-              </CardContent>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDismiss(notice.id)}
+                      aria-label={`Dismiss announcement: ${notice.title}`}
+                      className="h-8 w-8 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
 
-              {/* Distinct Action Footer */}
-              <CardFooter className="p-0 pt-2 flex items-center justify-between gap-3">
-                {notice.linkUrl && notice.linkText ? (
-                  <Button
-                    asChild
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDismiss(notice.id)}
-                    className={`text-sm font-semibold px-3 py-1.5 rounded-xl ${meta.ctaColor} transition-colors group/cta inline-flex items-center gap-1.5`}
-                  >
-                    <Link href={notice.linkUrl}>
-                      <span>{notice.linkText}</span>
-                      <ArrowRight className="w-4 h-4 transition-transform group-hover/cta:translate-x-1" />
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDismiss(notice.id)}
-                    className="text-xs text-slate-400 hover:text-slate-200 p-0 h-auto font-medium"
-                  >
-                    Dismiss
-                  </Button>
-                )}
-              </CardFooter>
-            </div>
-          </Card>
-        );
-      })}
+                {/* Content Body */}
+                <CardContent className="p-0 space-y-2 pt-1">
+                  <CardTitle className="text-lg sm:text-[19px] font-serif font-bold text-white leading-snug tracking-tight">
+                    {notice.title}
+                  </CardTitle>
+                  <CardDescription className="text-sm text-slate-300 leading-relaxed font-sans font-normal line-clamp-3">
+                    {notice.content}
+                  </CardDescription>
+                </CardContent>
+
+                {/* Distinct Action Footer */}
+                <CardFooter className="p-0 pt-2 flex items-center justify-between gap-3">
+                  {notice.linkUrl && notice.linkText ? (
+                    <Button
+                      asChild
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDismiss(notice.id)}
+                      className={`text-sm font-semibold px-3 py-1.5 rounded-xl ${meta.ctaColor} transition-colors group/cta inline-flex items-center gap-1.5`}
+                    >
+                      <Link href={notice.linkUrl}>
+                        <span>{notice.linkText}</span>
+                        <ArrowRight className="w-4 h-4 transition-transform group-hover/cta:translate-x-1" />
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDismiss(notice.id)}
+                      className="text-xs text-slate-400 hover:text-slate-200 p-0 h-auto font-medium"
+                    >
+                      Dismiss
+                    </Button>
+                  )}
+
+                  {!isHovered && hasMultiple && (
+                    <span className="text-[10px] font-mono text-slate-400 font-medium">
+                      Hover to expand
+                    </span>
+                  )}
+                </CardFooter>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
     </aside>
   );
 }

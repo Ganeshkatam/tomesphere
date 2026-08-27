@@ -24,13 +24,11 @@ export class LandingPageFacade {
   ) {}
 
   async get(): Promise<LandingViewModel> {
-    const [overview, statistics, announcements] = await Promise.all(
-      [
-        this.discoveryReadModel.getOverview(),
-        this.statisticsQuery.execute(),
-        this.announcementsQuery.execute(),
-      ],
-    );
+    const [overview, statistics, announcements] = await Promise.all([
+      this.discoveryReadModel.getOverview(),
+      this.statisticsQuery.execute(),
+      this.announcementsQuery.execute().catch(() => []),
+    ]);
 
     return {
       landing: {

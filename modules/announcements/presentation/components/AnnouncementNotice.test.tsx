@@ -5,7 +5,7 @@ import AnnouncementNotice from "./AnnouncementNotice";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import { ANNOUNCEMENT_SEEN_STORAGE_PREFIX } from "../utils/announcement-storage";
 
-describe("AnnouncementNotice multi-card stack & behavioral tests", () => {
+describe("AnnouncementNotice hover stack queue & behavioral tests", () => {
   const mockFeature: AnnouncementDto = {
     id: "ann-feat",
     title: "New Shelves Customization",
@@ -61,73 +61,86 @@ describe("AnnouncementNotice multi-card stack & behavioral tests", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("2. renders all active unseen eligible announcements in the notice stack", () => {
+  it("2. displays top announcement in queue when NOT hovered and shows stack count", () => {
     render(
-      <AnnouncementNotice announcements={[mockFeature, mockWarning, mockInfo]} />
+      <AnnouncementNotice announcements={[mockWarning, mockFeature, mockInfo]} />
     );
 
-    // All active announcements should be present in the notice stack
+    // Warning (Priority 3) is on top of the queue
+    expect(
+      screen.getByRole("heading", { name: "Scheduled Maintenance" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("+2 more")).toBeInTheDocument();
+    expect(screen.getByText("Hover to expand")).toBeInTheDocument();
+
+    // Other announcements remain collapsed in the queue
+    expect(
+      screen.queryByRole("heading", { name: "New Shelves Customization" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("3. expands all announcement cards when user hovers on container and collapses on leave", () => {
+    render(
+      <AnnouncementNotice announcements={[mockWarning, mockFeature, mockInfo]} />
+    );
+
+    const asideContainer = screen.getByRole("complementary");
+
+    // Mouse enters -> Expands all cards in the stack
+    fireEvent.mouseEnter(asideContainer);
+
+    expect(
+      screen.getByRole("heading", { name: "Scheduled Maintenance" })
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "New Shelves Customization" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Scheduled Maintenance" })
-    ).toBeInTheDocument();
-    expect(
       screen.getByRole("heading", { name: "Reader Annotations & Highlights" })
     ).toBeInTheDocument();
-  });
 
-  it("3. filters out previously seen announcements from the stack", () => {
-    window.localStorage.setItem(
-      `${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${mockFeature.id}`,
-      "true"
-    );
+    // Mouse leaves -> Collapses back to top card
+    fireEvent.mouseLeave(asideContainer);
 
-    render(
-      <AnnouncementNotice announcements={[mockFeature, mockWarning]} />
-    );
-
-    // Seen announcement is excluded; unseen one is displayed
+    expect(
+      screen.getByRole("heading", { name: "Scheduled Maintenance" })
+    ).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "New Shelves Customization" })
     ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "Scheduled Maintenance" })
-    ).toBeInTheDocument();
   });
 
   it("4. close button dismisses only that specific announcement card and marks it seen", () => {
     render(
-      <AnnouncementNotice announcements={[mockFeature, mockWarning]} />
+      <AnnouncementNotice announcements={[mockWarning, mockFeature]} />
     );
 
-    const closeFeatureBtn = screen.getByRole("button", {
-      name: `Dismiss announcement: ${mockFeature.title}`,
+    const closeWarningBtn = screen.getByRole("button", {
+      name: `Dismiss announcement: ${mockWarning.title}`,
     });
-    fireEvent.click(closeFeatureBtn);
+    fireEvent.click(closeWarningBtn);
 
-    // Feature card is dismissed; warning remains visible
+    // Warning is dismissed, next announcement (Feature) now becomes active top of queue
     expect(
-      screen.queryByRole("heading", { name: "New Shelves Customization" })
+      screen.queryByRole("heading", { name: "Scheduled Maintenance" })
     ).not.toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Scheduled Maintenance" })
+      screen.getByRole("heading", { name: "New Shelves Customization" })
     ).toBeInTheDocument();
 
     expect(
       window.localStorage.getItem(
-        `${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${mockFeature.id}`
+        `${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${mockWarning.id}`
       )
     ).toBe("true");
     expect(
       window.localStorage.getItem(
-        `${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${mockWarning.id}`
+        `${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${mockFeature.id}`
       )
     ).toBeNull();
   });
 
-  it("5. CTA link click marks announcement seen and unmounts that card", () => {
+  it("5. CTA link click marks announcement seen and navigates", () => {
     render(<AnnouncementNotice announcements={[mockFeature]} />);
 
     const ctaLink = screen.getByRole("link", { name: /Explore Shelves/i });
@@ -169,6 +182,6 @@ describe("AnnouncementNotice multi-card stack & behavioral tests", () => {
 
     // Must render as non-blocking aside container, NEVER a modal dialog or focus trap
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.getByRole("complementary")).toBeInTheDocument(); // <aside>
+    expect(screen.getByRole("complementary")).toBeInTheDocument();
   });
 });
