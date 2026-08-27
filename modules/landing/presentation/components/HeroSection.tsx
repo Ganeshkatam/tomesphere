@@ -52,7 +52,7 @@ export default function HeroSection({
       className="relative w-full min-h-[740px] lg:min-h-[820px] pt-20 pb-24 sm:pt-24 sm:pb-28 lg:pt-28 lg:pb-32 flex items-center z-10 overflow-hidden transition-colors duration-300"
       style={{ backgroundColor: isDark ? "#020617" : "#f8fafc" }}
     >
-      {/* Background Image -- masked for gradual left-to-right opacity */}
+      {/* Background Image -- clear, high-contrast, non-blurry across themes */}
       <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
         <Image
           src="/hero_sanctuary_bg.jpg"
@@ -60,22 +60,26 @@ export default function HeroSection({
           fill
           className="object-cover object-right lg:object-center transition-opacity duration-500"
           style={{
-            opacity: isDark ? 1 : 0.55,
+            opacity: isDark ? 1 : 0.88,
             filter: isDark
               ? "contrast(1.05) brightness(0.85)"
-              : "contrast(0.95) brightness(1.0) saturate(0.8)",
-            mixBlendMode: isDark ? "normal" : "multiply",
-            maskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.3) 25%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.85) 55%, black 75%), linear-gradient(to top, transparent 0%, black 12%)",
+              : "contrast(1.02) brightness(0.98) saturate(0.95)",
+            mixBlendMode: "normal",
+            maskImage: isDark
+              ? "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.3) 25%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.85) 55%, black 75%), linear-gradient(to top, transparent 0%, black 12%)"
+              : "linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.92) 60%, black 90%), linear-gradient(to top, transparent 0%, black 8%)",
             maskComposite: "intersect",
-            WebkitMaskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.3) 25%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.85) 55%, black 75%), linear-gradient(to top, transparent 0%, black 12%)",
+            WebkitMaskImage: isDark
+              ? "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.3) 25%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.85) 55%, black 75%), linear-gradient(to top, transparent 0%, black 12%)"
+              : "linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.92) 60%, black 90%), linear-gradient(to top, transparent 0%, black 8%)",
             WebkitMaskComposite: "source-in",
           }}
           priority
         />
 
-        {/* Bottom fade into page surface */}
+        {/* Subtle bottom fade into page surface */}
         <div
-          className="absolute bottom-0 left-0 w-full h-48"
+          className="absolute bottom-0 left-0 w-full h-24 pointer-events-none"
           style={{
             background: isDark
               ? "linear-gradient(to top, #020617, transparent)"
