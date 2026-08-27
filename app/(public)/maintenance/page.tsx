@@ -42,7 +42,7 @@ export default async function MaintenancePage() {
 
   return (
     <div className="min-h-screen bg-[var(--surface-canvas)] text-[var(--text-primary)] font-sans">
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <main className="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Breadcrumb Navigation */}
         <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 mb-8">
           <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">
