@@ -52,26 +52,26 @@ export default function HeroSection({
       className="relative w-full min-h-[740px] lg:min-h-[820px] pt-20 pb-24 sm:pt-24 sm:pb-28 lg:pt-28 lg:pb-32 flex items-center z-10 overflow-hidden transition-colors duration-300"
       style={{ backgroundColor: isDark ? "#020617" : "#f8fafc" }}
     >
-      {/* Background Image -- clear, high-contrast, non-blurry across themes */}
-      <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+      {/* Background Image -- bespoke sunlit daylight sanctuary for light mode & dusk sanctuary for dark mode */}
+      <div className="absolute inset-0 w-full h-full z-0 pointer-events-none overflow-hidden">
         <Image
-          src="/hero_sanctuary_bg.jpg"
-          alt="Digital library sanctuary"
+          src={isDark ? "/hero_sanctuary_bg.jpg" : "/hero_light_bg.jpg"}
+          alt={isDark ? "Digital library sanctuary at dusk" : "Sunlit classical library sanctuary"}
           fill
-          className="object-cover object-right lg:object-center transition-opacity duration-500"
+          className="object-cover object-right lg:object-center transition-all duration-700 scale-105"
           style={{
-            opacity: isDark ? 1 : 0.88,
+            opacity: isDark ? 1 : 0.95,
             filter: isDark
-              ? "contrast(1.05) brightness(0.85)"
-              : "contrast(1.02) brightness(0.98) saturate(0.95)",
+              ? "contrast(1.05) brightness(0.85) blur(1.5px)"
+              : "contrast(1.02) brightness(0.98) blur(2px)",
             mixBlendMode: "normal",
             maskImage: isDark
               ? "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.3) 25%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.85) 55%, black 75%), linear-gradient(to top, transparent 0%, black 12%)"
-              : "linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.92) 60%, black 90%), linear-gradient(to top, transparent 0%, black 8%)",
+              : "linear-gradient(to right, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.9) 60%, black 90%), linear-gradient(to top, transparent 0%, black 6%)",
             maskComposite: "intersect",
             WebkitMaskImage: isDark
               ? "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.3) 25%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.85) 55%, black 75%), linear-gradient(to top, transparent 0%, black 12%)"
-              : "linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.92) 60%, black 90%), linear-gradient(to top, transparent 0%, black 8%)",
+              : "linear-gradient(to right, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.9) 60%, black 90%), linear-gradient(to top, transparent 0%, black 6%)",
             WebkitMaskComposite: "source-in",
           }}
           priority
