@@ -15,6 +15,7 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       featuredRes,
       newBooksRes,
       trendingRes,
+      collectionsRes,
       classicsRes,
       philosophyRes,
       scienceRes,
@@ -24,28 +25,42 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       genresRes,
       subjectsRes,
     ] = await Promise.all([
+      // 1. Curated Featured Books (from featured_books table joined with books)
       this.supabase
-        .from("books")
+        .from("featured_books")
         .select(
-          "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
+          "position, books!inner(id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name)))"
         )
-        .eq("is_featured", true)
-        .order("created_at", { ascending: false })
+        .order("position", { ascending: true })
         .limit(10),
+
+      // 2. New Acquisitions / Recent Additions (ordered by release_date DESC)
       this.supabase
         .from("books")
         .select(
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
-        .order("created_at", { ascending: false })
+        .order("release_date", { ascending: false, nullsFirst: false })
         .limit(16),
+
+      // 3. Trending Books (from trending_books_projection ordered by daily_score)
       this.supabase
         .from("trending_books_projection")
         .select(
-          "books!inner(id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name)))",
+          "daily_score, books!inner(id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name)))",
         )
         .order("daily_score", { ascending: false })
         .limit(16),
+
+      // 4. Featured Collections (from collections table)
+      this.supabase
+        .from("collections")
+        .select("id, title, slug, description, cover_url, is_active, collection_books(count)")
+        .eq("is_active", true)
+        .order("created_at", { ascending: true })
+        .limit(6),
+
+      // 5. Categorical sections
       this.supabase
         .from("books")
         .select(
@@ -86,18 +101,33 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       this.supabase.from("subjects").select("name").limit(12),
     ]);
 
-    // Distinct Genres (max 12 for preview)
+    // Distinct Genres, Authors, Subjects
     const genres = (genresRes.data || []).map((g: any) => g.name);
     const authors = (authorsRes.data || []).map((a: any) => a.name);
     const subjects = (subjectsRes.data || []).map((s: any) => s.name);
-    const languages = ["English"]; // Placeholder since we don't have a languages table yet
+    const languages = ["English"];
 
-    const trendingBooksData = (trendingRes.data || []).map(
-      (row: any) => row.books,
-    );
+    const featuredBooksData =
+      featuredRes.data && featuredRes.data.length > 0
+        ? (featuredRes.data as any[]).map((r) => r.books)
+        : [];
+
+    const trendingBooksData =
+      trendingRes.data && trendingRes.data.length > 0
+        ? (trendingRes.data as any[]).map((row: any) => row.books)
+        : [];
+
+    const featuredCollections = (collectionsRes.data || []).map((col: any) => ({
+      id: col.id,
+      title: col.title,
+      slug: col.slug,
+      description: col.description,
+      coverUrl: col.cover_url,
+      bookCount: col.collection_books?.[0]?.count || 0,
+    }));
 
     return {
-      featuredBooks: (featuredRes.data || []).map(BookSummaryMapper.toDto),
+      featuredBooks: featuredBooksData.map(BookSummaryMapper.toDto),
       trendingBooks: trendingBooksData.map(BookSummaryMapper.toDto),
       newBooks: (newBooksRes.data || []).map(BookSummaryMapper.toDto),
       classicsBooks: (classicsRes.data || []).map(BookSummaryMapper.toDto),
@@ -105,7 +135,7 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       scienceBooks: (scienceRes.data || []).map(BookSummaryMapper.toDto),
       historyBooks: (historyRes.data || []).map(BookSummaryMapper.toDto),
       curatedBooks: (curatedRes.data || []).map(BookSummaryMapper.toDto),
-      featuredCollections: [], // Placeholder for V1 until collections table exists
+      featuredCollections,
       genres,
       subjects,
       languages,
@@ -209,8 +239,8 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       monthly: "monthly_rank",
       "all-time": "all_time_rank",
     };
-    const scoreCol = periodScoreMap[query.period];
-    const rankCol = periodRankMap[query.period];
+    const scoreCol = periodScoreMap[query.period] || "daily_score";
+    const rankCol = periodRankMap[query.period] || "daily_rank";
 
     let dbQuery = this.supabase
       .from("trending_books_projection")
@@ -261,14 +291,14 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
   > {
     const limit = query.limit || 6;
     const { data } = await this.supabase
-      .from("books")
+      .from("featured_books")
       .select(
-        "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
+        "position, books!inner(id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name)))"
       )
-      .eq("is_featured", true)
+      .order("position", { ascending: true })
       .limit(limit);
 
-    const items = (data || []).map(BookSummaryMapper.toDto);
+    const items = (data || []).map((r: any) => BookSummaryMapper.toDto(r.books));
     return {
       items,
       total: items.length,
@@ -288,7 +318,7 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       .select(
         "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
       )
-      .order("created_at", { ascending: false })
+      .order("release_date", { ascending: false, nullsFirst: false })
       .limit(limit);
 
     const items = (data || []).map(BookSummaryMapper.toDto);
@@ -305,9 +335,28 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
   ): Promise<
     import("../../application/queries/GetCollections/response").GetCollectionsResponseDto
   > {
+    const limit = query.limit || 12;
+    const { data, count } = await this.supabase
+      .from("collections")
+      .select("id, title, slug, description, cover_url, is_active, collection_books(count)", {
+        count: "exact",
+      })
+      .eq("is_active", true)
+      .order("created_at", { ascending: true })
+      .limit(limit);
+
+    const items = (data || []).map((col: any) => ({
+      id: col.id,
+      title: col.title,
+      slug: col.slug,
+      description: col.description,
+      coverUrl: col.cover_url,
+      bookCount: col.collection_books?.[0]?.count || 0,
+    }));
+
     return {
-      items: [],
-      total: 0,
+      items,
+      total: count || items.length,
       page: query.page,
       hasMore: false,
     };
