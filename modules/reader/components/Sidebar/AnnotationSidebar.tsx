@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState } from "react";
 import { useReaderStore } from "../../state/reader-store";
 import { ReaderService } from "../../application/ReaderService";
 import {
@@ -18,7 +19,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface AnnotationSidebarProps {
   service: ReaderService | null;
@@ -111,20 +112,24 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
           {sidebarTab === "search" && "Search Volume"}
         </h3>
 
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => setSidebarOpen(false)}
-          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${themeStyles.closeBtn}`}
-          title="Close Sidebar"
+          aria-label="Close Sidebar"
+          className={`p-1.5 rounded-lg transition-colors cursor-pointer h-auto w-auto ${themeStyles.closeBtn}`}
         >
           <X size={17} />
-        </button>
+        </Button>
       </div>
 
       {/* Tabs */}
-      <div className={`flex border-b transition-colors ${themeStyles.headerBorder}`}>
+      <div className={`flex border-b transition-colors ${themeStyles.headerBorder}`} role="tablist">
         <button
           type="button"
+          role="tab"
+          aria-selected={sidebarTab === "toc"}
           onClick={() => handleTabChange("toc")}
           className={`flex-1 py-2.5 text-xs font-semibold transition-colors cursor-pointer text-center ${
             sidebarTab === "toc"
@@ -136,6 +141,8 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={sidebarTab === "annotations"}
           onClick={() => handleTabChange("annotations")}
           className={`flex-1 py-2.5 text-xs font-semibold transition-colors cursor-pointer text-center ${
             sidebarTab === "annotations"
@@ -147,6 +154,8 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={sidebarTab === "bookmarks"}
           onClick={() => handleTabChange("bookmarks")}
           className={`flex-1 py-2.5 text-xs font-semibold transition-colors cursor-pointer text-center ${
             sidebarTab === "bookmarks"
@@ -263,57 +272,65 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
 
                 {/* Options Toolbar on each Note card */}
                 <div className="flex items-center gap-0.5">
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleCopy(highlight.selectedText, highlight.id);
                     }}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
-                    title={copiedId === highlight.id ? "Copied!" : "Copy quote"}
+                    aria-label={copiedId === highlight.id ? "Copied" : "Copy quote"}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer h-auto w-auto"
                   >
                     {copiedId === highlight.id ? (
                       <Check size={13} className="text-emerald-500" />
                     ) : (
                       <Copy size={13} />
                     )}
-                  </button>
+                  </Button>
 
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={(e) => {
                       e.stopPropagation();
                       service.openNoteForHighlight(highlight.id);
                     }}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
-                    title={note ? "Edit attached note" : "Add note"}
+                    aria-label={note ? "Edit attached note" : "Add note"}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer h-auto w-auto"
                   >
                     {note ? <Pencil size={13} /> : <MessageSquarePlus size={13} />}
-                  </button>
+                  </Button>
 
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={(e) => {
                       e.stopPropagation();
                       service.goToLocation(highlight.selectionAnchor.start);
                     }}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
-                    title="Jump to location"
+                    aria-label="Jump to location"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer h-auto w-auto"
                   >
                     <ExternalLink size={13} />
-                  </button>
+                  </Button>
 
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={(e) => {
                       e.stopPropagation();
                       service.deleteHighlight(highlight.id);
                     }}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
-                    title="Delete highlight"
+                    aria-label="Delete highlight"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer h-auto w-auto"
                   >
                     <Trash2 size={13} />
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -407,17 +424,19 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
                     </p>
                   )}
                 </div>
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={(e) => {
                     e.stopPropagation();
                     service.deleteBookmark(bookmark.id);
                   }}
-                  className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-400 hover:text-red-500 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-all cursor-pointer"
-                  title="Delete bookmark"
+                  aria-label={`Delete bookmark: ${label}`}
+                  className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 p-1.5 text-slate-400 hover:text-red-500 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-all cursor-pointer h-auto w-auto"
                 >
                   <Trash2 size={13} />
-                </button>
+                </Button>
               </div>
             );
           })}

@@ -1,10 +1,25 @@
 "use client";
 
+import React, { useState } from "react";
 import { useReaderStore } from "@/modules/reader/state/reader-store";
 import { ReaderService } from "@/modules/reader/application/ReaderService";
 import { Settings, Maximize, Search, List } from "lucide-react";
-import { useState } from "react";
 import { useTheme } from "@/shared/providers/theme-context";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 
 interface SettingsToolbarProps {
   service: ReaderService | null;
@@ -54,245 +69,313 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
       btn: "text-slate-700 hover:text-slate-900 hover:bg-slate-100",
       activeBtn: "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-500/20",
       settingsActive: "bg-slate-200 text-slate-900",
-      menuBg: "bg-white border-slate-200 text-slate-800 shadow-2xl",
+      menuBg: "bg-white border-slate-200 text-slate-800",
       sectionHeader: "text-slate-500",
       pillInactive: "bg-slate-100 text-slate-700 hover:bg-slate-200",
-      pillActive: "bg-indigo-600 text-white shadow-xs",
-      stepBtn: "bg-slate-100 text-slate-700 hover:bg-slate-200",
+      pillActive: "bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs",
+      stepBtn: "bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200",
       valueText: "text-slate-900",
     },
     dark: {
       btn: "text-slate-200 hover:text-white hover:bg-white/10",
       activeBtn: "bg-indigo-950/60 text-indigo-400 ring-1 ring-indigo-500/30",
       settingsActive: "bg-white/20 text-white",
-      menuBg: "bg-[#28292c] border-[#3c4043] text-slate-100 shadow-2xl",
+      menuBg: "bg-[#28292c] border-[#3c4043] text-slate-100",
       sectionHeader: "text-slate-400",
       pillInactive: "bg-[#1c1d1f] text-slate-300 hover:bg-[#323338]",
-      pillActive: "bg-indigo-600 text-white shadow-xs",
-      stepBtn: "bg-[#1c1d1f] text-slate-200 hover:bg-[#323338]",
+      pillActive: "bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs",
+      stepBtn: "bg-[#1c1d1f] text-slate-200 hover:bg-[#323338] border-[#3c4043]",
       valueText: "text-slate-100",
     },
     sepia: {
       btn: "text-[#5b4636] hover:text-[#382b21] hover:bg-[#ede3cc]",
       activeBtn: "bg-[#ede3cc] text-[#8b5a2b] ring-1 ring-[#c87a32]/30",
       settingsActive: "bg-[#ede3cc] text-[#5b4636]",
-      menuBg: "bg-[#fbf0d9] border-[#dfd3b9] text-[#5b4636] shadow-xl",
+      menuBg: "bg-[#fbf0d9] border-[#dfd3b9] text-[#5b4636]",
       sectionHeader: "text-[#8a725b]",
       pillInactive: "bg-[#ede3cc] text-[#5b4636] hover:bg-[#e4d9bf]",
-      pillActive: "bg-[#8b5a2b] text-[#fbf0d9] shadow-xs",
-      stepBtn: "bg-[#ede3cc] text-[#5b4636] hover:bg-[#e4d9bf]",
+      pillActive: "bg-[#8b5a2b] hover:bg-[#794e25] text-[#fbf0d9] shadow-xs",
+      stepBtn: "bg-[#ede3cc] text-[#5b4636] hover:bg-[#e4d9bf] border-[#dfd3b9]",
       valueText: "text-[#5b4636]",
     },
   }[theme];
 
   return (
-    <div className="flex items-center gap-1 relative">
-      <button
-        type="button"
-        onClick={() => {
-          if (sidebarOpen && sidebarTab === "search") {
-            setSidebarOpen(false);
-          } else {
-            setSidebarTab("search");
-            setSidebarOpen(true);
-          }
-        }}
-        className={`p-2 rounded-xl transition-colors cursor-pointer ${
-          sidebarOpen && sidebarTab === "search"
-            ? themeStyles.activeBtn
-            : themeStyles.btn
-        }`}
-        title="Search in Volume"
-      >
-        <Search size={18} />
-      </button>
+    <TooltipProvider delayDuration={300}>
+      <div className="flex items-center gap-1 relative">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                if (sidebarOpen && sidebarTab === "search") {
+                  setSidebarOpen(false);
+                } else {
+                  setSidebarTab("search");
+                  setSidebarOpen(true);
+                }
+              }}
+              aria-label="Search in Volume"
+              aria-expanded={sidebarOpen && sidebarTab === "search"}
+              className={`p-2 rounded-xl transition-colors cursor-pointer h-auto w-auto ${
+                sidebarOpen && sidebarTab === "search"
+                  ? themeStyles.activeBtn
+                  : themeStyles.btn
+              }`}
+            >
+              <Search size={18} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Search in Volume</TooltipContent>
+        </Tooltip>
 
-      <button
-        type="button"
-        onClick={() => {
-          if (sidebarOpen && sidebarTab === "toc") {
-            setSidebarOpen(false);
-          } else {
-            setSidebarTab("toc");
-            setSidebarOpen(true);
-          }
-        }}
-        className={`p-2 rounded-xl transition-colors cursor-pointer ${
-          sidebarOpen && sidebarTab === "toc"
-            ? themeStyles.activeBtn
-            : themeStyles.btn
-        }`}
-        title="Table of Contents"
-      >
-        <List size={18} />
-      </button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                if (sidebarOpen && sidebarTab === "toc") {
+                  setSidebarOpen(false);
+                } else {
+                  setSidebarTab("toc");
+                  setSidebarOpen(true);
+                }
+              }}
+              aria-label="Table of Contents"
+              aria-expanded={sidebarOpen && sidebarTab === "toc"}
+              className={`p-2 rounded-xl transition-colors cursor-pointer h-auto w-auto ${
+                sidebarOpen && sidebarTab === "toc"
+                  ? themeStyles.activeBtn
+                  : themeStyles.btn
+              }`}
+            >
+              <List size={18} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Table of Contents</TooltipContent>
+        </Tooltip>
 
-      <button
-        type="button"
-        onClick={toggleFullscreen}
-        className={`p-2 rounded-xl transition-colors cursor-pointer ${themeStyles.btn}`}
-        title="Fullscreen Mode"
-      >
-        <Maximize size={18} />
-      </button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={toggleFullscreen}
+              aria-label="Fullscreen Mode"
+              className={`p-2 rounded-xl transition-colors cursor-pointer h-auto w-auto ${themeStyles.btn}`}
+            >
+              <Maximize size={18} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Fullscreen Mode</TooltipContent>
+        </Tooltip>
 
-      <button
-        type="button"
-        onClick={() => setMenuOpen(!menuOpen)}
-        className={`p-2 rounded-xl transition-colors cursor-pointer ${
-          menuOpen ? themeStyles.settingsActive : themeStyles.btn
-        }`}
-        title="Reader Settings"
-      >
-        <Settings size={18} />
-      </button>
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <SheetTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Reader Settings"
+                  aria-expanded={menuOpen}
+                  className={`p-2 rounded-xl transition-colors cursor-pointer h-auto w-auto ${
+                    menuOpen ? themeStyles.settingsActive : themeStyles.btn
+                  }`}
+                >
+                  <Settings size={18} />
+                </Button>
+              </SheetTrigger>
+            </TooltipTrigger>
+            <TooltipContent>Reader Settings</TooltipContent>
+          </Tooltip>
 
-      {menuOpen && (
-        <div
-          className={`absolute top-12 right-0 w-64 border rounded-2xl p-4 flex flex-col gap-4 z-50 animate-in fade-in slide-in-from-top-2 ${themeStyles.menuBg}`}
-        >
-          {/* App Theme (Global system / light / dark) */}
-          <div>
-            <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-              App Theme
-            </span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setAppTheme("system")}
-                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  appTheme === "system"
-                    ? themeStyles.pillActive
-                    : themeStyles.pillInactive
-                }`}
-              >
-                System
-              </button>
-              <button
-                type="button"
-                onClick={() => setAppTheme("light")}
-                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  appTheme === "light"
-                    ? themeStyles.pillActive
-                    : themeStyles.pillInactive
-                }`}
-              >
-                Light
-              </button>
-              <button
-                type="button"
-                onClick={() => setAppTheme("dark")}
-                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  appTheme === "dark"
-                    ? themeStyles.pillActive
-                    : themeStyles.pillInactive
-                }`}
-              >
-                Dark
-              </button>
+          <SheetContent
+            side="right"
+            className={`w-72 sm:w-80 p-5 flex flex-col gap-5 overflow-y-auto ${themeStyles.menuBg}`}
+          >
+            <SheetHeader className="text-left space-y-1">
+              <SheetTitle className="text-sm font-bold tracking-tight">Reader Settings</SheetTitle>
+              <SheetDescription className="text-xs">
+                Customize themes, typography, and display zoom.
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="flex flex-col gap-4">
+              {/* App Theme (Global system / light / dark) */}
+              <div>
+                <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+                  App Theme
+                </span>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={appTheme === "system" ? "default" : "secondary"}
+                    size="sm"
+                    onClick={() => setAppTheme("system")}
+                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                      appTheme === "system"
+                        ? themeStyles.pillActive
+                        : themeStyles.pillInactive
+                    }`}
+                  >
+                    System
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={appTheme === "light" ? "default" : "secondary"}
+                    size="sm"
+                    onClick={() => setAppTheme("light")}
+                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                      appTheme === "light"
+                        ? themeStyles.pillActive
+                        : themeStyles.pillInactive
+                    }`}
+                  >
+                    Light
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={appTheme === "dark" ? "default" : "secondary"}
+                    size="sm"
+                    onClick={() => setAppTheme("dark")}
+                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                      appTheme === "dark"
+                        ? themeStyles.pillActive
+                        : themeStyles.pillInactive
+                    }`}
+                  >
+                    Dark
+                  </Button>
+                </div>
+              </div>
+
+              {/* Reader Theme (Document & reading canvas color) */}
+              <div>
+                <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+                  Reader Theme
+                </span>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={preferences.theme === "light" ? "default" : "secondary"}
+                    size="sm"
+                    onClick={() => handleThemeChange("light")}
+                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                      preferences.theme === "light"
+                        ? themeStyles.pillActive
+                        : themeStyles.pillInactive
+                    }`}
+                  >
+                    Light
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={preferences.theme === "dark" ? "default" : "secondary"}
+                    size="sm"
+                    onClick={() => handleThemeChange("dark")}
+                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                      preferences.theme === "dark"
+                        ? themeStyles.pillActive
+                        : themeStyles.pillInactive
+                    }`}
+                  >
+                    Dark
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={preferences.theme === "sepia" ? "default" : "secondary"}
+                    size="sm"
+                    onClick={() => handleThemeChange("sepia")}
+                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                      preferences.theme === "sepia"
+                        ? themeStyles.pillActive
+                        : themeStyles.pillInactive
+                    }`}
+                  >
+                    Sepia
+                  </Button>
+                </div>
+              </div>
+
+              {/* Text Size (EPUB) */}
+              <div>
+                <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+                  Text Size (EPUB)
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => adjustFontSize(-2)}
+                    disabled={preferences.fontSize <= 12}
+                    aria-label="Decrease Font Size"
+                    className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                  >
+                    -
+                  </Button>
+                  <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
+                    {preferences.fontSize}px
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => adjustFontSize(2)}
+                    disabled={preferences.fontSize >= 32}
+                    aria-label="Increase Font Size"
+                    className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+
+              {/* Zoom (PDF) */}
+              <div>
+                <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+                  Zoom (PDF)
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => adjustZoom(-10)}
+                    disabled={(preferences.zoom || 100) <= 80}
+                    aria-label="Zoom Out"
+                    className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                  >
+                    -
+                  </Button>
+                  <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
+                    {preferences.zoom || 100}%
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => adjustZoom(10)}
+                    disabled={(preferences.zoom || 100) >= 300}
+                    aria-label="Zoom In"
+                    className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
-
-          {/* Reader Theme (Document & reading canvas color) */}
-          <div>
-            <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-              Reader Theme
-            </span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => handleThemeChange("light")}
-                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  preferences.theme === "light"
-                    ? themeStyles.pillActive
-                    : themeStyles.pillInactive
-                }`}
-              >
-                Light
-              </button>
-              <button
-                type="button"
-                onClick={() => handleThemeChange("dark")}
-                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  preferences.theme === "dark"
-                    ? themeStyles.pillActive
-                    : themeStyles.pillInactive
-                }`}
-              >
-                Dark
-              </button>
-              <button
-                type="button"
-                onClick={() => handleThemeChange("sepia")}
-                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  preferences.theme === "sepia"
-                    ? themeStyles.pillActive
-                    : themeStyles.pillInactive
-                }`}
-              >
-                Sepia
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-              Text Size (EPUB)
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => adjustFontSize(-2)}
-                disabled={preferences.fontSize <= 12}
-                className={`w-8 h-8 rounded-xl disabled:opacity-30 font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-              >
-                -
-              </button>
-              <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
-                {preferences.fontSize}px
-              </span>
-              <button
-                type="button"
-                onClick={() => adjustFontSize(2)}
-                disabled={preferences.fontSize >= 32}
-                className={`w-8 h-8 rounded-xl disabled:opacity-30 font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-              Zoom (PDF)
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => adjustZoom(-10)}
-                disabled={(preferences.zoom || 100) <= 80}
-                className={`w-8 h-8 rounded-xl disabled:opacity-30 font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-                title="Zoom Out (Minimum 80%)"
-              >
-                -
-              </button>
-              <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
-                {preferences.zoom || 100}%
-              </span>
-              <button
-                type="button"
-                onClick={() => adjustZoom(10)}
-                disabled={(preferences.zoom || 100) >= 300}
-                className={`w-8 h-8 rounded-xl disabled:opacity-30 font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-                title="Zoom In (Max 300%)"
-              >
-                +
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </TooltipProvider>
   );
 }
 

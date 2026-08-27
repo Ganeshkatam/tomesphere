@@ -10,6 +10,7 @@ import {
   Loader2,
   FileText,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface PageSideRailProps {
   service: ReaderService | null;
@@ -270,31 +271,37 @@ export function PageSideRail({ service }: PageSideRailProps) {
       <div
         className={`w-11 flex flex-col items-center py-3.5 gap-2.5 transition-colors ${railThemeStyles.miniStrip}`}
       >
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => setActiveTab("thumbnails")}
-          className={`p-2 rounded-lg transition-colors cursor-pointer ${
+          aria-label="Page Thumbnails"
+          aria-pressed={activeTab === "thumbnails"}
+          className={`p-2 rounded-lg transition-colors cursor-pointer h-auto w-auto ${
             activeTab === "thumbnails"
               ? railThemeStyles.activeTab
               : railThemeStyles.inactiveTab
           }`}
-          title="Page Thumbnails"
         >
           <ImageIcon size={18} />
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => setActiveTab("outline")}
-          className={`p-2 rounded-lg transition-colors cursor-pointer ${
+          aria-label="Document Outline"
+          aria-pressed={activeTab === "outline"}
+          className={`p-2 rounded-lg transition-colors cursor-pointer h-auto w-auto ${
             activeTab === "outline"
               ? railThemeStyles.activeTab
               : railThemeStyles.inactiveTab
           }`}
-          title="Document Outline"
         >
           <List size={18} />
-        </button>
+        </Button>
       </div>
 
       {/* 2. Main Increased-Width Rail Content Panel (5 pages viewable at a time) */}
