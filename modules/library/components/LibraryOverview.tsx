@@ -2,6 +2,7 @@
 
 import { LibrarySummaryDto } from "../application/dto/response/LibraryPageDto";
 import { BookOpen, BookmarkCheck, FolderArchive, Layers } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 interface LibraryOverviewProps {
   summary: LibrarySummaryDto;
@@ -54,20 +55,22 @@ export default function LibraryOverview({ summary }: LibraryOverviewProps) {
         {cards.map((card, idx) => {
           const Icon = card.icon;
           return (
-            <div
+            <Card
               key={idx}
-              className={`p-4 sm:p-5 rounded-2xl border ${card.bg} shadow-xs transition-all`}
+              className={`p-4 sm:p-5 rounded-2xl border ${card.bg} shadow-xs transition-all gap-0`}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+              <CardHeader className="p-0 flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-xs font-semibold text-slate-600 dark:text-slate-400 tracking-normal">
                   {card.label}
-                </span>
+                </CardTitle>
                 <Icon size={16} className={card.color} />
-              </div>
-              <div className="text-2xl sm:text-3xl font-display font-extrabold text-slate-900 dark:text-white">
-                {card.value}
-              </div>
-            </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="text-2xl sm:text-3xl font-display font-extrabold text-slate-900 dark:text-white">
+                  {card.value}
+                </div>
+              </CardContent>
+            </Card>
           );
         })}
       </div>

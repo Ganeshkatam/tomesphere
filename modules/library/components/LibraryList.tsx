@@ -1,18 +1,20 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { LibraryBookDto } from "../application/dto/response/LibraryBookDto";
 import { useLibraryStore } from "../store/library-store";
 import { BookOpen, Check, Bookmark } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface LibraryListProps {
   books: LibraryBookDto[];
 }
 
 export default function LibraryList({ books }: LibraryListProps) {
-  const router = useRouter();
-  const { toggleSelection, selection } = useLibraryStore();
+  const { selection } = useLibraryStore();
 
   if (books.length === 0) {
     return null;
@@ -24,21 +26,24 @@ export default function LibraryList({ books }: LibraryListProps) {
         const isSelected = selection.includes(item.bookId);
 
         return (
-          <div
+          <Card
             key={item.bookId}
-            className={`flex items-center gap-4 p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer ${
+            className={`flex items-center gap-4 p-3.5 sm:p-4 rounded-2xl border transition-all ${
               isSelected
                 ? "bg-indigo-50/80 dark:bg-indigo-950/40 border-indigo-500 shadow-md"
-                : "bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md"
+                : "bg-card hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md"
             }`}
-            onClick={() => router.push(`/read/${item.bookId}`)}
           >
-            {/* Cover */}
-            <div className="relative w-12 sm:w-14 aspect-[2/3] flex-shrink-0 rounded-xl overflow-hidden shadow-md border border-slate-200 dark:border-slate-800">
+            {/* Cover with native Link */}
+            <Link
+              href={`/read/${item.bookId}`}
+              aria-label={`Read ${item.title}`}
+              className="relative w-12 sm:w-14 aspect-[2/3] flex-shrink-0 rounded-xl overflow-hidden shadow-md border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
               {item.coverUrl ? (
                 <Image
                   src={item.coverUrl}
-                  alt={item.title}
+                  alt=""
                   fill
                   className="object-cover"
                 />
@@ -47,19 +52,28 @@ export default function LibraryList({ books }: LibraryListProps) {
                   <span className="text-[10px] text-slate-400">No cover</span>
                 </div>
               )}
-            </div>
+            </Link>
 
-            {/* Info */}
+            {/* Info with Button asChild Link */}
             <div className="flex-1 min-w-0">
-              <h4 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white truncate">
-                {item.title}
-              </h4>
+              <Button
+                asChild
+                variant="ghost"
+                className="h-auto p-0 hover:bg-transparent justify-start max-w-full"
+              >
+                <Link
+                  href={`/read/${item.bookId}`}
+                  className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white truncate block hover:text-indigo-600 dark:hover:text-indigo-400 focus:underline"
+                >
+                  {item.title}
+                </Link>
+              </Button>
               <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5 font-medium">
                 {item.authors.map((a) => a.name).join(", ") || "Unknown Author"}
               </p>
             </div>
 
-            {/* Status & Progress Bar */}
+            {/* Status & Progress Presentation (from DTO) */}
             <div className="flex flex-col items-end w-32 sm:w-44 flex-shrink-0 space-y-1.5">
               <div className="flex items-center gap-1.5 text-xs font-bold">
                 {item.status === "reading" ? (
@@ -89,7 +103,17 @@ export default function LibraryList({ books }: LibraryListProps) {
                 </div>
               )}
             </div>
-          </div>
+
+            {/* Direct Action Link */}
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="hidden sm:inline-flex rounded-xl text-xs font-semibold shrink-0"
+            >
+              <Link href={`/read/${item.bookId}`}>Read</Link>
+            </Button>
+          </Card>
         );
       })}
     </div>

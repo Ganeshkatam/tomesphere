@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import React, { useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -26,6 +26,16 @@ import { uploadFileToStorage } from "@/modules/storage/presentation/actions/stor
 import { showSuccess, showError } from "@/lib/toast";
 import { PhotoUploadConsentModal } from "@/shared/ui/PhotoUploadConsentModal";
 import { usePhotoUploadPermission } from "@/shared/hooks/usePhotoUploadPermission";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const PRESET_COVERS = [
   { label: "Sanctuary", url: "/hero_sanctuary_bg.jpg" },
@@ -46,6 +56,10 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
   const [shelf, setShelf] = useState<CollectionDto>(initialShelf);
   const [books, setBooks] = useState<LibraryBookDto[]>(initialBooks);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Delete Dialog State
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Edit Modal State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -129,17 +143,17 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
     }
   };
 
-  const handleDeleteShelf = async () => {
-    if (!confirm(`Are you sure you want to delete "${shelf.name}"? Books will remain in your library.`)) {
-      return;
-    }
-
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
     try {
       await deleteShelfAction(shelf.id);
       showSuccess("Shelf deleted");
+      setIsDeleteDialogOpen(false);
       router.push("/me/shelves");
     } catch (err: any) {
       showError(err.message || "Failed to delete shelf");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -164,13 +178,15 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
         
         {/* Navigation Breadcrumb */}
         <div className="mb-6">
-          <Link
-            href="/me/shelves"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-          >
-            <ArrowLeft size={16} />
-            <span>Back to My Shelves</span>
-          </Link>
+          <Button asChild variant="ghost" className="gap-2 text-sm font-semibold p-0 hover:bg-transparent h-auto">
+            <Link
+              href="/me/shelves"
+              className="text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors inline-flex items-center gap-2"
+            >
+              <ArrowLeft size={16} />
+              <span>Back to My Shelves</span>
+            </Link>
+          </Button>
         </div>
 
         {/* Shelf Header Banner */}
@@ -220,7 +236,10 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
 
             {/* Action Buttons */}
             <div className="flex items-center gap-2.5 self-start shrink-0">
-              <button
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
                 onClick={() => {
                   setName(shelf.name);
                   setDescription(shelf.description || "");
@@ -228,19 +247,22 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
                   setIsPublic(shelf.isPublic);
                   setIsEditModalOpen(true);
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-bold transition-all cursor-pointer"
+                className="gap-2 rounded-xl text-xs font-bold"
               >
                 <Edit2 size={14} />
                 <span>Edit Shelf</span>
-              </button>
-              <button
-                onClick={handleDeleteShelf}
-                className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-300 text-xs font-bold transition-all cursor-pointer"
-                title="Delete Shelf"
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={() => setIsDeleteDialogOpen(true)}
+                className="gap-2 rounded-xl text-xs font-bold"
+                aria-label="Delete Shelf"
               >
                 <Trash2 size={14} />
                 <span className="hidden sm:inline">Delete</span>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -249,22 +271,22 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
           <div className="relative w-full sm:w-80">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
+            <Input
               type="text"
               placeholder="Search books in this shelf..."
+              aria-label="Search books in this shelf"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
             />
           </div>
 
-          <Link
-            href="/discover"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm shrink-0 self-end sm:self-auto"
-          >
-            <Compass size={14} />
-            <span>Discover More Books</span>
-          </Link>
+          <Button asChild size="sm" className="gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm shrink-0 self-end sm:self-auto">
+            <Link href="/discover">
+              <Compass size={14} />
+              <span>Discover More Books</span>
+            </Link>
+          </Button>
         </div>
 
         {/* Books Content */}
@@ -281,18 +303,12 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
               You haven&apos;t added any volumes to &quot;{shelf.name}&quot; yet. Add books from your library or explore our public domain catalog.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href="/me/library"
-                className="px-5 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold rounded-xl text-xs hover:opacity-90 transition-all"
-              >
-                Go to My Library
-              </Link>
-              <Link
-                href="/discover"
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition-all shadow-sm"
-              >
-                Explore Discover Hub
-              </Link>
+              <Button asChild variant="secondary" className="rounded-xl text-xs font-bold">
+                <Link href="/me/library">Go to My Library</Link>
+              </Button>
+              <Button asChild className="rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm">
+                <Link href="/discover">Explore Discover Hub</Link>
+              </Button>
             </div>
           </div>
         ) : filteredBooks.length === 0 ? (
@@ -320,13 +336,17 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
                 
                 {/* Remove Book Button on Card Hover */}
                 <div className="mt-2 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => handleRemoveBook(item.bookId, item.title)}
-                    className="text-[11px] font-semibold text-rose-500 hover:text-rose-600 dark:hover:text-rose-400 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                    aria-label={`Remove ${item.title} from shelf`}
+                    className="text-[11px] font-semibold text-rose-500 hover:text-rose-600 dark:hover:text-rose-400 gap-1 h-auto p-1 cursor-pointer"
                   >
                     <X size={12} />
                     <span>Remove from shelf</span>
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
@@ -334,151 +354,180 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
         )}
       </div>
 
-      {/* Edit Shelf Modal */}
-      {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-950 w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <form onSubmit={handleEditSave}>
-              <div className="p-6 border-b border-slate-100 dark:border-slate-800">
-                <h2 className="text-xl font-bold">Edit Shelf</h2>
-              </div>
+      {/* Delete Shelf Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Shelf</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete &quot;{shelf.name}&quot;? Books will remain in your library.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete Shelf"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Shelf Dialog */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Shelf</DialogTitle>
+            <DialogDescription>
+              Update the name, description, and cover artwork for this shelf.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleEditSave} className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Name</label>
+              <Input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder="e.g. Science Fiction"
+                className="w-full"
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="description" className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Description (optional)</label>
+              <textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="What kind of books belong here?"
+                rows={2}
+                className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300 flex items-center justify-between">
+                <span>Cover Artwork</span>
+                {coverImage && (
+                  <button
+                    type="button"
+                    onClick={() => setCoverImage("")}
+                    className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer font-medium"
+                  >
+                    Reset to default
+                  </button>
+                )}
+              </label>
               
-              <div className="p-6 space-y-4 flex flex-col">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Name</label>
-                  <input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    placeholder="e.g. Science Fiction"
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="description" className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Description (optional)</label>
-                  <textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="What kind of books belong here?"
-                    rows={2}
-                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300 flex items-center justify-between">
-                    <span>Cover Artwork</span>
-                    {coverImage && (
-                      <button
-                        type="button"
-                        onClick={() => setCoverImage("")}
-                        className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer font-medium"
-                      >
-                        Reset to default
-                      </button>
-                    )}
-                  </label>
-                  
-                  {/* Preset Swatches */}
-                  <p className="text-xs text-slate-500 mb-2">Select a theme or upload your own image</p>
-                  <div className="grid grid-cols-5 gap-2 mb-3">
-                    {PRESET_COVERS.map((preset) => {
-                      const isSelected = coverImage === preset.url;
-                      return (
-                        <button
-                          key={preset.url}
-                          type="button"
-                          onClick={() => setCoverImage(preset.url)}
-                          className={`relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
-                            isSelected ? "border-indigo-600 ring-2 ring-indigo-500/30 scale-105" : "border-slate-200 dark:border-slate-700 opacity-70 hover:opacity-100"
-                          }`}
-                          title={preset.label}
-                        >
-                          <Image src={preset.url} alt={preset.label} fill className="object-cover" sizes="80px" />
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Upload Image Button */}
-                  <label className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-400 bg-slate-50 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 text-xs font-semibold cursor-pointer transition-colors">
-                    {isUploading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
-                        <span>Uploading image...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                        <span>{coverImage && !PRESET_COVERS.some(p => p.url === coverImage) ? "Change Custom Image" : "Upload Custom Image"}</span>
-                      </>
-                    )}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileSelect}
-                      disabled={isUploading}
-                      className="hidden"
-                    />
-                  </label>
-
-                  {/* Active Custom Preview if uploaded */}
-                  {coverImage && !PRESET_COVERS.some(p => p.url === coverImage) && (
-                    <div className="mt-2.5 relative h-16 rounded-xl overflow-hidden border border-indigo-500/40">
-                      <Image src={coverImage} alt="Selected Cover" fill className="object-cover" />
-                      <div className="absolute inset-0 bg-black/35 flex items-center justify-between px-3">
-                        <span className="text-[11px] font-semibold text-white">Custom Upload Active</span>
-                        <button
-                          type="button"
-                          onClick={() => setCoverImage("")}
-                          className="text-[11px] bg-rose-600 hover:bg-rose-700 text-white px-2 py-0.5 rounded-md font-medium cursor-pointer"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3 p-4 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/50">
-                  <input
-                    id="isPublic"
-                    type="checkbox"
-                    checked={isPublic}
-                    onChange={(e) => setIsPublic(e.target.checked)}
-                    className="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                  />
-                  <div>
-                    <label htmlFor="isPublic" className="font-semibold text-sm cursor-pointer block">Make Public</label>
-                    <p className="text-xs text-slate-500 leading-tight">Allow other users to see and follow this shelf</p>
-                  </div>
-                </div>
+              {/* Preset Swatches */}
+              <p className="text-xs text-slate-500 mb-2">Select a theme or upload your own image</p>
+              <div className="grid grid-cols-5 gap-2 mb-3">
+                {PRESET_COVERS.map((preset) => {
+                  const isSelected = coverImage === preset.url;
+                  return (
+                    <button
+                      key={preset.url}
+                      type="button"
+                      onClick={() => setCoverImage(preset.url)}
+                      className={`relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                        isSelected ? "border-indigo-600 ring-2 ring-indigo-500/30 scale-105" : "border-slate-200 dark:border-slate-700 opacity-70 hover:opacity-100"
+                      }`}
+                      title={preset.label}
+                    >
+                      <Image src={preset.url} alt={preset.label} fill className="object-cover" sizes="80px" />
+                    </button>
+                  );
+                })}
               </div>
 
-              <div className="p-6 pt-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={!name.trim() || isSaving}
-                  className="px-6 py-2 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 flex items-center justify-center min-w-[100px] transition-colors cursor-pointer"
-                >
-                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
-                </button>
+              {/* Upload Image Button */}
+              <label className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-400 bg-slate-50 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 text-xs font-semibold cursor-pointer transition-colors">
+                {isUploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+                    <span>Uploading image...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    <span>{coverImage && !PRESET_COVERS.some(p => p.url === coverImage) ? "Change Custom Image" : "Upload Custom Image"}</span>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  disabled={isUploading}
+                  className="hidden"
+                />
+              </label>
+
+              {/* Active Custom Preview if uploaded */}
+              {coverImage && !PRESET_COVERS.some(p => p.url === coverImage) && (
+                <div className="mt-2.5 relative h-16 rounded-xl overflow-hidden border border-indigo-500/40">
+                  <Image src={coverImage} alt="Selected Cover" fill className="object-cover" />
+                  <div className="absolute inset-0 bg-black/35 flex items-center justify-between px-3">
+                    <span className="text-[11px] font-semibold text-white">Custom Upload Active</span>
+                    <button
+                      type="button"
+                      onClick={() => setCoverImage("")}
+                      className="text-[11px] bg-rose-600 hover:bg-rose-700 text-white px-2 py-0.5 rounded-md font-medium cursor-pointer"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3 p-4 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+              <input
+                id="isPublic"
+                type="checkbox"
+                checked={isPublic}
+                onChange={(e) => setIsPublic(e.target.checked)}
+                className="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+              />
+              <div>
+                <label htmlFor="isPublic" className="font-semibold text-sm cursor-pointer block">Make Public</label>
+                <p className="text-xs text-slate-500 leading-tight">Allow other users to see and follow this shelf</p>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+            </div>
+
+            <DialogFooter className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={!name.trim() || isSaving}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold"
+              >
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <PhotoUploadConsentModal
         isOpen={!!pendingCoverFile}
