@@ -10,7 +10,9 @@ describe("AnnouncementSection behavioral tests", () => {
       id: "ann-1",
       title: "Welcome to TomeSphere 1.0",
       content: "Explore classic literature with deep reading tools.",
-      type: "info",
+      type: "feature",
+      linkUrl: "/me/library",
+      linkText: "Explore Now",
       isDismissible: false,
       startsAt: "2026-08-24T00:00:00.000Z",
       endsAt: "2026-09-01T00:00:00.000Z",
@@ -19,7 +21,7 @@ describe("AnnouncementSection behavioral tests", () => {
       id: "ann-2",
       title: "New Shelf Sharing Features",
       content: "You can now organize and share custom collections.",
-      type: "success",
+      type: "warning",
       isDismissible: true,
       startsAt: "2026-08-25T12:00:00.000Z",
       endsAt: "2026-09-05T00:00:00.000Z",
@@ -48,14 +50,17 @@ describe("AnnouncementSection behavioral tests", () => {
   it("renders at most 2 announcements with formatted date and content", () => {
     render(<AnnouncementSection announcements={mockAnnouncements} />);
 
-    expect(screen.getByText("Announcements")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Announcements" })).toBeInTheDocument();
     expect(screen.getByText("Welcome to TomeSphere 1.0")).toBeInTheDocument();
     expect(screen.getByText("New Shelf Sharing Features")).toBeInTheDocument();
     expect(screen.queryByText("Excess Announcement")).not.toBeInTheDocument();
 
     // Check type badge
-    expect(screen.getByText("INFO")).toBeInTheDocument();
-    expect(screen.getByText("SUCCESS")).toBeInTheDocument();
+    expect(screen.getByText("New Feature")).toBeInTheDocument();
+    expect(screen.getByText("Notice")).toBeInTheDocument();
+
+    // Check CTA link
+    expect(screen.getByRole("link", { name: /Explore Now/i })).toHaveAttribute("href", "/me/library");
 
     // Check deterministic date rendering
     expect(screen.getByText("August 24, 2026")).toBeInTheDocument();

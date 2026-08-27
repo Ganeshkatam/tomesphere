@@ -3,7 +3,7 @@ import Footer from "@/shared/layout/Footer/Footer";
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { SupabaseAnnouncementReadModel } from "@/modules/announcements/infrastructure/read-models/SupabaseAnnouncementReadModel";
 import { GetActiveAnnouncementsQueryHandler } from "@/modules/announcements/application/queries/GetActiveAnnouncements/handler";
-import { AnnouncementBanner } from "@/modules/announcements/presentation/components/AnnouncementBanner";
+import { AnnouncementEntryCard } from "@/modules/announcements/presentation/components/AnnouncementEntryCard";
 
 export default async function PublicLayout({
   children,
@@ -42,7 +42,7 @@ export default async function PublicLayout({
   return (
     <div className="min-h-screen flex flex-col bg-[var(--surface-canvas)] text-[var(--text-primary)] font-sans">
       <AppHeader variant="marketing" user={appUser} />
-      <AnnouncementBanner announcements={activeAnnouncements} />
+      <AnnouncementEntryCard announcements={activeAnnouncements} />
       <main className="flex-1 w-full flex flex-col">
         {children}
       </main>
