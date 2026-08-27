@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { SupabaseAnnouncementReadModel } from "@/modules/announcements/infrastructure/read-models/SupabaseAnnouncementReadModel";
 import { GetActiveAnnouncementsQueryHandler } from "@/modules/announcements/application/queries/GetActiveAnnouncements/handler";
 import { AnnouncementBanner } from "@/modules/announcements/presentation/components/AnnouncementBanner";
+import { AnnouncementEntryCard } from "@/modules/announcements/presentation/components/AnnouncementEntryCard";
 
 export default async function WorkspaceLayout({
   children,
@@ -46,6 +47,7 @@ export default async function WorkspaceLayout({
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
       <AppHeader variant="application" user={appUser} />
       <AnnouncementBanner announcements={activeAnnouncements} />
+      <AnnouncementEntryCard announcements={activeAnnouncements} />
       <main className="flex-1 w-full flex flex-col">
         {children}
       </main>

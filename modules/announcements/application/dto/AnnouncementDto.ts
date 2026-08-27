@@ -1,8 +1,16 @@
+export type AnnouncementType =
+  | "info"
+  | "warning"
+  | "success"
+  | "error"
+  | "feature"
+  | "maintenance";
+
 export interface AnnouncementDto {
   id: string;
   title: string;
   content: string;
-  type: "info" | "warning" | "success" | "error";
+  type: AnnouncementType;
   linkUrl?: string;
   linkText?: string;
   isDismissible: boolean;

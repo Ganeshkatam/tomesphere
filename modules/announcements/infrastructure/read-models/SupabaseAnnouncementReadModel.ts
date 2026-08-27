@@ -23,7 +23,7 @@ export class SupabaseAnnouncementReadModel implements AnnouncementReadModel {
       id: row.id,
       title: row.title,
       content: row.content,
-      type: row.type as "info" | "warning" | "success" | "error",
+      type: row.type as AnnouncementDto["type"],
       linkUrl: row.link_url || undefined,
       linkText: row.link_text || undefined,
       isDismissible: row.is_dismissible ?? true,

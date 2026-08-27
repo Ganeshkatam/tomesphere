@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Info, AlertTriangle, Sparkles, AlertCircle, X, ArrowRight, Megaphone } from "lucide-react";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
-
-export interface AnnouncementBannerProps {
-  announcements: AnnouncementDto[];
-}
-
-const DISMISSED_STORAGE_KEY_PREFIX = "tomesphere_dismissed_announcement_";
+import {
+  isAnnouncementSeen,
+  markAnnouncementSeen,
+} from "../utils/announcement-storage";
+import { Button } from "@/components/ui/button";
+import AnnouncementCenter from "./AnnouncementCenter";
 
 function getThemeStyles(type: string) {
   switch (type) {
@@ -47,25 +47,22 @@ function getThemeStyles(type: string) {
   }
 }
 
+export interface AnnouncementBannerProps {
+  announcements: AnnouncementDto[];
+}
+
 export function AnnouncementBanner({ announcements }: AnnouncementBannerProps) {
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => new Set());
   const [isClient, setIsClient] = useState(false);
 
-  // Load device-local dismissal state from localStorage on client mount
+  // Load device-local dismissal state from storage utility on client mount
   useEffect(() => {
     setIsClient(true);
     const dismissed = new Set<string>();
 
-    if (typeof window !== "undefined" && window.localStorage) {
-      for (const announcement of announcements) {
-        try {
-          const key = `${DISMISSED_STORAGE_KEY_PREFIX}${announcement.id}`;
-          if (window.localStorage.getItem(key) === "true") {
-            dismissed.add(announcement.id);
-          }
-        } catch {
-          // Ignore localStorage access errors in restricted sandbox
-        }
+    for (const announcement of announcements) {
+      if (isAnnouncementSeen(announcement.id)) {
+        dismissed.add(announcement.id);
       }
     }
 
@@ -79,13 +76,7 @@ export function AnnouncementBanner({ announcements }: AnnouncementBannerProps) {
       return next;
     });
 
-    if (typeof window !== "undefined" && window.localStorage) {
-      try {
-        window.localStorage.setItem(`${DISMISSED_STORAGE_KEY_PREFIX}${id}`, "true");
-      } catch {
-        // Fallback gracefully
-      }
-    }
+    markAnnouncementSeen(id);
   };
 
   // Filter out dismissed announcements
@@ -122,24 +113,40 @@ export function AnnouncementBanner({ announcements }: AnnouncementBannerProps) {
 
               <div className="flex items-center gap-3 shrink-0">
                 {announcement.linkUrl && announcement.linkText && (
-                  <Link
-                    href={announcement.linkUrl}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold shadow-sm transition-all duration-150 active:scale-95 ${theme.cta}`}
-                  >
-                    <span>{announcement.linkText}</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
+                  <Button asChild size="sm" className={`h-7 px-3 text-xs font-semibold shadow-sm ${theme.cta}`}>
+                    <Link href={announcement.linkUrl} className="inline-flex items-center gap-1.5">
+                      <span>{announcement.linkText}</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </Button>
                 )}
 
+                <AnnouncementCenter
+                  announcements={announcements}
+                  trigger={
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label="View all announcements"
+                      className="h-7 w-7 opacity-70 hover:opacity-100"
+                    >
+                      <Megaphone className="w-3.5 h-3.5" />
+                    </Button>
+                  }
+                />
+
                 {announcement.isDismissible && (
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => handleDismiss(announcement.id)}
                     aria-label={`Dismiss announcement: ${announcement.title}`}
-                    className="p-1 rounded-md opacity-70 hover:opacity-100 hover:bg-black/10 dark:hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-current"
+                    className="h-7 w-7 opacity-70 hover:opacity-100"
                   >
                     <X className="w-4 h-4" />
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
