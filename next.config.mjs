@@ -1,6 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  compiler: {
+    // Strip console.log, console.warn, and console.info from production bundles.
+    // console.error is preserved for genuine runtime error diagnostics.
+    removeConsole: {
+      exclude: ["error"],
+    },
+  },
   allowedDevOrigins: [
     "acorn-daily-overture.ngrok-free.dev",
     "*.ngrok-free.dev",
