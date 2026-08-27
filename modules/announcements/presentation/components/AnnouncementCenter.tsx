@@ -5,7 +5,10 @@ import Link from "next/link";
 import { Megaphone, ArrowRight, CheckCheck, Info, AlertTriangle, Sparkles, AlertCircle } from "lucide-react";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import { formatDate } from "@/lib/utils";
-import { markAnnouncementSeen } from "../utils/announcement-storage";
+import {
+  markAnnouncementSeen,
+  markBannerDismissed,
+} from "../utils/announcement-storage";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,7 +30,10 @@ export function AnnouncementCenter({
   const [isOpen, setIsOpen] = useState(false);
 
   const handleMarkAllSeen = () => {
-    announcements.forEach((a) => markAnnouncementSeen(a.id));
+    announcements.forEach((a) => {
+      markAnnouncementSeen(a.id);
+      markBannerDismissed(a.id);
+    });
     setIsOpen(false);
   };
 
@@ -160,6 +166,7 @@ export function AnnouncementCenter({
                           size="sm"
                           onClick={() => {
                             markAnnouncementSeen(announcement.id);
+                            markBannerDismissed(announcement.id);
                             setIsOpen(false);
                           }}
                         >

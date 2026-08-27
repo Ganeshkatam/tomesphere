@@ -3,8 +3,11 @@ import {
   isEntryEligible,
   isAnnouncementSeen,
   markAnnouncementSeen,
+  isBannerDismissed,
+  markBannerDismissed,
   selectEntryAnnouncement,
   ANNOUNCEMENT_SEEN_STORAGE_PREFIX,
+  ANNOUNCEMENT_BANNER_DISMISSED_PREFIX,
 } from "./announcement-storage";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 
@@ -43,7 +46,7 @@ describe("announcement-storage policy & persistence tests", () => {
     id: "a-feat",
     title: "Custom Shelves Released",
     content: "Organize your personal library with custom shelves.",
-    type: "feature" as any,
+    type: "feature",
     isDismissible: true,
     startsAt: "2026-08-26T00:00:00.000Z",
     endsAt: "2026-09-01T00:00:00.000Z",
@@ -101,6 +104,27 @@ describe("announcement-storage policy & persistence tests", () => {
     ).toBe("true");
   });
 
+  it("separates banner dismissal from entry card seen state", () => {
+    expect(isBannerDismissed("item-a")).toBe(false);
+    expect(isAnnouncementSeen("item-a")).toBe(false);
+
+    // Closing the banner should hide the banner, but NOT mark the entry card as seen
+    markBannerDismissed("item-a");
+    expect(isBannerDismissed("item-a")).toBe(true);
+    expect(isAnnouncementSeen("item-a")).toBe(false);
+    expect(
+      window.localStorage.getItem(`${ANNOUNCEMENT_BANNER_DISMISSED_PREFIX}item-a`)
+    ).toBe("true");
+    expect(
+      window.localStorage.getItem(`${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}item-a`)
+    ).toBeNull();
+
+    // Acknowledging the entry card marks both seen and banner dismissed
+    markAnnouncementSeen("item-b");
+    expect(isAnnouncementSeen("item-b")).toBe(true);
+    expect(isBannerDismissed("item-b")).toBe(true);
+  });
+
   it("handles storage exceptions gracefully without crashing", () => {
     const originalSetItem = window.localStorage.setItem;
     window.localStorage.setItem = jest.fn(() => {
@@ -108,6 +132,7 @@ describe("announcement-storage policy & persistence tests", () => {
     });
 
     expect(() => markAnnouncementSeen("test-err")).not.toThrow();
+    expect(() => markBannerDismissed("test-err")).not.toThrow();
 
     window.localStorage.setItem = originalSetItem;
   });

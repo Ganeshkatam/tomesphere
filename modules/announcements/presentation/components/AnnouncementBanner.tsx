@@ -5,8 +5,8 @@ import Link from "next/link";
 import { Info, AlertTriangle, Sparkles, AlertCircle, X, ArrowRight, Megaphone } from "lucide-react";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import {
-  isAnnouncementSeen,
-  markAnnouncementSeen,
+  isBannerDismissed,
+  markBannerDismissed,
 } from "../utils/announcement-storage";
 import { Button } from "@/components/ui/button";
 import AnnouncementCenter from "./AnnouncementCenter";
@@ -61,7 +61,7 @@ export function AnnouncementBanner({ announcements }: AnnouncementBannerProps) {
     const dismissed = new Set<string>();
 
     for (const announcement of announcements) {
-      if (isAnnouncementSeen(announcement.id)) {
+      if (isBannerDismissed(announcement.id)) {
         dismissed.add(announcement.id);
       }
     }
@@ -76,7 +76,7 @@ export function AnnouncementBanner({ announcements }: AnnouncementBannerProps) {
       return next;
     });
 
-    markAnnouncementSeen(id);
+    markBannerDismissed(id);
   };
 
   // Filter out dismissed announcements

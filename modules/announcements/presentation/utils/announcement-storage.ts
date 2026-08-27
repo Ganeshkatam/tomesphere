@@ -1,14 +1,20 @@
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 
+/**
+ * Storage keys:
+ * - ANNOUNCEMENT_SEEN_STORAGE_PREFIX: Tracks entry card acknowledgment/dismissal.
+ * - ANNOUNCEMENT_BANNER_DISMISSED_PREFIX: Tracks passive top banner dismissal independently.
+ */
 export const ANNOUNCEMENT_SEEN_STORAGE_PREFIX = "tomesphere_announcement_seen_";
+export const ANNOUNCEMENT_BANNER_DISMISSED_PREFIX = "tomesphere_announcement_banner_dismissed_";
 
 /**
- * Priority values for announcement entry presentation:
- * - Critical non-dismissible: 4
- * - Warning: 3
- * - Error (dismissible): 2
- * - Feature: 1
- * - Info / Success: 0 (never eligible for entry card)
+ * Priority matrix for announcement entry presentation:
+ * - Priority 4: Critical Non-Dismissible Error (type="error", isDismissible=false) -> Requires blocking Dialog
+ * - Priority 3: Warning (type="warning") -> Important notice Card
+ * - Priority 2: Dismissible Error (type="error", isDismissible=true) -> Important error Card
+ * - Priority 1: Feature (type="feature") -> New capability Card
+ * - Priority 0: Passive (type="info" | "success") -> Banner/Center only, never eligible for entry Card
  */
 export function getAnnouncementPriority(announcement: AnnouncementDto): number {
   if (announcement.type === "error" && !announcement.isDismissible) {
@@ -17,7 +23,7 @@ export function getAnnouncementPriority(announcement: AnnouncementDto): number {
   if (announcement.type === "warning") {
     return 3;
   }
-  if (announcement.type === "error") {
+  if (announcement.type === "error" && announcement.isDismissible) {
     return 2;
   }
   if (announcement.type === "feature") {
@@ -35,7 +41,7 @@ export function isEntryEligible(announcement: AnnouncementDto): boolean {
 }
 
 /**
- * Check whether an announcement was previously seen/dismissed on this device.
+ * Check whether an announcement was acknowledged/seen on this device.
  * Best-effort client device persistence, never authoritative for business logic.
  */
 export function isAnnouncementSeen(id: string): boolean {
@@ -50,7 +56,7 @@ export function isAnnouncementSeen(id: string): boolean {
 }
 
 /**
- * Marks an announcement as seen/dismissed on this device.
+ * Marks an announcement as acknowledged/seen on this device.
  */
 export function markAnnouncementSeen(id: string): void {
   if (typeof window === "undefined" || !window.localStorage) {
@@ -60,6 +66,39 @@ export function markAnnouncementSeen(id: string): void {
     window.localStorage.setItem(`${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${id}`, "true");
   } catch {
     // Graceful degradation when storage is blocked (e.g. sandbox/incognito quota)
+  }
+}
+
+/**
+ * Check whether the passive banner for an announcement is dismissed on this device.
+ * A banner is hidden if either the banner was explicitly closed OR the announcement was acknowledged.
+ */
+export function isBannerDismissed(id: string): boolean {
+  if (typeof window === "undefined" || !window.localStorage) {
+    return false;
+  }
+  try {
+    const bannerDismissed =
+      window.localStorage.getItem(`${ANNOUNCEMENT_BANNER_DISMISSED_PREFIX}${id}`) === "true";
+    const entrySeen =
+      window.localStorage.getItem(`${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${id}`) === "true";
+    return bannerDismissed || entrySeen;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Marks the passive banner as dismissed on this device without suppressing the entry card.
+ */
+export function markBannerDismissed(id: string): void {
+  if (typeof window === "undefined" || !window.localStorage) {
+    return;
+  }
+  try {
+    window.localStorage.setItem(`${ANNOUNCEMENT_BANNER_DISMISSED_PREFIX}${id}`, "true");
+  } catch {
+    // Graceful degradation
   }
 }
 
@@ -79,7 +118,7 @@ export function selectEntryAnnouncement(
     return null;
   }
 
-  // Sort descending by priority, breaking ties by startsAt or order in array
+  // Sort descending by priority, breaking ties by startsAt
   eligible.sort((a, b) => {
     const priorityDiff = getAnnouncementPriority(b) - getAnnouncementPriority(a);
     if (priorityDiff !== 0) return priorityDiff;

@@ -7,6 +7,7 @@ import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import {
   selectEntryAnnouncement,
   markAnnouncementSeen,
+  markBannerDismissed,
   isAnnouncementSeen,
 } from "../utils/announcement-storage";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,7 @@ export function AnnouncementEntryCard({ announcements }: AnnouncementEntryCardPr
 
   const handleDismiss = () => {
     markAnnouncementSeen(activeAnnouncement.id);
+    markBannerDismissed(activeAnnouncement.id);
     setActiveAnnouncement(null);
   };
 
