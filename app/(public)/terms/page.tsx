@@ -13,7 +13,7 @@ export default function TermsPage() {
           <h1 className="text-4xl font-display font-bold mb-6 text-[var(--text-primary)]">
             Terms of Service
           </h1>
-          <p className="text-sm text-[var(--text-tertiary)] mb-8">
+          <p className="text-sm text-[var(--text-tertiary)] mb-8" suppressHydrationWarning>
             Last Updated: {new Date().toLocaleDateString()}
           </p>
           <div className="prose prose-lg max-w-none text-[var(--text-secondary)] space-y-6">

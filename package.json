@@ -1,10 +1,11 @@
 {
-  "name": "tomesphere-app",
-  "version": "1.0.0",
+  "name": "tomesphere",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=\"--max-old-space-size=768\" next dev",
+    "dev": "next dev",
     "dev:host": "cross-env NODE_OPTIONS=\"--max-old-space-size=768\" next dev -H 0.0.0.0",
+    "dev:host-only": "next dev -H 0.0.0.0",
     "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=1024\" next build",
     "start": "cross-env NODE_OPTIONS=\"--max-old-space-size=768\" next start",
     "lint": "eslint .",

@@ -1,4 +1,6 @@
+import React from "react";
 import { AnnouncementDto } from "@/modules/announcements/application/dto/AnnouncementDto";
+import { formatDate } from "@/lib/utils";
 
 interface AnnouncementSectionProps {
   announcements: AnnouncementDto[];
@@ -26,8 +28,11 @@ export default function AnnouncementSection({
               >
                 {announcement.type.toUpperCase()}
               </span>
-              <span className="text-sm text-[var(--text-tertiary)]">
-                {new Date(announcement.startsAt).toLocaleDateString()}
+              <span
+                className="text-sm text-[var(--text-tertiary)]"
+                suppressHydrationWarning
+              >
+                {formatDate(announcement.startsAt)}
               </span>
             </div>
             <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
