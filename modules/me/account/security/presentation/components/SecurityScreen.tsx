@@ -2,7 +2,6 @@
 
 import { PasswordSection } from "./PasswordSection";
 import { SignOutSection } from "./SignOutSection";
-import { ExportSection } from "./ExportSection";
 import { DangerZone } from "./DangerZone";
 import { SecurityPageDto } from "../../application/dto/SecurityPageDto";
 
@@ -19,10 +18,6 @@ export function SecurityScreen({
 
       <div className="pt-2">
         <SignOutSection />
-      </div>
-
-      <div className="pt-2">
-        <ExportSection userId={userId} exportData={dto.exportData} />
       </div>
 
       <div className="pt-8 mt-8 border-t border-[var(--border-default)]">

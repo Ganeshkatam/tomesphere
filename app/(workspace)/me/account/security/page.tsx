@@ -21,26 +21,11 @@ export default async function SecurityPage() {
     redirect("/auth/sign-in");
   }
 
-  const { data: latestExport } = await supabase
-    .from("export_requests")
-    .select("status, download_url, requested_at")
-    .eq("user_id", user.id)
-    .order("requested_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
   const dto: SecurityPageDto = {
     password: {
       hasPassword: true,
       lastPasswordChange: null,
     },
-    exportData: latestExport
-      ? {
-          status: latestExport.status,
-          downloadUrl: latestExport.download_url,
-          requestedAt: latestExport.requested_at,
-        }
-      : null,
     deletion: {
       canDelete: true,
     },
@@ -53,7 +38,7 @@ export default async function SecurityPage() {
           Security & Access
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Manage your password, active sessions, GDPR data exports, and account deletion.
+          Manage your password, active sessions, and account credentials.
         </p>
       </div>
 
@@ -61,4 +46,3 @@ export default async function SecurityPage() {
     </div>
   );
 }
-

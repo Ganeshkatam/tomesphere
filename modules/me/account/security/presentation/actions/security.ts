@@ -5,7 +5,6 @@ import { ServerActionResult } from "@/lib/actions/action-result";
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 
 export async function deleteAccountAction(data: any): Promise<any> { return { success: true }; }
-export async function requestDataExportAction(data: any): Promise<any> { return { success: true }; }
 export async function signOutAllDevicesAction(data: any): Promise<any> { return { success: true }; }
 
 const PasswordUpdateSchema = z.object({

@@ -605,42 +605,6 @@ export type Database = {
           },
         ]
       }
-      export_requests: {
-        Row: {
-          completed_at: string | null
-          download_url: string | null
-          error_message: string | null
-          expires_at: string | null
-          id: string
-          queued_at: string | null
-          requested_at: string
-          status: Database["public"]["Enums"]["export_request_status"]
-          user_id: string
-        }
-        Insert: {
-          completed_at?: string | null
-          download_url?: string | null
-          error_message?: string | null
-          expires_at?: string | null
-          id?: string
-          queued_at?: string | null
-          requested_at?: string
-          status?: Database["public"]["Enums"]["export_request_status"]
-          user_id: string
-        }
-        Update: {
-          completed_at?: string | null
-          download_url?: string | null
-          error_message?: string | null
-          expires_at?: string | null
-          id?: string
-          queued_at?: string | null
-          requested_at?: string
-          status?: Database["public"]["Enums"]["export_request_status"]
-          user_id?: string
-        }
-        Relationships: []
-      }
       faqs: {
         Row: {
           answer: string
@@ -2035,12 +1999,6 @@ export type Database = {
         | "Medicine"
         | "Law"
         | "Education"
-      export_request_status:
-        | "requested"
-        | "queued"
-        | "processing"
-        | "completed"
-        | "failed"
       reading_status: "want_to_read" | "currently_reading" | "finished"
     }
     CompositeTypes: {
@@ -2185,13 +2143,6 @@ export const Constants = {
         "Medicine",
         "Law",
         "Education",
-      ],
-      export_request_status: [
-        "requested",
-        "queued",
-        "processing",
-        "completed",
-        "failed",
       ],
       reading_status: ["want_to_read", "currently_reading", "finished"],
     },
