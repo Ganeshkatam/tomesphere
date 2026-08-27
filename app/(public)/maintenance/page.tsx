@@ -98,22 +98,9 @@ export default async function MaintenancePage() {
                   {notice.title}
                 </h2>
 
-                <p className="text-base text-slate-700 dark:text-slate-200 leading-relaxed mb-6 font-normal">
+                <p className="text-base text-slate-700 dark:text-slate-200 leading-relaxed font-normal">
                   {notice.content}
                 </p>
-
-                {notice.linkUrl && notice.linkText && (
-                  <Button
-                    asChild
-                    size="default"
-                    className="h-10 px-5 text-sm font-bold rounded-xl bg-amber-600 hover:bg-amber-700 text-white shadow-sm"
-                  >
-                    <Link href={notice.linkUrl} className="inline-flex items-center gap-2">
-                      <span>{notice.linkText}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </Button>
-                )}
               </div>
             ))}
           </div>
@@ -136,7 +123,7 @@ export default async function MaintenancePage() {
         {/* Reader Assurance Card */}
         <div className="rounded-3xl p-8 sm:p-10 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-md mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <HelpCircle className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <HelpCircle className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               Reader Data Safety & Continuous Reading
             </h2>

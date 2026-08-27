@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AlertTriangle, AlertCircle, X, ArrowRight, Megaphone, ShieldAlert } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { AlertCircle, X, ArrowRight, Megaphone, ShieldAlert } from "lucide-react";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import { Button } from "@/components/ui/button";
 import AnnouncementCenter from "./AnnouncementCenter";
@@ -66,6 +67,7 @@ export interface AnnouncementBannerProps {
 }
 
 export function AnnouncementBanner({ announcements = [] }: AnnouncementBannerProps) {
+  const pathname = usePathname();
   const [items, setItems] = useState<AnnouncementDto[]>(announcements);
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => new Set());
   const [isClient, setIsClient] = useState(false);
@@ -124,6 +126,13 @@ export function AnnouncementBanner({ announcements = [] }: AnnouncementBannerPro
   const primaryAnnouncement = maintenanceAnnouncements[0];
   const theme = getThemeStyles(primaryAnnouncement.type);
 
+  // Check if user is already on the target link route (e.g. /maintenance)
+  const isAlreadyOnDestination =
+    Boolean(primaryAnnouncement.linkUrl) &&
+    (pathname === primaryAnnouncement.linkUrl ||
+      (pathname?.startsWith("/maintenance") &&
+        primaryAnnouncement.linkUrl?.startsWith("/maintenance")));
+
   return (
     <div
       className="w-full relative z-50 shrink-0"
@@ -179,21 +188,23 @@ export function AnnouncementBanner({ announcements = [] }: AnnouncementBannerPro
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {primaryAnnouncement.linkUrl && primaryAnnouncement.linkText && (
-              <Button
-                asChild
-                size="sm"
-                className={`h-7 px-3.5 text-xs font-bold rounded-full transition-all duration-200 hover:scale-105 ${theme.cta}`}
-              >
-                <Link
-                  href={primaryAnnouncement.linkUrl}
-                  className="inline-flex items-center gap-1.5"
+            {!isAlreadyOnDestination &&
+              primaryAnnouncement.linkUrl &&
+              primaryAnnouncement.linkText && (
+                <Button
+                  asChild
+                  size="sm"
+                  className={`h-7 px-3.5 text-xs font-bold rounded-full transition-all duration-200 hover:scale-105 ${theme.cta}`}
                 >
-                  <span>{primaryAnnouncement.linkText}</span>
-                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
-                </Link>
-              </Button>
-            )}
+                  <Link
+                    href={primaryAnnouncement.linkUrl}
+                    className="inline-flex items-center gap-1.5"
+                  >
+                    <span>{primaryAnnouncement.linkText}</span>
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </Button>
+              )}
 
             <AnnouncementCenter
               announcements={items}
