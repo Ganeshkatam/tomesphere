@@ -4,19 +4,33 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Info, AlertTriangle, Sparkles, AlertCircle, X, ArrowRight, Megaphone } from "lucide-react";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
-import {
-  isBannerDismissed,
-  markBannerDismissed,
-} from "../utils/announcement-storage";
 import { Button } from "@/components/ui/button";
 import AnnouncementCenter from "./AnnouncementCenter";
+
+function isTopBannerDismissed(id: string): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(`tomesphere_top_banner_dismissed_${id}`) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function markTopBannerDismissed(id: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(`tomesphere_top_banner_dismissed_${id}`, "true");
+  } catch {
+    // ignore
+  }
+}
 
 function getThemeStyles(type: string) {
   switch (type) {
     case "warning":
       return {
         wrapper:
-          "bg-amber-500/15 dark:bg-amber-950/60 border-amber-500/30 text-amber-950 dark:text-amber-100",
+          "bg-amber-500/15 dark:bg-amber-950/70 border-amber-500/40 text-amber-950 dark:text-amber-100",
         badge:
           "bg-amber-500/25 text-amber-900 dark:text-amber-300 border-amber-500/40",
         icon: (
@@ -28,7 +42,7 @@ function getThemeStyles(type: string) {
     case "feature":
       return {
         wrapper:
-          "bg-emerald-500/15 dark:bg-emerald-950/60 border-emerald-500/30 text-emerald-950 dark:text-emerald-100",
+          "bg-emerald-500/15 dark:bg-emerald-950/70 border-emerald-500/40 text-emerald-950 dark:text-emerald-100",
         badge:
           "bg-emerald-500/25 text-emerald-900 dark:text-emerald-300 border-emerald-500/40",
         icon: (
@@ -40,7 +54,7 @@ function getThemeStyles(type: string) {
     case "maintenance":
       return {
         wrapper:
-          "bg-rose-500/15 dark:bg-rose-950/60 border-rose-500/30 text-rose-950 dark:text-rose-100",
+          "bg-rose-500/15 dark:bg-rose-950/70 border-rose-500/40 text-rose-950 dark:text-rose-100",
         badge:
           "bg-rose-500/25 text-rose-900 dark:text-rose-300 border-rose-500/40",
         icon: (
@@ -52,7 +66,7 @@ function getThemeStyles(type: string) {
     default:
       return {
         wrapper:
-          "bg-indigo-500/15 dark:bg-indigo-950/60 border-indigo-500/30 text-indigo-950 dark:text-indigo-100",
+          "bg-indigo-500/15 dark:bg-indigo-950/70 border-indigo-500/40 text-indigo-950 dark:text-indigo-100",
         badge:
           "bg-indigo-500/25 text-indigo-900 dark:text-indigo-300 border-indigo-500/40",
         icon: (
@@ -64,26 +78,43 @@ function getThemeStyles(type: string) {
 }
 
 export interface AnnouncementBannerProps {
-  announcements: AnnouncementDto[];
+  announcements?: AnnouncementDto[];
 }
 
-export function AnnouncementBanner({ announcements }: AnnouncementBannerProps) {
+export function AnnouncementBanner({ announcements = [] }: AnnouncementBannerProps) {
+  const [items, setItems] = useState<AnnouncementDto[]>(announcements);
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => new Set());
   const [isClient, setIsClient] = useState(false);
 
-  // Load device-local dismissal state from storage utility on client mount
   useEffect(() => {
     setIsClient(true);
-    const dismissed = new Set<string>();
 
-    for (const announcement of announcements) {
-      if (isBannerDismissed(announcement.id)) {
-        dismissed.add(announcement.id);
+    if (announcements && announcements.length > 0) {
+      setItems(announcements);
+    } else {
+      // Client-side fallback fetch if server didn't pass announcements
+      fetch("/api/announcements")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.announcements && Array.isArray(data.announcements)) {
+            setItems(data.announcements);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [announcements]);
+
+  // Load top-banner dismissed state
+  useEffect(() => {
+    if (!isClient) return;
+    const dismissed = new Set<string>();
+    for (const item of items) {
+      if (isTopBannerDismissed(item.id)) {
+        dismissed.add(item.id);
       }
     }
-
     setDismissedIds(dismissed);
-  }, [announcements]);
+  }, [isClient, items]);
 
   const handleDismiss = (id: string) => {
     setDismissedIds((prev) => {
@@ -92,15 +123,15 @@ export function AnnouncementBanner({ announcements }: AnnouncementBannerProps) {
       return next;
     });
 
-    markBannerDismissed(id);
+    markTopBannerDismissed(id);
   };
 
-  // Filter out dismissed announcements, prioritizing warnings/maintenance
-  const visibleAnnouncements = announcements
+  // Filter out dismissed announcements, sorting warnings/maintenance first
+  const visibleAnnouncements = items
     .filter((a) => !dismissedIds.has(a.id))
     .sort((a, b) => {
-      const aScore = a.type === "warning" || a.type === "error" ? 2 : 1;
-      const bScore = b.type === "warning" || b.type === "error" ? 2 : 1;
+      const aScore = a.type === "warning" || a.type === "error" ? 3 : a.type === "feature" ? 2 : 1;
+      const bScore = b.type === "warning" || b.type === "error" ? 3 : b.type === "feature" ? 2 : 1;
       return bScore - aScore;
     });
 
@@ -160,7 +191,7 @@ export function AnnouncementBanner({ announcements }: AnnouncementBannerProps) {
             )}
 
             <AnnouncementCenter
-              announcements={announcements}
+              announcements={items}
               trigger={
                 <Button
                   type="button"

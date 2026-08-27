@@ -67,7 +67,6 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
 
   const handleDismiss = (id: string) => {
     markAnnouncementSeen(id);
-    markBannerDismissed(id);
     setActiveNotices((prev) => prev.filter((item) => item.id !== id));
   };
 
