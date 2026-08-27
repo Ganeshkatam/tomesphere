@@ -207,32 +207,37 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
       aria-label="Product announcements"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 w-[calc(100vw-32px)] sm:w-[440px] max-w-[460px] pointer-events-auto transition-all duration-300"
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 w-[calc(100vw-32px)] sm:w-[440px] max-w-[460px] pointer-events-auto transition-all duration-300 pt-8"
     >
       {/* Stack Container */}
       <div className="relative space-y-4">
-        {/* Physical stacked card tabs behind the top card */}
+        {/* Prominent High-Contrast Stacked Deck Tabs above the top card */}
         {!isHovered && hasMultiple && (
           <div className="pointer-events-none transition-all duration-300">
             {Array.from({ length: queueTabsCount }).map((_, i) => {
               // i goes from 0 (closest tab) to queueTabsCount - 1 (farthest top tab)
               const tabRank = queueTabsCount - i; // 3, 2, 1 (rendered from back to front)
-              const topOffset = tabRank * 6; // -18px, -12px, -6px
-              const insetHorizontal = tabRank * 12; // 36px, 24px, 12px
-              const borderAccent = tabRank === 1 ? "border-slate-500" : "border-slate-700/80";
-              const opacity = 1 - (tabRank - 1) * 0.2; // 0.6, 0.8, 1.0
+              const topOffset = tabRank * 11; // -33px, -22px, -11px
+              const insetHorizontal = tabRank * 14; // 42px, 28px, 14px
+              const borderTopAccent =
+                tabRank === 1
+                  ? "border-t-[2.5px] border-t-slate-400"
+                  : tabRank === 2
+                  ? "border-t-2 border-t-slate-500"
+                  : "border-t-2 border-t-slate-600";
+              const opacity = 1 - (tabRank - 1) * 0.12; // 0.76, 0.88, 1.0
 
               return (
                 <div
                   key={`deck-tab-${tabRank}`}
-                  className={`absolute h-8 bg-slate-900 border-t border-x ${borderAccent} rounded-t-2xl shadow-lg transition-all duration-300`}
+                  className={`absolute h-10 bg-slate-900/98 dark:bg-slate-900/98 ${borderTopAccent} border-x border-slate-700/80 rounded-t-2xl shadow-xl transition-all duration-300`}
                   style={{
                     top: `-${topOffset}px`,
                     left: `${insetHorizontal}px`,
                     right: `${insetHorizontal}px`,
                     opacity,
                     zIndex: -tabRank,
-                    boxShadow: "0 -4px 14px rgba(0, 0, 0, 0.5)",
+                    boxShadow: "0 -6px 18px rgba(0, 0, 0, 0.65)",
                   }}
                 />
               );
