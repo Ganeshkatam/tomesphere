@@ -8,6 +8,7 @@ tomesphere-app
 │   └── workflows
 │       └── ci.yml
 ├── .vscode
+│   ├── extensions.json
 │   └── settings.json
 ├── app
 │   ├── (app)
@@ -41,12 +42,19 @@ tomesphere-app
 │   │   ├── cookies
 │   │   │   └── page.tsx
 │   │   ├── forgot-password
+│   │   │   ├── layout.tsx
 │   │   │   └── page.tsx
 │   │   ├── login
 │   │   │   └── page.tsx
 │   │   ├── privacy
 │   │   │   └── page.tsx
+│   │   ├── report
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
 │   │   ├── reset-password
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── security
 │   │   │   └── page.tsx
 │   │   ├── signup
 │   │   │   └── page.tsx
@@ -55,6 +63,7 @@ tomesphere-app
 │   │   ├── terms
 │   │   │   └── page.tsx
 │   │   ├── verify-email
+│   │   │   ├── layout.tsx
 │   │   │   └── page.tsx
 │   │   ├── layout.tsx
 │   │   └── page.tsx
@@ -63,26 +72,49 @@ tomesphere-app
 │   │       └── [id]
 │   │           └── page.tsx
 │   ├── (workspace)
-│   │   ├── account
-│   │   │   ├── layout.tsx
-│   │   │   └── page.tsx
-│   │   ├── library
-│   │   │   ├── actions.ts
-│   │   │   └── page.tsx
 │   │   ├── me
-│   │   │   └── page.tsx
-│   │   ├── onboarding
-│   │   │   ├── [id]
+│   │   │   ├── account
+│   │   │   │   ├── connections
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── notifications
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── preferences
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── profile
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── security
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── storage
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── layout.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── annotations
+│   │   │   │   └── page.tsx
+│   │   │   ├── dashboard
+│   │   │   │   └── page.tsx
+│   │   │   ├── library
+│   │   │   │   └── page.tsx
+│   │   │   ├── notes
+│   │   │   │   └── page.tsx
+│   │   │   ├── onboarding
+│   │   │   │   └── page.tsx
+│   │   │   ├── shelves
+│   │   │   │   ├── [id]
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── actions.ts
+│   │   │   │   └── page.tsx
+│   │   │   ├── layout.tsx
 │   │   │   └── page.tsx
 │   │   └── layout.tsx
 │   ├── api
-
 │   │   └── cron
 │   │       └── process-outbox
 │   │           └── route.ts
 │   ├── auth
-│   │   └── callback
-│   │       └── route.ts
+│   │   ├── callback
+│   │   │   └── route.ts
+│   │   └── confirm
+│   │       └── page.tsx
 │   ├── sitemap
 │   │   └── page.tsx
 │   ├── error.tsx
@@ -91,84 +123,19 @@ tomesphere-app
 │   ├── loading.tsx
 │   ├── not-found.tsx
 │   ├── providers.tsx
+│   ├── robots.ts
+│   ├── sitemap.ts
 │   ├── template.tsx
 │   └── theme-init.ts
-├── architecture
-│   ├── decisions
-│   │   └── ADR-0005-code-architecture-freeze.md
-│   └── deployment.txt
-├── docs
-│   ├── architecture
-│   │   ├── audits
-│   │   │   ├── DR-001-dashboard.md
-│   │   │   ├── DR-002-analytics.md
-│   │   │   ├── DR-003-profile.md
-│   │   │   ├── DR-008-public-profile-discoverability.md
-│   │   │   └── index.md
-│   │   ├── decisions
-│   │   │   ├── ADR-0002-domain-splitting.md
-│   │   │   ├── ADR-0003-repository-pattern.md
-│   │   │   ├── ADR-0004-recommendation-pipeline.md
-│   │   │   └── ADR-0005-event-driven-integration.md
-│   │   ├── governance
-│   │   │   ├── ARCHITECTURE_GOVERNANCE.md
-│   │   │   ├── DECISION_RECORD_TEMPLATE.md
-│   │   │   ├── INVESTIGATION_PROCESS.md
-│   │   │   └── TRACEABILITY_MATRIX.md
-│   │   ├── milestones
-│   │   │   └── MILESTONE-1.5.md
-│   │   ├── templates
-│   │   │   └── ADR_TEMPLATE.md
-│   │   ├── ARCHITECTURE_FROZEN.md
-│   │   ├── architecture-health.md
-│   │   ├── backend.md
-│   │   ├── capability-roadmap.md
-│   │   ├── database.md
-│   │   ├── dependency-map.md
-│   │   ├── dependency-rules.md
-│   │   ├── deployment.md
-│   │   ├── design.md
-│   │   ├── DOMAIN_DRIVEN_DESIGN_TEMPLATE.md
-│   │   ├── frontend.md
-│   │   ├── module-lifecycle.md
-│   │   ├── PRODUCT_EVOLUTION.md
-│   │   ├── reader.md
-│   │   ├── README.md
-│   │   ├── security.md
-│   │   └── testing.md
-│   ├── database
-│   │   └── DB_FRUGAL_AUDIT.md
-│   ├── design
-│   │   ├── design_board_0_product_vision.md
-│   │   ├── design_board_1_ia.md
-│   │   ├── design_board_2a_layouts.md
-│   │   ├── design_board_2b_experience.md
-│   │   ├── design_board_3a_wireframes.md
-│   │   ├── design_board_3b_spacing.md
-│   │   ├── DESIGN_GOVERNANCE.md
-│   │   ├── design_system.md
-│   │   ├── DISCOVERY_RUNTIME_ACCEPTANCE.md
-│   │   ├── README.md
-│   │   ├── ROUTE_GOVERNANCE.md
-│   │   └── UI_IMPLEMENTATION_GUIDE.md
-│   ├── governance
-│   │   ├── DR-001-post-architecture-execution-policy.md
-│   │   └── DR-002-search-ranking-strategy.md
-│   ├── reader
-│   │   └── Reader_Experience.md
-│   ├── ACTIVE_PRODUCT.md
-│   ├── API_ARCHITECTURE.md
-│   ├── API_ERROR_CODES.md
-│   ├── API_LIFECYCLE.md
-│   ├── API_STYLE_GUIDE.md
-│   ├── database_decisions_v1.md
-│   ├── database_erd_v1.md
-│   ├── DATABASE_LIFECYCLE.md
-│   ├── database_schema_v1.md
-│   ├── LAUNCH_SCOPE.md
-│   ├── PRODUCT_ROADMAP.md
-│   ├── V1-ROADMAP.md
-│   └── visual_erd_v1.md
+├── components
+│   └── ui
+│       ├── button.tsx
+│       ├── card.tsx
+│       ├── dialog.tsx
+│       ├── dropdown-menu.tsx
+│       ├── input.tsx
+│       ├── sheet.tsx
+│       └── tooltip.tsx
 ├── lib
 │   ├── actions
 │   │   └── action-result.ts
@@ -176,140 +143,6 @@ tomesphere-app
 │   ├── toast.tsx
 │   └── utils.ts
 ├── modules
-│   ├── account
-│   │   ├── application
-│   │   │   ├── dto
-│   │   │   ├── facades
-│   │   │   │   ├── AccountDashboardFacade.ts
-│   │   │   │   └── index.ts
-│   │   │   ├── ports
-│   │   │   │   └── read-models
-│   │   │   │       └── DashboardReadModel.ts
-│   │   │   └── queries
-│   │   │       ├── GetDashboardOverview
-│   │   │       │   ├── handler.ts
-│   │   │       │   └── read-model.ts
-│   │   │       └── GetRecentActivityQuery
-│   │   │           ├── dto.ts
-│   │   │           └── index.ts
-│   │   ├── deletion
-│   │   │   ├── application
-│   │   │   │   ├── commands
-│   │   │   │   │   └── DeleteAccount
-│   │   │   │   │       ├── handler.ts
-│   │   │   │   │       └── index.ts
-│   │   │   │   └── validators
-│   │   │   │       └── deleteAccountSchema.ts
-│   │   │   ├── domain
-│   │   │   │   └── repositories
-│   │   │   │       └── AccountDeletionRepository.ts
-│   │   │   └── infrastructure
-│   │   │       └── repositories
-│   │   │           └── SupabaseAccountDeletionRepository.ts
-│   │   ├── export
-│   │   │   ├── application
-│   │   │   │   ├── commands
-│   │   │   │   │   └── RequestExport
-│   │   │   │   │       ├── handler.ts
-│   │   │   │   │       └── index.ts
-│   │   │   │   ├── dto
-│   │   │   │   │   └── ExportPayloadSpec.ts
-│   │   │   │   └── validators
-│   │   │   │       └── requestExportSchema.ts
-│   │   │   ├── domain
-│   │   │   │   ├── entities
-│   │   │   │   │   └── ExportRequest.ts
-│   │   │   │   └── repositories
-│   │   │   │       └── ExportRequestRepository.ts
-│   │   │   └── infrastructure
-│   │   │       └── repositories
-│   │   │           └── SupabaseExportRequestRepository.ts
-│   │   ├── infrastructure
-│   │   │   ├── read-models
-│   │   │   │   ├── SupabaseDashboardReadModel.ts
-│   │   │   │   └── SupabaseRecentActivityReadModel.ts
-│   │   │   └── repositories
-│   │   ├── preferences
-│   │   │   ├── application
-│   │   │   │   ├── commands
-│   │   │   │   │   └── UpdatePreferences
-│   │   │   │   │       ├── handler.ts
-│   │   │   │   │       └── index.ts
-│   │   │   │   ├── dto
-│   │   │   │   │   └── PreferencesPageDto.ts
-│   │   │   │   ├── facades
-│   │   │   │   │   └── PreferencesPageFacade.ts
-│   │   │   │   ├── ports
-│   │   │   │   │   └── ReaderPreferencesPort.ts
-│   │   │   │   ├── queries
-│   │   │   │   │   └── GetPreferences
-│   │   │   │   │       └── index.ts
-│   │   │   │   └── validators
-│   │   │   │       └── updatePreferencesSchema.ts
-│   │   │   ├── domain
-│   │   │   │   ├── entities
-│   │   │   │   │   └── UserPreferences.ts
-│   │   │   │   └── repositories
-│   │   │   │       └── PreferencesRepository.ts
-│   │   │   ├── infrastructure
-│   │   │   │   ├── read-models
-│   │   │   │   │   └── SupabasePreferencesReadModel.ts
-│   │   │   │   └── repositories
-│   │   │   │       └── SupabasePreferencesRepository.ts
-│   │   │   └── presentation
-│   │   │       ├── actions
-│   │   │       │   └── preferences.ts
-│   │   │       └── components
-│   │   │           └── PreferencesForm.tsx
-│   │   ├── presentation
-│   │   │   ├── actions
-│   │   │   │   └── profile.ts
-│   │   │   ├── components
-│   │   │   │   ├── AccountLayoutShell.tsx
-│   │   │   │   ├── AccountSidebar.tsx
-│   │   │   │   └── TodayLayoutShell.tsx
-│   │   │   ├── hooks
-│   │   │   ├── screens
-│   │   │   │   ├── CollectionsScreen.tsx
-│   │   │   │   ├── InboxScreen.tsx
-│   │   │   │   ├── PreferencesScreen.tsx
-│   │   │   │   ├── ReadingScreen.tsx
-│   │   │   │   └── TodayScreen.tsx
-│   │   │   └── navigation.ts
-│   │   └── security
-│   │       ├── application
-│   │       │   ├── commands
-│   │       │   │   ├── ChangePassword
-│   │       │   │   │   ├── handler.ts
-│   │       │   │   │   └── index.ts
-│   │       │   │   └── SignOutEverywhere
-│   │       │   │       ├── handler.ts
-│   │       │   │       └── index.ts
-│   │       │   ├── dto
-│   │       │   │   └── SecurityPageDto.ts
-│   │       │   ├── facades
-│   │       │   │   └── SecurityPageFacade.ts
-│   │       │   ├── ports
-│   │       │   │   └── SecurityReadModel.ts
-│   │       │   └── validators
-│   │       │       └── changePasswordSchema.ts
-│   │       ├── domain
-│   │       │   └── repositories
-│   │       │       └── SecurityRepository.ts
-│   │       ├── infrastructure
-│   │       │   ├── read-models
-│   │       │   │   └── SupabaseSecurityReadModel.ts
-│   │       │   └── repositories
-│   │       │       └── SupabaseSecurityRepository.ts
-│   │       └── presentation
-│   │           ├── actions
-│   │           │   └── security.ts
-│   │           └── components
-│   │               ├── DangerZone.tsx
-│   │               ├── ExportSection.tsx
-│   │               ├── PasswordSection.tsx
-│   │               ├── SecurityScreen.tsx
-│   │               └── SignOutSection.tsx
 │   ├── analytics
 │   │   ├── application
 │   │   │   └── event-handlers
@@ -322,7 +155,6 @@ tomesphere-app
 │   │   │   ├── commands
 │   │   │   │   ├── CreateAnnouncementCommand.ts
 │   │   │   │   ├── DeleteAnnouncementCommand.ts
-│   │   │   │   ├── index.ts
 │   │   │   │   └── UpdateAnnouncementCommand.ts
 │   │   │   ├── dto
 │   │   │   │   └── AnnouncementDto.ts
@@ -331,18 +163,29 @@ tomesphere-app
 │   │   │   │       └── AnnouncementReadModel.ts
 │   │   │   └── queries
 │   │   │       └── GetActiveAnnouncements
-│   │   │           ├── handler.ts
-│   │   │           └── index.ts
+│   │   │           └── handler.ts
 │   │   ├── domain
 │   │   │   ├── entities
 │   │   │   │   └── Announcement.ts
 │   │   │   └── repositories
 │   │   │       └── AnnouncementRepository.ts
-│   │   └── infrastructure
-│   │       ├── read-models
-│   │       │   └── SupabaseAnnouncementReadModel.ts
-│   │       ├── repositories
-│   │       └── SupabaseAnnouncementRepository.ts
+│   │   ├── infrastructure
+│   │   │   ├── read-models
+│   │   │   │   └── SupabaseAnnouncementReadModel.ts
+│   │   │   ├── repositories
+│   │   │   └── SupabaseAnnouncementRepository.ts
+│   │   └── presentation
+│   │       ├── actions
+│   │       │   └── announcements.ts
+│   │       ├── components
+│   │       │   ├── AnnouncementBanner.tsx
+│   │       │   ├── AnnouncementCenter.test.tsx
+│   │       │   ├── AnnouncementCenter.tsx
+│   │       │   ├── AnnouncementEntryCard.test.tsx
+│   │       │   └── AnnouncementEntryCard.tsx
+│   │       └── utils
+│   │           ├── announcement-storage.test.ts
+│   │           └── announcement-storage.ts
 │   ├── authentication
 │   │   ├── presentation
 │   │   │   ├── actions
@@ -392,6 +235,7 @@ tomesphere-app
 │   │   │   │   ├── ChangeBookLanguageCommand.ts
 │   │   │   │   ├── CreateBookCommand.ts
 │   │   │   │   ├── DeleteBookFileCommand.ts
+│   │   │   │   ├── IncrementBookViewCountCommand.ts
 │   │   │   │   ├── index.ts
 │   │   │   │   ├── PublishBookCommand.ts
 │   │   │   │   ├── ReplaceBookFilesCommand.ts
@@ -407,7 +251,11 @@ tomesphere-app
 │   │   │   │   │   └── query.ts
 │   │   │   │   ├── GetBookDetail
 │   │   │   │   │   └── handler.ts
+│   │   │   │   ├── GetBooksByAuthor
+│   │   │   │   │   └── handler.ts
 │   │   │   │   ├── GetBookViewerContext
+│   │   │   │   │   └── handler.ts
+│   │   │   │   ├── GetRelatedBooks
 │   │   │   │   │   └── handler.ts
 │   │   │   │   ├── GetTrendingBooks
 │   │   │   │   │   └── handler.ts
@@ -417,9 +265,14 @@ tomesphere-app
 │   │   │   │       └── query.ts
 │   │   │   └── types.ts
 │   │   ├── components
+│   │   │   ├── AddToShelfButton.test.tsx
+│   │   │   ├── AddToShelfButton.tsx
+│   │   │   ├── BookCard.test.tsx
 │   │   │   ├── BookCard.tsx
 │   │   │   ├── BookDetailActions.tsx
+│   │   │   ├── BookDetailHero.test.tsx
 │   │   │   ├── BookDetailHero.tsx
+│   │   │   ├── DefaultBookCover.tsx
 │   │   │   ├── ExploreClient.tsx
 │   │   │   ├── RandomBookButton.tsx
 │   │   │   └── RecentlyViewed.tsx
@@ -471,6 +324,27 @@ tomesphere-app
 │   │   │       └── CollectionRepository.ts
 │   │   └── infrastructure
 │   │       └── SupabaseCollectionRepository.ts
+│   ├── dashboard
+│   │   ├── application
+│   │   │   ├── dto
+│   │   │   │   └── DashboardPageDto.ts
+│   │   │   ├── facades
+│   │   │   │   └── DashboardPageFacade.ts
+│   │   │   └── queries
+│   │   │       └── GetDashboardAnalytics
+│   │   │           └── handler.ts
+│   │   └── presentation
+│   │       ├── actions
+│   │       │   └── goals.ts
+│   │       └── components
+│   │           ├── DashboardActiveShelf.tsx
+│   │           ├── DashboardClient.tsx
+│   │           ├── DashboardGoalsCard.tsx
+│   │           ├── DashboardMetrics.tsx
+│   │           ├── DashboardMilestones.tsx
+│   │           ├── DashboardTimeline.tsx
+│   │           ├── DashboardVelocityChart.tsx
+│   │           └── ReadingGoalModal.tsx
 │   ├── discovery
 │   │   ├── application
 │   │   │   ├── dto
@@ -538,26 +412,38 @@ tomesphere-app
 │   │   │   │   └── SupabaseSuggestedReadsReadModel.ts
 │   │   │   └── repositories
 │   │   ├── presentation
-│   │   │   └── components
-│   │   │       ├── AuthorCard.tsx
-│   │   │       ├── AuthorGrid.tsx
-│   │   │       ├── BookCard.tsx
-│   │   │       ├── BookGrid.tsx
-│   │   │       ├── CollectionCard.tsx
-│   │   │       ├── CollectionGrid.tsx
-│   │   │       ├── CuratedSections.tsx
-│   │   │       ├── DiscoveryHero.tsx
-│   │   │       ├── DiscoverySearch.tsx
-│   │   │       ├── DiscoverySection.tsx
-│   │   │       ├── DiscoverySidebar.tsx
-│   │   │       ├── FeaturedBooks.tsx
-│   │   │       ├── GenreBrowser.tsx
-│   │   │       ├── GenreCard.tsx
-│   │   │       ├── GenreGrid.tsx
-│   │   │       ├── LanguageCard.tsx
-│   │   │       ├── LanguageGrid.tsx
-│   │   │       ├── SubjectCard.tsx
-│   │   │       └── SubjectGrid.tsx
+│   │   │   ├── actions
+│   │   │   │   └── discovery.ts
+│   │   │   ├── components
+│   │   │   │   ├── AuthorCard.tsx
+│   │   │   │   ├── AuthorGrid.tsx
+│   │   │   │   ├── BookCard.tsx
+│   │   │   │   ├── BookCarousel.test.tsx
+│   │   │   │   ├── BookCarousel.tsx
+│   │   │   │   ├── BookGrid.tsx
+│   │   │   │   ├── CollectionCard.tsx
+│   │   │   │   ├── CollectionGrid.tsx
+│   │   │   │   ├── CuratedSections.tsx
+│   │   │   │   ├── DiscoverPlatformFeatures.tsx
+│   │   │   │   ├── DiscoverThemeHub.tsx
+│   │   │   │   ├── DiscoveryHero.tsx
+│   │   │   │   ├── DiscoverySearch.test.tsx
+│   │   │   │   ├── DiscoverySearch.tsx
+│   │   │   │   ├── DiscoverySection.tsx
+│   │   │   │   ├── DiscoverySidebar.tsx
+│   │   │   │   ├── FeaturedBooks.tsx
+│   │   │   │   ├── GenreBrowser.tsx
+│   │   │   │   ├── GenreCard.tsx
+│   │   │   │   ├── GenreGrid.tsx
+│   │   │   │   ├── LanguageCard.tsx
+│   │   │   │   ├── LanguageGrid.tsx
+│   │   │   │   ├── SubjectCard.tsx
+│   │   │   │   └── SubjectGrid.tsx
+│   │   │   ├── factories
+│   │   │   │   ├── getDiscoveryConfiguration.test.tsx
+│   │   │   │   └── getDiscoveryConfiguration.tsx
+│   │   │   └── types
+│   │   │       └── DiscoveryConfiguration.ts
 │   │   ├── recommendations
 │   │   │   ├── application
 │   │   │   │   ├── event-handlers
@@ -698,7 +584,9 @@ tomesphere-app
 │   │       │   ├── components
 │   │       │   │   ├── CommandPalette.tsx
 │   │       │   │   ├── GlobalSearchInput.tsx
+│   │       │   │   ├── SearchBar.tsx
 │   │       │   │   ├── SearchClient.tsx
+│   │       │   │   ├── SearchFacetSidebar.test.tsx
 │   │       │   │   ├── SearchFacetSidebar.tsx
 │   │       │   │   ├── SearchSuggestions.tsx
 │   │       │   │   └── VoiceInput.tsx
@@ -765,6 +653,7 @@ tomesphere-app
 │   │   │       └── LandingPageFacade.ts
 │   │   ├── presentation
 │   │   │   └── components
+│   │   │       ├── AnnouncementSection.test.tsx
 │   │   │       ├── AnnouncementSection.tsx
 │   │   │       ├── BookShelfRow.tsx
 │   │   │       ├── CatalogHero.tsx
@@ -831,16 +720,20 @@ tomesphere-app
 │   │   │   │       ├── CollectionDto.ts
 │   │   │   │       ├── LibraryBookDto.ts
 │   │   │   │       ├── LibraryEntryDto.ts
-│   │   │   │       └── LibraryPageDto.ts
+│   │   │   │       ├── LibraryPageDto.ts
+│   │   │   │       └── ShelvesPageDto.ts
 │   │   │   ├── facades
 │   │   │   │   ├── index.ts
-│   │   │   │   └── LibraryPageFacade.ts
+│   │   │   │   ├── LibraryPageFacade.ts
+│   │   │   │   └── ShelvesPageFacade.ts
 │   │   │   ├── mappers
 │   │   │   │   ├── BookMapper.ts
 │   │   │   │   └── LibraryMapper.ts
 │   │   │   ├── ports
 │   │   │   │   └── read-models
 │   │   │   │       └── LibraryReadModel.ts
+│   │   │   ├── projections
+│   │   │   │   └── CanonicalBookProgressProjection.ts
 │   │   │   └── queries
 │   │   │       ├── GetAllLibraryBooks
 │   │   │       │   └── handler.ts
@@ -869,16 +762,26 @@ tomesphere-app
 │   │   │       │   └── index.ts
 │   │   │       ├── GetLibrarySummary
 │   │   │       │   └── handler.ts
+│   │   │       ├── GetShelvesPage
+│   │   │       │   └── handler.ts
 │   │   │       └── GetWantToRead
 │   │   │           └── handler.ts
 │   │   ├── components
+│   │   │   ├── LibraryClient.test.tsx
 │   │   │   ├── LibraryClient.tsx
 │   │   │   ├── LibraryContextMenu.tsx
 │   │   │   ├── LibraryGrid.tsx
+│   │   │   ├── LibraryList.test.tsx
 │   │   │   ├── LibraryList.tsx
 │   │   │   ├── LibraryOverview.tsx
-│   │   │   ├── LibrarySidebar.tsx
-│   │   │   └── LibraryToolbar.tsx
+│   │   │   ├── LibraryToolbar.test.tsx
+│   │   │   ├── LibraryToolbar.tsx
+│   │   │   ├── ShelfCard.test.tsx
+│   │   │   ├── ShelfCard.tsx
+│   │   │   ├── ShelfDetailClient.test.tsx
+│   │   │   ├── ShelfDetailClient.tsx
+│   │   │   ├── ShelvesClient.test.tsx
+│   │   │   └── ShelvesClient.tsx
 │   │   ├── domain
 │   │   │   ├── entities
 │   │   │   │   └── LibraryBook.ts
@@ -919,15 +822,192 @@ tomesphere-app
 │   │   │   └── library-store.ts
 │   │   └── types
 │   ├── me
+│   │   ├── account
+│   │   │   ├── application
+│   │   │   │   ├── dto
+│   │   │   │   ├── facades
+│   │   │   │   │   ├── AccountDashboardFacade.ts
+│   │   │   │   │   └── index.ts
+│   │   │   │   ├── ports
+│   │   │   │   │   └── read-models
+│   │   │   │   │       └── DashboardReadModel.ts
+│   │   │   │   └── queries
+│   │   │   │       ├── GetDashboardOverview
+│   │   │   │       │   ├── handler.ts
+│   │   │   │       │   └── read-model.ts
+│   │   │   │       └── GetRecentActivityQuery
+│   │   │   │           ├── dto.ts
+│   │   │   │           └── index.ts
+│   │   │   ├── connections
+│   │   │   │   └── presentation
+│   │   │   │       └── components
+│   │   │   │           └── ConnectedAccountsScreen.tsx
+│   │   │   ├── deletion
+│   │   │   │   ├── application
+│   │   │   │   │   ├── commands
+│   │   │   │   │   │   └── DeleteAccount
+│   │   │   │   │   │       ├── handler.ts
+│   │   │   │   │   │       └── index.ts
+│   │   │   │   │   └── validators
+│   │   │   │   │       └── deleteAccountSchema.ts
+│   │   │   │   ├── domain
+│   │   │   │   │   └── repositories
+│   │   │   │   │       └── AccountDeletionRepository.ts
+│   │   │   │   └── infrastructure
+│   │   │   │       └── repositories
+│   │   │   │           └── SupabaseAccountDeletionRepository.ts
+│   │   │   ├── export
+│   │   │   │   ├── application
+│   │   │   │   │   ├── commands
+│   │   │   │   │   │   └── RequestExport
+│   │   │   │   │   │       ├── handler.ts
+│   │   │   │   │   │       └── index.ts
+│   │   │   │   │   ├── dto
+│   │   │   │   │   │   └── ExportPayloadSpec.ts
+│   │   │   │   │   └── validators
+│   │   │   │   │       └── requestExportSchema.ts
+│   │   │   │   ├── domain
+│   │   │   │   │   ├── entities
+│   │   │   │   │   │   └── ExportRequest.ts
+│   │   │   │   │   └── repositories
+│   │   │   │   │       └── ExportRequestRepository.ts
+│   │   │   │   └── infrastructure
+│   │   │   │       └── repositories
+│   │   │   │           └── SupabaseExportRequestRepository.ts
+│   │   │   ├── infrastructure
+│   │   │   │   ├── read-models
+│   │   │   │   │   ├── SupabaseDashboardReadModel.ts
+│   │   │   │   │   └── SupabaseRecentActivityReadModel.ts
+│   │   │   │   └── repositories
+│   │   │   ├── notifications
+│   │   │   │   ├── domain
+│   │   │   │   │   ├── entities
+│   │   │   │   │   │   └── NotificationPreferences.ts
+│   │   │   │   │   └── repositories
+│   │   │   │   │       └── NotificationPreferencesRepository.ts
+│   │   │   │   ├── infrastructure
+│   │   │   │   │   └── repositories
+│   │   │   │   │       └── SupabaseNotificationPreferencesRepository.ts
+│   │   │   │   └── presentation
+│   │   │   │       ├── actions
+│   │   │   │       │   └── notifications.ts
+│   │   │   │       └── components
+│   │   │   │           └── NotificationsForm.tsx
+│   │   │   ├── preferences
+│   │   │   │   ├── application
+│   │   │   │   │   ├── commands
+│   │   │   │   │   │   └── UpdatePreferences
+│   │   │   │   │   │       ├── handler.ts
+│   │   │   │   │   │       └── index.ts
+│   │   │   │   │   ├── dto
+│   │   │   │   │   │   └── PreferencesPageDto.ts
+│   │   │   │   │   ├── facades
+│   │   │   │   │   │   └── PreferencesPageFacade.ts
+│   │   │   │   │   ├── ports
+│   │   │   │   │   │   └── ReaderPreferencesPort.ts
+│   │   │   │   │   ├── queries
+│   │   │   │   │   │   └── GetPreferences
+│   │   │   │   │   │       └── index.ts
+│   │   │   │   │   └── validators
+│   │   │   │   │       └── updatePreferencesSchema.ts
+│   │   │   │   ├── domain
+│   │   │   │   │   ├── entities
+│   │   │   │   │   │   └── UserPreferences.ts
+│   │   │   │   │   └── repositories
+│   │   │   │   │       └── PreferencesRepository.ts
+│   │   │   │   ├── infrastructure
+│   │   │   │   │   ├── read-models
+│   │   │   │   │   │   └── SupabasePreferencesReadModel.ts
+│   │   │   │   │   └── repositories
+│   │   │   │   │       └── SupabasePreferencesRepository.ts
+│   │   │   │   └── presentation
+│   │   │   │       ├── actions
+│   │   │   │       │   └── preferences.ts
+│   │   │   │       └── components
+│   │   │   │           └── PreferencesForm.tsx
+│   │   │   ├── presentation
+│   │   │   │   ├── actions
+│   │   │   │   │   └── profile.ts
+│   │   │   │   ├── components
+│   │   │   │   │   ├── AccountLayoutShell.tsx
+│   │   │   │   │   ├── AccountSidebar.tsx
+│   │   │   │   │   └── TodayLayoutShell.tsx
+│   │   │   │   ├── hooks
+│   │   │   │   ├── screens
+│   │   │   │   │   ├── CollectionsScreen.tsx
+│   │   │   │   │   ├── InboxScreen.tsx
+│   │   │   │   │   ├── PreferencesScreen.tsx
+│   │   │   │   │   ├── ReadingScreen.tsx
+│   │   │   │   │   └── TodayScreen.tsx
+│   │   │   │   └── navigation.ts
+│   │   │   ├── profile
+│   │   │   │   ├── domain
+│   │   │   │   │   ├── entities
+│   │   │   │   │   │   └── Profile.ts
+│   │   │   │   │   └── repositories
+│   │   │   │   │       └── ProfileRepository.ts
+│   │   │   │   ├── infrastructure
+│   │   │   │   │   └── repositories
+│   │   │   │   │       └── SupabaseProfileRepository.ts
+│   │   │   │   └── presentation
+│   │   │   │       ├── actions
+│   │   │   │       │   └── profile.ts
+│   │   │   │       └── components
+│   │   │   │           └── ProfileForm.tsx
+│   │   │   ├── security
+│   │   │   │   ├── application
+│   │   │   │   │   ├── commands
+│   │   │   │   │   │   ├── ChangePassword
+│   │   │   │   │   │   │   ├── handler.ts
+│   │   │   │   │   │   │   └── index.ts
+│   │   │   │   │   │   └── SignOutEverywhere
+│   │   │   │   │   │       ├── handler.ts
+│   │   │   │   │   │       └── index.ts
+│   │   │   │   │   ├── dto
+│   │   │   │   │   │   └── SecurityPageDto.ts
+│   │   │   │   │   ├── facades
+│   │   │   │   │   │   └── SecurityPageFacade.ts
+│   │   │   │   │   ├── ports
+│   │   │   │   │   │   └── SecurityReadModel.ts
+│   │   │   │   │   └── validators
+│   │   │   │   │       └── changePasswordSchema.ts
+│   │   │   │   ├── domain
+│   │   │   │   │   └── repositories
+│   │   │   │   │       └── SecurityRepository.ts
+│   │   │   │   ├── infrastructure
+│   │   │   │   │   ├── read-models
+│   │   │   │   │   │   └── SupabaseSecurityReadModel.ts
+│   │   │   │   │   └── repositories
+│   │   │   │   │       └── SupabaseSecurityRepository.ts
+│   │   │   │   └── presentation
+│   │   │   │       ├── actions
+│   │   │   │       │   └── security.ts
+│   │   │   │       └── components
+│   │   │   │           ├── DangerZone.tsx
+│   │   │   │           ├── ExportSection.tsx
+│   │   │   │           ├── PasswordSection.tsx
+│   │   │   │           ├── SecurityForm.tsx
+│   │   │   │           ├── SecurityScreen.tsx
+│   │   │   │           └── SignOutSection.tsx
+│   │   │   └── storage
+│   │   │       └── presentation
+│   │   │           └── components
+│   │   │               └── StorageSettingsScreen.tsx
 │   │   ├── application
 │   │   │   ├── facades
 │   │   │   │   ├── index.ts
 │   │   │   │   └── MePageFacade.ts
 │   │   │   ├── queries
+│   │   │   │   └── GetUserStatisticsQuery.ts
 │   │   │   └── repositories
+│   │   ├── infrastructure
+│   │   │   └── supabase
+│   │   │       └── SupabaseUserStatisticsReadModel.ts
 │   │   └── presentation
 │   │       └── components
-│   │           └── MeClient.tsx
+│   │           ├── MeClient.tsx
+│   │           ├── MeHeroSection.tsx
+│   │           └── UserStatisticsWidget.tsx
 │   ├── notifications
 │   │   ├── application
 │   │   │   └── event-handlers
@@ -944,12 +1024,9 @@ tomesphere-app
 │   │   └── ReadingActivityCoordinator.ts
 │   ├── progress
 │   │   ├── analytics
-│   │   │   ├── actions
 │   │   │   ├── components
 │   │   │   │   ├── ReadingGoalProgress.tsx
 │   │   │   │   └── ReadingStreak.tsx
-│   │   │   ├── presentation
-│   │   │   │   └── screens
 │   │   │   ├── services
 │   │   │   │   └── view-history.ts
 │   │   │   └── types
@@ -1037,9 +1114,31 @@ tomesphere-app
 │   ├── reader
 │   │   ├── annotations
 │   │   │   ├── actions
+│   │   │   │   ├── annotationActions.ts
 │   │   │   │   └── sync.ts
+│   │   │   ├── application
+│   │   │   │   ├── dto
+│   │   │   │   │   └── response
+│   │   │   │   │       ├── AnnotationsPageDto.ts
+│   │   │   │   │       └── NotesPageDto.ts
+│   │   │   │   ├── facades
+│   │   │   │   │   ├── AnnotationsPageFacade.ts
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   └── NotesPageFacade.ts
+│   │   │   │   └── ports
+│   │   │   │       └── read-models
+│   │   │   │           ├── AnnotationsReadModel.ts
+│   │   │   │           └── NotesReadModel.ts
 │   │   │   ├── components
-│   │   │   │   └── AnnotationLayer.tsx
+│   │   │   │   ├── AnnotationCard.tsx
+│   │   │   │   ├── AnnotationLayer.tsx
+│   │   │   │   ├── AnnotationsClient.tsx
+│   │   │   │   ├── NoteCard.tsx
+│   │   │   │   └── NotesClient.tsx
+│   │   │   ├── infrastructure
+│   │   │   │   └── read-models
+│   │   │   │       ├── SupabaseAnnotationsReadModel.ts
+│   │   │   │       └── SupabaseNotesReadModel.ts
 │   │   │   ├── services
 │   │   │   │   └── annotation-sync.ts
 │   │   │   ├── state
@@ -1063,6 +1162,7 @@ tomesphere-app
 │   │   │   │   │   ├── handler.ts
 │   │   │   │   │   ├── input.ts
 │   │   │   │   │   └── output.ts
+│   │   │   │   ├── CompleteBookCommand.ts
 │   │   │   │   ├── CompleteReadingSessionCommand.ts
 │   │   │   │   ├── CreateBookmarkCommand.ts
 │   │   │   │   ├── CreateHighlightCommand.ts
@@ -1070,6 +1170,7 @@ tomesphere-app
 │   │   │   │   ├── DeleteBookmarkCommand.ts
 │   │   │   │   ├── DeleteHighlightCommand.ts
 │   │   │   │   ├── DeleteNoteCommand.ts
+│   │   │   │   ├── StartReadingSessionCommand.ts
 │   │   │   │   ├── UpdateNoteCommand.ts
 │   │   │   │   └── UpdateReaderPositionCommand.ts
 │   │   │   ├── dto
@@ -1100,21 +1201,32 @@ tomesphere-app
 │   │   │   │   ├── GetHighlightsQuery.ts
 │   │   │   │   ├── GetNotesQuery.ts
 │   │   │   │   └── GetReaderPositionQuery.ts
+│   │   │   ├── services
+│   │   │   │   └── ReadingStreakTracker.ts
 │   │   │   └── ReaderService.ts
 │   │   ├── components
 │   │   │   ├── Sidebar
-│   │   │   │   └── AnnotationSidebar.tsx
+│   │   │   │   ├── AnnotationSidebar.test.tsx
+│   │   │   │   ├── AnnotationSidebar.tsx
+│   │   │   │   ├── PageSideRail.test.tsx
+│   │   │   │   └── PageSideRail.tsx
 │   │   │   ├── toolbar
+│   │   │   │   ├── AnnotationToolbar.test.tsx
 │   │   │   │   ├── AnnotationToolbar.tsx
+│   │   │   │   ├── NavigationToolbar.test.tsx
 │   │   │   │   ├── NavigationToolbar.tsx
+│   │   │   │   ├── ProgressToolbar.test.tsx
 │   │   │   │   ├── ProgressToolbar.tsx
+│   │   │   │   ├── SettingsToolbar.test.tsx
 │   │   │   │   ├── SettingsToolbar.tsx
 │   │   │   │   └── Toolbar.tsx
 │   │   │   ├── viewer
 │   │   │   │   └── Viewer.tsx
+│   │   │   ├── ClientReaderShell.tsx
 │   │   │   ├── HighlightContextMenu.tsx
 │   │   │   ├── HighlightPopup.tsx
 │   │   │   ├── NoteEditor.tsx
+│   │   │   ├── NoteHoverTooltip.tsx
 │   │   │   └── ReaderShell.tsx
 │   │   ├── domain
 │   │   │   ├── events
@@ -1152,6 +1264,7 @@ tomesphere-app
 │   │   │       │   └── EpubJsRenderer.ts
 │   │   │       ├── pdf
 │   │   │       │   ├── PdfJsEngine.ts
+│   │   │       │   ├── PdfJsRenderer.test.ts
 │   │   │       │   └── PdfJsRenderer.ts
 │   │   │       └── RendererFactory.ts
 │   │   ├── state
@@ -1213,6 +1326,8 @@ tomesphere-app
 │   │       └── SupabaseSubjectRepository.ts
 │   ├── support
 │   │   ├── application
+│   │   │   ├── commands
+│   │   │   │   └── SubmitReportCommand.ts
 │   │   │   ├── dto
 │   │   │   │   └── FaqDto.ts
 │   │   │   ├── ports
@@ -1222,11 +1337,18 @@ tomesphere-app
 │   │   │       └── GetFaqs
 │   │   │           └── handler.ts
 │   │   ├── domain
+│   │   │   ├── entities
+│   │   │   │   └── PlatformReport.ts
 │   │   │   └── repositories
-│   │   └── infrastructure
-│   │       ├── read-models
-│   │       │   └── SupabaseSupportReadModel.ts
-│   │       └── repositories
+│   │   │       └── IPlatformReportRepository.ts
+│   │   ├── infrastructure
+│   │   │   ├── read-models
+│   │   │   │   └── SupabaseSupportReadModel.ts
+│   │   │   └── repositories
+│   │   │       └── SupabasePlatformReportRepository.ts
+│   │   └── presentation
+│   │       └── actions
+│   │           └── reportActions.ts
 │   └── user
 │       └── profile
 │           ├── application
@@ -1279,22 +1401,23 @@ tomesphere-app
 │           │   └── repositories
 │           │       ├── SupabaseAccountDeletionRepository.ts
 │           │       └── SupabaseProfileRepository.ts
-│           ├── presentation
-│           │   ├── actions
-│           │   │   ├── notifications.ts
-│           │   │   └── profile.ts
-│           │   └── components
-│           │       ├── ProfileEditForm.tsx
-│           │       ├── ProfileHeader.tsx
-│           │       ├── ProfileOverview.tsx
-│           │       └── ProfileStats.tsx
-│           └── services
+│           └── presentation
+│               ├── actions
+│               │   ├── notifications.ts
+│               │   └── profile.ts
+│               └── components
+│                   ├── ProfileEditForm.tsx
+│                   ├── ProfileHeader.tsx
+│                   ├── ProfileOverview.tsx
+│                   └── ProfileStats.tsx
 ├── public
 │   ├── about_cta_banner.jpg
 │   ├── about_showcase.jpg
 │   ├── auth_login_bg.jpg
 │   ├── auth_signup_bg.jpg
 │   ├── book-placeholder.svg
+│   ├── default_book_cover.jpg
+│   ├── favicon.ico
 │   ├── hero_library_bg.jpg
 │   ├── hero_sanctuary_bg.jpg
 │   ├── icon.png
@@ -1353,6 +1476,7 @@ tomesphere-app
 │   │   └── components
 │   │       └── AppToaster.tsx
 │   ├── hooks
+│   │   └── usePhotoUploadPermission.ts
 │   ├── infrastructure
 │   │   ├── database
 │   │   │   └── WorkerDatabaseClient.ts
@@ -1383,7 +1507,8 @@ tomesphere-app
 │   ├── layout
 │   │   ├── AppHeader
 │   │   │   ├── AppHeader.tsx
-│   │   │   └── index.ts
+│   │   │   ├── index.ts
+│   │   │   └── UserMenu.tsx
 │   │   ├── AppPage
 │   │   │   ├── AppPage.tsx
 │   │   │   └── index.ts
@@ -1438,6 +1563,7 @@ tomesphere-app
 │   │   ├── FormError.tsx
 │   │   ├── LoadingSpinner.tsx
 │   │   ├── motion.tsx
+│   │   ├── PhotoUploadConsentModal.tsx
 │   │   ├── PlaceholderScreen.tsx
 │   │   ├── SkeletonLoader.tsx
 │   │   ├── skeletons.tsx
@@ -1485,7 +1611,19 @@ tomesphere-app
 ├── supabase
 │   ├── .temp
 │   │   ├── cli-latest
-│   │   └── linked-project.json
+│   │   ├── gotrue-version
+│   │   ├── linked-project.json
+│   │   ├── pooler-url
+│   │   ├── postgres-version
+│   │   ├── project-ref
+│   │   ├── rest-version
+│   │   ├── storage-migration
+│   │   └── storage-version
+│   ├── functions
+│   │   └── send-login-email
+│   │       ├── .npmrc
+│   │       ├── deno.json
+│   │       └── index.ts
 │   ├── migrations
 │   │   ├── 20260716221802_domain_schema_normalization.sql
 │   │   ├── 20260717000000_add_biography_to_profiles.sql
@@ -1547,7 +1685,37 @@ tomesphere-app
 │   │   ├── 20260721200010_revoke_security_definer_from_authenticated.sql
 │   │   ├── 20260721200011_rls_policy_deduplication.sql
 │   │   ├── 20260721200012_populate_canonical_book_files.sql
-│   │   └── 20260721200013_schema_table_and_column_documentation.sql
+│   │   ├── 20260721200013_schema_table_and_column_documentation.sql
+│   │   ├── 20260819185102_add_outbox_insert_policy.sql
+│   │   ├── 20260820000000_implement_user_statistics.sql
+│   │   ├── 20260821030000_create_user_notification_preferences.sql
+│   │   ├── 20260821034900_normalize_storage_double_extensions.sql
+│   │   ├── 20260821062600_map_canonical_book_covers.sql
+│   │   ├── 20260821072000_drop_books_total_pages.sql
+│   │   ├── 20260821072500_drop_reading_sessions_total_pages.sql
+│   │   ├── 20260821073100_add_pages_to_reading_sessions.sql
+│   │   ├── 20260821073700_update_book_publication_details.sql
+│   │   ├── 20260822000000_recreate_audit_logs.sql
+│   │   ├── 20260822000001_fix_reading_streak_trigger.sql
+│   │   ├── 20260822202209_create_login_notifications_log.sql
+│   │   ├── 20260823000000_create_platform_reports.sql
+│   │   ├── 20260823000001_final_security_hardening.sql
+│   │   ├── 20260823000002_fix_view_security.sql
+│   │   ├── 20260823000003_optimize_search_rpc.sql
+│   │   ├── 20260823000004_create_user_images_storage_bucket.sql
+│   │   ├── 20260823000005_flexible_genre_subject_search_matching.sql
+│   │   ├── 20260824000000_create_user_permissions.sql
+│   │   ├── 20260824000001_initialize_user_records_on_signup.sql
+│   │   ├── 20260824000002_fix_streak_and_statistics_calculation.sql
+│   │   ├── 20260824000003_atomic_book_view_count_rpc.sql
+│   │   ├── 20260824000004_align_discovery_refresh_popularity.sql
+│   │   ├── 20260824000005_book_popularity_metrics.sql
+│   │   ├── 20260824000006_trending_projection_recalculation.sql
+│   │   ├── 20260824000007_search_projection_maintenance.sql
+│   │   ├── 20260824000008_harden_maintenance_routine_privileges.sql
+│   │   ├── 20260824170000_grant_worker_notifications_insert.sql
+│   │   └── 20260824180000_fix_announcements_rls.sql
+│   ├── config.toml
 │   └── schema_210726183034.sql
 ├── templates
 │   └── bounded-context
@@ -1563,9 +1731,38 @@ tomesphere-app
 │       │   ├── models
 │       │   └── repositories
 │       └── presentation
+├── test-results
+│   ├── book-book-network-Book-Det-36f85-ce-requests-on-initial-load-chromium
+│   │   └── error-context.md
+│   ├── book-book-performance-Book-da078-LCP-CLS-and-network-metrics-chromium
+│   │   └── error-context.md
+│   ├── discovery-discovery-access-8b7f5-tment-and-logical-tab-order-chromium
+│   │   └── error-context.md
+│   ├── discovery-discovery-networ-87274-r-images-lazy-load-behavior-chromium
+│   │   └── error-context.md
+│   ├── discovery-discovery-networ-f62df-ce-requests-on-initial-load-chromium
+│   │   └── error-context.md
+│   ├── discovery-discovery-perfor-3783f-LCP-CLS-and-network-metrics-chromium
+│   │   └── error-context.md
+│   ├── discovery-discovery-reduce-b47ad--usable-with-reduced-motion-chromium
+│   │   └── error-context.md
+│   ├── discovery-discovery-respon-1f55e-at-1024x768-on-Torture-Test-chromium
+│   │   └── error-context.md
+│   ├── discovery-discovery-respon-43b3c-at-1440x900-on-Torture-Test-chromium
+│   │   └── error-context.md
+│   ├── discovery-discovery-respon-3561c--at-375x812-on-Torture-Test-chromium
+│   │   └── error-context.md
+│   ├── discovery-discovery-respon-a80e2-at-768x1024-on-Torture-Test-chromium
+│   │   └── error-context.md
+│   ├── discovery-discovery-search-7bf61-e-GET-form-submission-works-chromium
+│   │   └── error-context.md
+│   ├── discovery-discovery-search-5779e-n-discover-or-does-not-fail-chromium
+│   │   └── error-context.md
+│   ├── discovery-discovery-search-afea1-ode-query-works-predictably-chromium
+│   │   └── error-context.md
+│   └── .last-run.json
 ├── tests
 │   ├── book
-│   │   ├── book-actions.spec.ts
 │   │   ├── book-mapper.test.ts
 │   │   ├── book-network.spec.ts
 │   │   └── book-performance.spec.ts
@@ -1576,8 +1773,10 @@ tomesphere-app
 │   │   ├── discovery-reduced-motion.spec.ts
 │   │   ├── discovery-responsive.spec.ts
 │   │   └── discovery-search.spec.ts
-│   └── fixtures
-│       └── discovery-edge-cases.ts
+│   ├── fixtures
+│   │   └── discovery-edge-cases.ts
+│   └── mocks
+│       └── pdfjsMock.js
 ├── .depcruise.js
 ├── .env.local
 ├── .gitignore
@@ -1585,6 +1784,7 @@ tomesphere-app
 ├── .vercelignore
 ├── ARCHITECTURE_RULES.md
 ├── book-performance-baseline.json
+├── components.json
 ├── eslint.config.mjs
 ├── instrumentation.ts
 ├── jest.config.js
@@ -1599,6 +1799,7 @@ tomesphere-app
 ├── postcss.config.mjs
 ├── proxy.ts
 ├── README.md
+├── schema.json
 ├── tailwind.config.ts
 ├── tsconfig.json
 ├── tsconfig.tsbuildinfo
