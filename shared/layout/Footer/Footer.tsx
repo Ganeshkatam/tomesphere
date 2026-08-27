@@ -21,6 +21,7 @@ const COMPANY_LINKS = [
 
 const SUPPORT_LINKS = [
   { label: "Help & Support", href: "/support" },
+  { label: "System Status", href: "/maintenance" },
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms of Service", href: "/terms" },
   { label: "Cookie Policy", href: "/cookies" },
