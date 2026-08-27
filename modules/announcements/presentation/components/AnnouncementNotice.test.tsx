@@ -61,7 +61,7 @@ describe("AnnouncementNotice hover stack queue & behavioral tests", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("2. displays top announcement in queue when NOT hovered and shows stack count", () => {
+  it("2. displays top announcement in queue when NOT hovered and collapses others", () => {
     render(
       <AnnouncementNotice announcements={[mockWarning, mockFeature, mockInfo]} />
     );
@@ -70,8 +70,6 @@ describe("AnnouncementNotice hover stack queue & behavioral tests", () => {
     expect(
       screen.getByRole("heading", { name: "Scheduled Maintenance" })
     ).toBeInTheDocument();
-    expect(screen.getByText("1 of 3")).toBeInTheDocument();
-    expect(screen.getByText("Hover to view all (3)")).toBeInTheDocument();
 
     // Other announcements remain collapsed in the queue
     expect(

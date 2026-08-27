@@ -10,7 +10,6 @@ import {
   X,
   BookOpen,
   Bookmark,
-  Layers,
 } from "lucide-react";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import {
@@ -245,7 +244,7 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
           </div>
         )}
 
-        {displayedNotices.map((notice, index) => {
+        {displayedNotices.map((notice) => {
           const meta = getNoticeMeta(notice.type);
           return (
             <Card
@@ -259,7 +258,7 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
               <div className={`absolute inset-0 pointer-events-none ${meta.glowBg}`} />
 
               <div className="p-5 sm:p-6 space-y-3 relative z-10">
-                {/* Header Row: Distinct Kicker Badge, Prominent Stack Counter, & Close Button */}
+                {/* Header Row: Distinct Kicker Badge & Close Button */}
                 <CardHeader className="p-0 flex flex-row items-center justify-between space-y-0 gap-3">
                   <div className="flex items-center gap-2.5">
                     <div
@@ -274,32 +273,16 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 -mr-1 -mt-1">
-                    {/* Unmistakable Queue Counter Badge */}
-                    {!isHovered && hasMultiple && (
-                      <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold px-2.5 py-1 rounded-full bg-slate-900 border border-indigo-500/40 text-indigo-300 shadow-sm">
-                        <Layers className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                        <span>1 of {activeNotices.length}</span>
-                      </span>
-                    )}
-
-                    {isHovered && hasMultiple && (
-                      <span className="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider px-2 py-0.5 rounded bg-slate-900 border border-slate-800">
-                        Notice {index + 1} of {activeNotices.length}
-                      </span>
-                    )}
-
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDismiss(notice.id)}
-                      aria-label={`Dismiss announcement: ${notice.title}`}
-                      className="h-8 w-8 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDismiss(notice.id)}
+                    aria-label={`Dismiss announcement: ${notice.title}`}
+                    className="h-8 w-8 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 -mr-1 -mt-1 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
                 </CardHeader>
 
                 {/* Content Body */}
@@ -337,13 +320,6 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
                     >
                       Dismiss
                     </Button>
-                  )}
-
-                  {!isHovered && hasMultiple && (
-                    <span className="text-[11px] font-mono text-indigo-400 hover:text-indigo-300 font-semibold inline-flex items-center gap-1">
-                      <span>Hover to view all ({activeNotices.length})</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </span>
                   )}
                 </CardFooter>
               </div>
