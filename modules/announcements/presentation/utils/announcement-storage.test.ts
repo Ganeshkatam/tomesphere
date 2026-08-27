@@ -90,20 +90,20 @@ describe("announcement-storage policy & persistence tests", () => {
     expect(getAnnouncementPriority(mockCritical)).toBe(4);
     expect(getAnnouncementPriority(mockWarning)).toBe(3);
     expect(getAnnouncementPriority(mockErrorDismissible)).toBe(2);
-    expect(getAnnouncementPriority(mockFeature)).toBe(1);
-    expect(getAnnouncementPriority(mockGreetings)).toBe(1);
-    expect(getAnnouncementPriority(mockInfo)).toBe(0);
-    expect(getAnnouncementPriority(mockSuccess)).toBe(0);
+    expect(getAnnouncementPriority(mockFeature)).toBe(1.5);
+    expect(getAnnouncementPriority(mockGreetings)).toBe(1.4);
+    expect(getAnnouncementPriority(mockInfo)).toBe(1.2);
+    expect(getAnnouncementPriority(mockSuccess)).toBe(1.0);
   });
 
-  it("classifies entry eligibility: info and success never interrupt", () => {
+  it("classifies entry eligibility: all active announcement types are eligible", () => {
     expect(isEntryEligible(mockCritical)).toBe(true);
     expect(isEntryEligible(mockWarning)).toBe(true);
     expect(isEntryEligible(mockErrorDismissible)).toBe(true);
     expect(isEntryEligible(mockFeature)).toBe(true);
     expect(isEntryEligible(mockGreetings)).toBe(true);
-    expect(isEntryEligible(mockInfo)).toBe(false);
-    expect(isEntryEligible(mockSuccess)).toBe(false);
+    expect(isEntryEligible(mockInfo)).toBe(true);
+    expect(isEntryEligible(mockSuccess)).toBe(true);
   });
 
   it("persists seen state to localStorage and detects seen announcements", () => {
@@ -164,8 +164,16 @@ describe("announcement-storage policy & persistence tests", () => {
     seen.add("a-warn");
     expect(selectEntryAnnouncement(all, seen)?.id).toBe("a-feat");
 
-    // 4. If feature is seen, only info & success remain -> should return null
+    // 4. If feature is seen, info should win
     seen.add("a-feat");
+    expect(selectEntryAnnouncement(all, seen)?.id).toBe("a-info");
+
+    // 5. If info is seen, success should win
+    seen.add("a-info");
+    expect(selectEntryAnnouncement(all, seen)?.id).toBe("a-succ");
+
+    // 6. If all are seen, returns null
+    seen.add("a-succ");
     expect(selectEntryAnnouncement(all, seen)).toBeNull();
   });
 });

@@ -8,12 +8,13 @@ import {
   AlertCircle,
   ArrowRight,
   X,
-  CheckCircle2,
   BookOpen,
+  Bookmark,
 } from "lucide-react";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import {
-  selectEntryAnnouncement,
+  getAnnouncementPriority,
+  isEntryEligible,
   markAnnouncementSeen,
   markBannerDismissed,
   isAnnouncementSeen,
@@ -41,206 +42,246 @@ export interface AnnouncementNoticeProps {
 }
 
 export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
-  const [activeAnnouncement, setActiveAnnouncement] = useState<AnnouncementDto | null>(null);
+  const [activeNotices, setActiveNotices] = useState<AnnouncementDto[]>([]);
   const [isClient, setIsClient] = useState(false);
 
-  // Evaluate notice queue once on initial session mount
+  // Evaluate all unseen eligible notices on initial session mount
   useEffect(() => {
     setIsClient(true);
-    const seenSet = new Set<string>();
-
-    for (const item of announcements) {
-      if (isAnnouncementSeen(item.id)) {
-        seenSet.add(item.id);
-      }
+    if (!announcements || announcements.length === 0) {
+      setActiveNotices([]);
+      return;
     }
 
-    const selected = selectEntryAnnouncement(announcements, seenSet);
-    setActiveAnnouncement(selected);
+    const unseenEligible = announcements
+      .filter((item) => isEntryEligible(item) && !isAnnouncementSeen(item.id))
+      .sort((a, b) => getAnnouncementPriority(b) - getAnnouncementPriority(a));
+
+    setActiveNotices(unseenEligible);
   }, [announcements]);
 
-  if (!isClient || !activeAnnouncement) {
+  if (!isClient || activeNotices.length === 0) {
     return null;
   }
 
-  const handleDismiss = () => {
-    markAnnouncementSeen(activeAnnouncement.id);
-    markBannerDismissed(activeAnnouncement.id);
-    setActiveAnnouncement(null);
+  const handleDismiss = (id: string) => {
+    markAnnouncementSeen(id);
+    markBannerDismissed(id);
+    setActiveNotices((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const isCritical =
-    activeAnnouncement.type === "error" && !activeAnnouncement.isDismissible;
+  // Critical non-dismissible announcements use blocking Dialog
+  const criticalAnnouncement = activeNotices.find(
+    (item) => item.type === "error" && !item.isDismissible
+  );
 
-  // 1. Truly critical non-dismissible announcements use blocking Dialog
-  if (isCritical) {
+  if (criticalAnnouncement) {
     return (
       <Dialog open={true} onOpenChange={() => {}}>
         <DialogContent
-          className="sm:max-w-md border-rose-500/40 bg-slate-950 text-slate-100 p-6 rounded-2xl shadow-2xl"
+          className="sm:max-w-lg border-rose-500/40 bg-slate-950 text-slate-100 p-0 overflow-hidden rounded-3xl shadow-2xl"
           aria-describedby="critical-announcement-desc"
         >
-          <DialogHeader className="gap-2 text-left">
-            <div className="flex items-center gap-2 text-rose-400">
-              <AlertCircle className="w-5 h-5 shrink-0" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em] font-mono">
-                Critical Notice
-              </span>
-            </div>
-            <DialogTitle className="text-xl font-serif font-bold text-white leading-tight">
-              {activeAnnouncement.title}
-            </DialogTitle>
-            <DialogDescription
-              id="critical-announcement-desc"
-              className="text-sm text-slate-300 pt-1 leading-relaxed font-sans"
-            >
-              {activeAnnouncement.content}
-            </DialogDescription>
-          </DialogHeader>
+          <div className="h-1 w-full bg-gradient-to-r from-rose-500 via-pink-400 to-rose-500" />
+          <div className="p-7 sm:p-8 space-y-4">
+            <DialogHeader className="gap-2.5 text-left">
+              <div className="flex items-center gap-2 text-rose-400">
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <span className="text-xs font-bold uppercase tracking-[0.2em] font-mono">
+                  Critical Notice
+                </span>
+              </div>
+              <DialogTitle className="text-2xl font-serif font-bold text-white leading-tight">
+                {criticalAnnouncement.title}
+              </DialogTitle>
+              <DialogDescription
+                id="critical-announcement-desc"
+                className="text-sm sm:text-base text-slate-300 pt-1 leading-relaxed font-sans"
+              >
+                {criticalAnnouncement.content}
+              </DialogDescription>
+            </DialogHeader>
 
-          <DialogFooter className="mt-4 pt-4 border-t border-slate-800 flex items-center gap-2 sm:justify-end">
-            {activeAnnouncement.linkUrl && activeAnnouncement.linkText && (
-              <Button asChild variant="default" onClick={handleDismiss} className="bg-rose-600 hover:bg-rose-500 text-white rounded-xl h-9 px-4 text-xs font-semibold">
-                <Link href={activeAnnouncement.linkUrl} className="flex items-center gap-1.5 font-semibold">
-                  <span>{activeAnnouncement.linkText}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+            <DialogFooter className="pt-4 border-t border-slate-800 flex items-center gap-3 sm:justify-end">
+              {criticalAnnouncement.linkUrl && criticalAnnouncement.linkText && (
+                <Button
+                  asChild
+                  variant="default"
+                  onClick={() => handleDismiss(criticalAnnouncement.id)}
+                  className="bg-rose-600 hover:bg-rose-500 text-white rounded-xl h-10 px-5 text-sm font-semibold"
+                >
+                  <Link href={criticalAnnouncement.linkUrl} className="flex items-center gap-1.5 font-semibold">
+                    <span>{criticalAnnouncement.linkText}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </Button>
+              )}
+              <Button
+                type="button"
+                variant={criticalAnnouncement.linkUrl ? "outline" : "default"}
+                onClick={() => handleDismiss(criticalAnnouncement.id)}
+                className="rounded-xl border-slate-700 hover:bg-slate-800 text-slate-200 h-10 px-5 text-sm font-medium"
+              >
+                I Understand
               </Button>
-            )}
-            <Button
-              type="button"
-              variant={activeAnnouncement.linkUrl ? "outline" : "default"}
-              onClick={handleDismiss}
-              className="rounded-xl border-slate-700 hover:bg-slate-800 text-slate-200 h-9 px-4 text-xs font-medium"
-            >
-              I Understand
-            </Button>
-          </DialogFooter>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     );
   }
 
-  // 2. Normal announcements: Non-blocking bottom-right anchored Card notice
+  // Distinct theme metadata for each announcement type
   const getNoticeMeta = (type: string) => {
     switch (type) {
       case "warning":
         return {
-          icon: <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />,
-          kicker: "Notice",
+          icon: <AlertTriangle className="w-4 h-4 text-amber-300" />,
+          kicker: "System Notice",
           kickerColor: "text-amber-400",
-          borderAccent: "border-amber-500/30",
-          ctaColor: "text-amber-400 hover:text-amber-300 hover:bg-amber-500/10",
+          topLine: "bg-gradient-to-r from-amber-500 via-orange-400 to-amber-500",
+          borderAccent: "border-amber-500/35 hover:border-amber-500/65",
+          iconPlate: "bg-amber-500/15 border-amber-500/30 text-amber-300",
+          glowBg: "bg-[radial-gradient(ellipse_at_top_left,rgba(245,158,11,0.15),transparent_65%)]",
+          ctaColor: "text-amber-400 hover:text-amber-300 hover:bg-amber-500/15",
         };
       case "error":
         return {
-          icon: <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />,
-          kicker: "Important",
+          icon: <AlertCircle className="w-4 h-4 text-rose-300" />,
+          kicker: "Important Notice",
           kickerColor: "text-rose-400",
-          borderAccent: "border-rose-500/30",
-          ctaColor: "text-rose-400 hover:text-rose-300 hover:bg-rose-500/10",
+          topLine: "bg-gradient-to-r from-rose-500 via-pink-400 to-rose-500",
+          borderAccent: "border-rose-500/35 hover:border-rose-500/65",
+          iconPlate: "bg-rose-500/15 border-rose-500/30 text-rose-300",
+          glowBg: "bg-[radial-gradient(ellipse_at_top_left,rgba(244,63,94,0.15),transparent_65%)]",
+          ctaColor: "text-rose-400 hover:text-rose-300 hover:bg-rose-500/15",
         };
-      case "success":
+      case "info":
         return {
-          icon: <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />,
-          kicker: "Update",
-          kickerColor: "text-emerald-400",
-          borderAccent: "border-emerald-500/30",
-          ctaColor: "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10",
+          icon: <Bookmark className="w-4 h-4 text-cyan-300" />,
+          kicker: "Reader Dispatch",
+          kickerColor: "text-cyan-400",
+          topLine: "bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-500",
+          borderAccent: "border-cyan-500/35 hover:border-cyan-500/65",
+          iconPlate: "bg-cyan-500/15 border-cyan-500/30 text-cyan-300",
+          glowBg: "bg-[radial-gradient(ellipse_at_top_left,rgba(6,182,212,0.15),transparent_65%)]",
+          ctaColor: "text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/15",
         };
       case "greetings":
       case "greeting":
       case "Greetings":
         return {
-          icon: <BookOpen className="w-4 h-4 text-indigo-400 shrink-0" />,
+          icon: <BookOpen className="w-4 h-4 text-indigo-300" />,
           kicker: "New at TomeSphere",
           kickerColor: "text-indigo-400",
-          borderAccent: "border-indigo-500/30",
-          ctaColor: "text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10",
+          topLine: "bg-gradient-to-r from-indigo-500 via-purple-400 to-indigo-500",
+          borderAccent: "border-indigo-500/35 hover:border-indigo-500/65",
+          iconPlate: "bg-indigo-500/15 border-indigo-500/30 text-indigo-300",
+          glowBg: "bg-[radial-gradient(ellipse_at_top_left,rgba(99,102,241,0.15),transparent_65%)]",
+          ctaColor: "text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/15",
         };
       case "feature":
       default:
         return {
-          icon: <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />,
-          kicker: "New at TomeSphere",
-          kickerColor: "text-indigo-400",
-          borderAccent: "border-indigo-500/30",
-          ctaColor: "text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10",
+          icon: <Sparkles className="w-4 h-4 text-emerald-300" />,
+          kicker: "New Feature",
+          kickerColor: "text-emerald-400",
+          topLine: "bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500",
+          borderAccent: "border-emerald-500/35 hover:border-emerald-500/65",
+          iconPlate: "bg-emerald-500/15 border-emerald-500/30 text-emerald-300",
+          glowBg: "bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.15),transparent_65%)]",
+          ctaColor: "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/15",
         };
     }
   };
 
-  const meta = getNoticeMeta(activeAnnouncement.type);
-
   return (
     <aside
-      aria-label="Product announcement"
-      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 w-[calc(100vw-32px)] sm:w-[360px] max-w-[380px] animate-in fade-in slide-in-from-bottom-3 duration-200 pointer-events-auto"
+      aria-label="Product announcements"
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 w-[calc(100vw-32px)] sm:w-[440px] max-w-[460px] space-y-4 pointer-events-none"
     >
-      <Card
-        className={`bg-slate-950/95 dark:bg-slate-950/95 text-slate-100 border ${meta.borderAccent} shadow-2xl rounded-2xl overflow-hidden backdrop-blur-md transition-all duration-200`}
-      >
-        <div className="p-4 sm:p-5 space-y-3">
-          {/* Header Row: Label & Close */}
-          <CardHeader className="p-0 flex flex-row items-center justify-between space-y-0 gap-2">
-            <div className="flex items-center gap-1.5">
-              {meta.icon}
-              <span className={`text-[10px] font-mono font-semibold uppercase tracking-[0.18em] ${meta.kickerColor}`}>
-                {meta.kicker}
-              </span>
+      {activeNotices.map((notice) => {
+        const meta = getNoticeMeta(notice.type);
+        return (
+          <Card
+            key={notice.id}
+            className={`bg-slate-950/95 dark:bg-slate-950/95 text-slate-100 border ${meta.borderAccent} shadow-2xl rounded-3xl overflow-hidden backdrop-blur-xl transition-all duration-200 pointer-events-auto animate-in fade-in slide-in-from-bottom-4 relative group`}
+          >
+            {/* 1. Distinct Glowing Top Line */}
+            <div className={`h-[3px] w-full ${meta.topLine}`} />
+
+            {/* 2. Distinct Radial Glow Background */}
+            <div className={`absolute inset-0 pointer-events-none ${meta.glowBg}`} />
+
+            <div className="p-5 sm:p-6 space-y-3 relative z-10">
+              {/* Header Row: Distinct Kicker Badge & Close Button */}
+              <CardHeader className="p-0 flex flex-row items-center justify-between space-y-0 gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center ${meta.iconPlate} border shadow-xs`}
+                  >
+                    {meta.icon}
+                  </div>
+                  <span
+                    className={`text-[11px] font-mono font-bold uppercase tracking-[0.2em] ${meta.kickerColor}`}
+                  >
+                    {meta.kicker}
+                  </span>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDismiss(notice.id)}
+                  aria-label={`Dismiss announcement: ${notice.title}`}
+                  className="h-8 w-8 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 -mr-1 -mt-1 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </CardHeader>
+
+              {/* Content Body */}
+              <CardContent className="p-0 space-y-2 pt-1">
+                <CardTitle className="text-lg sm:text-[19px] font-serif font-bold text-white leading-snug tracking-tight">
+                  {notice.title}
+                </CardTitle>
+                <CardDescription className="text-sm text-slate-300 leading-relaxed font-sans font-normal line-clamp-3">
+                  {notice.content}
+                </CardDescription>
+              </CardContent>
+
+              {/* Distinct Action Footer */}
+              <CardFooter className="p-0 pt-2 flex items-center justify-between gap-3">
+                {notice.linkUrl && notice.linkText ? (
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDismiss(notice.id)}
+                    className={`text-sm font-semibold px-3 py-1.5 rounded-xl ${meta.ctaColor} transition-colors group/cta inline-flex items-center gap-1.5`}
+                  >
+                    <Link href={notice.linkUrl}>
+                      <span>{notice.linkText}</span>
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover/cta:translate-x-1" />
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDismiss(notice.id)}
+                    className="text-xs text-slate-400 hover:text-slate-200 p-0 h-auto font-medium"
+                  >
+                    Dismiss
+                  </Button>
+                )}
+              </CardFooter>
             </div>
-
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={handleDismiss}
-              aria-label={`Dismiss announcement: ${activeAnnouncement.title}`}
-              className="h-7 w-7 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 -mr-1 -mt-1 transition-colors"
-            >
-              <X className="w-3.5 h-3.5" />
-            </Button>
-          </CardHeader>
-
-          {/* Content Body */}
-          <CardContent className="p-0 space-y-1.5">
-            <CardTitle className="text-base sm:text-[17px] font-serif font-bold text-white leading-snug tracking-tight">
-              {activeAnnouncement.title}
-            </CardTitle>
-            <CardDescription className="text-xs sm:text-[13px] text-slate-300 leading-relaxed font-sans font-normal line-clamp-3">
-              {activeAnnouncement.content}
-            </CardDescription>
-          </CardContent>
-
-          {/* Action Footer */}
-          <CardFooter className="p-0 pt-1 flex items-center justify-between gap-3">
-            {activeAnnouncement.linkUrl && activeAnnouncement.linkText ? (
-              <Button
-                asChild
-                variant="ghost"
-                size="sm"
-                onClick={handleDismiss}
-                className={`text-xs font-semibold p-0 h-auto ${meta.ctaColor} transition-colors group inline-flex items-center gap-1.5`}
-              >
-                <Link href={activeAnnouncement.linkUrl}>
-                  <span>{activeAnnouncement.linkText}</span>
-                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={handleDismiss}
-                className="text-xs text-slate-400 hover:text-slate-200 p-0 h-auto font-medium"
-              >
-                Dismiss
-              </Button>
-            )}
-          </CardFooter>
-        </div>
-      </Card>
+          </Card>
+        );
+      })}
     </aside>
   );
 }

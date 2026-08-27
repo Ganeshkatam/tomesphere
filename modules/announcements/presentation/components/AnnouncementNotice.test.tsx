@@ -5,7 +5,7 @@ import AnnouncementNotice from "./AnnouncementNotice";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import { ANNOUNCEMENT_SEEN_STORAGE_PREFIX } from "../utils/announcement-storage";
 
-describe("AnnouncementNotice behavioral & regression tests", () => {
+describe("AnnouncementNotice multi-card stack & behavioral tests", () => {
   const mockFeature: AnnouncementDto = {
     id: "ann-feat",
     title: "New Shelves Customization",
@@ -32,9 +32,11 @@ describe("AnnouncementNotice behavioral & regression tests", () => {
 
   const mockInfo: AnnouncementDto = {
     id: "ann-info",
-    title: "Library Tip",
-    content: "Double tap in reader to toggle full screen.",
+    title: "Reader Annotations & Highlights",
+    content: "Capture thoughts and quotes directly while reading.",
     type: "info",
+    linkUrl: "/me/annotations",
+    linkText: "View Notes",
     isDismissible: true,
     startsAt: "2026-08-27T00:00:00.000Z",
     endsAt: "2026-09-01T00:00:00.000Z",
@@ -59,62 +61,73 @@ describe("AnnouncementNotice behavioral & regression tests", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("2. returns null when only informational announcement exists (banner/center only)", () => {
-    const { container } = render(
-      <AnnouncementNotice announcements={[mockInfo]} />
+  it("2. renders all active unseen eligible announcements in the notice stack", () => {
+    render(
+      <AnnouncementNotice announcements={[mockFeature, mockWarning, mockInfo]} />
     );
-    expect(container.firstChild).toBeNull();
+
+    // All active announcements should be present in the notice stack
+    expect(
+      screen.getByRole("heading", { name: "New Shelves Customization" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Scheduled Maintenance" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Reader Annotations & Highlights" })
+    ).toBeInTheDocument();
   });
 
-  it("3. returns null if the announcement is already seen in localStorage", () => {
+  it("3. filters out previously seen announcements from the stack", () => {
     window.localStorage.setItem(
       `${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${mockFeature.id}`,
       "true"
     );
 
-    const { container } = render(
-      <AnnouncementNotice announcements={[mockFeature]} />
-    );
-    expect(container.firstChild).toBeNull();
-  });
-
-  it("4 & 5. renders exactly one announcement (highest priority wins when multiple eligible)", () => {
     render(
       <AnnouncementNotice announcements={[mockFeature, mockWarning]} />
     );
 
-    // Warning (Priority 3) wins over Feature (Priority 1)
+    // Seen announcement is excluded; unseen one is displayed
+    expect(
+      screen.queryByRole("heading", { name: "New Shelves Customization" })
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Scheduled Maintenance" })
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("heading", { name: "New Shelves Customization" })
-    ).not.toBeInTheDocument();
   });
 
-  it("6. close button marks announcement seen and unmounts notice", () => {
-    render(<AnnouncementNotice announcements={[mockFeature]} />);
+  it("4. close button dismisses only that specific announcement card and marks it seen", () => {
+    render(
+      <AnnouncementNotice announcements={[mockFeature, mockWarning]} />
+    );
 
-    expect(
-      screen.getByRole("heading", { name: "New Shelves Customization" })
-    ).toBeInTheDocument();
-
-    const closeBtn = screen.getByRole("button", {
+    const closeFeatureBtn = screen.getByRole("button", {
       name: `Dismiss announcement: ${mockFeature.title}`,
     });
-    fireEvent.click(closeBtn);
+    fireEvent.click(closeFeatureBtn);
 
+    // Feature card is dismissed; warning remains visible
     expect(
       screen.queryByRole("heading", { name: "New Shelves Customization" })
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Scheduled Maintenance" })
+    ).toBeInTheDocument();
+
     expect(
       window.localStorage.getItem(
         `${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${mockFeature.id}`
       )
     ).toBe("true");
+    expect(
+      window.localStorage.getItem(
+        `${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${mockWarning.id}`
+      )
+    ).toBeNull();
   });
 
-  it("7 & 8. CTA marks announcement seen and contains valid navigation href", () => {
+  it("5. CTA link click marks announcement seen and unmounts that card", () => {
     render(<AnnouncementNotice announcements={[mockFeature]} />);
 
     const ctaLink = screen.getByRole("link", { name: /Explore Shelves/i });
@@ -129,7 +142,7 @@ describe("AnnouncementNotice behavioral & regression tests", () => {
     ).toBe("true");
   });
 
-  it("9. critical non-dismissible announcement uses the blocking Dialog path", () => {
+  it("6. critical non-dismissible announcement uses the blocking Dialog path", () => {
     render(<AnnouncementNotice announcements={[mockCritical]} />);
 
     expect(
@@ -151,10 +164,10 @@ describe("AnnouncementNotice behavioral & regression tests", () => {
     ).toBe("true");
   });
 
-  it("10. REGRESSION TEST: ordinary announcements NEVER render as a modal Dialog", () => {
-    render(<AnnouncementNotice announcements={[mockFeature]} />);
+  it("7. REGRESSION TEST: ordinary announcements NEVER render as a modal Dialog", () => {
+    render(<AnnouncementNotice announcements={[mockFeature, mockWarning]} />);
 
-    // Must render as non-blocking aside card, NEVER a dialog or focus trap
+    // Must render as non-blocking aside container, NEVER a modal dialog or focus trap
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.getByRole("complementary")).toBeInTheDocument(); // <aside>
   });

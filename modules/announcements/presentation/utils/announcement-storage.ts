@@ -26,10 +26,23 @@ export function getAnnouncementPriority(announcement: AnnouncementDto): number {
   if (announcement.type === "error" && announcement.isDismissible) {
     return 2;
   }
-  if (announcement.type === "feature" || announcement.type === "greetings" || announcement.type === "greeting" || announcement.type === "Greetings") {
-    return 1;
+  if (announcement.type === "feature") {
+    return 1.5;
   }
-  return 0;
+  if (
+    announcement.type === "greetings" ||
+    announcement.type === "greeting" ||
+    announcement.type === "Greetings"
+  ) {
+    return 1.4;
+  }
+  if (announcement.type === "info") {
+    return 1.2;
+  }
+  if (announcement.type === "success" || announcement.type === "maintenance") {
+    return 1.0;
+  }
+  return 1;
 }
 
 /**
