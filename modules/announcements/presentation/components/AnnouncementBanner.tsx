@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AlertTriangle, AlertCircle, X, ArrowRight, Megaphone } from "lucide-react";
+import { AlertTriangle, AlertCircle, X, ArrowRight, Megaphone, ShieldAlert } from "lucide-react";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import { Button } from "@/components/ui/button";
 import AnnouncementCenter from "./AnnouncementCenter";
@@ -35,25 +35,29 @@ function getThemeStyles(type: string) {
   if (normalized === "error") {
     return {
       wrapper:
-        "bg-rose-500/15 dark:bg-rose-950/70 border-rose-500/40 text-rose-950 dark:text-rose-100",
+        "bg-gradient-to-r from-rose-50/90 via-rose-50/50 to-pink-50/80 dark:from-rose-950/50 dark:via-slate-950/90 dark:to-rose-950/40 border-b border-rose-200/80 dark:border-rose-500/25",
+      topHighlight: "via-rose-500/50",
       badge:
-        "bg-rose-500/25 text-rose-900 dark:text-rose-300 border-rose-500/40",
+        "bg-rose-500/10 dark:bg-rose-500/20 text-rose-800 dark:text-rose-300 border-rose-300/60 dark:border-rose-500/40",
+      pulseColor: "bg-rose-500",
       icon: (
-        <AlertCircle className="w-4 h-4 text-rose-700 dark:text-rose-400 shrink-0" />
+        <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
       ),
-      cta: "bg-rose-600 hover:bg-rose-700 text-white dark:bg-rose-500 dark:hover:bg-rose-400 dark:text-slate-950 shadow-xs",
+      cta: "bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white shadow-sm hover:shadow-rose-500/20",
     };
   }
 
   return {
     wrapper:
-      "bg-amber-500/15 dark:bg-amber-950/70 border-amber-500/40 text-amber-950 dark:text-amber-100",
+      "bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-orange-500/10 dark:from-amber-950/45 dark:via-slate-950/90 dark:to-amber-950/35 border-b border-amber-300/50 dark:border-amber-500/20",
+    topHighlight: "via-amber-400/60 dark:via-amber-500/40",
     badge:
-      "bg-amber-500/25 text-amber-900 dark:text-amber-300 border-amber-500/40",
+      "bg-amber-500/15 dark:bg-amber-500/20 text-amber-900 dark:text-amber-200 border-amber-400/50 dark:border-amber-500/40",
+    pulseColor: "bg-amber-500",
     icon: (
-      <AlertTriangle className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
+      <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
     ),
-    cta: "bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-slate-950 shadow-xs",
+    cta: "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-sm hover:shadow-amber-500/25",
   };
 }
 
@@ -72,7 +76,7 @@ export function AnnouncementBanner({ announcements = [] }: AnnouncementBannerPro
     if (announcements && announcements.length > 0) {
       setItems(announcements);
     } else {
-      // Client-side fallback fetch if server didn't pass announcements
+      // Client-side fallback query
       fetch("/api/announcements")
         .then((res) => res.json())
         .then((data) => {
@@ -127,22 +131,48 @@ export function AnnouncementBanner({ announcements = [] }: AnnouncementBannerPro
       aria-label="System Maintenance Notice"
     >
       <aside
-        className={`w-full border-b backdrop-blur-md transition-all duration-300 ${theme.wrapper}`}
+        className={`w-full relative backdrop-blur-xl transition-all duration-300 ${theme.wrapper}`}
       >
-        <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-4">
+        {/* Top Hairline Gradient Highlight */}
+        <div
+          className={`absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent ${theme.topHighlight} to-transparent pointer-events-none`}
+        />
+
+        <div className="max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             {theme.icon}
-            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs sm:text-sm">
+
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs sm:text-sm">
+              {/* Premium Pulsing Status Pill */}
               <span
-                className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${theme.badge}`}
+                className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border shadow-2xs ${theme.badge}`}
               >
-                Maintenance
+                <span className="relative flex h-1.5 w-1.5">
+                  <span
+                    className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${theme.pulseColor}`}
+                  />
+                  <span
+                    className={`relative inline-flex rounded-full h-1.5 w-1.5 ${theme.pulseColor}`}
+                  />
+                </span>
+                <span>
+                  {primaryAnnouncement.type === "warning"
+                    ? "Maintenance"
+                    : primaryAnnouncement.type}
+                </span>
               </span>
-              <span className="font-bold text-slate-950 dark:text-white">
+
+              {/* Title */}
+              <span className="font-bold text-slate-900 dark:text-amber-100 tracking-tight">
                 {primaryAnnouncement.title}
               </span>
-              <span className="opacity-70 hidden sm:inline">&mdash;</span>
-              <span className="opacity-90 font-normal line-clamp-1 sm:line-clamp-none">
+
+              <span className="text-amber-500/50 dark:text-amber-400/40 hidden sm:inline">
+                &bull;
+              </span>
+
+              {/* Message Content */}
+              <span className="text-slate-700 dark:text-slate-300 font-normal leading-tight line-clamp-1 sm:line-clamp-none">
                 {primaryAnnouncement.content}
               </span>
             </div>
@@ -153,14 +183,14 @@ export function AnnouncementBanner({ announcements = [] }: AnnouncementBannerPro
               <Button
                 asChild
                 size="sm"
-                className={`h-7 px-3 text-xs font-bold rounded-lg ${theme.cta}`}
+                className={`h-7 px-3.5 text-xs font-bold rounded-full transition-all duration-200 hover:scale-105 ${theme.cta}`}
               >
                 <Link
                   href={primaryAnnouncement.linkUrl}
                   className="inline-flex items-center gap-1.5"
                 >
                   <span>{primaryAnnouncement.linkText}</span>
-                  <ArrowRight className="w-3 h-3" />
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </Button>
             )}
@@ -173,7 +203,7 @@ export function AnnouncementBanner({ announcements = [] }: AnnouncementBannerPro
                   variant="ghost"
                   size="icon"
                   aria-label="View all announcements"
-                  className="h-7 w-7 opacity-75 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10"
+                  className="h-7 w-7 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10"
                 >
                   <Megaphone className="w-3.5 h-3.5" />
                 </Button>
@@ -187,9 +217,9 @@ export function AnnouncementBanner({ announcements = [] }: AnnouncementBannerPro
                 size="icon"
                 onClick={() => handleDismiss(primaryAnnouncement.id)}
                 aria-label={`Dismiss announcement: ${primaryAnnouncement.title}`}
-                className="h-7 w-7 opacity-75 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10"
+                className="h-7 w-7 rounded-full text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5" />
               </Button>
             )}
           </div>
