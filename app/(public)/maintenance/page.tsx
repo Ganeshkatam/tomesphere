@@ -2,23 +2,23 @@ import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
 import {
-  ShieldAlert,
   CheckCircle2,
   BookOpen,
   ArrowRight,
   Clock,
   HelpCircle,
+  FileCode2,
 } from "lucide-react";
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { SupabaseAnnouncementReadModel } from "@/modules/announcements/infrastructure/read-models/SupabaseAnnouncementReadModel";
 import { GetActiveAnnouncementsQueryHandler } from "@/modules/announcements/application/queries/GetActiveAnnouncements/handler";
-import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { MaintenanceDocumentViewer } from "@/modules/announcements/presentation/components/MaintenanceDocumentViewer";
 
 export const metadata: Metadata = {
-  title: "System Status & Maintenance",
+  title: "System Status & Maintenance Advisory",
   description:
-    "Official operational status and scheduled maintenance notices for TomeSphere digital library services.",
+    "Official operational status and scheduled maintenance reports for TomeSphere digital library services.",
 };
 
 export const revalidate = 60; // Refresh every 60 seconds
@@ -37,6 +37,8 @@ export default async function MaintenancePage() {
       a.type === "maintenance" ||
       a.type === "error"
   );
+
+  const primaryNotice = activeMaintenanceNotices[0] || null;
 
   return (
     <div className="min-h-screen bg-[var(--surface-canvas)] text-[var(--text-primary)] font-sans">
@@ -62,46 +64,25 @@ export default async function MaintenancePage() {
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300">
-            Official system operations status and scheduled maintenance notices across TomeSphere.
+            Official system operations status and scheduled maintenance advisory documents.
           </p>
         </div>
 
-        {/* Live Database Maintenance Advisories */}
+        {/* Live Database Maintenance Advisory - Formatted Document Viewer */}
         {activeMaintenanceNotices.length > 0 ? (
-          <div className="space-y-6 mb-12">
-            {activeMaintenanceNotices.map((notice) => (
-              <div
-                key={notice.id}
-                className="rounded-3xl p-8 sm:p-10 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-orange-500/10 dark:from-amber-950/40 dark:via-slate-950/90 dark:to-amber-950/20 border border-amber-400/50 dark:border-amber-500/30 shadow-xl"
-              >
-                <div className="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-amber-300/40 dark:border-amber-500/20">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-800 dark:text-amber-300 flex items-center justify-center border border-amber-400/40 shrink-0">
-                      <ShieldAlert className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300">
-                        {notice.type === "error" ? "Critical System Notice" : "Scheduled Maintenance"}
-                      </span>
-                      <p className="text-xs text-slate-500 dark:text-slate-400" suppressHydrationWarning>
-                        Posted {formatDate(notice.startsAt)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-amber-500/20 text-amber-950 dark:text-amber-200 border border-amber-400/50">
-                    Active
-                  </span>
-                </div>
-
-                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-4">
-                  {notice.title}
-                </h2>
-
-                <p className="text-base text-slate-700 dark:text-slate-200 leading-relaxed font-normal">
-                  {notice.content}
-                </p>
+          <div className="space-y-8 mb-12">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+                <FileCode2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <span>Active Advisory Bulletin</span>
               </div>
+              <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                Rendered with GitHub Markdown format
+              </span>
+            </div>
+
+            {activeMaintenanceNotices.map((notice) => (
+              <MaintenanceDocumentViewer key={notice.id} notice={notice} />
             ))}
           </div>
         ) : (
@@ -114,7 +95,7 @@ export default async function MaintenancePage() {
                 All Systems Operational
               </h2>
               <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                There is currently no scheduled maintenance or active system advisory. All reader engines, search endpoints, and library synchronization are operating normally.
+                There is currently no active maintenance or service advisory. All reader engines, search endpoints, and library synchronization are operating normally at 100% capacity.
               </p>
             </div>
           </div>
