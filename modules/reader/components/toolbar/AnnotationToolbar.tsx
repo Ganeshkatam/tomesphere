@@ -1,9 +1,16 @@
 "use client";
 
+import React, { useMemo } from "react";
 import { useReaderStore } from "@/modules/reader/state/reader-store";
 import { ReaderService } from "@/modules/reader/application/ReaderService";
 import { Bookmark, MessageSquare } from "lucide-react";
-import { useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 interface AnnotationToolbarProps {
   service: ReaderService | null;
@@ -49,36 +56,54 @@ export function AnnotationToolbar({ service }: AnnotationToolbarProps) {
   }[theme];
 
   return (
-    <div className="flex items-center gap-1">
-      <button
-        type="button"
-        onClick={() => service?.toggleBookmark()}
-        className={`p-2 rounded-xl transition-colors cursor-pointer ${
-          isBookmarked ? themeStyles.bookmarkActive : themeStyles.btn
-        }`}
-        title={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
-      >
-        <Bookmark size={18} className={isBookmarked ? "fill-current" : ""} />
-      </button>
+    <TooltipProvider delayDuration={300}>
+      <div className="flex items-center gap-1">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => service?.toggleBookmark()}
+              aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
+              aria-pressed={isBookmarked}
+              className={`p-2 rounded-xl transition-colors cursor-pointer h-auto w-auto ${
+                isBookmarked ? themeStyles.bookmarkActive : themeStyles.btn
+              }`}
+            >
+              <Bookmark size={18} className={isBookmarked ? "fill-current" : ""} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{isBookmarked ? "Remove Bookmark" : "Add Bookmark"}</TooltipContent>
+        </Tooltip>
 
-      <button
-        type="button"
-        onClick={() => {
-          if (isNotesActive) {
-            setSidebarOpen(false);
-          } else {
-            setSidebarTab("annotations");
-            setSidebarOpen(true);
-          }
-        }}
-        className={`p-2 rounded-xl transition-colors cursor-pointer ${
-          isNotesActive ? themeStyles.activeBtn : themeStyles.btn
-        }`}
-        title="Notes & Bookmarks"
-      >
-        <MessageSquare size={18} />
-      </button>
-    </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                if (isNotesActive) {
+                  setSidebarOpen(false);
+                } else {
+                  setSidebarTab("annotations");
+                  setSidebarOpen(true);
+                }
+              }}
+              aria-label="Notes & Bookmarks"
+              aria-expanded={isNotesActive}
+              className={`p-2 rounded-xl transition-colors cursor-pointer h-auto w-auto ${
+                isNotesActive ? themeStyles.activeBtn : themeStyles.btn
+              }`}
+            >
+              <MessageSquare size={18} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Notes & Bookmarks</TooltipContent>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
   );
 }
 

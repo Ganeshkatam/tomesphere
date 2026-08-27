@@ -1,8 +1,16 @@
 "use client";
 
+import React from "react";
 import { useReaderStore } from "@/modules/reader/state/reader-store";
 import { ReaderService } from "@/modules/reader/application/ReaderService";
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 interface ProgressToolbarProps {
   service: ReaderService | null;
@@ -52,62 +60,95 @@ export function ProgressToolbar({ service }: ProgressToolbarProps) {
   }[theme];
 
   return (
-    <div className="flex items-center gap-4 sm:gap-6">
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          onClick={() => service?.previous()}
-          disabled={!rendererReady || !service}
-          className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent ${themeStyles.btn}`}
-          title="Previous Page (Left Arrow)"
-        >
-          <ChevronLeft size={18} />
-        </button>
-        <span className={`text-xs sm:text-sm font-bold min-w-[56px] text-center font-mono ${themeStyles.pageText}`}>
-          Page {currentPage}
-        </span>
-        <button
-          type="button"
-          onClick={() => service?.next()}
-          disabled={!rendererReady || !service}
-          className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent ${themeStyles.btn}`}
-          title="Next Page (Right Arrow or Space)"
-        >
-          <ChevronRight size={18} />
-        </button>
+    <TooltipProvider delayDuration={300}>
+      <div className="flex items-center gap-4 sm:gap-6">
+        <div className="flex items-center gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => service?.previous()}
+                disabled={!rendererReady || !service}
+                aria-label="Previous Page"
+                className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent h-auto w-auto ${themeStyles.btn}`}
+              >
+                <ChevronLeft size={18} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Previous Page</TooltipContent>
+          </Tooltip>
 
-        <div className={`w-px h-4 mx-1.5 sm:mx-2 ${themeStyles.divider}`} />
+          <span className={`text-xs sm:text-sm font-bold min-w-[56px] text-center font-mono ${themeStyles.pageText}`}>
+            Page {currentPage}
+          </span>
 
-        <button
-          type="button"
-          onClick={() => {
-            const newZoom = Math.max(80, (preferences.zoom || 100) - 10);
-            updatePreference("zoom", newZoom);
-            service?.applyPreferences({ ...preferences, zoom: newZoom });
-          }}
-          disabled={!rendererReady || !service || (preferences.zoom || 100) <= 80}
-          className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent ${themeStyles.btn}`}
-          title="Zoom Out (Min 80%)"
-        >
-          <ZoomOut size={16} />
-        </button>
-        <span className={`text-xs font-semibold w-10 text-center font-mono ${themeStyles.zoomText}`}>
-          {preferences.zoom || 100}%
-        </span>
-        <button
-          type="button"
-          onClick={() => {
-            const newZoom = Math.min(300, (preferences.zoom || 100) + 10);
-            updatePreference("zoom", newZoom);
-            service?.applyPreferences({ ...preferences, zoom: newZoom });
-          }}
-          disabled={!rendererReady || !service || (preferences.zoom || 100) >= 300}
-          className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent ${themeStyles.btn}`}
-          title="Zoom In (Max 300%)"
-        >
-          <ZoomIn size={16} />
-        </button>
-      </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => service?.next()}
+                disabled={!rendererReady || !service}
+                aria-label="Next Page"
+                className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent h-auto w-auto ${themeStyles.btn}`}
+              >
+                <ChevronRight size={18} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Next Page</TooltipContent>
+          </Tooltip>
+
+          <div className={`w-px h-4 mx-1.5 sm:mx-2 ${themeStyles.divider}`} />
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  const newZoom = Math.max(80, (preferences.zoom || 100) - 10);
+                  updatePreference("zoom", newZoom);
+                  service?.applyPreferences({ ...preferences, zoom: newZoom });
+                }}
+                disabled={!rendererReady || !service || (preferences.zoom || 100) <= 80}
+                aria-label="Zoom Out"
+                className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent h-auto w-auto ${themeStyles.btn}`}
+              >
+                <ZoomOut size={16} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Zoom Out</TooltipContent>
+          </Tooltip>
+
+          <span className={`text-xs font-semibold w-10 text-center font-mono ${themeStyles.zoomText}`}>
+            {preferences.zoom || 100}%
+          </span>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  const newZoom = Math.min(300, (preferences.zoom || 100) + 10);
+                  updatePreference("zoom", newZoom);
+                  service?.applyPreferences({ ...preferences, zoom: newZoom });
+                }}
+                disabled={!rendererReady || !service || (preferences.zoom || 100) >= 300}
+                aria-label="Zoom In"
+                className={`p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent h-auto w-auto ${themeStyles.btn}`}
+              >
+                <ZoomIn size={16} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Zoom In</TooltipContent>
+          </Tooltip>
+        </div>
 
       <div className={`text-xs font-semibold hidden md:block ${themeStyles.statusText}`}>
         {!rendererReady ? (
@@ -127,7 +168,8 @@ export function ProgressToolbar({ service }: ProgressToolbarProps) {
           </span>
         )}
       </div>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }
 
