@@ -4,7 +4,6 @@ import BookCard from "@/modules/books/components/BookCard";
 import { SearchRequest } from "@/modules/discovery/search/application/dto/SearchRequestDto";
 import {
   Search as SearchIcon,
-  SlidersHorizontal,
   BookOpen,
   ArrowUpDown,
   Sparkles,
@@ -12,6 +11,8 @@ import {
 import Link from "next/link";
 import { SearchBar } from "@/modules/discovery/search/presentation/components/SearchBar";
 import type { Metadata } from "next";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 export const dynamic = "force-dynamic";
 
@@ -175,17 +176,20 @@ export default async function SearchPage({
                   params.set("page", "1");
 
                   return (
-                    <Link
+                    <Button
                       key={s.key}
-                      href={`/search?${params.toString()}`}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                        isSelected
-                          ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs"
+                      asChild
+                      variant={isSelected ? "default" : "ghost"}
+                      size="sm"
+                      className={`h-auto px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${isSelected
+                          ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs hover:bg-white dark:hover:bg-slate-900 hover:text-indigo-600 dark:hover:text-indigo-400"
                           : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                      }`}
+                        }`}
                     >
-                      {s.label}
-                    </Link>
+                      <Link href={`/search?${params.toString()}`}>
+                        {s.label}
+                      </Link>
+                    </Button>
                   );
                 })}
               </div>
@@ -204,7 +208,7 @@ export default async function SearchPage({
 
         {/* Main Search Body Results Grid */}
         <div className="grid grid-cols-1 gap-6 items-start">
-          
+
           {/* Inline Collapsible Filters */}
           {showSidebar && (
             <div className="w-full">
@@ -241,7 +245,7 @@ export default async function SearchPage({
                 ))}
               </div>
             ) : (
-              <div className="p-12 sm:p-16 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-center flex flex-col items-center justify-center space-y-4">
+              <Card className="p-12 sm:p-16 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-center flex flex-col items-center justify-center space-y-4">
                 <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-1">
                   <BookOpen size={28} />
                 </div>
@@ -261,14 +265,16 @@ export default async function SearchPage({
                   Try checking your spelling, removing active filters, or exploring all catalogue genres.
                 </p>
                 <div className="pt-2">
-                  <Link
-                    href="/discover"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-all"
+                  <Button
+                    asChild
+                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-all h-auto"
                   >
-                    <span>Browse All Discover Categories</span>
-                  </Link>
+                    <Link href="/discover">
+                      <span>Browse All Discover Categories</span>
+                    </Link>
+                  </Button>
                 </div>
-              </div>
+              </Card>
             )}
 
             {/* Pagination Controls */}
@@ -286,18 +292,22 @@ export default async function SearchPage({
                     }
                     params.set("page", pageNum.toString());
 
+                    const isCurrent = pageNum === request.page;
                     return (
-                      <Link
+                      <Button
                         key={pageNum}
-                        href={`/search?${params.toString()}`}
-                        className={`w-10 h-10 flex items-center justify-center rounded-xl text-xs font-bold transition-all ${
-                          pageNum === request.page
-                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                            : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
-                        }`}
+                        asChild
+                        variant={isCurrent ? "default" : "outline"}
+                        size="icon"
+                        className={`w-10 h-10 rounded-xl text-xs font-bold transition-all ${isCurrent
+                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500"
+                            : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-800"
+                          }`}
                       >
-                        {pageNum}
-                      </Link>
+                        <Link href={`/search?${params.toString()}`}>
+                          {pageNum}
+                        </Link>
+                      </Button>
                     );
                   },
                 )}

@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, ArrowRight, BookOpen, User, Tag, Layers, LucideIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export function DiscoverySearch() {
   const [query, setQuery] = useState("");
@@ -15,8 +17,6 @@ export function DiscoverySearch() {
     authors: { label: "Authors", icon: User },
     subjects: { label: "Subjects", icon: Tag },
   };
-
-  const CurrentIcon = filterLabels[filterType].icon;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,25 +32,28 @@ export function DiscoverySearch() {
   return (
     <div className="w-full max-w-3xl mx-auto">
       {/* 1. Scope Tabs above search */}
-      <div className="flex items-center justify-center gap-1 mb-2.5">
+      <div className="flex items-center justify-center gap-1.5 mb-2.5 flex-wrap">
         {(["all", "books", "authors", "subjects"] as const).map((type) => {
           const isActive = filterType === type;
           const Icon = filterLabels[type].icon;
 
           return (
-            <button
+            <Button
               key={type}
               type="button"
+              variant={isActive ? "default" : "secondary"}
+              size="sm"
               onClick={() => setFilterType(type)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              aria-pressed={isActive}
+              className={`h-8 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 isActive
-                  ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/20"
+                  ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20"
                   : "bg-slate-100 dark:bg-slate-800/90 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700/80"
               }`}
             >
               <Icon size={12} className={isActive ? "text-white" : "text-slate-400"} />
               <span>{filterLabels[type].label}</span>
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -64,22 +67,23 @@ export function DiscoverySearch() {
           <Search className="h-5 w-5" />
         </div>
 
-        <input
+        <Input
           type="search"
           name="q"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          aria-label="Search digital archives"
           placeholder="Search thousands of preserved books, authors, philosophies, subjects..."
-          className="w-full bg-transparent text-slate-900 dark:text-white text-sm sm:text-base px-2 py-2 focus:outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium"
+          className="w-full border-0 bg-transparent text-slate-900 dark:text-white text-sm sm:text-base px-2 py-2 shadow-none focus-visible:ring-0 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium h-auto"
         />
 
-        <button
+        <Button
           type="submit"
-          className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs sm:text-sm font-extrabold flex items-center gap-1.5 shadow-md shadow-indigo-600/30 transition-all cursor-pointer shrink-0"
+          className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs sm:text-sm font-extrabold flex items-center gap-1.5 shadow-md shadow-indigo-600/30 transition-all cursor-pointer shrink-0 h-auto"
         >
           <span>Search</span>
           <ArrowRight size={14} />
-        </button>
+        </Button>
       </form>
     </div>
   );

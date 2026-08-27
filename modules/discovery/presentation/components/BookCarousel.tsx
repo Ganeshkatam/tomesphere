@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import BookCard from "@/modules/books/components/BookCard";
 import { BookSummaryDto } from "../../application/dto/BookSummaryDto";
-import { EmptyState } from "@/shared/ui/EmptyState";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { addBookToLibraryAction } from "../actions/discovery";
+import { Button } from "@/components/ui/button";
 
 interface BookCarouselProps {
   items: readonly BookSummaryDto[];
@@ -86,26 +86,30 @@ export function BookCarousel({ items, priority = false }: BookCarouselProps) {
     <div className="relative group/carousel w-full min-w-0">
       {/* Left Navigation Arrow */}
       {canScrollLeft && (
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="icon"
           onClick={() => scroll("left")}
           aria-label="Scroll left"
           className="absolute -left-3 sm:-left-5 top-[38%] -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/95 dark:bg-slate-900/95 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 shadow-xl flex items-center justify-center z-20 hover:scale-110 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all cursor-pointer backdrop-blur-xs"
         >
           <ChevronLeft size={20} />
-        </button>
+        </Button>
       )}
 
       {/* Right Navigation Arrow */}
       {canScrollRight && (
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="icon"
           onClick={() => scroll("right")}
           aria-label="Scroll right"
           className="absolute -right-3 sm:-right-5 top-[38%] -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/95 dark:bg-slate-900/95 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 shadow-xl flex items-center justify-center z-20 hover:scale-110 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 transition-all cursor-pointer backdrop-blur-xs"
         >
           <ChevronRight size={20} />
-        </button>
+        </Button>
       )}
 
       {/* Smooth Horizontal Carousel */}
