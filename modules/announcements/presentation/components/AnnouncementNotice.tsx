@@ -199,6 +199,8 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
 
   const hasMultiple = activeNotices.length > 1;
   const displayedNotices = isHovered ? activeNotices : [activeNotices[0]];
+  // Limit rendered background tabs to at most 3 physical layered edges
+  const queueTabsCount = Math.min(activeNotices.length - 1, 3);
 
   return (
     <aside
@@ -209,26 +211,32 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
     >
       {/* Stack Container */}
       <div className="relative space-y-4">
-        {/* Prominent Stacked Deck Tabs above top card when collapsed */}
+        {/* Physical stacked card tabs behind the top card */}
         {!isHovered && hasMultiple && (
           <div className="pointer-events-none transition-all duration-300">
-            {/* 3rd Card Tab (if 3+ notices) */}
-            {activeNotices.length > 2 && (
-              <div
-                className="absolute -top-5.5 inset-x-8 h-8 bg-slate-900/80 border-t border-x border-slate-700/60 rounded-t-2xl shadow-md -z-20 scale-[0.93] transition-transform duration-300"
-                style={{
-                  boxShadow: "0 -4px 12px rgba(0, 0, 0, 0.4)",
-                }}
-              />
-            )}
+            {Array.from({ length: queueTabsCount }).map((_, i) => {
+              // i goes from 0 (closest tab) to queueTabsCount - 1 (farthest top tab)
+              const tabRank = queueTabsCount - i; // 3, 2, 1 (rendered from back to front)
+              const topOffset = tabRank * 6; // -18px, -12px, -6px
+              const insetHorizontal = tabRank * 12; // 36px, 24px, 12px
+              const borderAccent = tabRank === 1 ? "border-slate-500" : "border-slate-700/80";
+              const opacity = 1 - (tabRank - 1) * 0.2; // 0.6, 0.8, 1.0
 
-            {/* 2nd Card Tab */}
-            <div
-              className="absolute -top-3 inset-x-4 h-8 bg-slate-900 border-t border-x border-slate-600/90 rounded-t-2xl shadow-lg -z-10 scale-[0.97] transition-transform duration-300"
-              style={{
-                boxShadow: "0 -4px 16px rgba(0, 0, 0, 0.5)",
-              }}
-            />
+              return (
+                <div
+                  key={`deck-tab-${tabRank}`}
+                  className={`absolute h-8 bg-slate-900 border-t border-x ${borderAccent} rounded-t-2xl shadow-lg transition-all duration-300`}
+                  style={{
+                    top: `-${topOffset}px`,
+                    left: `${insetHorizontal}px`,
+                    right: `${insetHorizontal}px`,
+                    opacity,
+                    zIndex: -tabRank,
+                    boxShadow: "0 -4px 14px rgba(0, 0, 0, 0.5)",
+                  }}
+                />
+              );
+            })}
           </div>
         )}
 
