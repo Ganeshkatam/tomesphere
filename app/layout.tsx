@@ -4,6 +4,10 @@ import "./globals.css";
 import "@/shared/layout/layout.css";
 import { Providers } from "./providers";
 import { themeInitScript } from "./theme-init";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
+import { SupabaseAnnouncementReadModel } from "@/modules/announcements/infrastructure/read-models/SupabaseAnnouncementReadModel";
+import { GetActiveAnnouncementsQueryHandler } from "@/modules/announcements/application/queries/GetActiveAnnouncements/handler";
+import { AnnouncementBanner } from "@/modules/announcements/presentation/components/AnnouncementBanner";
 
 const atkinson = Atkinson_Hyperlegible({
   subsets: ["latin"],
@@ -81,11 +85,21 @@ export const viewport = {
   themeColor: "#6366f1",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let activeAnnouncements: any[] = [];
+  try {
+    const supabase = await createSupabaseServerClient();
+    const announcementsRepo = new SupabaseAnnouncementReadModel(supabase);
+    const announcementsQuery = new GetActiveAnnouncementsQueryHandler(announcementsRepo);
+    activeAnnouncements = await announcementsQuery.execute().catch(() => []);
+  } catch {
+    activeAnnouncements = [];
+  }
+
   return (
     <html
       lang="en"
@@ -105,8 +119,10 @@ export default function RootLayout({
           suppressHydrationWarning
         />
       </head>
-      <body className="antialiased font-sans" suppressHydrationWarning>
+      <body className="antialiased font-sans flex flex-col min-h-screen" suppressHydrationWarning>
         <Providers>
+          {/* Universal Maintenance & System Announcement Banner Across All Routes */}
+          <AnnouncementBanner announcements={activeAnnouncements} />
           {children}
         </Providers>
       </body>

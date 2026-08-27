@@ -9,7 +9,6 @@ import FeaturedCollectionsSection from "./FeaturedCollectionsSection";
 import GenreBrowserSection from "./GenreBrowserSection";
 import SubjectsExplorerSection from "./SubjectsExplorerSection";
 import PopularAuthorsSection from "./PopularAuthorsSection";
-import AnnouncementSection from "./AnnouncementSection";
 
 export interface LandingClientProps {
   model?: any;
@@ -21,7 +20,6 @@ export default function LandingClient({ model, overview }: LandingClientProps) {
   const landingData = model?.landing || model || {};
   const overviewData = landingData.overview || model?.overview || overview || landingData;
   const statisticsData = landingData.statistics || model?.statistics || null;
-  const announcementsData = landingData.announcements || overviewData.announcements || [];
 
   const {
     featuredBooks = [],
@@ -55,9 +53,6 @@ export default function LandingClient({ model, overview }: LandingClientProps) {
         <GenreBrowserSection genres={genres} />
         <SubjectsExplorerSection subjects={subjects} />
         <PopularAuthorsSection authors={authors} />
-
-        {/* Platform Dispatches & Notices */}
-        <AnnouncementSection announcements={announcementsData} />
       </div>
     </div>
   );
