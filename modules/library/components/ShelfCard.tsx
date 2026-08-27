@@ -1,9 +1,19 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ShelfSummaryDto } from "../application/dto/response/ShelvesPageDto";
-import { Settings, Trash2, Edit2, Globe, Lock, BookMarked } from "lucide-react";
+import { MoreVertical, Trash2, Edit2, Globe, Lock, BookMarked } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 interface ShelfCardProps {
   shelf: ShelfSummaryDto;
@@ -23,7 +33,7 @@ export default function ShelfCard({ shelf, onEdit, onDelete }: ShelfCardProps) {
   const placeholdersNeeded = Math.max(0, 4 - covers.length);
 
   return (
-    <div className="group relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-black/50 transition-all duration-300 flex flex-col hover:-translate-y-1">
+    <Card className="group relative overflow-hidden transition-all duration-300 flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-black/50 border-border bg-card">
       
       {/* Cover Visual Area */}
       <div 
@@ -107,40 +117,60 @@ export default function ShelfCard({ shelf, onEdit, onDelete }: ShelfCardProps) {
           >
             {shelf.name}
           </h3>
-          <div className="flex items-center text-slate-500" title={shelf.isPublic ? "Public" : "Private"}>
+          <div className="flex items-center text-muted-foreground" title={shelf.isPublic ? "Public" : "Private"}>
             {shelf.isPublic ? <Globe className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
           </div>
         </div>
 
         {shelf.description && (
-          <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 flex-1">
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1">
             {shelf.description}
           </p>
         )}
 
-        <div className="flex items-center justify-between mt-auto pt-4 border-t border-[var(--border-default)]">
-          <span className="text-xs font-medium text-slate-500 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full">
+        <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
+          <span className="text-xs font-medium text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
             {shelf.bookCount} {shelf.bookCount === 1 ? "book" : "books"}
           </span>
           
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={(e) => { e.stopPropagation(); onEdit(shelf); }}
-              className="p-1.5 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-md transition-colors"
-              title="Edit Shelf"
-            >
-              <Edit2 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); onDelete(shelf); }}
-              className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-md transition-colors"
-              title="Delete Shelf"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted opacity-80 sm:opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                onClick={(e) => e.stopPropagation()}
+                aria-label={`Actions for ${shelf.name}`}
+              >
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40" onClick={(e) => e.stopPropagation()}>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(shelf);
+                }}
+                className="cursor-pointer gap-2"
+              >
+                <Edit2 className="w-4 h-4" />
+                <span>Edit Shelf</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(shelf);
+                }}
+                className="cursor-pointer gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Delete Shelf</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
