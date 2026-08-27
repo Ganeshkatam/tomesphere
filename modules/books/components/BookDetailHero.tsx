@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -31,6 +31,20 @@ import { addBookToLibraryAction } from "@/modules/library/presentation/actions/l
 import BookCard from "@/modules/books/components/BookCard";
 import AddToShelfButton from "@/modules/books/components/AddToShelfButton";
 import DefaultBookCover from "./DefaultBookCover";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 interface BookDetailHeroProps {
   book: BookDetailDto;
@@ -61,7 +75,6 @@ export function BookDetailHero({
   const [currentPage] = useState(viewer?.currentPage);
   const [totalPages] = useState(viewer?.totalPages || book.pageCount || 0);
   const [isUpdatingState, setIsUpdatingState] = useState(false);
-  const [showShelfMenu, setShowShelfMenu] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -127,7 +140,6 @@ export function BookDetailHero({
   ) => {
     if (isUpdatingState) return;
     setIsUpdatingState(true);
-    setShowShelfMenu(false);
 
     try {
       if (targetState === "remove") {
@@ -226,10 +238,22 @@ export function BookDetailHero({
           </span>
         </div>
 
-        <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold shadow-2xs">
-          <ShieldCheck size={13} className="text-emerald-500" />
-          <span>Verified Digital Edition</span>
-        </div>
+        <TooltipProvider delayDuration={200}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold shadow-2xs cursor-default"
+                aria-label="Verified Digital Edition"
+              >
+                <ShieldCheck size={13} className="text-emerald-500" />
+                <span>Verified Digital Edition</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              Scholarly digitized edition preserved in TomeSphere Digital Archive
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       {/* 2. Hero Spotlight Card */}
@@ -364,103 +388,101 @@ export function BookDetailHero({
               </Link>
 
               {/* Shelf Status Dropdown Switcher */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setShowShelfMenu(!showShelfMenu)}
-                  disabled={isUpdatingState}
-                  className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${inLibrary
-                      ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
-                      : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isUpdatingState}
+                    aria-label="Reading status"
+                    className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer ${
+                      inLibrary
+                        ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950/80"
+                        : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
                     }`}
-                >
-                  {isUpdatingState ? (
-                    <span>Updating...</span>
-                  ) : readingStatus === "want_to_read" ? (
-                    <>
-                      <Bookmark size={15} className="text-amber-500" />
-                      <span>Want to Read</span>
-                    </>
-                  ) : readingStatus === "currently_reading" ? (
-                    <>
-                      <BookOpen
-                        size={15}
-                        className="text-indigo-600 dark:text-indigo-400"
-                      />
-                      <span>Currently Reading</span>
-                    </>
-                  ) : readingStatus === "finished" ? (
-                    <>
-                      <Check
-                        size={15}
-                        className="text-emerald-600 dark:text-emerald-400"
-                      />
-                      <span>Finished</span>
-                    </>
-                  ) : (
-                    <>
-                      <Bookmark size={15} />
-                      <span>Add to Library</span>
-                    </>
-                  )}
-                </button>
-
-                {showShelfMenu && (
-                  <div className="absolute left-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl z-30 p-2 text-xs font-semibold text-slate-700 dark:text-slate-200 animate-in fade-in slide-in-from-top-2">
-                    <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                      Set Shelf Status
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleSetState("want_to_read")}
-                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${readingStatus === "want_to_read"
-                          ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 font-bold"
-                          : ""
-                        }`}
-                    >
-                      <span>Want to Read</span>
-                      {readingStatus === "want_to_read" && <Check size={14} />}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSetState("currently_reading")}
-                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${readingStatus === "currently_reading"
-                          ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 font-bold"
-                          : ""
-                        }`}
-                    >
-                      <span>Currently Reading</span>
-                      {readingStatus === "currently_reading" && (
-                        <Check size={14} />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSetState("finished")}
-                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${readingStatus === "finished"
-                          ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 font-bold"
-                          : ""
-                        }`}
-                    >
-                      <span>Finished</span>
-                      {readingStatus === "finished" && <Check size={14} />}
-                    </button>
-
-                    {inLibrary && (
+                  >
+                    {isUpdatingState ? (
+                      <span>Updating...</span>
+                    ) : readingStatus === "want_to_read" ? (
                       <>
-                        <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
-                        <button
-                          type="button"
-                          onClick={() => handleSetState("remove")}
-                          className="w-full text-left px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer font-bold"
-                        >
-                          Remove from Library
-                        </button>
+                        <Bookmark size={15} className="text-amber-500" />
+                        <span>Want to Read</span>
+                      </>
+                    ) : readingStatus === "currently_reading" ? (
+                      <>
+                        <BookOpen
+                          size={15}
+                          className="text-indigo-600 dark:text-indigo-400"
+                        />
+                        <span>Currently Reading</span>
+                      </>
+                    ) : readingStatus === "finished" ? (
+                      <>
+                        <Check
+                          size={15}
+                          className="text-emerald-600 dark:text-emerald-400"
+                        />
+                        <span>Finished</span>
+                      </>
+                    ) : (
+                      <>
+                        <Bookmark size={15} />
+                        <span>Add to Library</span>
                       </>
                     )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56 p-1.5">
+                  <div className="px-2.5 py-1.5 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Set Shelf Status
                   </div>
-                )}
-              </div>
+                  <DropdownMenuItem
+                    onClick={() => handleSetState("want_to_read")}
+                    className={`flex items-center justify-between cursor-pointer rounded-lg px-2.5 py-2 text-xs font-semibold ${
+                      readingStatus === "want_to_read"
+                        ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 font-bold"
+                        : ""
+                    }`}
+                  >
+                    <span>Want to Read</span>
+                    {readingStatus === "want_to_read" && <Check size={14} />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleSetState("currently_reading")}
+                    className={`flex items-center justify-between cursor-pointer rounded-lg px-2.5 py-2 text-xs font-semibold ${
+                      readingStatus === "currently_reading"
+                        ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-bold"
+                        : ""
+                    }`}
+                  >
+                    <span>Currently Reading</span>
+                    {readingStatus === "currently_reading" && <Check size={14} />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleSetState("finished")}
+                    className={`flex items-center justify-between cursor-pointer rounded-lg px-2.5 py-2 text-xs font-semibold ${
+                      readingStatus === "finished"
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 font-bold"
+                        : ""
+                    }`}
+                  >
+                    <span>Finished</span>
+                    {readingStatus === "finished" && <Check size={14} />}
+                  </DropdownMenuItem>
+
+                  {inLibrary && (
+                    <>
+                      <DropdownMenuSeparator className="my-1" />
+                      <DropdownMenuItem
+                        onClick={() => handleSetState("remove")}
+                        className="cursor-pointer rounded-lg px-2.5 py-2 text-xs font-bold text-destructive focus:text-destructive focus:bg-destructive/10"
+                      >
+                        <span>Remove from Library</span>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* Add to Shelf Button */}
               <AddToShelfButton
@@ -469,32 +491,45 @@ export function BookDetailHero({
                 variant="hero"
               />
 
-              <button
-                onClick={handleShare}
-                className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${copied
-                    ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
-                    : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
-                  }`}
-                title="Share this book"
-              >
-                {copied ? (
-                  <>
-                    <Check
-                      size={16}
-                      className="text-emerald-600 dark:text-emerald-400"
-                    />
-                    <span>Link Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Share2
-                      size={15}
-                      className="text-slate-600 dark:text-slate-300"
-                    />
-                    <span>Share</span>
-                  </>
-                )}
-              </button>
+              {/* Share Button with Tooltip */}
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleShare}
+                      aria-label={copied ? "Link Copied" : "Share this book"}
+                      className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer ${
+                        copied
+                          ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950/80"
+                          : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
+                      }`}
+                    >
+                      {copied ? (
+                        <>
+                          <Check
+                            size={16}
+                            className="text-emerald-600 dark:text-emerald-400"
+                          />
+                          <span>Link Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Share2
+                            size={15}
+                            className="text-slate-600 dark:text-slate-300"
+                          />
+                          <span>Share</span>
+                        </>
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    {copied ? "URL copied to clipboard" : "Share this book"}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
 
             {/* Book Description / Synopsis */}
@@ -841,22 +876,26 @@ export function BookDetailHero({
                 </p>
               </div>
               <div className="flex items-center gap-1.5">
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={scrollAuthorLeft}
                   aria-label="Scroll author works left"
-                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-all cursor-pointer text-slate-700 dark:text-slate-200"
                 >
                   <ChevronLeft size={16} />
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={scrollAuthorRight}
                   aria-label="Scroll author works right"
-                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-all cursor-pointer text-slate-700 dark:text-slate-200"
                 >
                   <ChevronRight size={16} />
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -901,22 +940,26 @@ export function BookDetailHero({
                 </p>
               </div>
               <div className="flex items-center gap-1.5">
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={scrollLeft}
                   aria-label="Scroll related books left"
-                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-all cursor-pointer text-slate-700 dark:text-slate-200"
                 >
                   <ChevronLeft size={16} />
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={scrollRight}
                   aria-label="Scroll related books right"
-                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition-all cursor-pointer text-slate-700 dark:text-slate-200"
                 >
                   <ChevronRight size={16} />
-                </button>
+                </Button>
               </div>
             </div>
 

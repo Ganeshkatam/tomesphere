@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { FolderPlus, Plus, Check, Loader2, Library, X } from "lucide-react";
+import React, { useState } from "react";
+import { FolderPlus, Plus, Check, Loader2, Library } from "lucide-react";
 import {
   getBookShelvesAction,
   toggleBookInShelfAction,
@@ -9,6 +9,13 @@ import {
 } from "@/app/(workspace)/me/shelves/actions";
 import { CollectionDto } from "@/modules/library/application/dto/response/CollectionDto";
 import { showSuccess, showError } from "@/lib/toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from "@/components/ui/dropdown-menu";
 
 interface AddToShelfButtonProps {
   bookId: string;
@@ -19,7 +26,6 @@ interface AddToShelfButtonProps {
 
 export default function AddToShelfButton({
   bookId,
-  bookTitle,
   variant = "hero",
   className = "",
 }: AddToShelfButtonProps) {
@@ -30,27 +36,6 @@ export default function AddToShelfButton({
   const [isCreatingShelf, setIsCreatingShelf] = useState(false);
   const [newShelfName, setNewShelfName] = useState("");
   const [showNewShelfInput, setShowNewShelfInput] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-        setShowNewShelfInput(false);
-      }
-    }
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
 
   const loadShelves = async () => {
     setIsLoading(true);
@@ -62,16 +47,6 @@ export default function AddToShelfButton({
       console.error("Failed to load user shelves", err);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleOpen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    const nextState = !isOpen;
-    setIsOpen(nextState);
-    if (nextState) {
-      loadShelves();
     }
   };
 
@@ -121,75 +96,102 @@ export default function AddToShelfButton({
   const activeCount = containingShelfIds.length;
 
   return (
-    <div className={`relative inline-block ${className}`} ref={dropdownRef}>
-      {/* Button Triggers based on Variant */}
-      {variant === "hero" ? (
-        <button
-          type="button"
-          onClick={handleOpen}
-          className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2.5 shadow-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${
-            activeCount > 0
-              ? "bg-indigo-50 dark:bg-indigo-950/60 border-indigo-300 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300"
-              : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
-          }`}
-        >
-          <FolderPlus size={16} className={activeCount > 0 ? "text-indigo-600 dark:text-indigo-400" : ""} />
-          <span>{activeCount > 0 ? `In ${activeCount} ${activeCount === 1 ? "Shelf" : "Shelves"}` : "Add to Shelf"}</span>
-        </button>
-      ) : variant === "compact" ? (
-        <button
-          type="button"
-          onClick={handleOpen}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs border transition-colors cursor-pointer ${
-            activeCount > 0
-              ? "bg-indigo-50 dark:bg-indigo-950/60 border-indigo-300 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300"
-              : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
-          }`}
-        >
-          <FolderPlus size={13} />
-          <span>{activeCount > 0 ? `${activeCount} Shelves` : "Shelf"}</span>
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={handleOpen}
-          className="w-8 h-8 rounded-xl bg-black/60 hover:bg-black/90 backdrop-blur-md text-white border border-white/25 flex items-center justify-center transition-colors cursor-pointer shadow-md active:scale-95"
-          title="Add to Shelf"
-        >
-          <FolderPlus size={14} />
-        </button>
-      )}
+    <div className={`relative inline-block ${className}`}>
+      <DropdownMenu
+        open={isOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open);
+          if (open) {
+            loadShelves();
+          } else {
+            setShowNewShelfInput(false);
+          }
+        }}
+      >
+        <DropdownMenuTrigger asChild>
+          {variant === "hero" ? (
+            <Button
+              type="button"
+              variant="outline"
+              aria-label={
+                activeCount > 0 ? `In ${activeCount} shelves` : "Add to Shelf"
+              }
+              className={`h-12 sm:h-13 px-5 sm:px-6 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2.5 shadow-xs transition-all cursor-pointer ${
+                activeCount > 0
+                  ? "bg-indigo-50 dark:bg-indigo-950/60 border-indigo-300 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-950/80"
+                  : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"
+              }`}
+            >
+              <FolderPlus
+                size={16}
+                className={
+                  activeCount > 0 ? "text-indigo-600 dark:text-indigo-400" : ""
+                }
+              />
+              <span>
+                {activeCount > 0
+                  ? `In ${activeCount} ${activeCount === 1 ? "Shelf" : "Shelves"}`
+                  : "Add to Shelf"}
+              </span>
+            </Button>
+          ) : variant === "compact" ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              aria-label={
+                activeCount > 0 ? `In ${activeCount} shelves` : "Shelf"
+              }
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs border transition-colors cursor-pointer ${
+                activeCount > 0
+                  ? "bg-indigo-50 dark:bg-indigo-950/60 border-indigo-300 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-950/80"
+                  : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
+              }`}
+            >
+              <FolderPlus size={13} />
+              <span>
+                {activeCount > 0 ? `${activeCount} Shelves` : "Shelf"}
+              </span>
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Add to Shelf"
+              className="w-8 h-8 rounded-xl bg-black/60 hover:bg-black/90 backdrop-blur-md text-white border border-white/25 flex items-center justify-center transition-colors cursor-pointer shadow-md"
+            >
+              <FolderPlus size={14} />
+            </Button>
+          )}
+        </DropdownMenuTrigger>
 
-      {/* Popover Dropdown Menu */}
-      {isOpen && (
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className="absolute left-0 mt-2 w-72 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl z-40 p-3 text-xs font-semibold text-slate-700 dark:text-slate-200 animate-in fade-in slide-in-from-top-2"
+        <DropdownMenuContent
+          align="start"
+          className="w-72 p-3 text-xs font-semibold"
+          onCloseAutoFocus={(e) => e.preventDefault()}
         >
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900 dark:text-white">
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-border">
+            <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
               <Library size={14} className="text-indigo-500" />
               <span>Add to Shelf</span>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 rounded cursor-pointer"
-            >
-              <X size={14} />
-            </button>
           </div>
 
           {/* Shelves List */}
           <div className="max-h-52 overflow-y-auto space-y-1 pr-1 scrollbar-thin">
             {isLoading ? (
-              <div className="flex items-center justify-center py-8 text-slate-400">
+              <div className="flex items-center justify-center py-8 text-muted-foreground">
                 <Loader2 className="w-5 h-5 animate-spin text-indigo-500" />
               </div>
             ) : shelves.length === 0 ? (
               <div className="text-center py-5 px-2">
-                <p className="text-xs text-slate-400 mb-1">No custom shelves yet.</p>
-                <p className="text-[11px] text-slate-500">Create one below to organize your books.</p>
+                <p className="text-xs text-muted-foreground mb-1">
+                  No custom shelves yet.
+                </p>
+                <p className="text-[11px] text-muted-foreground/80">
+                  Create one below to organize your books.
+                </p>
               </div>
             ) : (
               shelves.map((shelf) => {
@@ -202,7 +204,7 @@ export default function AddToShelfButton({
                     className={`flex items-center justify-between w-full text-left px-3 py-2 rounded-xl transition-colors cursor-pointer text-xs ${
                       isInShelf
                         ? "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold"
-                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        : "text-foreground hover:bg-accent hover:text-accent-foreground"
                     }`}
                   >
                     <span className="truncate pr-2">{shelf.name}</span>
@@ -210,7 +212,7 @@ export default function AddToShelfButton({
                       className={`w-4 h-4 rounded-md flex items-center justify-center shrink-0 border transition-all ${
                         isInShelf
                           ? "bg-indigo-600 border-indigo-600 text-white"
-                          : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
+                          : "border-input bg-background"
                       }`}
                     >
                       {isInShelf && <Check size={11} strokeWidth={3} />}
@@ -222,49 +224,59 @@ export default function AddToShelfButton({
           </div>
 
           {/* Inline Create Shelf Section */}
-          <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div className="mt-2 pt-2 border-t border-border">
             {showNewShelfInput ? (
               <form onSubmit={handleCreateShelf} className="space-y-2">
-                <input
+                <Input
                   type="text"
                   value={newShelfName}
                   onChange={(e) => setNewShelfName(e.target.value)}
+                  onKeyDown={(e) => e.stopPropagation()}
                   placeholder="New shelf name..."
                   autoFocus
                   maxLength={50}
-                  className="w-full bg-slate-100 dark:bg-slate-800/80 border border-indigo-500/50 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="h-8 text-xs px-2.5"
                 />
                 <div className="flex items-center justify-end gap-1.5">
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setShowNewShelfInput(false)}
-                    className="px-2.5 py-1 rounded-lg text-[11px] text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    className="h-7 px-2 text-[11px]"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="submit"
+                    size="sm"
                     disabled={!newShelfName.trim() || isCreatingShelf}
-                    className="px-3 py-1 rounded-lg text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 flex items-center gap-1"
+                    className="h-7 px-2.5 text-[11px] font-bold"
                   >
-                    {isCreatingShelf ? <Loader2 size={11} className="animate-spin" /> : <Plus size={11} />}
+                    {isCreatingShelf ? (
+                      <Loader2 size={11} className="animate-spin" />
+                    ) : (
+                      <Plus size={11} />
+                    )}
                     <span>Create</span>
-                  </button>
+                  </Button>
                 </div>
               </form>
             ) : (
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="sm"
                 onClick={() => setShowNewShelfInput(true)}
-                className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors cursor-pointer"
+                className="w-full flex items-center justify-center gap-1.5 py-1.5 h-8 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40"
               >
                 <Plus size={13} />
                 <span>Create New Shelf</span>
-              </button>
+              </Button>
             )}
           </div>
-        </div>
-      )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
