@@ -6,6 +6,18 @@ import { AnnotationsPageDto, AnnotationSummaryDto } from "../application/dto/res
 import { AnnotationCard } from "./AnnotationCard";
 import { updateAnnotationAction, deleteAnnotationAction } from "../actions/annotationActions";
 import { showSuccess, showError } from "@/lib/toast";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface AnnotationsClientProps {
   initialData: AnnotationsPageDto;
@@ -14,6 +26,8 @@ interface AnnotationsClientProps {
 export function AnnotationsClient({ initialData }: AnnotationsClientProps) {
   const [annotations, setAnnotations] = useState<AnnotationSummaryDto[]>(initialData.items);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState<string>("all");
+  const [selectedBook, setSelectedBook] = useState<string>("all");
 
   const handleUpdate = async (id: string, newBodyMarkdown: string): Promise<boolean> => {
     try {
@@ -60,15 +74,45 @@ export function AnnotationsClient({ initialData }: AnnotationsClientProps) {
     }
   };
 
+  // Derive unique book titles for the book filter
+  const uniqueBooks = Array.from(
+    new Set(annotations.map((a) => a.bookTitle).filter((t): t is string => Boolean(t)))
+  );
+
+  const hasActiveFilter = filterType !== "all" || selectedBook !== "all";
+
   const filteredAnnotations = annotations.filter((a) => {
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      (a.bodyMarkdown && a.bodyMarkdown.toLowerCase().includes(q)) ||
-      (a.highlightText && a.highlightText.toLowerCase().includes(q)) ||
-      (a.bookTitle && a.bookTitle.toLowerCase().includes(q))
-    );
+    // 1. Text Search Filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      const matchesSearch =
+        (a.bodyMarkdown && a.bodyMarkdown.toLowerCase().includes(q)) ||
+        (a.highlightText && a.highlightText.toLowerCase().includes(q)) ||
+        (a.bookTitle && a.bookTitle.toLowerCase().includes(q));
+      if (!matchesSearch) return false;
+    }
+
+    // 2. Type Filter
+    if (filterType === "highlights" && !a.highlightText) {
+      return false;
+    }
+    if (filterType === "edited" && (!a.updatedAt || a.updatedAt === a.createdAt)) {
+      return false;
+    }
+
+    // 3. Book Filter
+    if (selectedBook !== "all" && a.bookTitle !== selectedBook) {
+      return false;
+    }
+
+    return true;
   });
+
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setFilterType("all");
+    setSelectedBook("all");
+  };
 
   return (
     <div className="min-h-screen relative w-full flex flex-col bg-[var(--surface-canvas)]">
@@ -87,17 +131,76 @@ export function AnnotationsClient({ initialData }: AnnotationsClientProps) {
             </p>
           </div>
 
-          {/* Quick Search / Filter Bar */}
+          {/* Quick Search & Filter Controls */}
           {annotations.length > 0 && (
-            <div className="relative w-full sm:w-72">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search annotations..."
-                className="w-full text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm"
-              />
+            <div className="flex items-center gap-2.5 w-full sm:w-auto">
+              <div className="relative flex-1 sm:w-64">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search annotations..."
+                  className="pl-9 pr-4"
+                />
+              </div>
+
+              {/* Filter Dropdown Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant={hasActiveFilter ? "default" : "outline"}
+                    size="sm"
+                    className="h-10 px-3.5 gap-2 text-xs font-semibold shrink-0 cursor-pointer"
+                    aria-label="Filter annotations"
+                  >
+                    <Filter className="w-4 h-4" />
+                    <span className="hidden sm:inline">Filter</span>
+                    {hasActiveFilter && (
+                      <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Filter by Type</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuRadioGroup value={filterType} onValueChange={setFilterType}>
+                    <DropdownMenuRadioItem value="all">All annotations</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="highlights">With highlights only</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="edited">Edited commentary only</DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+
+                  {uniqueBooks.length > 1 && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuLabel>Filter by Book</DropdownMenuLabel>
+                      <DropdownMenuRadioGroup value={selectedBook} onValueChange={setSelectedBook}>
+                        <DropdownMenuRadioItem value="all">All books</DropdownMenuRadioItem>
+                        {uniqueBooks.map((title) => (
+                          <DropdownMenuRadioItem key={title} value={title} className="truncate">
+                            {title}
+                          </DropdownMenuRadioItem>
+                        ))}
+                      </DropdownMenuRadioGroup>
+                    </>
+                  )}
+
+                  {hasActiveFilter && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setFilterType("all");
+                          setSelectedBook("all");
+                        }}
+                        className="text-primary justify-center text-xs font-semibold"
+                      >
+                        Reset filters
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )}
         </div>
@@ -118,14 +221,17 @@ export function AnnotationsClient({ initialData }: AnnotationsClientProps) {
         ) : filteredAnnotations.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              No annotations match &quot;{searchQuery}&quot;.
+              No annotations match your active filters
+              {searchQuery ? ` and search "${searchQuery}"` : ""}.
             </p>
-            <button
-              onClick={() => setSearchQuery("")}
-              className="mt-2 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+            <Button
+              variant="link"
+              size="sm"
+              onClick={clearAllFilters}
+              className="mt-1 h-auto p-0 text-xs font-semibold text-primary"
             >
-              Clear search filter
-            </button>
+              Reset all search and filters
+            </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -143,9 +249,9 @@ export function AnnotationsClient({ initialData }: AnnotationsClientProps) {
         {/* Pagination stub for V1 */}
         {initialData.nextCursor && (
           <div className="mt-10 flex justify-center">
-            <button className="px-6 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shadow-sm cursor-pointer">
+            <Button variant="secondary" className="px-6 font-semibold">
               Load More
-            </button>
+            </Button>
           </div>
         )}
       </div>
