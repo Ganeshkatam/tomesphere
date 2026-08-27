@@ -233,20 +233,30 @@ export default function HeroSection({
         </div>
       </div>
 
+      {/* Editorial Text Contrast Scrim (Pristine typography readability against illustration) */}
+      <div
+        className="absolute inset-y-0 left-0 w-full lg:w-[65%] xl:w-[58%] z-10 pointer-events-none transition-all duration-500"
+        style={{
+          background: isDark
+            ? "linear-gradient(to right, rgba(2,6,23,0.92) 0%, rgba(2,6,23,0.78) 45%, rgba(2,6,23,0.3) 80%, transparent 100%)"
+            : "linear-gradient(to right, rgba(248,250,252,0.94) 0%, rgba(248,250,252,0.82) 45%, rgba(248,250,252,0.35) 80%, transparent 100%)",
+        }}
+      />
+
       {/* Hero Content */}
       <div className="w-full max-w-[1760px] mx-auto px-6 sm:px-10 lg:px-14 xl:px-20 relative z-20">
         <div className="max-w-3xl xl:max-w-4xl text-left">
-          {/* Typographic Identity */}
+          {/* Typographic Identity with Enhanced Contrast */}
           <h1
             className="text-5xl sm:text-6xl md:text-7xl lg:text-[80px] xl:text-[88px] mb-4 leading-[1.02] tracking-tight transition-colors"
-            style={{ color: isDark ? "#ffffff" : "#0f172a" }}
+            style={{ color: isDark ? "#ffffff" : "#020617" }}
           >
-            <span className="font-sans font-extrabold block">
+            <span className="font-sans font-extrabold block drop-shadow-xs">
               Explore books.
             </span>
             <span
               className="font-serif italic font-normal block mt-1"
-              style={{ color: isDark ? "rgba(255,237,213,0.9)" : "#92400e" }}
+              style={{ color: isDark ? "rgba(255,237,213,0.95)" : "#78350f" }}
             >
               Discover ideas.
             </span>
@@ -254,8 +264,8 @@ export default function HeroSection({
 
           {/* Subtitle */}
           <p
-            className="text-lg sm:text-xl lg:text-2xl font-sans leading-relaxed mb-10 max-w-xl transition-colors"
-            style={{ color: isDark ? "#cbd5e1" : "#475569" }}
+            className="text-lg sm:text-xl lg:text-2xl font-sans leading-relaxed mb-10 max-w-xl transition-colors font-normal"
+            style={{ color: isDark ? "#e2e8f0" : "#334155" }}
           >
             Discover, read, and explore knowledge
             <br className="hidden sm:inline" />
