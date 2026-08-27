@@ -209,19 +209,30 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
     >
       {/* Stack Container */}
       <div className="relative space-y-4">
-        {/* Decorative stacked cards peek when collapsed */}
+        {/* Prominent Stacked Deck Tabs above top card when collapsed */}
         {!isHovered && hasMultiple && (
-          <>
-            {/* Third card layer peek if 3+ notices */}
+          <div className="pointer-events-none transition-all duration-300">
+            {/* 3rd Card Tab (if 3+ notices) */}
             {activeNotices.length > 2 && (
-              <div className="absolute -top-3.5 inset-x-4 h-12 bg-slate-900/60 border border-slate-800/60 rounded-2xl -z-20 scale-[0.92] transition-transform duration-300" />
+              <div
+                className="absolute -top-5.5 inset-x-8 h-8 bg-slate-900/80 border-t border-x border-slate-700/60 rounded-t-2xl shadow-md -z-20 scale-[0.93] transition-transform duration-300"
+                style={{
+                  boxShadow: "0 -4px 12px rgba(0, 0, 0, 0.4)",
+                }}
+              />
             )}
-            {/* Second card layer peek */}
-            <div className="absolute -top-2 inset-x-2 h-12 bg-slate-900/90 border border-slate-800 rounded-2xl -z-10 scale-[0.96] transition-transform duration-300" />
-          </>
+
+            {/* 2nd Card Tab */}
+            <div
+              className="absolute -top-3 inset-x-4 h-8 bg-slate-900 border-t border-x border-slate-600/90 rounded-t-2xl shadow-lg -z-10 scale-[0.97] transition-transform duration-300"
+              style={{
+                boxShadow: "0 -4px 16px rgba(0, 0, 0, 0.5)",
+              }}
+            />
+          </div>
         )}
 
-        {displayedNotices.map((notice) => {
+        {displayedNotices.map((notice, index) => {
           const meta = getNoticeMeta(notice.type);
           return (
             <Card
@@ -235,7 +246,7 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
               <div className={`absolute inset-0 pointer-events-none ${meta.glowBg}`} />
 
               <div className="p-5 sm:p-6 space-y-3 relative z-10">
-                {/* Header Row: Distinct Kicker Badge, Stack Counter, & Close Button */}
+                {/* Header Row: Distinct Kicker Badge, Prominent Stack Counter, & Close Button */}
                 <CardHeader className="p-0 flex flex-row items-center justify-between space-y-0 gap-3">
                   <div className="flex items-center gap-2.5">
                     <div
@@ -250,12 +261,18 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 -mr-1 -mt-1">
-                    {/* Collapsed Queue Badge */}
+                  <div className="flex items-center gap-2 -mr-1 -mt-1">
+                    {/* Unmistakable Queue Counter Badge */}
                     {!isHovered && hasMultiple && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700 text-slate-300 shadow-xs">
-                        <Layers className="w-3 h-3 text-indigo-400" />
-                        <span>+{activeNotices.length - 1} more</span>
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold px-2.5 py-1 rounded-full bg-slate-900 border border-indigo-500/40 text-indigo-300 shadow-sm">
+                        <Layers className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                        <span>1 of {activeNotices.length}</span>
+                      </span>
+                    )}
+
+                    {isHovered && hasMultiple && (
+                      <span className="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider px-2 py-0.5 rounded bg-slate-900 border border-slate-800">
+                        Notice {index + 1} of {activeNotices.length}
                       </span>
                     )}
 
@@ -310,8 +327,9 @@ export function AnnouncementNotice({ announcements }: AnnouncementNoticeProps) {
                   )}
 
                   {!isHovered && hasMultiple && (
-                    <span className="text-[10px] font-mono text-slate-400 font-medium">
-                      Hover to expand
+                    <span className="text-[11px] font-mono text-indigo-400 hover:text-indigo-300 font-semibold inline-flex items-center gap-1">
+                      <span>Hover to view all ({activeNotices.length})</span>
+                      <ArrowRight className="w-3 h-3" />
                     </span>
                   )}
                 </CardFooter>

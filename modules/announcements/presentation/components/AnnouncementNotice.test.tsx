@@ -70,8 +70,8 @@ describe("AnnouncementNotice hover stack queue & behavioral tests", () => {
     expect(
       screen.getByRole("heading", { name: "Scheduled Maintenance" })
     ).toBeInTheDocument();
-    expect(screen.getByText("+2 more")).toBeInTheDocument();
-    expect(screen.getByText("Hover to expand")).toBeInTheDocument();
+    expect(screen.getByText("1 of 3")).toBeInTheDocument();
+    expect(screen.getByText("Hover to view all (3)")).toBeInTheDocument();
 
     // Other announcements remain collapsed in the queue
     expect(
