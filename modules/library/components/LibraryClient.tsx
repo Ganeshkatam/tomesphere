@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect, useState, useCallback, useTransition, useRef } from "react";
+import React, { useEffect, useState, useCallback, useTransition, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LibraryPageDto } from "../application/dto/response/LibraryPageDto";
 import { useLibraryStore } from "../store/library-store";
 import { getLibraryPageAction } from "../presentation/actions/library";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { AlertCircle, RefreshCw } from "lucide-react";
 
 import LibraryOverview from "./LibraryOverview";
 import LibraryToolbar from "./LibraryToolbar";
@@ -20,6 +24,7 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [data, setData] = useState<LibraryPageDto>(initialData);
+  const [error, setError] = useState<string | null>(null);
 
   const {
     activeViewId,
@@ -51,6 +56,7 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
     }
 
     setLoadingView(true);
+    setError(null);
 
     try {
       const result = await getLibraryPageAction({
@@ -65,8 +71,9 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
       startTransition(() => {
         setData(result);
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to fetch library page data", err);
+      setError(err?.message || "Failed to load library books. Please try again.");
     } finally {
       setLoadingView(false);
     }
@@ -97,15 +104,45 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
           <LibraryToolbar />
 
           {isPending && (
-            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm z-10 flex items-center justify-center">
+            <div
+              role="status"
+              aria-live="polite"
+              className="absolute inset-0 bg-background/50 backdrop-blur-sm z-10 flex items-center justify-center"
+            >
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <span className="sr-only">Loading library...</span>
             </div>
           )}
 
+          {/* Error & Retry State */}
+          {error && !isPending && (
+            <Card className="flex flex-col items-center justify-center py-16 px-6 text-center border-destructive/40 bg-destructive/5 my-8">
+              <div className="w-12 h-12 rounded-full bg-destructive/10 text-destructive flex items-center justify-center mb-4">
+                <AlertCircle size={24} />
+              </div>
+              <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
+                Unable to Load Library
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mb-6">
+                {error}
+              </p>
+              <Button
+                type="button"
+                variant="default"
+                onClick={fetchPageData}
+                className="gap-2"
+                aria-label="Retry loading library"
+              >
+                <RefreshCw size={16} />
+                <span>Retry</span>
+              </Button>
+            </Card>
+          )}
+
           {/* Empty State */}
-          {!hasBooks && !isPending && (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="mb-6 relative w-24 h-24 mx-auto opacity-50">
+          {!hasBooks && !isPending && !error && (
+            <Card className="flex flex-col items-center justify-center py-20 px-6 text-center border-dashed my-8">
+              <div className="mb-6 relative w-20 h-20 mx-auto opacity-50">
                 <Image
                   src="/book-placeholder.svg"
                   alt=""
@@ -113,23 +150,22 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
                   className="object-contain"
                 />
               </div>
-              <h3 className="text-2xl font-bold mb-2">No books found</h3>
-              <p className="text-slate-400 mb-6">
-                Your current view has no books in it.
+              <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
+                No books found
+              </h3>
+              <p className="text-slate-400 max-w-sm mb-6 text-sm">
+                Your current view has no books in it. Add books to your library to track your reading journey.
               </p>
               {isOverview && (
-                <button
-                  onClick={() => router.push("/discover")}
-                  className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-bold rounded-xl shadow-lg transition-all transform hover:scale-105"
-                >
-                  Explore Books
-                </button>
+                <Button asChild size="lg" className="rounded-xl font-bold">
+                  <Link href="/discover">Explore Books</Link>
+                </Button>
               )}
-            </div>
+            </Card>
           )}
 
           {/* Book Display */}
-          {hasBooks && (
+          {hasBooks && !error && (
             <div
               className={`animate-fadeIn ${isPending ? "opacity-50" : "opacity-100"} transition-opacity duration-200`}
             >
@@ -142,25 +178,31 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
           )}
 
           {/* Pagination Controls */}
-          {data.books.totalPages > 1 && (
+          {data.books.totalPages > 1 && !error && (
             <div className="flex items-center justify-center gap-4 mt-12 mb-8">
-              <button
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
                 disabled={!data.books.hasPrevious}
                 onClick={() => setPage((p) => p - 1)}
-                className="px-4 py-2 bg-white/5 hover:bg-white/10 disabled:opacity-50 border border-[var(--border-default)] rounded-lg text-sm"
+                aria-label="Previous page"
               >
                 Previous
-              </button>
+              </Button>
               <span className="text-sm text-slate-400">
                 Page {data.books.page} of {data.books.totalPages}
               </span>
-              <button
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
                 disabled={!data.books.hasNext}
                 onClick={() => setPage((p) => p + 1)}
-                className="px-4 py-2 bg-white/5 hover:bg-white/10 disabled:opacity-50 border border-[var(--border-default)] rounded-lg text-sm"
+                aria-label="Next page"
               >
                 Next
-              </button>
+              </Button>
             </div>
           )}
         </div>
