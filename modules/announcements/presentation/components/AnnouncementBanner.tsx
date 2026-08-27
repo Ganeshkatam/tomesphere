@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Info, AlertTriangle, Sparkles, AlertCircle, X, ArrowRight, Megaphone } from "lucide-react";
+import { AlertTriangle, AlertCircle, X, ArrowRight, Megaphone } from "lucide-react";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import { Button } from "@/components/ui/button";
 import AnnouncementCenter from "./AnnouncementCenter";
@@ -25,56 +25,36 @@ function markTopBannerDismissed(id: string): void {
   }
 }
 
+function isMaintenanceAnnouncement(type: string): boolean {
+  const normalized = type?.toLowerCase();
+  return normalized === "warning" || normalized === "maintenance" || normalized === "error";
+}
+
 function getThemeStyles(type: string) {
-  switch (type) {
-    case "warning":
-      return {
-        wrapper:
-          "bg-amber-500/15 dark:bg-amber-950/70 border-amber-500/40 text-amber-950 dark:text-amber-100",
-        badge:
-          "bg-amber-500/25 text-amber-900 dark:text-amber-300 border-amber-500/40",
-        icon: (
-          <AlertTriangle className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
-        ),
-        cta: "bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-slate-950 shadow-xs",
-      };
-    case "success":
-    case "feature":
-      return {
-        wrapper:
-          "bg-emerald-500/15 dark:bg-emerald-950/70 border-emerald-500/40 text-emerald-950 dark:text-emerald-100",
-        badge:
-          "bg-emerald-500/25 text-emerald-900 dark:text-emerald-300 border-emerald-500/40",
-        icon: (
-          <Sparkles className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
-        ),
-        cta: "bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-500 dark:hover:bg-emerald-400 dark:text-slate-950 shadow-xs",
-      };
-    case "error":
-    case "maintenance":
-      return {
-        wrapper:
-          "bg-rose-500/15 dark:bg-rose-950/70 border-rose-500/40 text-rose-950 dark:text-rose-100",
-        badge:
-          "bg-rose-500/25 text-rose-900 dark:text-rose-300 border-rose-500/40",
-        icon: (
-          <AlertCircle className="w-4 h-4 text-rose-700 dark:text-rose-400 shrink-0" />
-        ),
-        cta: "bg-rose-600 hover:bg-rose-700 text-white dark:bg-rose-500 dark:hover:bg-rose-400 dark:text-slate-950 shadow-xs",
-      };
-    case "info":
-    default:
-      return {
-        wrapper:
-          "bg-indigo-500/15 dark:bg-indigo-950/70 border-indigo-500/40 text-indigo-950 dark:text-indigo-100",
-        badge:
-          "bg-indigo-500/25 text-indigo-900 dark:text-indigo-300 border-indigo-500/40",
-        icon: (
-          <Info className="w-4 h-4 text-indigo-700 dark:text-indigo-400 shrink-0" />
-        ),
-        cta: "bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:text-white shadow-xs",
-      };
+  const normalized = type?.toLowerCase();
+  if (normalized === "error") {
+    return {
+      wrapper:
+        "bg-rose-500/15 dark:bg-rose-950/70 border-rose-500/40 text-rose-950 dark:text-rose-100",
+      badge:
+        "bg-rose-500/25 text-rose-900 dark:text-rose-300 border-rose-500/40",
+      icon: (
+        <AlertCircle className="w-4 h-4 text-rose-700 dark:text-rose-400 shrink-0" />
+      ),
+      cta: "bg-rose-600 hover:bg-rose-700 text-white dark:bg-rose-500 dark:hover:bg-rose-400 dark:text-slate-950 shadow-xs",
+    };
   }
+
+  return {
+    wrapper:
+      "bg-amber-500/15 dark:bg-amber-950/70 border-amber-500/40 text-amber-950 dark:text-amber-100",
+    badge:
+      "bg-amber-500/25 text-amber-900 dark:text-amber-300 border-amber-500/40",
+    icon: (
+      <AlertTriangle className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
+    ),
+    cta: "bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-slate-950 shadow-xs",
+  };
 }
 
 export interface AnnouncementBannerProps {
@@ -126,28 +106,25 @@ export function AnnouncementBanner({ announcements = [] }: AnnouncementBannerPro
     markTopBannerDismissed(id);
   };
 
-  // Filter out dismissed announcements, sorting warnings/maintenance first
-  const visibleAnnouncements = items
-    .filter((a) => !dismissedIds.has(a.id))
-    .sort((a, b) => {
-      const aScore = a.type === "warning" || a.type === "error" ? 3 : a.type === "feature" ? 2 : 1;
-      const bScore = b.type === "warning" || b.type === "error" ? 3 : b.type === "feature" ? 2 : 1;
-      return bScore - aScore;
-    });
+  // Strictly filter for maintenance / critical warning announcements from the database
+  const maintenanceAnnouncements = items.filter(
+    (a) => isMaintenanceAnnouncement(a.type) && !dismissedIds.has(a.id)
+  );
 
-  if (!isClient || visibleAnnouncements.length === 0) {
+  // If and only if there exists a maintenance announcement from the database
+  if (!isClient || maintenanceAnnouncements.length === 0) {
     return null;
   }
 
-  // Display top priority active notice banner on top of header
-  const primaryAnnouncement = visibleAnnouncements[0];
+  // Display top priority active maintenance notice banner
+  const primaryAnnouncement = maintenanceAnnouncements[0];
   const theme = getThemeStyles(primaryAnnouncement.type);
 
   return (
     <div
       className="w-full relative z-50 shrink-0"
       role="region"
-      aria-label="System Maintenance and Announcements"
+      aria-label="System Maintenance Notice"
     >
       <aside
         className={`w-full border-b backdrop-blur-md transition-all duration-300 ${theme.wrapper}`}
@@ -159,9 +136,7 @@ export function AnnouncementBanner({ announcements = [] }: AnnouncementBannerPro
               <span
                 className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${theme.badge}`}
               >
-                {primaryAnnouncement.type === "warning"
-                  ? "Maintenance"
-                  : primaryAnnouncement.type}
+                Maintenance
               </span>
               <span className="font-bold text-slate-950 dark:text-white">
                 {primaryAnnouncement.title}
