@@ -52,6 +52,16 @@ describe("announcement-storage policy & persistence tests", () => {
     endsAt: "2026-09-01T00:00:00.000Z",
   };
 
+  const mockGreetings: AnnouncementDto = {
+    id: "a-greet",
+    title: "Welcome to TomeSphere",
+    content: "Discover curated public domain volumes.",
+    type: "greetings",
+    isDismissible: true,
+    startsAt: "2026-08-26T00:00:00.000Z",
+    endsAt: "2026-09-01T00:00:00.000Z",
+  };
+
   const mockInfo: AnnouncementDto = {
     id: "a-info",
     title: "Did You Know?",
@@ -81,6 +91,7 @@ describe("announcement-storage policy & persistence tests", () => {
     expect(getAnnouncementPriority(mockWarning)).toBe(3);
     expect(getAnnouncementPriority(mockErrorDismissible)).toBe(2);
     expect(getAnnouncementPriority(mockFeature)).toBe(1);
+    expect(getAnnouncementPriority(mockGreetings)).toBe(1);
     expect(getAnnouncementPriority(mockInfo)).toBe(0);
     expect(getAnnouncementPriority(mockSuccess)).toBe(0);
   });
@@ -90,6 +101,7 @@ describe("announcement-storage policy & persistence tests", () => {
     expect(isEntryEligible(mockWarning)).toBe(true);
     expect(isEntryEligible(mockErrorDismissible)).toBe(true);
     expect(isEntryEligible(mockFeature)).toBe(true);
+    expect(isEntryEligible(mockGreetings)).toBe(true);
     expect(isEntryEligible(mockInfo)).toBe(false);
     expect(isEntryEligible(mockSuccess)).toBe(false);
   });

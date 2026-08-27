@@ -26,7 +26,7 @@ export function getAnnouncementPriority(announcement: AnnouncementDto): number {
   if (announcement.type === "error" && announcement.isDismissible) {
     return 2;
   }
-  if (announcement.type === "feature") {
+  if (announcement.type === "feature" || announcement.type === "greetings" || announcement.type === "greeting" || announcement.type === "Greetings") {
     return 1;
   }
   return 0;

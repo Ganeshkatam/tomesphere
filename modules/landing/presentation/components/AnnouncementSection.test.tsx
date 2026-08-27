@@ -56,8 +56,8 @@ describe("AnnouncementSection behavioral tests", () => {
     expect(screen.queryByText("Excess Announcement")).not.toBeInTheDocument();
 
     // Check type badge
-    expect(screen.getByText("New Feature")).toBeInTheDocument();
-    expect(screen.getByText("Notice")).toBeInTheDocument();
+    expect(screen.getByText("New Capability")).toBeInTheDocument();
+    expect(screen.getByText("Maintenance & Notice")).toBeInTheDocument();
 
     // Check CTA link
     expect(screen.getByRole("link", { name: /Explore Now/i })).toHaveAttribute("href", "/me/library");

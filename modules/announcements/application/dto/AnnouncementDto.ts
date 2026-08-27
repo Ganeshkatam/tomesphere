@@ -4,7 +4,10 @@ export type AnnouncementType =
   | "success"
   | "error"
   | "feature"
-  | "maintenance";
+  | "maintenance"
+  | "greetings"
+  | "greeting"
+  | "Greetings";
 
 export interface AnnouncementDto {
   id: string;

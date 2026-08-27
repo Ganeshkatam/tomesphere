@@ -129,6 +129,15 @@ export function AnnouncementEntryCard({ announcements }: AnnouncementEntryCardPr
           badgeStyle: "bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30",
           cardBorder: "border-rose-500/30",
         };
+      case "greetings":
+      case "greeting":
+      case "Greetings":
+        return {
+          icon: <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />,
+          label: "Greetings",
+          badgeStyle: "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border-indigo-500/30",
+          cardBorder: "border-indigo-500/30",
+        };
       case "feature":
       default:
         return {
