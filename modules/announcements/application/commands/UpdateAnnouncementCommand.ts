@@ -1,4 +1,4 @@
-import { AnnouncementRepository } from "../ports/AnnouncementRepository";
+import { AnnouncementRepository } from "../../domain/repositories/AnnouncementRepository";
 import { Permission } from "@/shared/kernel/security/Permission";
 import { PermissionService } from "@/shared/kernel/security/PermissionService";
 
