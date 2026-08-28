@@ -28,6 +28,7 @@ import {
   Loader2,
   Shield,
   Code2,
+  Users,
 } from "lucide-react";
 import { MePageDto } from "../../application/facades/MePageFacade";
 import { CurrentReadingDto } from "@/modules/library/application/queries/GetCurrentReadingQuery/dto";
@@ -699,13 +700,22 @@ function StreamedDynamicShelvesSection({
   const result = use(promise);
   const sections = result?.overview?.sections || [];
   const visibleSections = sections.slice(0, loadedCount);
+  const authors = result?.overview?.topAuthors || [];
 
   return (
     <>
-      {visibleSections.map((section) => (
-        <LazySection key={section.id} fallback={<BooksShelfSkeleton />}>
-          <CuratedDisciplineShelfSection section={section} />
-        </LazySection>
+      {visibleSections.map((section, idx) => (
+        <div key={section.id} className="contents">
+          <LazySection fallback={<BooksShelfSkeleton />}>
+            <CuratedDisciplineShelfSection section={section} />
+          </LazySection>
+          {/* Insert Top Authors midway through streamed disciplines */}
+          {idx === 1 && authors.length > 0 && (
+            <LazySection fallback={<DiscoveryTabsSkeleton />}>
+              <TopAuthorsSection promise={promise} />
+            </LazySection>
+          )}
+        </div>
       ))}
       {loadedCount >= sections.length && sections.length > 0 && (
         <LazySection fallback={<DiscoveryTabsSkeleton />}>
@@ -726,7 +736,10 @@ function CuratedCollectionsSection({
   promise: Promise<DiscoveryOverviewPageDto>;
 }) {
   const result = use(promise);
-  const collections = result?.collections?.items || [];
+  const collections =
+    (result?.collections?.items && result.collections.items.length > 0)
+      ? result.collections.items
+      : result?.overview?.featuredCollections || [];
 
   if (collections.length === 0) return null;
 
@@ -771,10 +784,124 @@ function CuratedCollectionsSection({
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center justify-between">
-              <span>{col.bookCount || 12} volumes</span>
+              <span>{col.bookCount || 2} volumes</span>
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ----------------------------------------------------------------------
+// 8. Top Authors & Visionaries Showcase
+// ----------------------------------------------------------------------
+
+const AUTHOR_GRADIENTS = [
+  "from-indigo-600 via-indigo-700 to-purple-800",
+  "from-purple-600 via-purple-700 to-pink-800",
+  "from-emerald-600 via-teal-700 to-cyan-800",
+  "from-rose-600 via-pink-700 to-amber-800",
+  "from-blue-600 via-cyan-700 to-teal-800",
+  "from-amber-600 via-orange-700 to-rose-800",
+];
+
+function MeAuthorCard({
+  author,
+  index = 0,
+}: {
+  author: any;
+  index: number;
+}) {
+  const gradient = AUTHOR_GRADIENTS[index % AUTHOR_GRADIENTS.length];
+  const initials = useMemo(() => {
+    const parts = (author.name || "").trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return "A";
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }, [author.name]);
+
+  return (
+    <Link
+      href={`/search?author=${encodeURIComponent(author.name)}`}
+      className="group relative flex flex-col items-center justify-between text-center p-4 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-600/80 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 min-h-[170px]"
+    >
+      <div className="relative mb-3">
+        <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-2xl overflow-hidden shadow-md border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+          {author.imageUrl ? (
+            <Image
+              src={author.imageUrl.replace(/ /g, "%20")}
+              alt={author.name}
+              fill
+              className="object-cover"
+              sizes="72px"
+            />
+          ) : (
+            <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center relative overflow-hidden`}>
+              <Feather className="absolute -right-2 -bottom-2 w-10 h-10 text-white/10 rotate-12" />
+              <span className="font-display font-extrabold text-lg text-white tracking-widest drop-shadow-sm select-none">
+                {initials}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="w-full flex-1 flex flex-col justify-center">
+        <h4
+          className="font-display font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-2 leading-snug group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors"
+          title={author.name}
+        >
+          {author.name}
+        </h4>
+      </div>
+
+      <div className="mt-2.5">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] sm:text-[11px] font-bold text-slate-600 dark:text-slate-400 group-hover:bg-amber-50 dark:group-hover:bg-amber-950/70 group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">
+          <BookOpen size={11} />
+          <span>{author.bookCount} {author.bookCount === 1 ? "work" : "works"}</span>
+        </span>
+      </div>
+    </Link>
+  );
+}
+
+function TopAuthorsSection({
+  promise,
+}: {
+  promise: Promise<DiscoveryOverviewPageDto>;
+}) {
+  const result = use(promise);
+  const authors = result?.overview?.topAuthors || [];
+
+  if (authors.length === 0) return null;
+
+  return (
+    <section className="space-y-4">
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200/60 dark:border-amber-800/60 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-xs">
+            <Users size={16} />
+          </div>
+          <div>
+            <h2 className="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
+              Prominent Authors & Thinkers
+            </h2>
+          </div>
+        </div>
+        <Link
+          href="/discover/authors"
+          className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
+        >
+          <span>All authors</span>
+          <ChevronRight size={14} />
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5 sm:gap-4">
+        {authors.slice(0, 6).map((author, index) => (
+          <MeAuthorCard key={author.id} author={author} index={index} />
         ))}
       </div>
     </section>

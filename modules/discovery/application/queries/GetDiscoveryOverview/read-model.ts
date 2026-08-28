@@ -1,4 +1,6 @@
 import { BookSummaryDto } from "../../dto/BookSummaryDto";
+import { AuthorCardDto } from "../../dto/AuthorCardDto";
+import { CollectionSummaryDto } from "../../dto/CollectionSummaryDto";
 
 export interface DiscoverySectionDto {
   readonly id: string;
@@ -17,7 +19,8 @@ export interface DiscoveryOverviewDto {
   readonly trendingBooks: BookSummaryDto[];
   readonly newBooks: BookSummaryDto[];
   readonly sections: DiscoverySectionDto[];
-  readonly featuredCollections: any[];
+  readonly featuredCollections: CollectionSummaryDto[];
+  readonly topAuthors: AuthorCardDto[];
   readonly genres: string[];
   readonly subjects: string[];
   readonly languages: string[];

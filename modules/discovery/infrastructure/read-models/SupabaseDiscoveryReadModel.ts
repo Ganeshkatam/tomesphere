@@ -6,6 +6,8 @@ import {
 } from "../../application/queries/GetDiscoveryOverview/read-model";
 import { SearchResultDto } from "../../application/queries/SearchBooks/read-model";
 import { BookSummaryDto } from "../../application/dto/BookSummaryDto";
+import { AuthorCardDto } from "../../application/dto/AuthorCardDto";
+import { CollectionSummaryDto } from "../../application/dto/CollectionSummaryDto";
 import { BookSummaryMapper } from "../../application/mappers/BookSummaryMapper";
 import { GetTrendingBooksQuery } from "../../application/queries/GetTrendingBooks/query";
 import { TrendingBooksResponseDto } from "../../application/queries/GetTrendingBooks/response";
@@ -67,8 +69,12 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
         )
         .order("title", { ascending: true }),
 
-      // 6. Taxonomies
-      this.supabase.from("authors").select("name").limit(20),
+      // 6. Taxonomies & Top Authors
+      this.supabase
+        .from("authors")
+        .select("id, name, slug, bio, avatar_url, book_authors(count)")
+        .order("name", { ascending: true })
+        .limit(20),
       this.supabase.from("genres").select("name").limit(20),
       this.supabase.from("subjects").select("name").limit(20),
     ]);
@@ -78,6 +84,16 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
     const authors = (authorsRes.data || []).map((a: any) => a.name);
     const subjects = (subjectsRes.data || []).map((s: any) => s.name);
     const languages = ["English"];
+
+    const topAuthors: AuthorCardDto[] = (authorsRes.data || [])
+      .map((a: any) => ({
+        id: a.id,
+        name: a.name,
+        slug: a.slug || a.id,
+        imageUrl: a.avatar_url,
+        bookCount: a.book_authors?.[0]?.count || 0,
+      }))
+      .filter((a) => a.bookCount > 0);
 
     const featuredBooksData =
       featuredRes.data && featuredRes.data.length > 0
@@ -89,12 +105,11 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
         ? (trendingRes.data as any[]).map((row: any) => row.books)
         : [];
 
-    const featuredCollections = (collectionsRes.data || []).map((col: any) => ({
+    const featuredCollections: CollectionSummaryDto[] = (collectionsRes.data || []).map((col: any) => ({
       id: col.id,
       title: col.title,
       slug: col.slug,
       description: col.description,
-      coverUrl: col.cover_url,
       bookCount: col.collection_books?.[0]?.count || 0,
     }));
 
@@ -203,6 +218,7 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       newBooks: (newBooksRes.data || []).map(BookSummaryMapper.toDto),
       sections,
       featuredCollections,
+      topAuthors,
       genres,
       subjects,
       languages,
