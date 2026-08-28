@@ -16,11 +16,7 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       newBooksRes,
       trendingRes,
       collectionsRes,
-      classicsRes,
-      philosophyRes,
-      scienceRes,
-      historyRes,
-      curatedRes,
+      catalogRes,
       authorsRes,
       genresRes,
       subjectsRes,
@@ -41,7 +37,7 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
         .order("release_date", { ascending: false, nullsFirst: false })
-        .limit(16),
+        .limit(20),
 
       // 3. Trending Books (from trending_books_projection ordered by daily_score)
       this.supabase
@@ -58,47 +54,20 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
         .select("id, title, slug, description, cover_url, is_active, collection_books(count)")
         .eq("is_active", true)
         .order("created_at", { ascending: true })
-        .limit(6),
+        .limit(10),
 
-      // 5. Categorical sections
+      // 5. Full Catalog for canonical categorical discipline mapping
       this.supabase
         .from("books")
         .select(
           "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
         )
-        .order("title", { ascending: true })
-        .limit(16),
-      this.supabase
-        .from("books")
-        .select(
-          "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
-        )
-        .order("title", { ascending: false })
-        .limit(16),
-      this.supabase
-        .from("books")
-        .select(
-          "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
-        )
-        .order("release_date", { ascending: true, nullsFirst: false })
-        .limit(16),
-      this.supabase
-        .from("books")
-        .select(
-          "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
-        )
-        .order("id", { ascending: false })
-        .limit(16),
-      this.supabase
-        .from("books")
-        .select(
-          "id, title, cover_url, languages(name), release_date, is_featured, book_authors(position, authors(id, name, slug)), book_genres(genres(id, name))",
-        )
-        .order("release_date", { ascending: false, nullsFirst: false })
-        .limit(16),
-      this.supabase.from("authors").select("name").limit(12),
-      this.supabase.from("genres").select("name").limit(12),
-      this.supabase.from("subjects").select("name").limit(12),
+        .order("title", { ascending: true }),
+
+      // 6. Taxonomies
+      this.supabase.from("authors").select("name").limit(20),
+      this.supabase.from("genres").select("name").limit(20),
+      this.supabase.from("subjects").select("name").limit(20),
     ]);
 
     // Distinct Genres, Authors, Subjects
@@ -126,15 +95,72 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       bookCount: col.collection_books?.[0]?.count || 0,
     }));
 
+    const allCatalog = (catalogRes.data || []).map(BookSummaryMapper.toDto);
+
+    // Canonical Genre/Discipline Categorizations
+    const cybersecurityBooks = allCatalog.filter((b) =>
+      b.genres.some((g) =>
+        ["cybersecurity", "security"].includes(g.name.toLowerCase())
+      ) || b.title.toLowerCase().includes("hacker") || b.title.toLowerCase().includes("security")
+    );
+
+    const programmingBooks = allCatalog.filter((b) =>
+      b.genres.some((g) =>
+        ["programming", "computer science"].includes(g.name.toLowerCase())
+      ) || ["python", "javascript", "java"].some((term) => b.title.toLowerCase().includes(term))
+    );
+
+    const mathematicsBooks = allCatalog.filter((b) =>
+      b.genres.some((g) =>
+        ["mathematics", "vedic mathematics"].includes(g.name.toLowerCase())
+      ) || ["maths", "vedic"].some((term) => b.title.toLowerCase().includes(term))
+    );
+
+    const yogaBooks = allCatalog.filter((b) =>
+      b.genres.some((g) =>
+        ["yoga", "health"].includes(g.name.toLowerCase())
+      ) || ["yoga", "asanas"].some((term) => b.title.toLowerCase().includes(term))
+    );
+
+    const philosophyBooks = allCatalog.filter((b) =>
+      b.genres.some((g) =>
+        ["spirituality", "motivation", "fiction", "novels", "philosophy"].includes(g.name.toLowerCase())
+      )
+    );
+
+    const biographyBooks = allCatalog.filter((b) =>
+      b.genres.some((g) =>
+        ["biography", "history"].includes(g.name.toLowerCase())
+      ) || ["wings of fire", "autobiography"].some((term) => b.title.toLowerCase().includes(term))
+    );
+
+    const artBooks = allCatalog.filter((b) =>
+      b.genres.some((g) =>
+        ["art", "drawing"].includes(g.name.toLowerCase())
+      ) || ["figure drawing", "design"].some((term) => b.title.toLowerCase().includes(term))
+    );
+
+    const scienceBooks = allCatalog.filter((b) =>
+      b.genres.some((g) =>
+        ["science", "education"].includes(g.name.toLowerCase())
+      )
+    );
+
     return {
       featuredBooks: featuredBooksData.map(BookSummaryMapper.toDto),
       trendingBooks: trendingBooksData.map(BookSummaryMapper.toDto),
       newBooks: (newBooksRes.data || []).map(BookSummaryMapper.toDto),
-      classicsBooks: (classicsRes.data || []).map(BookSummaryMapper.toDto),
-      philosophyBooks: (philosophyRes.data || []).map(BookSummaryMapper.toDto),
-      scienceBooks: (scienceRes.data || []).map(BookSummaryMapper.toDto),
-      historyBooks: (historyRes.data || []).map(BookSummaryMapper.toDto),
-      curatedBooks: (curatedRes.data || []).map(BookSummaryMapper.toDto),
+      cybersecurityBooks,
+      programmingBooks,
+      mathematicsBooks,
+      yogaBooks,
+      philosophyBooks,
+      biographyBooks,
+      artBooks,
+      scienceBooks,
+      classicsBooks: philosophyBooks,
+      historyBooks: biographyBooks,
+      curatedBooks: featuredBooksData.map(BookSummaryMapper.toDto),
       featuredCollections,
       genres,
       subjects,

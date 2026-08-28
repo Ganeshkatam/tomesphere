@@ -11,7 +11,7 @@ interface CollectionCardProps {
 export function CollectionCard({ collection }: CollectionCardProps) {
   return (
     <Link
-      href={`/discover/collections/${collection.slug || collection.id}`}
+      href={`/search?q=${encodeURIComponent(collection.title)}`}
       className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-3xl"
     >
       <div className="flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-700/80">

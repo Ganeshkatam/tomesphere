@@ -8,14 +8,6 @@ import {
   Compass,
   ChevronRight,
   ShieldCheck,
-  ShieldAlert,
-  Code,
-  Calculator,
-  Activity,
-  HeartHandshake,
-  UserCheck,
-  Palette,
-  GraduationCap,
 } from "lucide-react";
 import { getDiscoveryFacade } from "@/modules/discovery/application/facades";
 import { DiscoverySection } from "@/modules/discovery/presentation/components/DiscoverySection";
@@ -54,62 +46,28 @@ const CATEGORY_TABS = [
 
 export default async function DiscoverOverviewPage() {
   const facade = await getDiscoveryFacade();
-  const [overviewData, fullCatalog] = await Promise.all([
-    facade.getOverview(),
-    facade.getNewArrivals({ limit: 50, page: 1 }),
+  const [overviewData, authorsData] = await Promise.all([
+    facade.getDiscoveryOverview(),
+    facade.getAuthors({ limit: 12, page: 1 }),
   ]);
 
-  const allItems = fullCatalog.items || [];
+  const {
+    featuredBooks = [],
+    trendingBooks = [],
+    newBooks = [],
+    cybersecurityBooks = [],
+    programmingBooks = [],
+    mathematicsBooks = [],
+    yogaBooks = [],
+    philosophyBooks = [],
+    biographyBooks = [],
+    artBooks = [],
+    scienceBooks = [],
+    featuredCollections = [],
+    subjects = [],
+  } = overviewData;
 
-  // Categorize books into dedicated curated sections
-  const securityBooks = allItems.filter((b) =>
-    (b.genres || []).some((g) => g.name.toLowerCase().includes("security") || g.name.toLowerCase().includes("cyber")) ||
-    b.title.toLowerCase().includes("hacker") ||
-    b.title.toLowerCase().includes("security")
-  );
-
-  const programmingBooks = allItems.filter((b) =>
-    (b.genres || []).some((g) => g.name.toLowerCase().includes("programming") || g.name.toLowerCase().includes("computer science")) ||
-    b.title.toLowerCase().includes("python") ||
-    b.title.toLowerCase().includes("java") ||
-    b.title.toLowerCase().includes("javascript")
-  );
-
-  const mathematicsBooks = allItems.filter((b) =>
-    (b.genres || []).some((g) => g.name.toLowerCase().includes("mathematics") || g.name.toLowerCase().includes("math")) ||
-    b.title.toLowerCase().includes("maths") ||
-    b.title.toLowerCase().includes("vedic")
-  );
-
-  const yogaHealthBooks = allItems.filter((b) =>
-    (b.genres || []).some((g) => g.name.toLowerCase().includes("yoga") || g.name.toLowerCase().includes("health")) ||
-    b.title.toLowerCase().includes("yoga") ||
-    b.title.toLowerCase().includes("asanas")
-  );
-
-  const philosophyBooks = allItems.filter((b) =>
-    (b.genres || []).some((g) => g.name.toLowerCase().includes("motivation") || g.name.toLowerCase().includes("spirituality") || g.name.toLowerCase().includes("fiction")) ||
-    b.title.toLowerCase().includes("ferrari") ||
-    b.title.toLowerCase().includes("silence")
-  );
-
-  const biographyBooks = allItems.filter((b) =>
-    (b.genres || []).some((g) => g.name.toLowerCase().includes("biography") || g.name.toLowerCase().includes("history")) ||
-    b.title.toLowerCase().includes("wings of fire") ||
-    b.title.toLowerCase().includes("autobiography")
-  );
-
-  const artDesignBooks = allItems.filter((b) =>
-    (b.genres || []).some((g) => g.name.toLowerCase().includes("art") || g.name.toLowerCase().includes("drawing")) ||
-    b.title.toLowerCase().includes("figure drawing") ||
-    b.title.toLowerCase().includes("design")
-  );
-
-  const educationalTextbooks = allItems.filter((b) =>
-    (b.genres || []).some((g) => g.name.toLowerCase().includes("education") || g.name.toLowerCase().includes("science")) ||
-    b.title.toLowerCase().includes("science") ||
-    b.title.toLowerCase().includes("fundamentals")
-  );
+  const authorCards = authorsData.items || [];
 
   return (
     <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-6 sm:py-8 lg:py-10 space-y-12 sm:space-y-16 animate-in fade-in duration-300">
@@ -173,41 +131,41 @@ export default async function DiscoverOverviewPage() {
         </div>
       </div>
 
-      {/* 4. The 10 Rich Book Sections & Curated Shelves */}
+      {/* 4. The Rich Book Sections & Curated Shelves */}
       <div className="flex flex-col gap-14 sm:gap-18 pt-2">
         {/* Section 1: Featured Masterpieces */}
-        {overviewData.featured?.items?.length > 0 && (
+        {featuredBooks.length > 0 && (
           <DiscoverySection
             title="Featured Masterpieces"
             description="Curated highlights and hand-picked treasures from the archive."
             actionHref="/discover/featured"
             actionLabel="View all picks"
           >
-            <FeaturedBooks items={overviewData.featured.items} />
+            <FeaturedBooks items={featuredBooks} />
           </DiscoverySection>
         )}
 
-        {/* Section 2: Trending Volumes (High Velocity & Engagement) */}
-        {overviewData.trending?.books?.length > 0 && (
+        {/* Section 2: Trending Volumes */}
+        {trendingBooks.length > 0 && (
           <DiscoverySection
             title="Trending Volumes"
             description="Most active and frequently read works across the digital catalogue."
             actionHref="/discover/trending"
             actionLabel="View trending rank"
           >
-            <BookCarousel items={overviewData.trending.books} priority={true} />
+            <BookCarousel items={trendingBooks} priority={true} />
           </DiscoverySection>
         )}
 
-        {/* Section 3: Cybersecurity & Offensive Defense */}
-        {securityBooks.length > 0 && (
+        {/* Section 3: Cybersecurity & Ethical Hacking */}
+        {cybersecurityBooks.length > 0 && (
           <DiscoverySection
             title="Cybersecurity & Offensive Defense"
             description="Practical penetration testing handbooks, vulnerability analysis, and network security foundations."
             actionHref="/search?q=Cybersecurity"
             actionLabel="Explore security"
           >
-            <BookCarousel items={securityBooks} />
+            <BookCarousel items={cybersecurityBooks} />
           </DiscoverySection>
         )}
 
@@ -244,14 +202,14 @@ export default async function DiscoverOverviewPage() {
         )}
 
         {/* Section 6: Yoga, Asanas & Holistic Health */}
-        {yogaHealthBooks.length > 0 && (
+        {yogaBooks.length > 0 && (
           <DiscoverySection
             title="Yoga, Asanas & Holistic Health"
             description="Definitive posture manuals, alignment mechanics, daily breathwork, and transformative mind-body wellness."
             actionHref="/search?q=Yoga"
             actionLabel="View yoga guides"
           >
-            <BookCarousel items={yogaHealthBooks} />
+            <BookCarousel items={yogaBooks} />
           </DiscoverySection>
         )}
 
@@ -280,72 +238,72 @@ export default async function DiscoverOverviewPage() {
         )}
 
         {/* Section 9: Visual Arts & Creative Design */}
-        {artDesignBooks.length > 0 && (
+        {artBooks.length > 0 && (
           <DiscoverySection
             title="Visual Arts & Creative Design"
             description="Mastery of human anatomy, structural gesture drawing, creative invention, and classical illustration."
             actionHref="/search?q=Art"
             actionLabel="Explore art books"
           >
-            <BookCarousel items={artDesignBooks} />
+            <BookCarousel items={artBooks} />
           </DiscoverySection>
         )}
 
         {/* Section 10: Foundational Educational Textbooks */}
-        {educationalTextbooks.length > 0 && (
+        {scienceBooks.length > 0 && (
           <DiscoverySection
             title="Foundational Educational Textbooks"
             description="Secondary physical sciences, curriculum mathematics, and foundational academic learning."
             actionHref="/search?q=Science"
             actionLabel="Explore textbooks"
           >
-            <BookCarousel items={educationalTextbooks} />
+            <BookCarousel items={scienceBooks} />
           </DiscoverySection>
         )}
 
         {/* Section 11: Recently Added Ingestions */}
-        {overviewData.newArrivals?.items?.length > 0 && (
+        {newBooks.length > 0 && (
           <DiscoverySection
             title="Recently Cataloged Editions"
             description="Freshly catalogued and preserved public domain editions."
             actionHref="/discover/new"
             actionLabel="View recent additions"
           >
-            <BookCarousel items={overviewData.newArrivals.items} />
+            <BookCarousel items={newBooks} />
           </DiscoverySection>
         )}
 
         {/* Subject Domains */}
-        {overviewData.subjects?.items?.length > 0 && (
+        {subjects.length > 0 && (
           <DiscoverySection
             title="Explore by Knowledge Domain"
             description="Dive into specific disciplines, humanities, and sciences."
           >
-            <SubjectGrid items={overviewData.subjects.items.slice(0, 12)} />
+            <SubjectGrid items={subjects.slice(0, 12)} />
           </DiscoverySection>
         )}
 
         {/* Curated Archival Collections */}
-        {overviewData.collections?.items?.length > 0 && (
+        {featuredCollections.length > 0 && (
           <DiscoverySection
             title="Curated Archival Collections"
             description="Thematic anthologies and structured reading paths."
             actionHref="/discover/collections"
             actionLabel="Explore collections"
           >
-            <CollectionGrid items={overviewData.collections.items.slice(0, 4)} />
+            <CollectionGrid items={featuredCollections.slice(0, 4)} />
           </DiscoverySection>
         )}
 
         {/* Authors */}
-        {overviewData.authors?.items?.length > 0 && (
+        {authorCards.length > 0 && (
           <DiscoverySection
             title="Prominent Authors & Thinkers"
             description="Discover the prolific minds whose writings shaped history."
             actionHref="/discover/authors"
             actionLabel="Browse all authors"
           >
-            <AuthorGrid items={overviewData.authors.items.slice(0, 12)} />
+            <AuthorGrid items={authorCards.slice(0, 12)} />
           </DiscoverySection>
         )}
 

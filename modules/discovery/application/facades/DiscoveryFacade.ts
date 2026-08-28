@@ -19,8 +19,10 @@ import { GetLanguagesResponseDto } from "../queries/GetLanguages/response";
 import { GetSubjectsResponseDto } from "../queries/GetSubjects/response";
 import { TrendingBooksResponseDto } from "../queries/GetTrendingBooks/response";
 import { SearchResultDto } from "../queries/SearchBooks/read-model";
+import { DiscoveryOverviewDto } from "../queries/GetDiscoveryOverview/read-model";
 
 export interface DiscoveryOverviewPageDto {
+  overview: DiscoveryOverviewDto;
   trending: TrendingBooksResponseDto;
   featured: GetFeaturedBooksResponseDto;
   newArrivals: GetNewArrivalsResponseDto;
@@ -50,8 +52,13 @@ export class DiscoveryFacade {
     this.getSubjectsHandler = new GetSubjectsHandler(discoveryReadModel);
   }
 
+  async getDiscoveryOverview(): Promise<DiscoveryOverviewDto> {
+    return this.discoveryReadModel.getOverview();
+  }
+
   async getOverview(): Promise<DiscoveryOverviewPageDto> {
     const [
+      overview,
       trending,
       featured,
       newArrivals,
@@ -61,6 +68,7 @@ export class DiscoveryFacade {
       languages,
       subjects,
     ] = await Promise.all([
+      this.discoveryReadModel.getOverview(),
       getTrendingBooks(this.discoveryReadModel, {
         period: "weekly",
         limit: 6,
@@ -76,6 +84,7 @@ export class DiscoveryFacade {
     ]);
 
     return {
+      overview,
       trending,
       featured,
       newArrivals,
