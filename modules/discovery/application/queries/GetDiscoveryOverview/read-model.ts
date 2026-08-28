@@ -1,16 +1,22 @@
 import { BookSummaryDto } from "../../dto/BookSummaryDto";
 
+export interface DiscoverySectionDto {
+  readonly id: string;
+  readonly title: string;
+  readonly slug: string;
+  readonly description?: string;
+  readonly actionHref?: string;
+  readonly actionLabel?: string;
+  readonly iconName?: string;
+  readonly iconBg?: string;
+  readonly books: BookSummaryDto[];
+}
+
 export interface DiscoveryOverviewDto {
   readonly featuredBooks: BookSummaryDto[];
   readonly trendingBooks: BookSummaryDto[];
   readonly newBooks: BookSummaryDto[];
-  readonly cybersecurityBooks: BookSummaryDto[];
-  readonly programmingBooks: BookSummaryDto[];
-  readonly mathematicsBooks: BookSummaryDto[];
-  readonly yogaBooks: BookSummaryDto[];
-  readonly philosophyBooks: BookSummaryDto[];
-  readonly biographyBooks: BookSummaryDto[];
-  readonly artBooks: BookSummaryDto[];
+  readonly sections: DiscoverySectionDto[];
   readonly featuredCollections: any[];
   readonly genres: string[];
   readonly subjects: string[];

@@ -32,7 +32,10 @@ import {
 import { MePageDto } from "../../application/facades/MePageFacade";
 import { CurrentReadingDto } from "@/modules/library/application/queries/GetCurrentReadingQuery/dto";
 import { DiscoveryOverviewPageDto } from "@/modules/discovery/application/facades/DiscoveryFacade";
-import { DiscoveryOverviewDto } from "@/modules/discovery/application/queries/GetDiscoveryOverview/read-model";
+import {
+  DiscoveryOverviewDto,
+  DiscoverySectionDto,
+} from "@/modules/discovery/application/queries/GetDiscoveryOverview/read-model";
 import BookCard from "@/modules/books/components/BookCard";
 import MeHeroSection from "./MeHeroSection";
 
@@ -207,136 +210,14 @@ export function MeClient({ data }: MeClientProps) {
       </LazySection>
 
       {/* ------------------------------------------------------------- */}
-      {/* On-Demand Progressive Shelves (Streamed individually on demand) */}
+      {/* On-Demand Progressive Shelves (Streamed data-driven sections) */}
       {/* ------------------------------------------------------------- */}
-
-      {/* Extra 1: Cybersecurity & Offensive Defense */}
-      {loadedExtraSections >= 1 && (
-        <LazySection fallback={<BooksShelfSkeleton />}>
-          <Suspense fallback={<BooksShelfSkeleton />}>
-            <CuratedDisciplineShelfSection
-              title="Cybersecurity & Offensive Defense"
-              description="Deep technical treatises on application security, exploitation, and vulnerability discovery."
-              icon={<Shield size={16} />}
-              iconBg="bg-slate-900 border-slate-700 text-emerald-400"
-              categoryKey="cybersecurityBooks"
-              viewAllHref="/search?genre=Cybersecurity"
-              promise={data.discovery}
-            />
-          </Suspense>
-        </LazySection>
-      )}
-
-      {/* Extra 2: Software Engineering & Programming */}
-      {loadedExtraSections >= 2 && (
-        <LazySection fallback={<BooksShelfSkeleton />}>
-          <Suspense fallback={<BooksShelfSkeleton />}>
-            <CuratedDisciplineShelfSection
-              title="Software Engineering & Programming"
-              description="Foundations of computing, software systems, algorithms, and practical programming languages."
-              icon={<Code2 size={16} />}
-              iconBg="bg-blue-50 dark:bg-blue-950/60 border-blue-200/60 dark:border-blue-800/60 text-blue-600 dark:text-blue-400"
-              categoryKey="programmingBooks"
-              viewAllHref="/search?genre=Programming"
-              promise={data.discovery}
-            />
-          </Suspense>
-        </LazySection>
-      )}
-
-      {/* Extra 3: Vedic Mathematics & Speed Calculation */}
-      {loadedExtraSections >= 3 && (
-        <LazySection fallback={<BooksShelfSkeleton />}>
-          <Suspense fallback={<BooksShelfSkeleton />}>
-            <CuratedDisciplineShelfSection
-              title="Vedic Mathematics & Speed Calculation"
-              description="Ancient mental arithmetic methods, speed calculation techniques, and applied mathematical systems."
-              icon={<Compass size={16} />}
-              iconBg="bg-amber-50 dark:bg-amber-950/60 border-amber-200/60 dark:border-amber-800/60 text-amber-600 dark:text-amber-400"
-              categoryKey="mathematicsBooks"
-              viewAllHref="/search?genre=Mathematics"
-              promise={data.discovery}
-            />
-          </Suspense>
-        </LazySection>
-      )}
-
-      {/* Extra 4: Yoga, Asanas & Holistic Health */}
-      {loadedExtraSections >= 4 && (
-        <LazySection fallback={<BooksShelfSkeleton />}>
-          <Suspense fallback={<BooksShelfSkeleton />}>
-            <CuratedDisciplineShelfSection
-              title="Yoga, Asanas & Holistic Health"
-              description="Classical postures, breathing practices, and physical wellness disciplines."
-              icon={<HeartHandshake size={16} />}
-              iconBg="bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200/60 dark:border-emerald-800/60 text-emerald-600 dark:text-emerald-400"
-              categoryKey="yogaBooks"
-              viewAllHref="/search?genre=Yoga"
-              promise={data.discovery}
-            />
-          </Suspense>
-        </LazySection>
-      )}
-
-      {/* Extra 5: Philosophy & Transformative Wisdom */}
-      {loadedExtraSections >= 5 && (
-        <LazySection fallback={<BooksShelfSkeleton />}>
-          <Suspense fallback={<BooksShelfSkeleton />}>
-            <CuratedDisciplineShelfSection
-              title="Philosophy & Transformative Wisdom"
-              description="Essential works on purpose, mindfulness, stoicism, and the human condition."
-              icon={<Brain size={16} />}
-              iconBg="bg-purple-50 dark:bg-purple-950/60 border-purple-200/60 dark:border-purple-800/60 text-purple-600 dark:text-purple-400"
-              categoryKey="philosophyBooks"
-              viewAllHref="/search?genre=Philosophy"
-              promise={data.discovery}
-            />
-          </Suspense>
-        </LazySection>
-      )}
-
-      {/* Extra 6: Biographies & Inspiring Memoirs */}
-      {loadedExtraSections >= 6 && (
-        <LazySection fallback={<BooksShelfSkeleton />}>
-          <Suspense fallback={<BooksShelfSkeleton />}>
-            <CuratedDisciplineShelfSection
-              title="Biographies & Inspiring Memoirs"
-              description="Lived journeys of visionaries, leaders, and remarkable historical figures."
-              icon={<Landmark size={16} />}
-              iconBg="bg-orange-50 dark:bg-orange-950/60 border-orange-200/60 dark:border-orange-800/60 text-orange-600 dark:text-orange-400"
-              categoryKey="biographyBooks"
-              viewAllHref="/search?genre=Biography"
-              promise={data.discovery}
-            />
-          </Suspense>
-        </LazySection>
-      )}
-
-      {/* Extra 7: Visual Arts & Design Anatomy */}
-      {loadedExtraSections >= 7 && (
-        <LazySection fallback={<BooksShelfSkeleton />}>
-          <Suspense fallback={<BooksShelfSkeleton />}>
-            <CuratedDisciplineShelfSection
-              title="Visual Arts & Design Anatomy"
-              description="Classical drawing fundamentals, aesthetic principles, and proportion studies."
-              icon={<Palette size={16} />}
-              iconBg="bg-pink-50 dark:bg-pink-950/60 border-pink-200/60 dark:border-pink-800/60 text-pink-600 dark:text-pink-400"
-              categoryKey="artBooks"
-              viewAllHref="/search?genre=Art"
-              promise={data.discovery}
-            />
-          </Suspense>
-        </LazySection>
-      )}
-
-      {/* Extra 8: Explore by Discipline & Subject Chips */}
-      {loadedExtraSections >= 8 && (
-        <LazySection fallback={<DiscoveryTabsSkeleton />}>
-          <Suspense fallback={<DiscoveryTabsSkeleton />}>
-            <SubjectsExplorerSection promise={data.discovery} />
-          </Suspense>
-        </LazySection>
-      )}
+      <Suspense fallback={<BooksShelfSkeleton />}>
+        <StreamedDynamicShelvesSection
+          promise={data.discovery}
+          loadedCount={loadedExtraSections}
+        />
+      </Suspense>
 
       {/* Progressive Stream Bottom Trigger / Load More Bar */}
       {loadedExtraSections < TOTAL_EXTRA_SECTIONS && (
@@ -702,32 +583,33 @@ function PublicSizedShelfSection({
 }
 
 // ----------------------------------------------------------------------
-interface CuratedDisciplineShelfSectionProps {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  iconBg: string;
-  categoryKey: keyof DiscoveryOverviewDto;
-  viewAllHref?: string;
-  promise: Promise<DiscoveryOverviewPageDto>;
-}
+const ICON_COMPONENTS: Record<string, React.ElementType> = {
+  Shield,
+  Code2,
+  Compass,
+  HeartHandshake,
+  Brain,
+  Landmark,
+  Palette,
+  Atom,
+  BookOpen,
+  Sparkles,
+};
 
 function CuratedDisciplineShelfSection({
-  title,
-  description,
-  icon,
-  iconBg,
-  categoryKey,
-  viewAllHref,
-  promise,
-}: CuratedDisciplineShelfSectionProps) {
-  const result = use(promise);
+  section,
+}: {
+  section: DiscoverySectionDto;
+}) {
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  const rawBooks = result?.overview?.[categoryKey];
-  const disciplineBooks = Array.isArray(rawBooks) ? rawBooks : [];
+  const disciplineBooks = section.books || [];
 
   if (disciplineBooks.length === 0) return null;
+
+  const IconComponent = (section.iconName && ICON_COMPONENTS[section.iconName]) || BookOpen;
+  const iconBg =
+    section.iconBg ||
+    "bg-indigo-50 dark:bg-indigo-950/60 border-indigo-200/60 dark:border-indigo-800/60 text-indigo-600 dark:text-indigo-400";
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -745,24 +627,26 @@ function CuratedDisciplineShelfSection({
         <div>
           <div className="flex items-center gap-2.5">
             <div className={`w-8 h-8 rounded-lg border flex items-center justify-center shadow-xs ${iconBg}`}>
-              {icon}
+              <IconComponent size={16} />
             </div>
             <h2 className="text-xl sm:text-2xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
-              {title}
+              {section.title}
             </h2>
           </div>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            {description}
-          </p>
+          {section.description && (
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+              {section.description}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-2 self-end sm:self-auto">
-          {viewAllHref && (
+          {section.actionHref && (
             <Link
-              href={viewAllHref}
+              href={section.actionHref}
               className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1 mr-2"
             >
-              <span>See all</span>
+              <span>{section.actionLabel || "See all"}</span>
               <ChevronRight size={14} />
             </Link>
           )}
@@ -770,14 +654,14 @@ function CuratedDisciplineShelfSection({
           {/* Scroll Arrows */}
           <button
             onClick={() => scroll("left")}
-            aria-label={`Scroll ${title} left`}
+            aria-label={`Scroll ${section.title} left`}
             className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer shadow-xs"
           >
             <ChevronLeft size={16} />
           </button>
           <button
             onClick={() => scroll("right")}
-            aria-label={`Scroll ${title} right`}
+            aria-label={`Scroll ${section.title} right`}
             className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer shadow-xs"
           >
             <ChevronRight size={16} />
@@ -793,7 +677,7 @@ function CuratedDisciplineShelfSection({
         >
           {disciplineBooks.map((item: any, i: number) => (
             <div
-              key={`discipline-${String(categoryKey)}-${item.id || i}-${i}`}
+              key={`discipline-${section.id}-${item.id || i}-${i}`}
               className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col group/item transition-all duration-300 relative hover:z-40"
             >
               <BookCard book={item} />
@@ -802,6 +686,33 @@ function CuratedDisciplineShelfSection({
         </div>
       </div>
     </section>
+  );
+}
+
+function StreamedDynamicShelvesSection({
+  promise,
+  loadedCount,
+}: {
+  promise: Promise<DiscoveryOverviewPageDto>;
+  loadedCount: number;
+}) {
+  const result = use(promise);
+  const sections = result?.overview?.sections || [];
+  const visibleSections = sections.slice(0, loadedCount);
+
+  return (
+    <>
+      {visibleSections.map((section) => (
+        <LazySection key={section.id} fallback={<BooksShelfSkeleton />}>
+          <CuratedDisciplineShelfSection section={section} />
+        </LazySection>
+      ))}
+      {loadedCount >= sections.length && sections.length > 0 && (
+        <LazySection fallback={<DiscoveryTabsSkeleton />}>
+          <SubjectsExplorerSection promise={promise} />
+        </LazySection>
+      )}
+    </>
   );
 }
 

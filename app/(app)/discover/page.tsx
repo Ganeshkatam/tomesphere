@@ -55,13 +55,7 @@ export default async function DiscoverOverviewPage() {
     featuredBooks = [],
     trendingBooks = [],
     newBooks = [],
-    cybersecurityBooks = [],
-    programmingBooks = [],
-    mathematicsBooks = [],
-    yogaBooks = [],
-    philosophyBooks = [],
-    biographyBooks = [],
-    artBooks = [],
+    sections = [],
     featuredCollections = [],
     subjects = [],
   } = overviewData;
@@ -156,97 +150,29 @@ export default async function DiscoverOverviewPage() {
           </DiscoverySection>
         )}
 
-        {/* Section 3: Cybersecurity & Ethical Hacking */}
-        {cybersecurityBooks.length > 0 && (
-          <DiscoverySection
-            title="Cybersecurity & Offensive Defense"
-            description="Practical penetration testing handbooks, vulnerability analysis, and network security foundations."
-            actionHref="/search?q=Cybersecurity"
-            actionLabel="Explore security"
-          >
-            <BookCarousel items={cybersecurityBooks} />
-          </DiscoverySection>
-        )}
+        {/* Generalized Data-Driven Discipline Sections */}
+        {sections.map((section, idx) => (
+          <div key={section.id} className="contents">
+            <DiscoverySection
+              title={section.title}
+              description={section.description}
+              actionHref={section.actionHref}
+              actionLabel={section.actionLabel || "Explore"}
+            >
+              <BookCarousel items={section.books} />
+            </DiscoverySection>
 
-        {/* Curated Knowledge Disciplines Visual Hub */}
-        <DiscoverySection
-          title="Curated Knowledge Disciplines"
-          description="Explore foundational manuscripts organized by scientific and humanities disciplines."
-        >
-          <DiscoverThemeHub />
-        </DiscoverySection>
-
-        {/* Section 4: Software Engineering & Programming */}
-        {programmingBooks.length > 0 && (
-          <DiscoverySection
-            title="Software Engineering & Programming"
-            description="Modern language guides, JVM architecture, scripting paradigms, and beginner-to-advanced software development."
-            actionHref="/search?q=Programming"
-            actionLabel="View programming"
-          >
-            <BookCarousel items={programmingBooks} />
-          </DiscoverySection>
-        )}
-
-        {/* Section 5: Vedic Mathematics & Speed Arithmetic */}
-        {mathematicsBooks.length > 0 && (
-          <DiscoverySection
-            title="Vedic Mathematics & Speed Arithmetic"
-            description="Ancient Indian calculation sutras, rapid mental arithmetic shortcuts, and competitive examination mathematics."
-            actionHref="/search?q=Mathematics"
-            actionLabel="Explore math"
-          >
-            <BookCarousel items={mathematicsBooks} />
-          </DiscoverySection>
-        )}
-
-        {/* Section 6: Yoga, Asanas & Holistic Health */}
-        {yogaBooks.length > 0 && (
-          <DiscoverySection
-            title="Yoga, Asanas & Holistic Health"
-            description="Definitive posture manuals, alignment mechanics, daily breathwork, and transformative mind-body wellness."
-            actionHref="/search?q=Yoga"
-            actionLabel="View yoga guides"
-          >
-            <BookCarousel items={yogaBooks} />
-          </DiscoverySection>
-        )}
-
-        {/* Section 7: Philosophy & Transformative Wisdom */}
-        {philosophyBooks.length > 0 && (
-          <DiscoverySection
-            title="Philosophy & Transformative Wisdom"
-            description="Timeless life philosophies, mindfulness principles, self-discipline, and inspiring literary journeys."
-            actionHref="/search?q=Philosophy"
-            actionLabel="Explore philosophy"
-          >
-            <BookCarousel items={philosophyBooks} />
-          </DiscoverySection>
-        )}
-
-        {/* Section 8: Biographies & Historical Memoirs */}
-        {biographyBooks.length > 0 && (
-          <DiscoverySection
-            title="Biographies & Historical Memoirs"
-            description="Inspirational autobiographical records, scientific visionaries, and historical turning points."
-            actionHref="/search?q=Biography"
-            actionLabel="View memoirs"
-          >
-            <BookCarousel items={biographyBooks} />
-          </DiscoverySection>
-        )}
-
-        {/* Section 7: Visual Arts & Creative Design */}
-        {artBooks.length > 0 && (
-          <DiscoverySection
-            title="Visual Arts & Creative Design"
-            description="Mastery of human anatomy, structural gesture drawing, creative invention, and classical illustration."
-            actionHref="/search?q=Art"
-            actionLabel="Explore art books"
-          >
-            <BookCarousel items={artBooks} />
-          </DiscoverySection>
-        )}
+            {/* Insert Knowledge Disciplines Visual Hub after the first section */}
+            {idx === 0 && (
+              <DiscoverySection
+                title="Curated Knowledge Disciplines"
+                description="Explore foundational manuscripts organized by scientific and humanities disciplines."
+              >
+                <DiscoverThemeHub />
+              </DiscoverySection>
+            )}
+          </div>
+        ))}
 
         {/* Section 11: Recently Added Ingestions */}
         {newBooks.length > 0 && (

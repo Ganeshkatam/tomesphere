@@ -1,6 +1,9 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { DiscoveryReadModel } from "../../application/ports/read-models/DiscoveryReadModel";
-import { DiscoveryOverviewDto } from "../../application/queries/GetDiscoveryOverview/read-model";
+import {
+  DiscoveryOverviewDto,
+  DiscoverySectionDto,
+} from "../../application/queries/GetDiscoveryOverview/read-model";
 import { SearchResultDto } from "../../application/queries/SearchBooks/read-model";
 import { BookSummaryDto } from "../../application/dto/BookSummaryDto";
 import { BookSummaryMapper } from "../../application/mappers/BookSummaryMapper";
@@ -97,48 +100,108 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
 
     const allCatalog = (catalogRes.data || []).map(BookSummaryMapper.toDto);
 
-    // Exact Categorization Based Purely on Catalog Books
-    const cybersecurityBooks = allCatalog.filter((b) =>
-      b.genres.some((g) => g.name.toLowerCase() === "cybersecurity")
-    );
-
-    const programmingBooks = allCatalog.filter((b) =>
-      b.genres.some((g) => g.name.toLowerCase() === "programming") &&
-      !b.genres.some((g) => g.name.toLowerCase() === "cybersecurity")
-    );
-
-    const mathematicsBooks = allCatalog.filter((b) =>
-      b.genres.some((g) => ["mathematics", "vedic mathematics"].includes(g.name.toLowerCase()))
-    );
-
-    const yogaBooks = allCatalog.filter((b) =>
-      b.genres.some((g) => g.name.toLowerCase() === "yoga")
-    );
-
-    const philosophyBooks = allCatalog.filter((b) =>
-      b.genres.some((g) => ["spirituality", "fiction", "novels"].includes(g.name.toLowerCase())) &&
-      !b.genres.some((g) => g.name.toLowerCase() === "biography")
-    );
-
-    const biographyBooks = allCatalog.filter((b) =>
-      b.genres.some((g) => g.name.toLowerCase() === "biography")
-    );
-
-    const artBooks = allCatalog.filter((b) =>
-      b.genres.some((g) => ["art", "drawing"].includes(g.name.toLowerCase()))
-    );
+    // Build generalized catalog-driven sections
+    const sections: DiscoverySectionDto[] = [
+      {
+        id: "cybersecurity",
+        title: "Cybersecurity & Offensive Defense",
+        slug: "cybersecurity",
+        description: "Deep technical treatises on application security, exploitation, and vulnerability discovery.",
+        actionHref: "/search?genre=Cybersecurity",
+        actionLabel: "Explore security",
+        iconName: "Shield",
+        iconBg: "bg-slate-900 border-slate-700 text-emerald-400",
+        books: allCatalog.filter((b) =>
+          b.genres.some((g) => g.name.toLowerCase() === "cybersecurity")
+        ),
+      },
+      {
+        id: "programming",
+        title: "Software Engineering & Programming",
+        slug: "programming",
+        description: "Foundations of computing, software systems, algorithms, and practical programming languages.",
+        actionHref: "/search?genre=Programming",
+        actionLabel: "View programming",
+        iconName: "Code2",
+        iconBg: "bg-blue-50 dark:bg-blue-950/60 border-blue-200/60 dark:border-blue-800/60 text-blue-600 dark:text-blue-400",
+        books: allCatalog.filter((b) =>
+          b.genres.some((g) => g.name.toLowerCase() === "programming") &&
+          !b.genres.some((g) => g.name.toLowerCase() === "cybersecurity")
+        ),
+      },
+      {
+        id: "mathematics",
+        title: "Vedic Mathematics & Speed Calculation",
+        slug: "mathematics",
+        description: "Ancient mental arithmetic methods, speed calculation techniques, and applied mathematical systems.",
+        actionHref: "/search?genre=Mathematics",
+        actionLabel: "Explore math",
+        iconName: "Compass",
+        iconBg: "bg-amber-50 dark:bg-amber-950/60 border-amber-200/60 dark:border-amber-800/60 text-amber-600 dark:text-amber-400",
+        books: allCatalog.filter((b) =>
+          b.genres.some((g) => ["mathematics", "vedic mathematics"].includes(g.name.toLowerCase()))
+        ),
+      },
+      {
+        id: "yoga",
+        title: "Yoga, Asanas & Holistic Health",
+        slug: "yoga",
+        description: "Classical postures, breathing practices, and physical wellness disciplines.",
+        actionHref: "/search?genre=Yoga",
+        actionLabel: "View yoga guides",
+        iconName: "HeartHandshake",
+        iconBg: "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200/60 dark:border-emerald-800/60 text-emerald-600 dark:text-emerald-400",
+        books: allCatalog.filter((b) =>
+          b.genres.some((g) => g.name.toLowerCase() === "yoga")
+        ),
+      },
+      {
+        id: "philosophy",
+        title: "Philosophy & Transformative Wisdom",
+        slug: "philosophy",
+        description: "Essential works on purpose, mindfulness, stoicism, and the human condition.",
+        actionHref: "/search?genre=Philosophy",
+        actionLabel: "Explore philosophy",
+        iconName: "Brain",
+        iconBg: "bg-purple-50 dark:bg-purple-950/60 border-purple-200/60 dark:border-purple-800/60 text-purple-600 dark:text-purple-400",
+        books: allCatalog.filter((b) =>
+          b.genres.some((g) => ["spirituality", "fiction", "novels"].includes(g.name.toLowerCase())) &&
+          !b.genres.some((g) => g.name.toLowerCase() === "biography")
+        ),
+      },
+      {
+        id: "biography",
+        title: "Biographies & Inspiring Memoirs",
+        slug: "biography",
+        description: "Lived journeys of visionaries, leaders, and remarkable historical figures.",
+        actionHref: "/search?genre=Biography",
+        actionLabel: "View memoirs",
+        iconName: "Landmark",
+        iconBg: "bg-orange-50 dark:bg-orange-950/60 border-orange-200/60 dark:border-orange-800/60 text-orange-600 dark:text-orange-400",
+        books: allCatalog.filter((b) =>
+          b.genres.some((g) => g.name.toLowerCase() === "biography")
+        ),
+      },
+      {
+        id: "art",
+        title: "Visual Arts & Design Anatomy",
+        slug: "art",
+        description: "Classical drawing fundamentals, aesthetic principles, and proportion studies.",
+        actionHref: "/search?genre=Art",
+        actionLabel: "Explore art books",
+        iconName: "Palette",
+        iconBg: "bg-pink-50 dark:bg-pink-950/60 border-pink-200/60 dark:border-pink-800/60 text-pink-600 dark:text-pink-400",
+        books: allCatalog.filter((b) =>
+          b.genres.some((g) => ["art", "drawing"].includes(g.name.toLowerCase()))
+        ),
+      },
+    ].filter((s) => s.books.length > 0);
 
     return {
       featuredBooks: featuredBooksData.map(BookSummaryMapper.toDto),
       trendingBooks: trendingBooksData.map(BookSummaryMapper.toDto),
       newBooks: (newBooksRes.data || []).map(BookSummaryMapper.toDto),
-      cybersecurityBooks,
-      programmingBooks,
-      mathematicsBooks,
-      yogaBooks,
-      philosophyBooks,
-      biographyBooks,
-      artBooks,
+      sections,
       featuredCollections,
       genres,
       subjects,
