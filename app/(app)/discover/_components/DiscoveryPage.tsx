@@ -8,7 +8,6 @@ import {
   Users,
   Compass,
   ChevronRight,
-  ShieldCheck,
   Layers,
   LucideIcon,
 } from "lucide-react";
@@ -36,7 +35,7 @@ export function DiscoveryPage({ config }: { config: DiscoveryConfiguration }) {
 
   return (
     <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-6 sm:py-8 lg:py-10 space-y-8 animate-in fade-in duration-300">
-      {/* 1. Breadcrumb & Status Pill */}
+      {/* 1. Breadcrumb */}
       <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
         <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-medium">
           <Link
@@ -57,11 +56,6 @@ export function DiscoveryPage({ config }: { config: DiscoveryConfiguration }) {
             {config.title}
           </span>
         </nav>
-
-        <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-xs font-semibold shadow-2xs">
-          <ShieldCheck size={13} className="text-emerald-500" />
-          <span>Verified Digital Editions</span>
-        </div>
       </div>
 
       {/* 2. Interactive Discovery Category Nav Tabs */}
