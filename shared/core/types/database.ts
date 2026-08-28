@@ -1247,6 +1247,24 @@ export type Database = {
           },
         ]
       }
+      role_permissions: {
+        Row: {
+          created_at: string | null
+          permission: string
+          role: string
+        }
+        Insert: {
+          created_at?: string | null
+          permission: string
+          role: string
+        }
+        Update: {
+          created_at?: string | null
+          permission?: string
+          role?: string
+        }
+        Relationships: []
+      }
       search_history: {
         Row: {
           clicked_document_id: string | null
@@ -1600,6 +1618,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_statistics: {
         Row: {

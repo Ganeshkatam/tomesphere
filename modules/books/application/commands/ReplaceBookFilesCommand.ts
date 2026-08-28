@@ -6,6 +6,6 @@ export interface ReplaceBookFilesCommand {
 
 export class ReplaceBookFilesHandler {
   async execute(command: ReplaceBookFilesCommand): Promise<void> {
-    throw new Error("Not implemented");
+    console.warn("[Deferred] ReplaceBookFilesCommand is not yet implemented. This boundary is reserved for future catalog management.");
   }
 }

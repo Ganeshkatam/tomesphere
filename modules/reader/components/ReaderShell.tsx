@@ -40,7 +40,12 @@ export function ReaderShell({ data }: ReaderShellProps) {
 
     async function init() {
       try {
-        const newService = new ReaderService(userId, data.book.id);
+        const newService = new ReaderService(
+          userId,
+          data.book.id,
+          data.session,
+          data.preferences,
+        );
         serviceRef.current = newService;
 
         const renderer = RendererFactory.create(data.book.fileType);

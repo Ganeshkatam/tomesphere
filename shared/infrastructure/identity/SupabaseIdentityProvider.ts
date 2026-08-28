@@ -35,7 +35,23 @@ export class SupabaseIdentityProvider implements IdentityProvider {
   }
 
   async hasRole(role: string): Promise<boolean> {
-    const user = await this.currentUser();
-    return user?.role === role;
+    const userId = await this.currentUserId();
+    if (!userId) return false;
+
+    if (role === "authenticated" || role === "user") return true;
+
+    const { data, error } = await this.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", role)
+      .maybeSingle();
+
+    if (error) {
+      console.error("[SupabaseIdentityProvider] Error checking role:", error);
+      return false;
+    }
+
+    return !!data;
   }
 }

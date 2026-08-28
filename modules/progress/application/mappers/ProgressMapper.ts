@@ -7,11 +7,11 @@ export class ProgressMapper {
   static toGoalDto(goal: ReadingGoal): ReadingGoalDto {
     return {
       id: goal.id,
-      year: goal.year,
+      year: goal.year || new Date().getFullYear(),
       targetBooks: goal.targetBooks,
       booksRead: goal.booksRead,
       progressPercentage: goal.calculateProgressPercentage(),
-      isCompleted: goal.booksRead >= goal.targetBooks,
+      isCompleted: goal.isAchieved(),
     };
   }
 

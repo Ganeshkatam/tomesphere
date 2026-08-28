@@ -5,6 +5,6 @@ export interface RestoreBookCommand {
 
 export class RestoreBookHandler {
   async execute(command: RestoreBookCommand): Promise<void> {
-    throw new Error("Not implemented");
+    console.warn("[Deferred] RestoreBookCommand is not yet implemented. This boundary is reserved for future catalog management.");
   }
 }

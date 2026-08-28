@@ -23,18 +23,18 @@ export class SupabaseSearchReadModel {
         p_page: page,
         p_page_size: pageSize,
         p_sort: sort,
-        p_genres: filters.genres || [],
-        p_subjects: filters.subjects || [],
-        p_languages: filters.language || [],
-        p_publication_years: filters.publicationYear || [],
+        p_genres: filters?.genres || [],
+        p_subjects: filters?.subjects || [],
+        p_languages: filters?.language || [],
+        p_publication_years: filters?.publicationYear || [],
         p_include_unavailable: includeUnavailable || false,
       }),
       this.supabase.rpc("get_search_facets_v1", {
         p_query: query || "",
-        p_genres: filters.genres || [],
-        p_subjects: filters.subjects || [],
-        p_languages: filters.language || [],
-        p_publication_years: filters.publicationYear || [],
+        p_genres: filters?.genres || [],
+        p_subjects: filters?.subjects || [],
+        p_languages: filters?.language || [],
+        p_publication_years: filters?.publicationYear || [],
         p_include_unavailable: includeUnavailable || false,
       }),
     ]);
@@ -103,7 +103,7 @@ export class SupabaseSearchReadModel {
         value: row.facet_value,
         label: row.facet_value,
         count: Number(row.match_count),
-        selected: (filters[key as keyof typeof filters] || [])
+        selected: (filters?.[key as keyof typeof filters] || [])
           .map(String)
           .includes(row.facet_value),
       });

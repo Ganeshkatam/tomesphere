@@ -3,6 +3,8 @@ import { processOutbox } from "@/shared/core/jobs/outbox-relay";
 import { eventBus } from "@/shared/core/events/EventBus";
 import { AnalyticsModule } from "@/modules/analytics/AnalyticsModule";
 import { NotificationsModule } from "@/modules/notifications/NotificationsModule";
+import { SupabaseNotificationRepository } from "@/modules/notifications/infrastructure/SupabaseNotificationRepository";
+import { createSupabaseServerClient } from "@/shared/core/database/server";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
@@ -19,7 +21,10 @@ export async function GET(request: Request) {
 
   // Register handlers before processing
   await AnalyticsModule.registerEventHandlers(eventBus);
-  await NotificationsModule.registerEventHandlers(eventBus);
+
+  const supabase = await createSupabaseServerClient();
+  const notificationRepository = new SupabaseNotificationRepository(supabase);
+  await NotificationsModule.registerEventHandlers(eventBus, notificationRepository);
 
   const result = await processOutbox(eventBus);
 

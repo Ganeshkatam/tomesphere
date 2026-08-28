@@ -16,7 +16,7 @@ export class UpdateReadingGoalCommand {
   ): Promise<UseCaseResult<void>> {
     try {
       if (payload.targetBooks < 0) {
-        throw new Error("Target books cannot be negative"); // In a real app we'd throw DomainError
+        throw new Error("Target books cannot be negative");
       }
 
       let goal = await this.goalRepo.findByUserIdAndYear(
@@ -28,9 +28,10 @@ export class UpdateReadingGoalCommand {
         // Create new goal if it doesn't exist
         goal = ReadingGoal.create("goal-" + Date.now(), {
           userId: payload.userId,
+          goalType: "books_per_year",
           year: payload.year,
-          targetBooks: payload.targetBooks,
-          booksRead: 0,
+          targetValue: payload.targetBooks,
+          currentValue: 0,
         });
       } else {
         goal.updateTargetBooks(payload.targetBooks);

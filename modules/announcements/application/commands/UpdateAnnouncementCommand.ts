@@ -1,6 +1,9 @@
 import { AnnouncementRepository } from "../../domain/repositories/AnnouncementRepository";
+import { PermissionService } from "@/modules/authorization/application/PermissionService";
+import { Permission } from "@/shared/kernel/security/Permission";
 
 export interface UpdateAnnouncementCommand {
+  callerId: string;
   id: string;
   title?: string;
   content?: string;
@@ -14,9 +17,17 @@ export interface UpdateAnnouncementCommand {
 }
 
 export class UpdateAnnouncementHandler {
-  constructor(private readonly repository: AnnouncementRepository) {}
+  constructor(
+    private readonly repository: AnnouncementRepository,
+    private readonly permissionService: PermissionService,
+  ) {}
 
   async execute(command: UpdateAnnouncementCommand): Promise<void> {
+    await this.permissionService.assertPermission(
+      command.callerId,
+      Permission.ManageAnnouncements,
+    );
+
     const entity = await this.repository.findById(command.id);
     if (!entity)
       throw new Error(`Announcement with id ${command.id} not found`);

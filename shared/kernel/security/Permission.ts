@@ -11,6 +11,9 @@ export enum Permission {
   // Community & Content
   ModerateReviews = "ModerateReviews",
 
+  // Announcements & Communications
+  ManageAnnouncements = "ManageAnnouncements",
+
   // Observability
   ViewAuditLogs = "ViewAuditLogs",
 }

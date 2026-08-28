@@ -1,6 +1,9 @@
 import { AnnouncementRepository } from "../../domain/repositories/AnnouncementRepository";
+import { PermissionService } from "@/modules/authorization/application/PermissionService";
+import { Permission } from "@/shared/kernel/security/Permission";
 
 export interface CreateAnnouncementCommand {
+  callerId: string;
   title: string;
   content: string;
   type: string;
@@ -13,9 +16,17 @@ export interface CreateAnnouncementCommand {
 }
 
 export class CreateAnnouncementHandler {
-  constructor(private readonly repository: AnnouncementRepository) {}
+  constructor(
+    private readonly repository: AnnouncementRepository,
+    private readonly permissionService: PermissionService,
+  ) {}
 
   async execute(command: CreateAnnouncementCommand): Promise<string> {
+    await this.permissionService.assertPermission(
+      command.callerId,
+      Permission.ManageAnnouncements,
+    );
+
     const id = crypto.randomUUID();
     await this.repository.save({
       id,

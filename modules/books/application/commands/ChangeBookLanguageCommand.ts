@@ -6,6 +6,6 @@ export interface ChangeBookLanguageCommand {
 
 export class ChangeBookLanguageHandler {
   async execute(command: ChangeBookLanguageCommand): Promise<void> {
-    throw new Error("Not implemented");
+    console.warn("[Deferred] ChangeBookLanguageCommand is not yet implemented. This boundary is reserved for future catalog management.");
   }
 }

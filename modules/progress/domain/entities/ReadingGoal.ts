@@ -1,10 +1,22 @@
 import { AggregateRoot } from "@/shared/kernel/AggregateRoot";
 
+export type ReadingGoalType =
+  | "books_per_year"
+  | "books_per_month"
+  | "pages_per_day"
+  | "pages_per_week"
+  | "daily_minutes"
+  | "custom";
+
 export interface ReadingGoalProps {
   userId: string;
-  year: number;
-  targetBooks: number;
-  booksRead: number;
+  goalType: ReadingGoalType;
+  targetValue: number;
+  currentValue: number;
+  year?: number | null;
+  isActive?: boolean;
+  startDate?: string | null;
+  endDate?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -14,16 +26,40 @@ export class ReadingGoal extends AggregateRoot<ReadingGoalProps> {
     return this.props.userId;
   }
 
-  get year(): number {
-    return this.props.year;
+  get goalType(): ReadingGoalType {
+    return this.props.goalType;
+  }
+
+  get targetValue(): number {
+    return this.props.targetValue;
+  }
+
+  get currentValue(): number {
+    return this.props.currentValue;
   }
 
   get targetBooks(): number {
-    return this.props.targetBooks;
+    return this.props.targetValue;
   }
 
   get booksRead(): number {
-    return this.props.booksRead;
+    return this.props.currentValue;
+  }
+
+  get year(): number | null | undefined {
+    return this.props.year;
+  }
+
+  get isActive(): boolean {
+    return this.props.isActive !== false;
+  }
+
+  get startDate(): string | null | undefined {
+    return this.props.startDate;
+  }
+
+  get endDate(): string | null | undefined {
+    return this.props.endDate;
   }
 
   get createdAt(): Date {
@@ -45,28 +81,54 @@ export class ReadingGoal extends AggregateRoot<ReadingGoalProps> {
       updatedAt?: Date;
     },
   ): ReadingGoal {
+    if (props.targetValue <= 0) {
+      throw new Error("Target value must be greater than zero");
+    }
+
     return new ReadingGoal(id, {
       ...props,
+      currentValue: Math.max(0, props.currentValue || 0),
+      isActive: props.isActive !== undefined ? props.isActive : true,
       createdAt: props.createdAt || new Date(),
       updatedAt: props.updatedAt || new Date(),
     });
   }
 
-  public updateBooksRead(booksRead: number): void {
-    this.props.booksRead = booksRead;
+  public updateTarget(targetValue: number): void {
+    if (targetValue <= 0) {
+      throw new Error("Target value must be greater than zero");
+    }
+    this.props.targetValue = targetValue;
     this.props.updatedAt = new Date();
   }
 
   public updateTargetBooks(targetBooks: number): void {
-    this.props.targetBooks = targetBooks;
+    this.updateTarget(targetBooks);
+  }
+
+  public updateBooksRead(booksRead: number): void {
+    this.updateCurrentProgress(booksRead);
+  }
+
+  public updateCurrentProgress(currentValue: number): void {
+    this.props.currentValue = Math.max(0, currentValue);
+    this.props.updatedAt = new Date();
+  }
+
+  public deactivate(): void {
+    this.props.isActive = false;
     this.props.updatedAt = new Date();
   }
 
   public calculateProgressPercentage(): number {
-    if (this.props.targetBooks === 0) return 0;
+    if (this.props.targetValue <= 0) return 0;
     return Math.min(
-      Math.round((this.props.booksRead / this.props.targetBooks) * 100),
+      Math.round((this.props.currentValue / this.props.targetValue) * 100),
       100,
     );
+  }
+
+  public isAchieved(): boolean {
+    return this.props.currentValue >= this.props.targetValue;
   }
 }

@@ -5,6 +5,6 @@ export interface ArchiveBookCommand {
 
 export class ArchiveBookHandler {
   async execute(command: ArchiveBookCommand): Promise<void> {
-    throw new Error("Not implemented");
+    console.warn("[Deferred] ArchiveBookCommand is not yet implemented. This boundary is reserved for future catalog management.");
   }
 }

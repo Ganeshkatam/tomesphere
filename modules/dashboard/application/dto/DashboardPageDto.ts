@@ -33,7 +33,15 @@ export interface ActiveReadingBookDto {
 
 export interface ReadingGoalDto {
   id: string;
-  type: "daily_minutes" | "annual_books" | "pages_monthly";
+  type:
+    | "daily_minutes"
+    | "annual_books"
+    | "pages_monthly"
+    | "books_per_year"
+    | "books_per_month"
+    | "pages_per_day"
+    | "pages_per_week"
+    | "custom";
   label: string;
   target: number;
   current: number;

@@ -8,6 +8,6 @@ export async function executeReaderFacade(bookId: string) {
   const identityProvider = new SupabaseIdentityProvider(supabase);
   const bookRepository = new SupabaseBookRepository(supabase);
 
-  const facade = new ReaderFacade(identityProvider, bookRepository);
+  const facade = new ReaderFacade(identityProvider, bookRepository, supabase);
   return facade.getReaderPage(bookId);
 }

@@ -4,11 +4,13 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { ServerActionResult } from "@/lib/actions/action-result";
+import { requireAuth } from "@/modules/security/application/requireAuth";
 import { SupabaseAnnouncementRepository } from "../../infrastructure/SupabaseAnnouncementRepository";
+import { SupabaseAuthorizationRepository } from "@/modules/authorization/infrastructure/SupabaseAuthorizationRepository";
+import { PermissionService } from "@/modules/authorization/application/PermissionService";
 import { CreateAnnouncementHandler } from "../../application/commands/CreateAnnouncementCommand";
 import { UpdateAnnouncementHandler } from "../../application/commands/UpdateAnnouncementCommand";
 import { DeleteAnnouncementHandler } from "../../application/commands/DeleteAnnouncementCommand";
-import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Input Schemas
 const CreateAnnouncementInputSchema = z.object({
@@ -44,49 +46,24 @@ export type CreateAnnouncementInput = z.infer<typeof CreateAnnouncementInputSche
 export type UpdateAnnouncementInput = z.infer<typeof UpdateAnnouncementInputSchema>;
 
 /**
- * Authorization Guard: Verifies authentication & elevated administrator role.
- */
-async function authorizeAdmin(supabase: SupabaseClient): Promise<string> {
-  const { data: { user }, error } = await supabase.auth.getUser();
-
-  if (error || !user) {
-    throw new Error("Authentication required.");
-  }
-
-  // Check granular permission RPC or app/user metadata
-  const { data: hasPerm } = await supabase.rpc("has_permission", {
-    p_user_id: user.id,
-    p_permission: "ManageUsers",
-  });
-
-  const isAdmin =
-    hasPerm === true ||
-    user.app_metadata?.role === "admin" ||
-    user.user_metadata?.role === "admin";
-
-  if (!isAdmin) {
-    throw new Error("Unauthorized: Administrator permissions required.");
-  }
-
-  return user.id;
-}
-
-/**
- * Server Action: Create an announcement (Admin only)
+ * Server Action: Create an announcement (Authorized callers only)
  */
 export async function createAnnouncementAction(
   rawInput: CreateAnnouncementInput
 ): Promise<ServerActionResult<{ id: string }>> {
   try {
-    const supabase = await createSupabaseServerClient();
-    await authorizeAdmin(supabase);
-
+    const user = await requireAuth();
     const validated = CreateAnnouncementInputSchema.parse(rawInput);
 
-    const repository = new SupabaseAnnouncementRepository(supabase as any);
-    const handler = new CreateAnnouncementHandler(repository);
+    const supabase = await createSupabaseServerClient();
+    const announcementRepo = new SupabaseAnnouncementRepository(supabase as any);
+    const authRepo = new SupabaseAuthorizationRepository(supabase);
+    const permissionService = new PermissionService(authRepo);
+
+    const handler = new CreateAnnouncementHandler(announcementRepo, permissionService);
 
     const id = await handler.execute({
+      callerId: user.id,
       title: validated.title,
       content: validated.content,
       type: validated.type,
@@ -110,21 +87,24 @@ export async function createAnnouncementAction(
 }
 
 /**
- * Server Action: Update an announcement (Admin only)
+ * Server Action: Update an announcement (Authorized callers only)
  */
 export async function updateAnnouncementAction(
   rawInput: UpdateAnnouncementInput
 ): Promise<ServerActionResult<void>> {
   try {
-    const supabase = await createSupabaseServerClient();
-    await authorizeAdmin(supabase);
-
+    const user = await requireAuth();
     const validated = UpdateAnnouncementInputSchema.parse(rawInput);
 
-    const repository = new SupabaseAnnouncementRepository(supabase as any);
-    const handler = new UpdateAnnouncementHandler(repository);
+    const supabase = await createSupabaseServerClient();
+    const announcementRepo = new SupabaseAnnouncementRepository(supabase as any);
+    const authRepo = new SupabaseAuthorizationRepository(supabase);
+    const permissionService = new PermissionService(authRepo);
+
+    const handler = new UpdateAnnouncementHandler(announcementRepo, permissionService);
 
     await handler.execute({
+      callerId: user.id,
       id: validated.id,
       title: validated.title,
       content: validated.content,
@@ -149,21 +129,26 @@ export async function updateAnnouncementAction(
 }
 
 /**
- * Server Action: Delete an announcement (Admin only)
+ * Server Action: Delete an announcement (Authorized callers only)
  */
 export async function deleteAnnouncementAction(
   rawId: string
 ): Promise<ServerActionResult<void>> {
   try {
-    const supabase = await createSupabaseServerClient();
-    await authorizeAdmin(supabase);
-
+    const user = await requireAuth();
     const { id } = DeleteAnnouncementInputSchema.parse({ id: rawId });
 
-    const repository = new SupabaseAnnouncementRepository(supabase as any);
-    const handler = new DeleteAnnouncementHandler(repository);
+    const supabase = await createSupabaseServerClient();
+    const announcementRepo = new SupabaseAnnouncementRepository(supabase as any);
+    const authRepo = new SupabaseAuthorizationRepository(supabase);
+    const permissionService = new PermissionService(authRepo);
 
-    await handler.execute({ id });
+    const handler = new DeleteAnnouncementHandler(announcementRepo, permissionService);
+
+    await handler.execute({
+      callerId: user.id,
+      id,
+    });
 
     revalidatePath("/", "layout");
 

@@ -24,6 +24,7 @@ import {
 } from "../presentation/actions/reader";
 import { useReaderStore } from "../state/reader-store";
 import { ReaderSessionFacade } from "./facades/ReaderSessionFacade";
+import { ReaderSessionDto, ReaderPreferencesDto } from "./dto/ReaderPageDto";
 
 export class ReaderService {
   private renderer: ReaderRenderer | null = null;
@@ -52,7 +53,12 @@ export class ReaderService {
   private notes: ReaderNote[] = [];
   private bookmarks: ReaderBookmark[] = [];
 
-  constructor(userId: string, bookId: string) {
+  constructor(
+    userId: string,
+    bookId: string,
+    private initialSession?: ReaderSessionDto,
+    private initialPreferences?: ReaderPreferencesDto,
+  ) {
     this.userId = userId;
     this.bookId = bookId;
     this.storageKey = `tomesphere_reader_pos_${bookId}`;
@@ -72,9 +78,24 @@ export class ReaderService {
     store.setSessionState("opening");
     store.setBook(this.bookId);
 
-    // 1. Resolve last read position from local cache and backend
+    if (this.initialPreferences) {
+      store.setPreferences(this.initialPreferences);
+    }
+
+    // 1. Resolve canonical reading position (prioritize server session position, then local cache)
     let initialAnchor: LocationAnchor | null = null;
     let initialPageNumber = 1;
+
+    if (this.initialSession?.position) {
+      const pos = this.initialSession.position;
+      if (typeof pos === "object" && pos.type && pos.value) {
+        initialAnchor = pos;
+        const parsed = parseInt(pos.value, 10);
+        if (Number.isInteger(parsed) && parsed > 0) {
+          initialPageNumber = parsed;
+        }
+      }
+    }
 
     if (typeof window !== "undefined") {
       try {
@@ -82,8 +103,11 @@ export class ReaderService {
         if (cached) {
           const parsed = JSON.parse(cached);
           if (parsed?.anchor && parsed?.page) {
-            initialAnchor = parsed.anchor;
-            initialPageNumber = parseInt(parsed.page, 10) || 1;
+            // If we didn't have a server position, or if cache is valid, use it
+            if (!initialAnchor) {
+              initialAnchor = parsed.anchor;
+              initialPageNumber = parseInt(parsed.page, 10) || 1;
+            }
           }
         }
       } catch (err) {
@@ -91,19 +115,20 @@ export class ReaderService {
       }
     }
 
-    try {
-      const res = await getReaderPositionAction(this.bookId);
-      if (res.success && res.data?.locationAnchor) {
-        const remoteAnchor = res.data.locationAnchor;
-        const remotePage = parseInt(remoteAnchor.value, 10);
-        if (Number.isInteger(remotePage) && remotePage > 0) {
-          // If remote position is available, use it or prioritize newer
-          initialAnchor = remoteAnchor;
-          initialPageNumber = remotePage;
+    if (!initialAnchor) {
+      try {
+        const res = await getReaderPositionAction(this.bookId);
+        if (res.success && res.data?.locationAnchor) {
+          const remoteAnchor = res.data.locationAnchor;
+          const remotePage = parseInt(remoteAnchor.value, 10);
+          if (Number.isInteger(remotePage) && remotePage > 0) {
+            initialAnchor = remoteAnchor;
+            initialPageNumber = remotePage;
+          }
         }
+      } catch (err) {
+        console.warn("Could not fetch remote reading position:", err);
       }
-    } catch (err) {
-      console.warn("Could not fetch remote reading position:", err);
     }
 
     // Record initial saved position to prevent redundant immediate saves
