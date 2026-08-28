@@ -62,7 +62,6 @@ export default async function DiscoverOverviewPage() {
     philosophyBooks = [],
     biographyBooks = [],
     artBooks = [],
-    scienceBooks = [],
     featuredCollections = [],
     subjects = [],
   } = overviewData;
@@ -237,7 +236,7 @@ export default async function DiscoverOverviewPage() {
           </DiscoverySection>
         )}
 
-        {/* Section 9: Visual Arts & Creative Design */}
+        {/* Section 7: Visual Arts & Creative Design */}
         {artBooks.length > 0 && (
           <DiscoverySection
             title="Visual Arts & Creative Design"
@@ -246,18 +245,6 @@ export default async function DiscoverOverviewPage() {
             actionLabel="Explore art books"
           >
             <BookCarousel items={artBooks} />
-          </DiscoverySection>
-        )}
-
-        {/* Section 10: Foundational Educational Textbooks */}
-        {scienceBooks.length > 0 && (
-          <DiscoverySection
-            title="Foundational Educational Textbooks"
-            description="Secondary physical sciences, curriculum mathematics, and foundational academic learning."
-            actionHref="/search?q=Science"
-            actionLabel="Explore textbooks"
-          >
-            <BookCarousel items={scienceBooks} />
           </DiscoverySection>
         )}
 

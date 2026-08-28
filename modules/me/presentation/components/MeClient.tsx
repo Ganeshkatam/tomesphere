@@ -101,7 +101,7 @@ export function MeClient({ data }: MeClientProps) {
 
   // Progressive On-Demand Stream Management (loads remaining sections individually on user scroll/demand)
   const [loadedExtraSections, setLoadedExtraSections] = useState(0);
-  const TOTAL_EXTRA_SECTIONS = 9;
+  const TOTAL_EXTRA_SECTIONS = 8;
   const bottomTriggerRef = useRef<HTMLDivElement>(null);
   const [isLoadingNext, setIsLoadingNext] = useState(false);
 
@@ -329,25 +329,8 @@ export function MeClient({ data }: MeClientProps) {
         </LazySection>
       )}
 
-      {/* Extra 8: Foundational Sciences & Education */}
+      {/* Extra 8: Explore by Discipline & Subject Chips */}
       {loadedExtraSections >= 8 && (
-        <LazySection fallback={<BooksShelfSkeleton />}>
-          <Suspense fallback={<BooksShelfSkeleton />}>
-            <CuratedDisciplineShelfSection
-              title="Foundational Sciences & Education"
-              description="Explorations in physical sciences, foundational textbooks, and systematic inquiry."
-              icon={<Atom size={16} />}
-              iconBg="bg-teal-50 dark:bg-teal-950/60 border-teal-200/60 dark:border-teal-800/60 text-teal-600 dark:text-teal-400"
-              categoryKey="scienceBooks"
-              viewAllHref="/search?genre=Science"
-              promise={data.discovery}
-            />
-          </Suspense>
-        </LazySection>
-      )}
-
-      {/* Extra 9: Explore by Discipline & Subject Chips */}
-      {loadedExtraSections >= 9 && (
         <LazySection fallback={<DiscoveryTabsSkeleton />}>
           <Suspense fallback={<DiscoveryTabsSkeleton />}>
             <SubjectsExplorerSection promise={data.discovery} />

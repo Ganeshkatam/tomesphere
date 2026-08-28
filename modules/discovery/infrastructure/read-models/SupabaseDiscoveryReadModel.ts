@@ -97,53 +97,35 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
 
     const allCatalog = (catalogRes.data || []).map(BookSummaryMapper.toDto);
 
-    // Canonical Genre/Discipline Categorizations
+    // Exact Categorization Based Purely on Catalog Books
     const cybersecurityBooks = allCatalog.filter((b) =>
-      b.genres.some((g) =>
-        ["cybersecurity", "security"].includes(g.name.toLowerCase())
-      ) || b.title.toLowerCase().includes("hacker") || b.title.toLowerCase().includes("security")
+      b.genres.some((g) => g.name.toLowerCase() === "cybersecurity")
     );
 
     const programmingBooks = allCatalog.filter((b) =>
-      b.genres.some((g) =>
-        ["programming", "computer science"].includes(g.name.toLowerCase())
-      ) || ["python", "javascript", "java"].some((term) => b.title.toLowerCase().includes(term))
+      b.genres.some((g) => g.name.toLowerCase() === "programming") &&
+      !b.genres.some((g) => g.name.toLowerCase() === "cybersecurity")
     );
 
     const mathematicsBooks = allCatalog.filter((b) =>
-      b.genres.some((g) =>
-        ["mathematics", "vedic mathematics"].includes(g.name.toLowerCase())
-      ) || ["maths", "vedic"].some((term) => b.title.toLowerCase().includes(term))
+      b.genres.some((g) => ["mathematics", "vedic mathematics"].includes(g.name.toLowerCase()))
     );
 
     const yogaBooks = allCatalog.filter((b) =>
-      b.genres.some((g) =>
-        ["yoga", "health"].includes(g.name.toLowerCase())
-      ) || ["yoga", "asanas"].some((term) => b.title.toLowerCase().includes(term))
+      b.genres.some((g) => g.name.toLowerCase() === "yoga")
     );
 
     const philosophyBooks = allCatalog.filter((b) =>
-      b.genres.some((g) =>
-        ["spirituality", "motivation", "fiction", "novels", "philosophy"].includes(g.name.toLowerCase())
-      )
+      b.genres.some((g) => ["spirituality", "fiction", "novels"].includes(g.name.toLowerCase())) &&
+      !b.genres.some((g) => g.name.toLowerCase() === "biography")
     );
 
     const biographyBooks = allCatalog.filter((b) =>
-      b.genres.some((g) =>
-        ["biography", "history"].includes(g.name.toLowerCase())
-      ) || ["wings of fire", "autobiography"].some((term) => b.title.toLowerCase().includes(term))
+      b.genres.some((g) => g.name.toLowerCase() === "biography")
     );
 
     const artBooks = allCatalog.filter((b) =>
-      b.genres.some((g) =>
-        ["art", "drawing"].includes(g.name.toLowerCase())
-      ) || ["figure drawing", "design"].some((term) => b.title.toLowerCase().includes(term))
-    );
-
-    const scienceBooks = allCatalog.filter((b) =>
-      b.genres.some((g) =>
-        ["science", "education"].includes(g.name.toLowerCase())
-      )
+      b.genres.some((g) => ["art", "drawing"].includes(g.name.toLowerCase()))
     );
 
     return {
@@ -157,10 +139,6 @@ export class SupabaseDiscoveryReadModel implements DiscoveryReadModel {
       philosophyBooks,
       biographyBooks,
       artBooks,
-      scienceBooks,
-      classicsBooks: philosophyBooks,
-      historyBooks: biographyBooks,
-      curatedBooks: featuredBooksData.map(BookSummaryMapper.toDto),
       featuredCollections,
       genres,
       subjects,
