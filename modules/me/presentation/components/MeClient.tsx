@@ -26,10 +26,13 @@ import {
   Lightbulb,
   PlusCircle,
   Loader2,
+  Shield,
+  Code2,
 } from "lucide-react";
 import { MePageDto } from "../../application/facades/MePageFacade";
 import { CurrentReadingDto } from "@/modules/library/application/queries/GetCurrentReadingQuery/dto";
 import { DiscoveryOverviewPageDto } from "@/modules/discovery/application/facades/DiscoveryFacade";
+import { DiscoveryOverviewDto } from "@/modules/discovery/application/queries/GetDiscoveryOverview/read-model";
 import BookCard from "@/modules/books/components/BookCard";
 import MeHeroSection from "./MeHeroSection";
 
@@ -98,7 +101,7 @@ export function MeClient({ data }: MeClientProps) {
 
   // Progressive On-Demand Stream Management (loads remaining sections individually on user scroll/demand)
   const [loadedExtraSections, setLoadedExtraSections] = useState(0);
-  const TOTAL_EXTRA_SECTIONS = 14;
+  const TOTAL_EXTRA_SECTIONS = 9;
   const bottomTriggerRef = useRef<HTMLDivElement>(null);
   const [isLoadingNext, setIsLoadingNext] = useState(false);
 
@@ -207,212 +210,144 @@ export function MeClient({ data }: MeClientProps) {
       {/* On-Demand Progressive Shelves (Streamed individually on demand) */}
       {/* ------------------------------------------------------------- */}
 
-      {/* Extra 1: Timeless Philosophy & Mind */}
+      {/* Extra 1: Cybersecurity & Offensive Defense */}
       {loadedExtraSections >= 1 && (
         <LazySection fallback={<BooksShelfSkeleton />}>
           <Suspense fallback={<BooksShelfSkeleton />}>
             <CuratedDisciplineShelfSection
-              title="Timeless Philosophy & Mind"
-              description="Essential treatises on ethics, stoicism, logic, and human consciousness."
-              icon={<Brain size={16} />}
-              iconBg="bg-purple-50 dark:bg-purple-950/60 border-purple-200/60 dark:border-purple-800/60 text-purple-600 dark:text-purple-400"
-              genre="Philosophy"
-              offset={0}
+              title="Cybersecurity & Offensive Defense"
+              description="Deep technical treatises on application security, exploitation, and vulnerability discovery."
+              icon={<Shield size={16} />}
+              iconBg="bg-slate-900 border-slate-700 text-emerald-400"
+              categoryKey="cybersecurityBooks"
+              viewAllHref="/search?genre=Cybersecurity"
               promise={data.discovery}
             />
           </Suspense>
         </LazySection>
       )}
 
-      {/* Extra 2: Scientific Pioneers & Mathematics */}
+      {/* Extra 2: Software Engineering & Programming */}
       {loadedExtraSections >= 2 && (
         <LazySection fallback={<BooksShelfSkeleton />}>
           <Suspense fallback={<BooksShelfSkeleton />}>
             <CuratedDisciplineShelfSection
-              title="Scientific Pioneers & Mathematics"
-              description="Landmark discoveries that shaped modern physics, astronomy, and mathematics."
-              icon={<Atom size={16} />}
-              iconBg="bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200/60 dark:border-emerald-800/60 text-emerald-600 dark:text-emerald-400"
-              genre="Science"
-              offset={1}
+              title="Software Engineering & Programming"
+              description="Foundations of computing, software systems, algorithms, and practical programming languages."
+              icon={<Code2 size={16} />}
+              iconBg="bg-blue-50 dark:bg-blue-950/60 border-blue-200/60 dark:border-blue-800/60 text-blue-600 dark:text-blue-400"
+              categoryKey="programmingBooks"
+              viewAllHref="/search?genre=Programming"
               promise={data.discovery}
             />
           </Suspense>
         </LazySection>
       )}
 
-      {/* Extra 3: Classical Literature & Masterpieces */}
+      {/* Extra 3: Vedic Mathematics & Speed Calculation */}
       {loadedExtraSections >= 3 && (
         <LazySection fallback={<BooksShelfSkeleton />}>
           <Suspense fallback={<BooksShelfSkeleton />}>
             <CuratedDisciplineShelfSection
-              title="Classical Literature & Masterpieces"
-              description="Enduring poetry, dramatic works, and iconic epics preserved through ages."
-              icon={<Feather size={16} />}
-              iconBg="bg-rose-50 dark:bg-rose-950/60 border-rose-200/60 dark:border-rose-800/60 text-rose-600 dark:text-rose-400"
-              genre="Literature"
-              offset={2}
+              title="Vedic Mathematics & Speed Calculation"
+              description="Ancient mental arithmetic methods, speed calculation techniques, and applied mathematical systems."
+              icon={<Compass size={16} />}
+              iconBg="bg-amber-50 dark:bg-amber-950/60 border-amber-200/60 dark:border-amber-800/60 text-amber-600 dark:text-amber-400"
+              categoryKey="mathematicsBooks"
+              viewAllHref="/search?genre=Mathematics"
               promise={data.discovery}
             />
           </Suspense>
         </LazySection>
       )}
 
-      {/* Extra 4: Poetry, Odes & Sonnets */}
+      {/* Extra 4: Yoga, Asanas & Holistic Health */}
       {loadedExtraSections >= 4 && (
         <LazySection fallback={<BooksShelfSkeleton />}>
           <Suspense fallback={<BooksShelfSkeleton />}>
             <CuratedDisciplineShelfSection
-              title="Poetry, Odes & Sonnets"
-              description="Lyrical verse, romantic odes, and timeless sonnets from world-renowned poets."
-              icon={<Scroll size={16} />}
-              iconBg="bg-rose-50 dark:bg-rose-950/60 border-rose-200/60 dark:border-rose-800/60 text-rose-600 dark:text-rose-400"
-              genre="Poetry"
-              offset={3}
+              title="Yoga, Asanas & Holistic Health"
+              description="Classical postures, breathing practices, and physical wellness disciplines."
+              icon={<HeartHandshake size={16} />}
+              iconBg="bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200/60 dark:border-emerald-800/60 text-emerald-600 dark:text-emerald-400"
+              categoryKey="yogaBooks"
+              viewAllHref="/search?genre=Yoga"
               promise={data.discovery}
             />
           </Suspense>
         </LazySection>
       )}
 
-      {/* Extra 5: Short Reads & Quick Explorations */}
+      {/* Extra 5: Philosophy & Transformative Wisdom */}
       {loadedExtraSections >= 5 && (
         <LazySection fallback={<BooksShelfSkeleton />}>
           <Suspense fallback={<BooksShelfSkeleton />}>
             <CuratedDisciplineShelfSection
-              title="Short Reads & Quick Explorations"
-              description="Concise essays, compact treatises, and illuminating short works under 120 pages."
-              icon={<Lightbulb size={16} />}
-              iconBg="bg-amber-50 dark:bg-amber-950/60 border-amber-200/60 dark:border-amber-800/60 text-amber-600 dark:text-amber-400"
-              genre="Short"
-              offset={3}
+              title="Philosophy & Transformative Wisdom"
+              description="Essential works on purpose, mindfulness, stoicism, and the human condition."
+              icon={<Brain size={16} />}
+              iconBg="bg-purple-50 dark:bg-purple-950/60 border-purple-200/60 dark:border-purple-800/60 text-purple-600 dark:text-purple-400"
+              categoryKey="philosophyBooks"
+              viewAllHref="/search?genre=Philosophy"
               promise={data.discovery}
             />
           </Suspense>
         </LazySection>
       )}
 
-      {/* Extra 6: Historical Chronicles & Ancient Civilizations */}
+      {/* Extra 6: Biographies & Inspiring Memoirs */}
       {loadedExtraSections >= 6 && (
         <LazySection fallback={<BooksShelfSkeleton />}>
           <Suspense fallback={<BooksShelfSkeleton />}>
             <CuratedDisciplineShelfSection
-              title="Historical Chronicles & Civilizations"
-              description="Firsthand accounts, classical histories, and accounts of empires."
+              title="Biographies & Inspiring Memoirs"
+              description="Lived journeys of visionaries, leaders, and remarkable historical figures."
               icon={<Landmark size={16} />}
-              iconBg="bg-blue-50 dark:bg-blue-950/60 border-blue-200/60 dark:border-blue-800/60 text-blue-600 dark:text-blue-400"
-              genre="History"
-              offset={4}
+              iconBg="bg-orange-50 dark:bg-orange-950/60 border-orange-200/60 dark:border-orange-800/60 text-orange-600 dark:text-orange-400"
+              categoryKey="biographyBooks"
+              viewAllHref="/search?genre=Biography"
               promise={data.discovery}
             />
           </Suspense>
         </LazySection>
       )}
 
-      {/* Extra 7: Psychology, Cognition & Human Nature */}
+      {/* Extra 7: Visual Arts & Design Anatomy */}
       {loadedExtraSections >= 7 && (
         <LazySection fallback={<BooksShelfSkeleton />}>
           <Suspense fallback={<BooksShelfSkeleton />}>
             <CuratedDisciplineShelfSection
-              title="Psychology & The Human Condition"
-              description="Pioneering explorations into behavior, dreams, memory, and perception."
-              icon={<HeartHandshake size={16} />}
+              title="Visual Arts & Design Anatomy"
+              description="Classical drawing fundamentals, aesthetic principles, and proportion studies."
+              icon={<Palette size={16} />}
               iconBg="bg-pink-50 dark:bg-pink-950/60 border-pink-200/60 dark:border-pink-800/60 text-pink-600 dark:text-pink-400"
-              genre="Psychology"
-              offset={5}
+              categoryKey="artBooks"
+              viewAllHref="/search?genre=Art"
               promise={data.discovery}
             />
           </Suspense>
         </LazySection>
       )}
 
-      {/* Extra 8: Art, Architecture & Aesthetic Theory */}
+      {/* Extra 8: Foundational Sciences & Education */}
       {loadedExtraSections >= 8 && (
         <LazySection fallback={<BooksShelfSkeleton />}>
           <Suspense fallback={<BooksShelfSkeleton />}>
             <CuratedDisciplineShelfSection
-              title="Art, Architecture & Aesthetics"
-              description="Treatises on visual arts, Renaissance sculpture, drafting, and artistic theory."
-              icon={<Palette size={16} />}
-              iconBg="bg-indigo-50 dark:bg-indigo-950/60 border-indigo-200/60 dark:border-indigo-800/60 text-indigo-600 dark:text-indigo-400"
-              genre="Art"
-              offset={6}
-              promise={data.discovery}
-            />
-          </Suspense>
-        </LazySection>
-      )}
-
-      {/* Extra 9: Astronomy & Celestial Observation */}
-      {loadedExtraSections >= 9 && (
-        <LazySection fallback={<BooksShelfSkeleton />}>
-          <Suspense fallback={<BooksShelfSkeleton />}>
-            <CuratedDisciplineShelfSection
-              title="Astronomy & The Cosmos"
-              description="Historic star charts, planetary treatises, and early cosmos observations."
-              icon={<Telescope size={16} />}
-              iconBg="bg-cyan-50 dark:bg-cyan-950/60 border-cyan-200/60 dark:border-cyan-800/60 text-cyan-600 dark:text-cyan-400"
-              genre="Astronomy"
-              offset={7}
-              promise={data.discovery}
-            />
-          </Suspense>
-        </LazySection>
-      )}
-
-      {/* Extra 10: Mythology, Folklore & Ancient Sagas */}
-      {loadedExtraSections >= 10 && (
-        <LazySection fallback={<BooksShelfSkeleton />}>
-          <Suspense fallback={<BooksShelfSkeleton />}>
-            <CuratedDisciplineShelfSection
-              title="Mythology & Ancient Sagas"
-              description="Epic lore, folklore traditions, and timeless heroic mythologies of world cultures."
-              icon={<Scroll size={16} />}
-              iconBg="bg-orange-50 dark:bg-orange-950/60 border-orange-200/60 dark:border-orange-800/60 text-orange-600 dark:text-orange-400"
-              genre="Mythology"
-              offset={8}
-              promise={data.discovery}
-            />
-          </Suspense>
-        </LazySection>
-      )}
-
-      {/* Extra 11: Archivist Picks: Hidden Gems */}
-      {loadedExtraSections >= 11 && (
-        <LazySection fallback={<BooksShelfSkeleton />}>
-          <Suspense fallback={<BooksShelfSkeleton />}>
-            <CuratedDisciplineShelfSection
-              title="Archivist's Choice: Hidden Gems"
-              description="Lesser-known rare gems and overlooked treasures from deep digital vaults."
-              icon={<Gem size={16} />}
-              iconBg="bg-violet-50 dark:bg-violet-950/60 border-violet-200/60 dark:border-violet-800/60 text-violet-600 dark:text-violet-400"
-              genre="Rare"
-              offset={9}
-              promise={data.discovery}
-            />
-          </Suspense>
-        </LazySection>
-      )}
-
-      {/* Extra 12: Community Favorites & Heavily Bookmarked */}
-      {loadedExtraSections >= 12 && (
-        <LazySection fallback={<BooksShelfSkeleton />}>
-          <Suspense fallback={<BooksShelfSkeleton />}>
-            <CuratedDisciplineShelfSection
-              title="Community Favorites & Saved Classics"
-              description="The most frequently saved and bookmarked public domain works across our readers."
-              icon={<BookmarkCheck size={16} />}
+              title="Foundational Sciences & Education"
+              description="Explorations in physical sciences, foundational textbooks, and systematic inquiry."
+              icon={<Atom size={16} />}
               iconBg="bg-teal-50 dark:bg-teal-950/60 border-teal-200/60 dark:border-teal-800/60 text-teal-600 dark:text-teal-400"
-              genre="Popular"
-              offset={10}
+              categoryKey="scienceBooks"
+              viewAllHref="/search?genre=Science"
               promise={data.discovery}
             />
           </Suspense>
         </LazySection>
       )}
 
-      {/* Extra 13: Explore by Discipline & Subject Chips */}
-      {loadedExtraSections >= 13 && (
+      {/* Extra 9: Explore by Discipline & Subject Chips */}
+      {loadedExtraSections >= 9 && (
         <LazySection fallback={<DiscoveryTabsSkeleton />}>
           <Suspense fallback={<DiscoveryTabsSkeleton />}>
             <SubjectsExplorerSection promise={data.discovery} />
@@ -784,61 +719,32 @@ function PublicSizedShelfSection({
 }
 
 // ----------------------------------------------------------------------
-// Reusable Curated Discipline & Category Shelf
-// ----------------------------------------------------------------------
+interface CuratedDisciplineShelfSectionProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  iconBg: string;
+  categoryKey: keyof DiscoveryOverviewDto;
+  viewAllHref?: string;
+  promise: Promise<DiscoveryOverviewPageDto>;
+}
 
 function CuratedDisciplineShelfSection({
   title,
   description,
   icon,
   iconBg,
-  genre,
-  offset = 0,
+  categoryKey,
+  viewAllHref,
   promise,
-}: {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  iconBg: string;
-  genre: string;
-  offset?: number;
-  promise: Promise<DiscoveryOverviewPageDto>;
-}) {
+}: CuratedDisciplineShelfSectionProps) {
   const result = use(promise);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Filter or smartly slice diverse books with offset rotation
-  const disciplineBooks = useMemo(() => {
-    const rawBooks = [
-      ...(result?.featured?.items || []),
-      ...(result?.trending?.books || []),
-      ...(result?.newArrivals?.items || []),
-    ];
-    const seen = new Set<string>();
-    const allBooks = rawBooks.filter((book) => {
-      const id = book?.id;
-      if (!id || seen.has(id)) return false;
-      seen.add(id);
-      return true;
-    });
+  const rawBooks = result?.overview?.[categoryKey];
+  const disciplineBooks = Array.isArray(rawBooks) ? rawBooks : [];
 
-    const matched = allBooks.filter((b) =>
-      b.genres?.some((g: any) =>
-        (typeof g === "string" ? g : g.name)
-          .toLowerCase()
-          .includes(genre.toLowerCase())
-      )
-    );
-
-    if (matched.length >= 3) {
-      return matched.slice(0, 8);
-    }
-
-    // Diverse rotated slice so each distinct shelf shows distinct books
-    const start = (offset * 2) % Math.max(1, allBooks.length);
-    const rotated = [...allBooks.slice(start), ...allBooks.slice(0, start)];
-    return rotated.slice(0, 8);
-  }, [result, genre, offset]);
+  if (disciplineBooks.length === 0) return null;
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -867,8 +773,18 @@ function CuratedDisciplineShelfSection({
           </p>
         </div>
 
-        {/* Scroll Arrows */}
-        <div className="flex items-center gap-1.5 self-end sm:self-auto">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          {viewAllHref && (
+            <Link
+              href={viewAllHref}
+              className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1 mr-2"
+            >
+              <span>See all</span>
+              <ChevronRight size={14} />
+            </Link>
+          )}
+
+          {/* Scroll Arrows */}
           <button
             onClick={() => scroll("left")}
             aria-label={`Scroll ${title} left`}
@@ -894,7 +810,7 @@ function CuratedDisciplineShelfSection({
         >
           {disciplineBooks.map((item: any, i: number) => (
             <div
-              key={`discipline-${genre}-${item.id || i}-${i}`}
+              key={`discipline-${String(categoryKey)}-${item.id || i}-${i}`}
               className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col group/item transition-all duration-300 relative hover:z-40"
             >
               <BookCard book={item} />
