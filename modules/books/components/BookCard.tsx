@@ -57,7 +57,6 @@ export default function BookCard({
   priority = false,
 }: BookCardProps) {
   const router = useRouter();
-  const [imageLoaded, setImageLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [shelves, setShelves] = useState<CollectionDto[]>([]);
@@ -167,10 +166,6 @@ export default function BookCard({
       >
         {/* Cover Aspect [2/3] with Quick Hover Action Overlay */}
         <div className="relative aspect-[2/3] w-full shrink-0 overflow-hidden rounded-t-2xl bg-slate-100 dark:bg-slate-950">
-          {!imageLoaded && book.coverUrl && !hasError && (
-            <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse z-0" />
-          )}
-
           {book.coverUrl && !hasError ? (
             <Image
               src={book.coverUrl}
@@ -179,11 +174,8 @@ export default function BookCard({
               sizes="(max-width: 480px) 50vw, (max-width: 768px) 33vw, 240px"
               priority={priority}
               unoptimized={true}
-              className={`object-cover transition-transform duration-500 group-hover:scale-105 ${imageLoaded ? "opacity-100" : "opacity-0"
-                }`}
-              onLoad={() => setImageLoaded(true)}
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
               onError={() => {
-                setImageLoaded(true);
                 setHasError(true);
               }}
             />

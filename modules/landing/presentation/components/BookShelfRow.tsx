@@ -30,7 +30,7 @@ export default function BookShelfRow({
 }: BookShelfRowProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isRevealed, setIsRevealed] = useState(!onDemand);
+  const [isRevealed, setIsRevealed] = useState(true);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const lastScrollY = useRef(0);
