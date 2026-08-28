@@ -1,6 +1,6 @@
 import { IEventBus } from "@/shared/core/events/types";
 import { INotificationRepository } from "../../domain/repositories/INotificationRepository";
-import { NotificationPreferencesRepository } from "@/modules/me/account/notifications/domain/repositories/NotificationPreferencesRepository";
+import { INotificationPreferencesRepository } from "../../domain/repositories/INotificationPreferencesRepository";
 import { UserId } from "@/shared/kernel/UserId";
 
 /**
@@ -11,7 +11,7 @@ export class NotificationEventHandlers {
   constructor(
     private eventBus: IEventBus,
     private notificationRepository: INotificationRepository,
-    private preferencesRepository?: NotificationPreferencesRepository,
+    private preferencesRepository?: INotificationPreferencesRepository,
   ) {}
 
   public register(): void {

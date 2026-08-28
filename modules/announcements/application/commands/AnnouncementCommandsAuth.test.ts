@@ -2,7 +2,7 @@ import { CreateAnnouncementHandler } from "./CreateAnnouncementCommand";
 import { UpdateAnnouncementHandler } from "./UpdateAnnouncementCommand";
 import { DeleteAnnouncementHandler } from "./DeleteAnnouncementCommand";
 import { AnnouncementRepository } from "../../domain/repositories/AnnouncementRepository";
-import { PermissionService, UnauthorizedError } from "@/modules/authorization/application/PermissionService";
+import { PermissionService, UnauthorizedError } from "@/shared/kernel/security/PermissionService";
 import { Permission } from "@/shared/kernel/security/Permission";
 
 describe("Announcement Command Handlers Authorization", () => {

@@ -2,14 +2,11 @@ import "server-only";
 
 import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { User } from "@supabase/supabase-js";
-import { Permission } from "@/shared/kernel/security/Permission";
-import { SupabaseAuthorizationRepository } from "@/modules/authorization/infrastructure/SupabaseAuthorizationRepository";
-import { PermissionService, UnauthorizedError } from "@/modules/authorization/application/PermissionService";
 
 /**
- * Authentication & Authorization Guards
+ * Authentication Guards
  *
- * Reusable guards for server actions and routes.
+ * Reusable session authentication guards for server actions and routes.
  */
 
 export class AuthenticationError extends Error {
@@ -41,23 +38,6 @@ export async function requireAuth(): Promise<User> {
     throw new AuthenticationError();
   }
 
-  return user;
-}
-
-/**
- * Requires the current user to hold a specific permission.
- * Uses the canonical PermissionService and AuthorizationRepository.
- *
- * @throws AuthenticationError if not authenticated.
- * @throws UnauthorizedError if the user lacks the required permission.
- */
-export async function requirePermission(permission: Permission): Promise<User> {
-  const user = await requireAuth();
-  const supabase = await createSupabaseServerClient();
-  const authRepo = new SupabaseAuthorizationRepository(supabase);
-  const permissionService = new PermissionService(authRepo);
-
-  await permissionService.assertPermission(user.id, permission);
   return user;
 }
 

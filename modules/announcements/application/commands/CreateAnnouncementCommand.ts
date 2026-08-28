@@ -1,5 +1,5 @@
-import { AnnouncementRepository } from "../../domain/repositories/AnnouncementRepository";
-import { PermissionService } from "@/modules/authorization/application/PermissionService";
+import { AnnouncementRepository } from "../ports/AnnouncementRepository";
+import { PermissionService } from "@/shared/kernel/security/PermissionService";
 import { Permission } from "@/shared/kernel/security/Permission";
 
 export interface CreateAnnouncementCommand {
