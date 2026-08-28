@@ -151,28 +151,30 @@ export default async function DiscoverOverviewPage() {
         )}
 
         {/* Generalized Data-Driven Discipline Sections */}
-        {sections.map((section, idx) => (
-          <div key={section.id} className="contents">
-            <DiscoverySection
-              title={section.title}
-              description={section.description}
-              actionHref={section.actionHref}
-              actionLabel={section.actionLabel || "Explore"}
-            >
-              <BookCarousel items={section.books} />
-            </DiscoverySection>
-
-            {/* Insert Knowledge Disciplines Visual Hub after the first section */}
-            {idx === 0 && (
+        {sections
+          .filter((s) => Boolean(s && Array.isArray(s.books) && s.books.length > 0))
+          .map((section, idx) => (
+            <div key={section.id} className="contents">
               <DiscoverySection
-                title="Curated Knowledge Disciplines"
-                description="Explore foundational manuscripts organized by scientific and humanities disciplines."
+                title={section.title}
+                description={section.description}
+                actionHref={section.actionHref}
+                actionLabel={section.actionLabel || "Explore"}
               >
-                <DiscoverThemeHub />
+                <BookCarousel items={section.books} />
               </DiscoverySection>
-            )}
-          </div>
-        ))}
+
+              {/* Insert Knowledge Disciplines Visual Hub after the first section */}
+              {idx === 0 && (
+                <DiscoverySection
+                  title="Curated Knowledge Disciplines"
+                  description="Explore foundational manuscripts organized by scientific and humanities disciplines."
+                >
+                  <DiscoverThemeHub />
+                </DiscoverySection>
+              )}
+            </div>
+          ))}
 
         {/* Section 11: Recently Added Ingestions */}
         {newBooks.length > 0 && (

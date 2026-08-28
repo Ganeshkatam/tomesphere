@@ -600,13 +600,15 @@ const ICON_COMPONENTS: Record<string, React.ElementType> = {
 function CuratedDisciplineShelfSection({
   section,
 }: {
-  section: DiscoverySectionDto;
+  section?: DiscoverySectionDto;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const disciplineBooks = section.books || [];
 
-  if (disciplineBooks.length === 0) return null;
+  if (!section || !Array.isArray(section.books) || section.books.length === 0) {
+    return null;
+  }
 
+  const disciplineBooks = section.books;
   const IconComponent = (section.iconName && ICON_COMPONENTS[section.iconName]) || BookOpen;
   const iconBg =
     section.iconBg ||
@@ -678,7 +680,7 @@ function CuratedDisciplineShelfSection({
         >
           {disciplineBooks.map((item: any, i: number) => (
             <div
-              key={`discipline-${section.id}-${item.id || i}-${i}`}
+              key={`discipline-${section.id || i}-${item.id || i}-${i}`}
               className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col group/item transition-all duration-300 relative hover:z-40"
             >
               <BookCard book={item} />
@@ -698,14 +700,14 @@ function StreamedDynamicShelvesSection({
   loadedCount: number;
 }) {
   const result = use(promise);
-  const sections = result?.overview?.sections || [];
-  const visibleSections = sections.slice(0, loadedCount);
-  const authors = result?.overview?.topAuthors || [];
+  const sections = Array.isArray(result?.overview?.sections) ? result.overview.sections : [];
+  const visibleSections = sections.filter((s): s is DiscoverySectionDto => Boolean(s && Array.isArray(s.books) && s.books.length > 0)).slice(0, loadedCount);
+  const authors = Array.isArray(result?.overview?.topAuthors) ? result.overview.topAuthors : [];
 
   return (
     <>
       {visibleSections.map((section, idx) => (
-        <div key={section.id} className="contents">
+        <div key={section.id || idx} className="contents">
           <LazySection fallback={<BooksShelfSkeleton />}>
             <CuratedDisciplineShelfSection section={section} />
           </LazySection>
