@@ -30,7 +30,7 @@ jest.mock("@/shared/providers/theme-context", () => ({
   }),
 }));
 
-describe("SettingsToolbar presentation and Sheet interaction", () => {
+describe("SettingsToolbar presentation and Popover interaction", () => {
   const mockService = {
     applyPreferences: jest.fn(),
   };
@@ -64,7 +64,7 @@ describe("SettingsToolbar presentation and Sheet interaction", () => {
     expect(mockSetSidebarOpen).toHaveBeenCalledWith(true);
   });
 
-  it("opens Reader Settings sheet when clicking Settings button", () => {
+  it("opens Reader Settings popover when clicking Settings button", () => {
     render(<SettingsToolbar service={mockService as any} />);
 
     const settingsTrigger = screen.getByRole("button", { name: "Reader Settings" });
@@ -74,7 +74,7 @@ describe("SettingsToolbar presentation and Sheet interaction", () => {
     expect(screen.getByText("Customize themes, typography, and display zoom.")).toBeInTheDocument();
   });
 
-  it("switches reader theme when clicking theme buttons inside sheet", () => {
+  it("switches reader theme when clicking theme buttons inside popover", () => {
     render(<SettingsToolbar service={mockService as any} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Reader Settings" }));
@@ -90,7 +90,7 @@ describe("SettingsToolbar presentation and Sheet interaction", () => {
     });
   });
 
-  it("adjusts font size and zoom steppers inside sheet", () => {
+  it("adjusts font size and zoom steppers inside popover", () => {
     render(<SettingsToolbar service={mockService as any} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Reader Settings" }));

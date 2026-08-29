@@ -13,13 +13,10 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 
 interface SettingsToolbarProps {
   service: ReaderService | null;
@@ -175,37 +172,35 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
           <TooltipContent>Fullscreen Mode</TooltipContent>
         </Tooltip>
 
-        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <SheetTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Reader Settings"
-                  aria-expanded={menuOpen}
-                  className={`p-2 rounded-xl transition-colors cursor-pointer h-auto w-auto ${
-                    menuOpen ? themeStyles.settingsActive : themeStyles.btn
-                  }`}
-                >
-                  <Settings size={18} />
-                </Button>
-              </SheetTrigger>
-            </TooltipTrigger>
-            <TooltipContent>Reader Settings</TooltipContent>
-          </Tooltip>
+        <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Reader Settings"
+              title="Reader Settings"
+              aria-expanded={menuOpen}
+              className={`p-2 rounded-xl transition-colors cursor-pointer h-auto w-auto ${
+                menuOpen ? themeStyles.settingsActive : themeStyles.btn
+              }`}
+            >
+              <Settings size={18} />
+            </Button>
+          </PopoverTrigger>
 
-          <SheetContent
-            side="right"
-            className={`w-72 sm:w-80 p-5 flex flex-col gap-5 overflow-y-auto ${themeStyles.menuBg}`}
+          <PopoverContent
+            side="bottom"
+            align="end"
+            sideOffset={8}
+            className={`w-72 sm:w-80 p-5 flex flex-col gap-4 shadow-2xl rounded-2xl border ${themeStyles.menuBg}`}
           >
-            <SheetHeader className="text-left space-y-1">
-              <SheetTitle className="text-sm font-bold tracking-tight">Reader Settings</SheetTitle>
-              <SheetDescription className="text-xs">
+            <div className="text-left space-y-1">
+              <h2 className="text-sm font-bold tracking-tight">Reader Settings</h2>
+              <p className="text-xs opacity-75">
                 Customize themes, typography, and display zoom.
-              </SheetDescription>
-            </SheetHeader>
+              </p>
+            </div>
 
             <div className="flex flex-col gap-4">
               {/* App Theme (Global system / light / dark) */}
@@ -372,8 +367,8 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
                 </div>
               </div>
             </div>
-          </SheetContent>
-        </Sheet>
+          </PopoverContent>
+        </Popover>
       </div>
     </TooltipProvider>
   );
