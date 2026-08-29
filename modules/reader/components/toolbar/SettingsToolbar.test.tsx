@@ -106,12 +106,12 @@ describe("SettingsToolbar presentation and Popover interaction", () => {
     });
   });
 
-  it("hides reader theme and text size adjustment, and provides zoom for PDF documents", () => {
+  it("shows reader theme and zoom while hiding text size adjustment for PDF documents", () => {
     render(<SettingsToolbar service={mockService as any} fileType="pdf" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Reader Settings" }));
 
-    expect(screen.queryByRole("button", { name: "Sepia" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sepia" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Increase Font Size" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Decrease Font Size" })).not.toBeInTheDocument();
 

@@ -269,55 +269,53 @@ export function SettingsToolbar({ service, fileType }: SettingsToolbarProps) {
                     </div>
                   </div>
 
-                  {/* Reader Theme (Only for EPUB / Reflowable reading canvas) */}
-                  {fileType !== "pdf" && (
-                    <div>
-                      <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-                        Reader Theme (EPUB)
-                      </span>
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant={preferences.theme === "light" ? "default" : "secondary"}
-                          size="sm"
-                          onClick={() => handleThemeChange("light")}
-                          className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
-                            preferences.theme === "light"
-                              ? themeStyles.pillActive
-                              : themeStyles.pillInactive
-                          }`}
-                        >
-                          Light
-                        </Button>
-                        <Button
-                          type="button"
-                          variant={preferences.theme === "dark" ? "default" : "secondary"}
-                          size="sm"
-                          onClick={() => handleThemeChange("dark")}
-                          className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
-                            preferences.theme === "dark"
-                              ? themeStyles.pillActive
-                              : themeStyles.pillInactive
-                          }`}
-                        >
-                          Dark
-                        </Button>
-                        <Button
-                          type="button"
-                          variant={preferences.theme === "sepia" ? "default" : "secondary"}
-                          size="sm"
-                          onClick={() => handleThemeChange("sepia")}
-                          className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
-                            preferences.theme === "sepia"
-                              ? themeStyles.pillActive
-                              : themeStyles.pillInactive
-                          }`}
-                        >
-                          Sepia
-                        </Button>
-                      </div>
+                  {/* Reader Theme (Document & reading canvas color) */}
+                  <div>
+                    <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+                      Reader Theme
+                    </span>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant={preferences.theme === "light" ? "default" : "secondary"}
+                        size="sm"
+                        onClick={() => handleThemeChange("light")}
+                        className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                          preferences.theme === "light"
+                            ? themeStyles.pillActive
+                            : themeStyles.pillInactive
+                        }`}
+                      >
+                        Light
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={preferences.theme === "dark" ? "default" : "secondary"}
+                        size="sm"
+                        onClick={() => handleThemeChange("dark")}
+                        className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                          preferences.theme === "dark"
+                            ? themeStyles.pillActive
+                            : themeStyles.pillInactive
+                        }`}
+                      >
+                        Dark
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={preferences.theme === "sepia" ? "default" : "secondary"}
+                        size="sm"
+                        onClick={() => handleThemeChange("sepia")}
+                        className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                          preferences.theme === "sepia"
+                            ? themeStyles.pillActive
+                            : themeStyles.pillInactive
+                        }`}
+                      >
+                        Sepia
+                      </Button>
                     </div>
-                  )}
+                  </div>
 
                   {/* Text Size (Only for EPUB / Reflowable books) */}
                   {fileType !== "pdf" && (
