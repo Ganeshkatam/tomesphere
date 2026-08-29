@@ -38,9 +38,9 @@ export class ReaderService {
   private accumulatedDurationSeconds: number = 0;
   private uniquePagesVisited: Set<string> = new Set<string>();
 
-  // Auto-save debounce & Heartbeat
+  // Auto-save debounce (5 seconds idle after stopping at a position) & Heartbeat
   private autoSaveTimer: NodeJS.Timeout | null = null;
-  private readonly AUTO_SAVE_DELAY_MS = 2500;
+  private readonly AUTO_SAVE_DELAY_MS = 5000;
   private pendingSaveAnchor: LocationAnchor | null = null;
   private lastSavedPositionValue: string | null = null;
   private lastFlushedPositionValue: string | null = null;
