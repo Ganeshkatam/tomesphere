@@ -765,7 +765,7 @@ export class ReaderService {
     useReaderStore.getState().setSessionState("completed");
 
     const currentAnchor = useReaderStore.getState().currentAnchor;
-    if (currentAnchor) {
+    if (currentAnchor && currentAnchor.value !== this.lastSavedPositionValue) {
       if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
       await this.savePosition(currentAnchor);
     }
@@ -783,8 +783,8 @@ export class ReaderService {
       this.heartbeatTimer = null;
     }
 
-    // Force pending save
-    if (this.pendingSaveAnchor) {
+    // Force pending save only if position actually changed
+    if (this.pendingSaveAnchor && this.pendingSaveAnchor.value !== this.lastSavedPositionValue) {
       await this.savePosition(this.pendingSaveAnchor);
       this.pendingSaveAnchor = null;
     }
