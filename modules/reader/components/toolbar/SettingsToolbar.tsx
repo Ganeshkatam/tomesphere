@@ -15,9 +15,10 @@ import {
 
 interface SettingsToolbarProps {
   service: ReaderService | null;
+  fileType?: "pdf" | "epub";
 }
 
-export function SettingsToolbar({ service }: SettingsToolbarProps) {
+export function SettingsToolbar({ service, fileType }: SettingsToolbarProps) {
   const { preferences, updatePreference, sidebarOpen, sidebarTab, setSidebarOpen, setSidebarTab } =
     useReaderStore();
   const { theme: appTheme, setTheme: setAppTheme } = useTheme();
@@ -316,73 +317,77 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
                     </div>
                   </div>
 
-                  {/* Text Size (EPUB) */}
-                  <div>
-                    <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-                      Text Size (EPUB)
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => adjustFontSize(-2)}
-                        disabled={preferences.fontSize <= 12}
-                        aria-label="Decrease Font Size"
-                        className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-                      >
-                        -
-                      </Button>
-                      <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
-                        {preferences.fontSize}px
+                  {/* Text Size (Only for EPUB / Reflowable books) */}
+                  {fileType !== "pdf" && (
+                    <div>
+                      <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+                        Text Size (EPUB)
                       </span>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => adjustFontSize(2)}
-                        disabled={preferences.fontSize >= 32}
-                        aria-label="Increase Font Size"
-                        className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-                      >
-                        +
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => adjustFontSize(-2)}
+                          disabled={preferences.fontSize <= 12}
+                          aria-label="Decrease Font Size"
+                          className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                        >
+                          -
+                        </Button>
+                        <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
+                          {preferences.fontSize}px
+                        </span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => adjustFontSize(2)}
+                          disabled={preferences.fontSize >= 32}
+                          aria-label="Increase Font Size"
+                          className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                        >
+                          +
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
-                  {/* Zoom (PDF) */}
-                  <div>
-                    <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-                      Zoom (PDF)
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => adjustZoom(-10)}
-                        disabled={(preferences.zoom || 100) <= 80}
-                        aria-label="Zoom Out"
-                        className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-                      >
-                        -
-                      </Button>
-                      <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
-                        {preferences.zoom || 100}%
+                  {/* Zoom (For PDF / Fixed-layout books) */}
+                  {fileType !== "epub" && (
+                    <div>
+                      <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+                        Zoom (PDF)
                       </span>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => adjustZoom(10)}
-                        disabled={(preferences.zoom || 100) >= 300}
-                        aria-label="Zoom In"
-                        className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-                      >
-                        +
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => adjustZoom(-10)}
+                          disabled={(preferences.zoom || 100) <= 80}
+                          aria-label="Zoom Out"
+                          className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                        >
+                          -
+                        </Button>
+                        <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
+                          {preferences.zoom || 100}%
+                        </span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => adjustZoom(10)}
+                          disabled={(preferences.zoom || 100) >= 300}
+                          aria-label="Zoom In"
+                          className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                        >
+                          +
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </>

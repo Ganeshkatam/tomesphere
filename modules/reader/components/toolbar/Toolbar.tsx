@@ -11,9 +11,10 @@ import { useReaderStore } from "@/modules/reader/state/reader-store";
 interface ToolbarProps {
   service: ReaderService | null;
   bookTitle?: string;
+  fileType?: "pdf" | "epub";
 }
 
-export function Toolbar({ service, bookTitle }: ToolbarProps) {
+export function Toolbar({ service, bookTitle, fileType }: ToolbarProps) {
   const theme = useReaderStore((state) => state.preferences.theme) || "light";
 
   const themeClass = {
@@ -28,7 +29,7 @@ export function Toolbar({ service, bookTitle }: ToolbarProps) {
       <ProgressToolbar service={service} />
       <div className="flex items-center gap-1 sm:gap-2">
         <AnnotationToolbar service={service} />
-        <SettingsToolbar service={service} />
+        <SettingsToolbar service={service} fileType={fileType} />
       </div>
     </header>
   );

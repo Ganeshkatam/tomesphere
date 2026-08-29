@@ -90,8 +90,8 @@ describe("SettingsToolbar presentation and Popover interaction", () => {
     });
   });
 
-  it("adjusts font size and zoom steppers inside popover", () => {
-    render(<SettingsToolbar service={mockService as any} />);
+  it("adjusts font size for EPUB documents inside popover", () => {
+    render(<SettingsToolbar service={mockService as any} fileType="epub" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Reader Settings" }));
 
@@ -104,6 +104,15 @@ describe("SettingsToolbar presentation and Popover interaction", () => {
       fontSize: 18,
       zoom: 100,
     });
+  });
+
+  it("hides text size adjustment and provides zoom for PDF documents", () => {
+    render(<SettingsToolbar service={mockService as any} fileType="pdf" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Reader Settings" }));
+
+    expect(screen.queryByRole("button", { name: "Increase Font Size" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Decrease Font Size" })).not.toBeInTheDocument();
 
     const zoomInBtn = screen.getByRole("button", { name: "Zoom In" });
     fireEvent.click(zoomInBtn);
