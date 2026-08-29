@@ -45,6 +45,11 @@ export function SettingsToolbar({ service, fileType }: SettingsToolbarProps) {
 
   const handleThemeChange = (newTheme: "light" | "dark" | "sepia") => {
     updatePreference("theme", newTheme);
+    if (newTheme === "dark") {
+      setAppTheme("dark");
+    } else {
+      setAppTheme("light");
+    }
     if (service) {
       service.applyPreferences({ ...preferences, theme: newTheme });
     }
@@ -221,58 +226,10 @@ export function SettingsToolbar({ service, fileType }: SettingsToolbarProps) {
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  {/* App Theme (Global system / light / dark) */}
+                  {/* Theme Selector (Unified reading theme) */}
                   <div>
                     <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-                      App Theme
-                    </span>
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant={appTheme === "system" ? "default" : "secondary"}
-                        size="sm"
-                        onClick={() => setAppTheme("system")}
-                        className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
-                          appTheme === "system"
-                            ? themeStyles.pillActive
-                            : themeStyles.pillInactive
-                        }`}
-                      >
-                        System
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={appTheme === "light" ? "default" : "secondary"}
-                        size="sm"
-                        onClick={() => setAppTheme("light")}
-                        className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
-                          appTheme === "light"
-                            ? themeStyles.pillActive
-                            : themeStyles.pillInactive
-                        }`}
-                      >
-                        Light
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={appTheme === "dark" ? "default" : "secondary"}
-                        size="sm"
-                        onClick={() => setAppTheme("dark")}
-                        className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
-                          appTheme === "dark"
-                            ? themeStyles.pillActive
-                            : themeStyles.pillInactive
-                        }`}
-                      >
-                        Dark
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Reader Theme (Document & reading canvas color) */}
-                  <div>
-                    <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-                      Reader Theme
+                      Theme
                     </span>
                     <div className="flex gap-2">
                       <Button

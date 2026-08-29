@@ -1229,7 +1229,14 @@ export class PdfJsRenderer implements ReaderRenderer {
   }
 
   theme(themeName: "light" | "dark" | "sepia"): void {
-    void themeName;
+    if (this.container) {
+      const bgColors: Record<string, string> = {
+        light: "#f1f5f9",
+        dark: "#18191c",
+        sepia: "#f4ecd8",
+      };
+      this.container.style.backgroundColor = bgColors[themeName] || bgColors.light;
+    }
     // PDF pages maintain original print fidelity and true colors without theme filters
     for (const state of this.pageStates.values()) {
       if (!state.canvas) continue;
