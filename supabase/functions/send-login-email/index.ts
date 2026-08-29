@@ -116,19 +116,38 @@ serve(async (req: Request) => {
     
     const userEmail = userData.user.email;
 
-    // 6. Send Email via Brevo API
+    // 6. Record In-App Security Notification
+    try {
+      await supabase.from("notifications").insert({
+        user_id: session.user_id,
+        event_name: "auth.session.created",
+        aggregate_id: session.id,
+        aggregate_type: "auth.session",
+        type: "INFO",
+        title: "New Sign-in Detected",
+        body: `A new session was initiated at ${signInTime}.${session.user_agent ? ` (${session.user_agent.substring(0, 80)})` : ""}`,
+        metadata: {
+          session_id: session.id,
+          created_at: session.created_at,
+          ip: session.ip || null,
+        },
+      });
+    } catch (notifErr) {
+      console.warn("Failed to write in-app notification:", notifErr);
+    }
+
+    // 7. Send Email via Brevo API
     const brevoApiKey = Deno.env.get("BREVO_API_KEY");
     const senderEmail = Deno.env.get("SENDER_EMAIL") || "noreply@tomesphere.in";
     
     if (!brevoApiKey) {
-      console.error("Configuration Error: Missing BREVO_API_KEY");
+      console.error("Configuration Error: Missing BREVO_API_KEY secret in Supabase Edge Functions");
       await supabase.from("login_notifications_log")
-        .update({ status: "FAILED", last_error: "Missing Brevo API Key" })
+        .update({ status: "FAILED", last_error: "Missing BREVO_API_KEY secret in Supabase Edge Functions" })
         .eq("session_id", session.id);
-      return new Response("Internal Server Error", { status: 500 });
+      return new Response("Internal Server Error: Missing BREVO_API_KEY", { status: 500 });
     }
 
-    const signInTime = new Date(session.created_at).toLocaleString('en-US', { timeZone: 'UTC' }) + ' UTC';
     const htmlContent = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #fafafa;">
         <div style="background-color: #ffffff; border-radius: 16px; padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); border: 1px solid #eaeaea;">
@@ -205,9 +224,9 @@ serve(async (req: Request) => {
       return new Response("Failed to send email via Brevo", { status: 500 }); // Retry via webhook
     }
 
-    // 7. Mark Processed Successfully
+    // 8. Mark Processed Successfully
     await supabase.from("login_notifications_log")
-      .update({ status: "SENT", processed_at: new Date().toISOString() })
+      .update({ status: "SENT", processed_at: new Date().toISOString(), last_error: null })
       .eq("session_id", session.id);
 
     return new Response(JSON.stringify({ success: true }), {
