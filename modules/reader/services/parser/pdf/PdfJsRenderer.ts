@@ -45,6 +45,8 @@ export class PdfJsRenderer implements ReaderRenderer {
   private destroyed = false;
   private isNavigating = false;
   private navigatingTimer: any = null;
+  private navigationTicket = 0;
+  private pendingTargetPage: number | null = null;
   private lastEmittedPage = 0;
   private documentGeneration = 0;
   private placeholderRatio = 8.5 / 11;
@@ -851,11 +853,14 @@ export class PdfJsRenderer implements ReaderRenderer {
     const targetPage = Number.parseInt(rawPage, 10);
     if (!Number.isInteger(targetPage) || targetPage < 1 || targetPage > this.totalPages) return;
 
-    const pageDiff = Math.abs(targetPage - this.currentPageNum);
-    const scrollBehavior: ScrollBehavior = pageDiff <= 1 ? "smooth" : "auto";
-
+    const ticket = ++this.navigationTicket;
+    this.pendingTargetPage = targetPage;
     this.isNavigating = true;
-    if (this.navigatingTimer) clearTimeout(this.navigatingTimer);
+
+    if (this.navigatingTimer) {
+      clearTimeout(this.navigatingTimer);
+      this.navigatingTimer = null;
+    }
 
     this.currentPageNum = targetPage;
     this.emitLocation(targetPage);
@@ -863,34 +868,48 @@ export class PdfJsRenderer implements ReaderRenderer {
     const state = this.pageStates.get(targetPage);
     if (!state) return;
 
-    // Pre-render target page and immediate neighbors before scroll to eliminate flashes
-    await this.ensurePageRendered(targetPage);
-    if (targetPage + 1 <= this.totalPages) void this.ensurePageRendered(targetPage + 1);
-    if (targetPage - 1 >= 1) void this.ensurePageRendered(targetPage - 1);
-
-    // Scroll directly to target position
+    // Scroll immediately to target position to prevent animation pile-up during fast clicks
     const container = this.container;
     const targetTop = state.wrapper.offsetTop;
     container.scrollTo({
       top: Math.max(0, targetTop - 12),
-      behavior: scrollBehavior,
+      behavior: "auto",
     });
 
+    // Pre-render target page
+    await this.ensurePageRendered(targetPage);
+
+    // If a newer navigation occurred while this page was rendering, abort old operation
+    if (ticket !== this.navigationTicket || this.destroyed) {
+      return;
+    }
+
+    // Warm up neighbors asynchronously
+    if (targetPage + 1 <= this.totalPages) void this.ensurePageRendered(targetPage + 1);
+    if (targetPage - 1 >= 1) void this.ensurePageRendered(targetPage - 1);
+
     this.navigatingTimer = setTimeout(() => {
-      this.isNavigating = false;
-      this.enforceRenderBudget(targetPage);
-    }, pageDiff <= 1 ? 400 : 150);
+      if (ticket === this.navigationTicket) {
+        this.isNavigating = false;
+        this.pendingTargetPage = null;
+        this.enforceRenderBudget(targetPage);
+      }
+    }, 200);
   }
 
   async next(): Promise<void> {
-    const target = Math.min(this.totalPages, this.currentPageNum + 1);
-    if (target === this.currentPageNum) return;
+    const basePage = this.pendingTargetPage ?? this.currentPageNum;
+    const target = Math.min(this.totalPages, basePage + 1);
+    if (target === basePage && target === this.currentPageNum) return;
+    this.pendingTargetPage = target;
     await this.goTo(String(target));
   }
 
   async previous(): Promise<void> {
-    const target = Math.max(1, this.currentPageNum - 1);
-    if (target === this.currentPageNum) return;
+    const basePage = this.pendingTargetPage ?? this.currentPageNum;
+    const target = Math.max(1, basePage - 1);
+    if (target === basePage && target === this.currentPageNum) return;
+    this.pendingTargetPage = target;
     await this.goTo(String(target));
   }
 

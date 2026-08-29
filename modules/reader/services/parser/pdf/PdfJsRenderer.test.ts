@@ -172,6 +172,35 @@ describe("PdfJsRenderer continuous scrolling", () => {
     await renderer.destroy();
   });
 
+  it("handles rapid consecutive next page navigation without regressing", async () => {
+    const { document: pdfDoc } = createDocument(10);
+    getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc), destroy: jest.fn() } as unknown as pdfjsLib.PDFDocumentLoadingTask);
+
+    const container = document.createElement("div");
+    Object.defineProperty(container, "clientHeight", { configurable: true, value: 900 });
+    document.body.appendChild(container);
+
+    const renderer = new PdfJsRenderer();
+    const locations: string[] = [];
+    renderer.onLocationChanged((anchor) => locations.push(anchor.value));
+    await renderer.initialize("book.pdf", container);
+
+    // Rapidly trigger next 5 times in milliseconds
+    const p1 = renderer.next();
+    const p2 = renderer.next();
+    const p3 = renderer.next();
+    const p4 = renderer.next();
+    const p5 = renderer.next();
+
+    await Promise.all([p1, p2, p3, p4, p5]);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect((await renderer.getProgress()).anchor.value).toBe("6");
+    expect(locations[locations.length - 1]).toBe("6");
+
+    await renderer.destroy();
+  });
+
   it("cancels old renders and re-renders the active page when zoom changes", async () => {
     const { document: pdfDoc, pages } = createDocument(2);
     getDocumentMock.mockReturnValue({ promise: Promise.resolve(pdfDoc), destroy: jest.fn() } as unknown as pdfjsLib.PDFDocumentLoadingTask);
