@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useReaderStore } from "@/modules/reader/state/reader-store";
 import { ReaderService } from "@/modules/reader/application/ReaderService";
 import { Settings, Maximize, Search, List } from "lucide-react";
@@ -12,11 +12,6 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
 
 interface SettingsToolbarProps {
   service: ReaderService | null;
@@ -29,6 +24,15 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const theme = preferences.theme || "light";
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [menuOpen]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -99,7 +103,7 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="flex items-center gap-1 relative">
+      <div className="flex items-center gap-1">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -172,203 +176,218 @@ export function SettingsToolbar({ service }: SettingsToolbarProps) {
           <TooltipContent>Fullscreen Mode</TooltipContent>
         </Tooltip>
 
-        <Popover open={menuOpen} onOpenChange={setMenuOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label="Reader Settings"
-              title="Reader Settings"
-              aria-expanded={menuOpen}
-              className={`p-2 rounded-xl transition-colors cursor-pointer h-auto w-auto ${
-                menuOpen ? themeStyles.settingsActive : themeStyles.btn
-              }`}
-            >
-              <Settings size={18} />
-            </Button>
-          </PopoverTrigger>
+        <div className="relative">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => setMenuOpen((prev) => !prev)}
+                aria-label="Reader Settings"
+                title="Reader Settings"
+                aria-expanded={menuOpen}
+                className={`p-2 rounded-xl transition-colors cursor-pointer h-auto w-auto ${
+                  menuOpen ? themeStyles.settingsActive : themeStyles.btn
+                }`}
+              >
+                <Settings size={18} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Reader Settings</TooltipContent>
+          </Tooltip>
 
-          <PopoverContent
-            side="bottom"
-            align="end"
-            sideOffset={8}
-            className={`w-72 sm:w-80 p-5 flex flex-col gap-4 shadow-2xl rounded-2xl border ${themeStyles.menuBg}`}
-          >
-            <div className="text-left space-y-1">
-              <h2 className="text-sm font-bold tracking-tight">Reader Settings</h2>
-              <p className="text-xs opacity-75">
-                Customize themes, typography, and display zoom.
-              </p>
-            </div>
+          {menuOpen && (
+            <>
+              {/* Click outside backdrop */}
+              <div
+                className="fixed inset-0 z-40 bg-transparent"
+                onClick={() => setMenuOpen(false)}
+                aria-hidden="true"
+              />
 
-            <div className="flex flex-col gap-4">
-              {/* App Theme (Global system / light / dark) */}
-              <div>
-                <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-                  App Theme
-                </span>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant={appTheme === "system" ? "default" : "secondary"}
-                    size="sm"
-                    onClick={() => setAppTheme("system")}
-                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
-                      appTheme === "system"
-                        ? themeStyles.pillActive
-                        : themeStyles.pillInactive
-                    }`}
-                  >
-                    System
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={appTheme === "light" ? "default" : "secondary"}
-                    size="sm"
-                    onClick={() => setAppTheme("light")}
-                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
-                      appTheme === "light"
-                        ? themeStyles.pillActive
-                        : themeStyles.pillInactive
-                    }`}
-                  >
-                    Light
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={appTheme === "dark" ? "default" : "secondary"}
-                    size="sm"
-                    onClick={() => setAppTheme("dark")}
-                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
-                      appTheme === "dark"
-                        ? themeStyles.pillActive
-                        : themeStyles.pillInactive
-                    }`}
-                  >
-                    Dark
-                  </Button>
+              {/* Anchored popover card directly below Settings button */}
+              <div
+                role="dialog"
+                aria-label="Reader Settings"
+                className={`absolute right-0 top-full mt-2 z-50 w-72 sm:w-80 p-5 flex flex-col gap-4 shadow-2xl rounded-2xl border animate-in fade-in-0 zoom-in-95 duration-150 ${themeStyles.menuBg}`}
+              >
+                <div className="text-left space-y-1">
+                  <h2 className="text-sm font-bold tracking-tight">Reader Settings</h2>
+                  <p className="text-xs opacity-75">
+                    Customize themes, typography, and display zoom.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  {/* App Theme (Global system / light / dark) */}
+                  <div>
+                    <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+                      App Theme
+                    </span>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant={appTheme === "system" ? "default" : "secondary"}
+                        size="sm"
+                        onClick={() => setAppTheme("system")}
+                        className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                          appTheme === "system"
+                            ? themeStyles.pillActive
+                            : themeStyles.pillInactive
+                        }`}
+                      >
+                        System
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={appTheme === "light" ? "default" : "secondary"}
+                        size="sm"
+                        onClick={() => setAppTheme("light")}
+                        className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                          appTheme === "light"
+                            ? themeStyles.pillActive
+                            : themeStyles.pillInactive
+                        }`}
+                      >
+                        Light
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={appTheme === "dark" ? "default" : "secondary"}
+                        size="sm"
+                        onClick={() => setAppTheme("dark")}
+                        className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                          appTheme === "dark"
+                            ? themeStyles.pillActive
+                            : themeStyles.pillInactive
+                        }`}
+                      >
+                        Dark
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Reader Theme (Document & reading canvas color) */}
+                  <div>
+                    <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+                      Reader Theme
+                    </span>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant={preferences.theme === "light" ? "default" : "secondary"}
+                        size="sm"
+                        onClick={() => handleThemeChange("light")}
+                        className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                          preferences.theme === "light"
+                            ? themeStyles.pillActive
+                            : themeStyles.pillInactive
+                        }`}
+                      >
+                        Light
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={preferences.theme === "dark" ? "default" : "secondary"}
+                        size="sm"
+                        onClick={() => handleThemeChange("dark")}
+                        className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                          preferences.theme === "dark"
+                            ? themeStyles.pillActive
+                            : themeStyles.pillInactive
+                        }`}
+                      >
+                        Dark
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={preferences.theme === "sepia" ? "default" : "secondary"}
+                        size="sm"
+                        onClick={() => handleThemeChange("sepia")}
+                        className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
+                          preferences.theme === "sepia"
+                            ? themeStyles.pillActive
+                            : themeStyles.pillInactive
+                        }`}
+                      >
+                        Sepia
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Text Size (EPUB) */}
+                  <div>
+                    <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+                      Text Size (EPUB)
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => adjustFontSize(-2)}
+                        disabled={preferences.fontSize <= 12}
+                        aria-label="Decrease Font Size"
+                        className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                      >
+                        -
+                      </Button>
+                      <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
+                        {preferences.fontSize}px
+                      </span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => adjustFontSize(2)}
+                        disabled={preferences.fontSize >= 32}
+                        aria-label="Increase Font Size"
+                        className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Zoom (PDF) */}
+                  <div>
+                    <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
+                      Zoom (PDF)
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => adjustZoom(-10)}
+                        disabled={(preferences.zoom || 100) <= 80}
+                        aria-label="Zoom Out"
+                        className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                      >
+                        -
+                      </Button>
+                      <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
+                        {preferences.zoom || 100}%
+                      </span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => adjustZoom(10)}
+                        disabled={(preferences.zoom || 100) >= 300}
+                        aria-label="Zoom In"
+                        className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              {/* Reader Theme (Document & reading canvas color) */}
-              <div>
-                <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-                  Reader Theme
-                </span>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant={preferences.theme === "light" ? "default" : "secondary"}
-                    size="sm"
-                    onClick={() => handleThemeChange("light")}
-                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
-                      preferences.theme === "light"
-                        ? themeStyles.pillActive
-                        : themeStyles.pillInactive
-                    }`}
-                  >
-                    Light
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={preferences.theme === "dark" ? "default" : "secondary"}
-                    size="sm"
-                    onClick={() => handleThemeChange("dark")}
-                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
-                      preferences.theme === "dark"
-                        ? themeStyles.pillActive
-                        : themeStyles.pillInactive
-                    }`}
-                  >
-                    Dark
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={preferences.theme === "sepia" ? "default" : "secondary"}
-                    size="sm"
-                    onClick={() => handleThemeChange("sepia")}
-                    className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer h-auto ${
-                      preferences.theme === "sepia"
-                        ? themeStyles.pillActive
-                        : themeStyles.pillInactive
-                    }`}
-                  >
-                    Sepia
-                  </Button>
-                </div>
-              </div>
-
-              {/* Text Size (EPUB) */}
-              <div>
-                <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-                  Text Size (EPUB)
-                </span>
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => adjustFontSize(-2)}
-                    disabled={preferences.fontSize <= 12}
-                    aria-label="Decrease Font Size"
-                    className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-                  >
-                    -
-                  </Button>
-                  <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
-                    {preferences.fontSize}px
-                  </span>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => adjustFontSize(2)}
-                    disabled={preferences.fontSize >= 32}
-                    aria-label="Increase Font Size"
-                    className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-                  >
-                    +
-                  </Button>
-                </div>
-              </div>
-
-              {/* Zoom (PDF) */}
-              <div>
-                <span className={`text-[11px] font-extrabold uppercase tracking-wider mb-2 block ${themeStyles.sectionHeader}`}>
-                  Zoom (PDF)
-                </span>
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => adjustZoom(-10)}
-                    disabled={(preferences.zoom || 100) <= 80}
-                    aria-label="Zoom Out"
-                    className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-                  >
-                    -
-                  </Button>
-                  <span className={`flex-1 text-center text-xs font-bold font-mono ${themeStyles.valueText}`}>
-                    {preferences.zoom || 100}%
-                  </span>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => adjustZoom(10)}
-                    disabled={(preferences.zoom || 100) >= 300}
-                    aria-label="Zoom In"
-                    className={`w-8 h-8 rounded-xl font-bold transition-colors cursor-pointer ${themeStyles.stepBtn}`}
-                  >
-                    +
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+            </>
+          )}
+        </div>
       </div>
     </TooltipProvider>
   );
