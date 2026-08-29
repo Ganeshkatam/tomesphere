@@ -73,6 +73,21 @@ describe("ProgressToolbar presentation and interactions", () => {
     expect(mockService.applyPreferences).toHaveBeenCalledWith({ theme: "light", zoom: 110 });
   });
 
+  it("opens zoom selection menu and applies selected zoom option", () => {
+    render(<ProgressToolbar service={mockService as any} />);
+
+    const selectZoomBtn = screen.getByRole("button", { name: "Select Zoom Level" });
+    fireEvent.click(selectZoomBtn);
+
+    expect(screen.getByRole("menu", { name: "Zoom Level Options" })).toBeInTheDocument();
+    
+    const zoom150Option = screen.getByRole("menuitem", { name: "150%" });
+    fireEvent.click(zoom150Option);
+
+    expect(mockUpdatePreference).toHaveBeenCalledWith("zoom", 150);
+    expect(mockService.applyPreferences).toHaveBeenCalledWith({ theme: "light", zoom: 150 });
+  });
+
   it("disables controls when renderer is not ready", () => {
     mockStore.rendererReady = false;
     render(<ProgressToolbar service={mockService as any} />);
@@ -81,5 +96,6 @@ describe("ProgressToolbar presentation and interactions", () => {
     expect(screen.getByRole("button", { name: "Next Page" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Zoom Out" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Zoom In" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Select Zoom Level" })).toBeDisabled();
   });
 });
