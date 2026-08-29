@@ -232,21 +232,8 @@ export class ReaderService {
         const newPages = Math.max(0, currentPages - this.lastFlushedPagesCount);
         this.lastFlushedPagesCount = currentPages;
 
-        const currentAnchor = useReaderStore.getState().currentAnchor;
-        const currentPosValue = currentAnchor?.value;
-
-        // Only send position update if the user actually navigated to a new position
-        let pageToSend: number | undefined = undefined;
-        if (currentPosValue && currentPosValue !== this.lastFlushedPositionValue) {
-          const parsed = parseInt(currentPosValue, 10);
-          if (!isNaN(parsed) && parsed > 0) {
-            pageToSend = parsed;
-            this.lastFlushedPositionValue = currentPosValue;
-            this.lastSavedPositionValue = currentPosValue;
-          }
-        }
-
-        await this.sessionFacade.completeSession(elapsed, newPages, pageToSend);
+        // Periodic heartbeat strictly logs active reading duration without altering or spamming position updates
+        await this.sessionFacade.completeSession(elapsed, newPages);
       }
     }
   }
