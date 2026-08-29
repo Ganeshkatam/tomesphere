@@ -41,6 +41,7 @@ export class PdfJsRenderer implements ReaderRenderer {
   private currentPageNum = 1;
   private totalPages = 1;
   private currentZoom = 1;
+  private currentTheme: "light" | "dark" | "sepia" = "light";
   private initialized = false;
   private destroyed = false;
   private isNavigating = false;
@@ -604,6 +605,13 @@ export class PdfJsRenderer implements ReaderRenderer {
     pageContainer.style.borderRadius = "4px";
     pageContainer.style.boxShadow = "0 15px 35px -10px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.08)";
     pageContainer.style.backgroundColor = "white";
+
+    const filterStyles: Record<string, string> = {
+      light: "none",
+      dark: "invert(0.92) hue-rotate(180deg) contrast(0.92)",
+      sepia: "sepia(0.35) contrast(0.95) brightness(0.95)",
+    };
+    pageContainer.style.filter = filterStyles[this.currentTheme] || "none";
 
     canvas.style.boxShadow = "none";
     pageContainer.appendChild(canvas);
@@ -1229,6 +1237,7 @@ export class PdfJsRenderer implements ReaderRenderer {
   }
 
   theme(themeName: "light" | "dark" | "sepia"): void {
+    this.currentTheme = themeName;
     if (this.container) {
       const bgColors: Record<string, string> = {
         light: "#f1f5f9",
@@ -1237,10 +1246,22 @@ export class PdfJsRenderer implements ReaderRenderer {
       };
       this.container.style.backgroundColor = bgColors[themeName] || bgColors.light;
     }
-    // PDF pages maintain original print fidelity and true colors without theme filters
+
+    const filterStyles: Record<string, string> = {
+      light: "none",
+      dark: "invert(0.92) hue-rotate(180deg) contrast(0.92)",
+      sepia: "sepia(0.35) contrast(0.95) brightness(0.95)",
+    };
+
+    const filter = filterStyles[themeName] || "none";
+
     for (const state of this.pageStates.values()) {
-      if (!state.canvas) continue;
-      state.canvas.style.filter = "none";
+      const pageContainer = state.wrapper.querySelector<HTMLElement>(".tomesphere-pdf-page-container");
+      if (pageContainer) {
+        pageContainer.style.filter = filter;
+      } else if (state.canvas) {
+        state.canvas.style.filter = filter;
+      }
     }
   }
 
