@@ -262,7 +262,7 @@ export function ReaderShell({ data }: ReaderShellProps) {
 
   return (
     <div className={`flex flex-col h-screen w-full overflow-hidden transition-colors ${shellThemeClass}`}>
-      <Toolbar service={service} />
+      <Toolbar service={service} bookTitle={data.book.title} />
       <div className="flex flex-1 overflow-hidden relative">
         {/* Collapsible Left Page Side Rail */}
         <PageSideRail service={service} />

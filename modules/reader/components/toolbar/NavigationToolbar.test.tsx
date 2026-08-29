@@ -59,4 +59,10 @@ describe("NavigationToolbar presentation and interactions", () => {
 
     expect(mockSetSideRailOpen).toHaveBeenCalledWith(true);
   });
+
+  it("renders book title when provided", () => {
+    render(<NavigationToolbar bookTitle="Grade 10 Physical Science" />);
+
+    expect(screen.getByRole("heading", { name: "Grade 10 Physical Science" })).toBeInTheDocument();
+  });
 });

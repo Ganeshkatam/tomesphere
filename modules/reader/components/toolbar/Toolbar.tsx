@@ -10,9 +10,10 @@ import { useReaderStore } from "@/modules/reader/state/reader-store";
 
 interface ToolbarProps {
   service: ReaderService | null;
+  bookTitle?: string;
 }
 
-export function Toolbar({ service }: ToolbarProps) {
+export function Toolbar({ service, bookTitle }: ToolbarProps) {
   const theme = useReaderStore((state) => state.preferences.theme) || "light";
 
   const themeClass = {
@@ -23,7 +24,7 @@ export function Toolbar({ service }: ToolbarProps) {
 
   return (
     <header className={`h-14 flex items-center justify-between px-3 sm:px-4 sticky top-0 z-50 transition-colors shadow-2xs ${themeClass}`}>
-      <NavigationToolbar />
+      <NavigationToolbar bookTitle={bookTitle} />
       <ProgressToolbar service={service} />
       <div className="flex items-center gap-1 sm:gap-2">
         <AnnotationToolbar service={service} />
