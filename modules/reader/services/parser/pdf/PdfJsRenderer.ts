@@ -1210,15 +1210,11 @@ export class PdfJsRenderer implements ReaderRenderer {
   }
 
   theme(themeName: "light" | "dark" | "sepia"): void {
+    void themeName;
+    // PDF pages maintain original print fidelity and true colors without theme filters
     for (const state of this.pageStates.values()) {
       if (!state.canvas) continue;
-      if (themeName === "dark") {
-        state.canvas.style.filter = "invert(1) hue-rotate(180deg)";
-      } else if (themeName === "sepia") {
-        state.canvas.style.filter = "sepia(0.5)";
-      } else {
-        state.canvas.style.filter = "none";
-      }
+      state.canvas.style.filter = "none";
     }
   }
 

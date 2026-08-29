@@ -74,8 +74,8 @@ describe("SettingsToolbar presentation and Popover interaction", () => {
     expect(screen.getByText("Customize themes, typography, and display zoom.")).toBeInTheDocument();
   });
 
-  it("switches reader theme when clicking theme buttons inside popover", () => {
-    render(<SettingsToolbar service={mockService as any} />);
+  it("switches reader theme when clicking theme buttons inside popover for EPUB", () => {
+    render(<SettingsToolbar service={mockService as any} fileType="epub" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Reader Settings" }));
 
@@ -106,11 +106,12 @@ describe("SettingsToolbar presentation and Popover interaction", () => {
     });
   });
 
-  it("hides text size adjustment and provides zoom for PDF documents", () => {
+  it("hides reader theme and text size adjustment, and provides zoom for PDF documents", () => {
     render(<SettingsToolbar service={mockService as any} fileType="pdf" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Reader Settings" }));
 
+    expect(screen.queryByRole("button", { name: "Sepia" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Increase Font Size" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Decrease Font Size" })).not.toBeInTheDocument();
 
