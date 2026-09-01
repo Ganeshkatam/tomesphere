@@ -46,6 +46,8 @@ tomesphere-app
 │   │   │   └── page.tsx
 │   │   ├── login
 │   │   │   └── page.tsx
+│   │   ├── maintenance
+│   │   │   └── page.tsx
 │   │   ├── privacy
 │   │   │   └── page.tsx
 │   │   ├── report
@@ -107,6 +109,8 @@ tomesphere-app
 │   │   │   └── page.tsx
 │   │   └── layout.tsx
 │   ├── api
+│   │   ├── announcements
+│   │   │   └── route.ts
 │   │   └── cron
 │   │       └── process-outbox
 │   │           └── route.ts
@@ -134,6 +138,7 @@ tomesphere-app
 │       ├── dialog.tsx
 │       ├── dropdown-menu.tsx
 │       ├── input.tsx
+│       ├── popover.tsx
 │       ├── sheet.tsx
 │       └── tooltip.tsx
 ├── lib
@@ -153,6 +158,7 @@ tomesphere-app
 │   ├── announcements
 │   │   ├── application
 │   │   │   ├── commands
+│   │   │   │   ├── AnnouncementCommandsAuth.test.ts
 │   │   │   │   ├── CreateAnnouncementCommand.ts
 │   │   │   │   ├── DeleteAnnouncementCommand.ts
 │   │   │   │   └── UpdateAnnouncementCommand.ts
@@ -181,8 +187,9 @@ tomesphere-app
 │   │       │   ├── AnnouncementBanner.tsx
 │   │       │   ├── AnnouncementCenter.test.tsx
 │   │       │   ├── AnnouncementCenter.tsx
-│   │       │   ├── AnnouncementEntryCard.test.tsx
-│   │       │   └── AnnouncementEntryCard.tsx
+│   │       │   ├── AnnouncementNotice.test.tsx
+│   │       │   ├── AnnouncementNotice.tsx
+│   │       │   └── MaintenanceDocumentViewer.tsx
 │   │       └── utils
 │   │           ├── announcement-storage.test.ts
 │   │           └── announcement-storage.ts
@@ -209,10 +216,14 @@ tomesphere-app
 │   │   └── types
 │   ├── authorization
 │   │   ├── application
+│   │   │   ├── PermissionService.test.ts
 │   │   │   └── PermissionService.ts
 │   │   ├── domain
+│   │   │   ├── errors
+│   │   │   │   └── AuthorizationInfrastructureError.ts
 │   │   │   └── AuthorizationRepository.ts
 │   │   └── infrastructure
+│   │       ├── SupabaseAuthorizationRepository.test.ts
 │   │       └── SupabaseAuthorizationRepository.ts
 │   ├── authors
 │   │   ├── application
@@ -234,6 +245,7 @@ tomesphere-app
 │   │   │   │   ├── ArchiveBookCommand.ts
 │   │   │   │   ├── ChangeBookLanguageCommand.ts
 │   │   │   │   ├── CreateBookCommand.ts
+│   │   │   │   ├── DeferredCommands.test.ts
 │   │   │   │   ├── DeleteBookFileCommand.ts
 │   │   │   │   ├── IncrementBookViewCountCommand.ts
 │   │   │   │   ├── index.ts
@@ -333,18 +345,20 @@ tomesphere-app
 │   │   │   └── queries
 │   │   │       └── GetDashboardAnalytics
 │   │   │           └── handler.ts
-│   │   └── presentation
-│   │       ├── actions
-│   │       │   └── goals.ts
-│   │       └── components
-│   │           ├── DashboardActiveShelf.tsx
-│   │           ├── DashboardClient.tsx
-│   │           ├── DashboardGoalsCard.tsx
-│   │           ├── DashboardMetrics.tsx
-│   │           ├── DashboardMilestones.tsx
-│   │           ├── DashboardTimeline.tsx
-│   │           ├── DashboardVelocityChart.tsx
-│   │           └── ReadingGoalModal.tsx
+│   │   ├── presentation
+│   │   │   ├── actions
+│   │   │   │   ├── goals.test.ts
+│   │   │   │   └── goals.ts
+│   │   │   └── components
+│   │   │       ├── DashboardActiveShelf.tsx
+│   │   │       ├── DashboardClient.tsx
+│   │   │       ├── DashboardGoalsCard.tsx
+│   │   │       ├── DashboardMetrics.tsx
+│   │   │       ├── DashboardMilestones.tsx
+│   │   │       ├── DashboardTimeline.tsx
+│   │   │       ├── DashboardVelocityChart.tsx
+│   │   │       └── ReadingGoalModal.tsx
+│   │   └── ReadingGoalsFactBasedIntegration.test.ts
 │   ├── discovery
 │   │   ├── application
 │   │   │   ├── dto
@@ -540,6 +554,7 @@ tomesphere-app
 │   │       │   │   └── SearchIndexProjectionBuilder.ts
 │   │       │   ├── queries
 │   │       │   │   ├── GetAutocompleteSuggestions
+│   │       │   │   │   ├── handler.test.ts
 │   │       │   │   │   ├── handler.ts
 │   │       │   │   │   └── query.ts
 │   │       │   │   ├── GetRecentSearches
@@ -549,6 +564,7 @@ tomesphere-app
 │   │       │   │   │   ├── handler.ts
 │   │       │   │   │   └── query.ts
 │   │       │   │   ├── GetTrendingSearches
+│   │       │   │   │   ├── handler.test.ts
 │   │       │   │   │   ├── handler.ts
 │   │       │   │   │   └── query.ts
 │   │       │   │   └── SearchBooks
@@ -580,6 +596,7 @@ tomesphere-app
 │   │       ├── presentation
 │   │       │   ├── actions
 │   │       │   │   ├── search.ts
+│   │       │   │   ├── searchActions.test.ts
 │   │       │   │   └── searchActions.ts
 │   │       │   ├── components
 │   │       │   │   ├── CommandPalette.tsx
@@ -670,6 +687,7 @@ tomesphere-app
 │   │   │       ├── ScienceBooksSection.tsx
 │   │   │       ├── SlowScrollBooksSection.tsx
 │   │   │       ├── StatisticsSection.tsx
+│   │   │       ├── SubjectsExplorerSection.tsx
 │   │   │       ├── TrendingBooksSection.tsx
 │   │   │       └── ViewAllCard.tsx
 │   │   └── types
@@ -856,24 +874,6 @@ tomesphere-app
 │   │   │   │   └── infrastructure
 │   │   │   │       └── repositories
 │   │   │   │           └── SupabaseAccountDeletionRepository.ts
-│   │   │   ├── export
-│   │   │   │   ├── application
-│   │   │   │   │   ├── commands
-│   │   │   │   │   │   └── RequestExport
-│   │   │   │   │   │       ├── handler.ts
-│   │   │   │   │   │       └── index.ts
-│   │   │   │   │   ├── dto
-│   │   │   │   │   │   └── ExportPayloadSpec.ts
-│   │   │   │   │   └── validators
-│   │   │   │   │       └── requestExportSchema.ts
-│   │   │   │   ├── domain
-│   │   │   │   │   ├── entities
-│   │   │   │   │   │   └── ExportRequest.ts
-│   │   │   │   │   └── repositories
-│   │   │   │   │       └── ExportRequestRepository.ts
-│   │   │   │   └── infrastructure
-│   │   │   │       └── repositories
-│   │   │   │           └── SupabaseExportRequestRepository.ts
 │   │   │   ├── infrastructure
 │   │   │   │   ├── read-models
 │   │   │   │   │   ├── SupabaseDashboardReadModel.ts
@@ -890,6 +890,7 @@ tomesphere-app
 │   │   │   │   │       └── SupabaseNotificationPreferencesRepository.ts
 │   │   │   │   └── presentation
 │   │   │   │       ├── actions
+│   │   │   │       │   ├── notifications.test.ts
 │   │   │   │       │   └── notifications.ts
 │   │   │   │       └── components
 │   │   │   │           └── NotificationsForm.tsx
@@ -984,7 +985,6 @@ tomesphere-app
 │   │   │   │       │   └── security.ts
 │   │   │   │       └── components
 │   │   │   │           ├── DangerZone.tsx
-│   │   │   │           ├── ExportSection.tsx
 │   │   │   │           ├── PasswordSection.tsx
 │   │   │   │           ├── SecurityForm.tsx
 │   │   │   │           ├── SecurityScreen.tsx
@@ -1013,13 +1013,20 @@ tomesphere-app
 │   │   │   └── event-handlers
 │   │   │       └── NotificationEventHandlers.ts
 │   │   ├── domain
+│   │   │   ├── repositories
+│   │   │   │   ├── INotificationPreferencesRepository.ts
+│   │   │   │   └── INotificationRepository.ts
 │   │   │   └── Notification.ts
+│   │   ├── infrastructure
+│   │   │   └── SupabaseNotificationRepository.ts
 │   │   ├── presentation
 │   │   │   ├── actions
 │   │   │   │   └── notifications.ts
 │   │   │   └── components
 │   │   │       └── NotificationBell.tsx
-│   │   └── NotificationsModule.ts
+│   │   ├── NotificationPreferencesFiltering.test.ts
+│   │   ├── NotificationsModule.ts
+│   │   └── NotificationVerticalSlice.test.ts
 │   ├── orchestration
 │   │   └── ReadingActivityCoordinator.ts
 │   ├── progress
@@ -1071,6 +1078,7 @@ tomesphere-app
 │   │   │   ├── entities
 │   │   │   │   ├── Achievement.ts
 │   │   │   │   ├── ActivityLog.ts
+│   │   │   │   ├── ReadingGoal.test.ts
 │   │   │   │   ├── ReadingGoal.ts
 │   │   │   │   ├── ReadingStreak.ts
 │   │   │   │   └── UserProgress.ts
@@ -1104,6 +1112,7 @@ tomesphere-app
 │   │   │   └── repositories
 │   │   │       ├── SupabaseProgressRepository.ts
 │   │   │       ├── SupabaseReadingActivityRepository.ts
+│   │   │       ├── SupabaseReadingGoalRepository.test.ts
 │   │   │       └── SupabaseReadingGoalRepository.ts
 │   │   ├── presentation
 │   │   │   ├── actions
@@ -1255,6 +1264,7 @@ tomesphere-app
 │   │   │   └── SupabaseReaderRepository.ts
 │   │   ├── presentation
 │   │   │   ├── actions
+│   │   │   │   ├── reader.test.ts
 │   │   │   │   └── reader.ts
 │   │   │   └── screens
 │   │   ├── services
@@ -1269,7 +1279,8 @@ tomesphere-app
 │   │   │       └── RendererFactory.ts
 │   │   ├── state
 │   │   │   └── reader-store.ts
-│   │   └── ARCHITECTURE.md
+│   │   ├── ARCHITECTURE.md
+│   │   └── ReadingWorkspaceIntegration.test.ts
 │   ├── security
 │   │   ├── application
 │   │   │   ├── BearerAuthGuard.ts
@@ -1327,6 +1338,7 @@ tomesphere-app
 │   ├── support
 │   │   ├── application
 │   │   │   ├── commands
+│   │   │   │   ├── SubmitReportCommand.test.ts
 │   │   │   │   └── SubmitReportCommand.ts
 │   │   │   ├── dto
 │   │   │   │   └── FaqDto.ts
@@ -1338,6 +1350,7 @@ tomesphere-app
 │   │   │           └── handler.ts
 │   │   ├── domain
 │   │   │   ├── entities
+│   │   │   │   ├── PlatformReport.test.ts
 │   │   │   │   └── PlatformReport.ts
 │   │   │   └── repositories
 │   │   │       └── IPlatformReportRepository.ts
@@ -1345,9 +1358,11 @@ tomesphere-app
 │   │   │   ├── read-models
 │   │   │   │   └── SupabaseSupportReadModel.ts
 │   │   │   └── repositories
+│   │   │       ├── SupabasePlatformReportRepository.test.ts
 │   │   │       └── SupabasePlatformReportRepository.ts
 │   │   └── presentation
 │   │       └── actions
+│   │           ├── reportActions.test.ts
 │   │           └── reportActions.ts
 │   └── user
 │       └── profile
@@ -1419,6 +1434,7 @@ tomesphere-app
 │   ├── default_book_cover.jpg
 │   ├── favicon.ico
 │   ├── hero_library_bg.jpg
+│   ├── hero_light_bg.jpg
 │   ├── hero_sanctuary_bg.jpg
 │   ├── icon.png
 │   ├── library_bg.png
@@ -1497,6 +1513,7 @@ tomesphere-app
 │   │   │   └── AppRoutes.ts
 │   │   ├── security
 │   │   │   ├── Permission.ts
+│   │   │   ├── PermissionService.ts
 │   │   │   └── SecurityAction.ts
 │   │   ├── AggregateRoot.ts
 │   │   ├── DomainError.ts
@@ -1714,7 +1731,12 @@ tomesphere-app
 │   │   ├── 20260824000007_search_projection_maintenance.sql
 │   │   ├── 20260824000008_harden_maintenance_routine_privileges.sql
 │   │   ├── 20260824170000_grant_worker_notifications_insert.sql
-│   │   └── 20260824180000_fix_announcements_rls.sql
+│   │   ├── 20260824180000_fix_announcements_rls.sql
+│   │   ├── 20260828000000_frugal_schema_cleanup.sql
+│   │   ├── 20260828010000_retire_export_requests.sql
+│   │   ├── 20260828020000_repair_authorization_foundation.sql
+│   │   ├── 20260829000000_set_default_profile_bio.sql
+│   │   └── 20260829010000_grant_trending_searches_permissions.sql
 │   ├── config.toml
 │   └── schema_210726183034.sql
 ├── templates

@@ -7,6 +7,14 @@ import { ActiveReadingBookDto } from "../../application/dto/DashboardPageDto";
 import { BookOpen, Play, Clock, Bookmark, ChevronRight } from "lucide-react";
 import DefaultBookCover from "@/modules/books/components/DefaultBookCover";
 
+function formatRemainingTime(minutes: number): string {
+  if (minutes <= 0) return "Completed";
+  if (minutes < 60) return `~${minutes} mins remaining`;
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return mins > 0 ? `~${hrs}h ${mins}m remaining` : `~${hrs}h remaining`;
+}
+
 interface DashboardActiveShelfProps {
   books: ActiveReadingBookDto[];
 }
@@ -101,7 +109,7 @@ export default function DashboardActiveShelf({ books }: DashboardActiveShelfProp
                   </div>
                   <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-400 dark:text-slate-500">
                     <Clock size={10} />
-                    <span>~{b.estMinutesRemaining} mins remaining</span>
+                    <span>{formatRemainingTime(b.estMinutesRemaining)}</span>
                   </div>
                 </div>
               </div>

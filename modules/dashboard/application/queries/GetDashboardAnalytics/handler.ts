@@ -127,38 +127,56 @@ export class GetDashboardAnalyticsHandler {
     const readingSpeedPPH =
       totalMinutes > 0 ? Math.round(totalPages / (totalMinutes / 60)) : 0;
 
-    // Active in-progress books (strict user data)
-    let activeBooks: ActiveReadingBookDto[] = rawSessions
-      .filter((s) => Number(s.percentage || 0) < 100)
-      .map((s) => {
-        const book: any = s.books || {};
-        const authorNames =
-          (book.book_authors || [])
-            .map((ba: any) => ba.authors?.name)
-            .filter(Boolean)
-            .join(", ") || "Public Domain";
+    // Active in-progress books (strict user data, deduplicated by bookId)
+    const seenActiveBookIds = new Set<string>();
+    let activeBooks: ActiveReadingBookDto[] = [];
 
-        const bookPages = book.pages || s.pages || 200;
-        const curPage =
-          s.current_page ||
-          Math.round((Number(s.percentage || 0) / 100) * bookPages);
-        const percent = Math.min(100, Math.max(0, Number(s.percentage || 0)));
-        const remainingPages = Math.max(0, bookPages - curPage);
-        const estMinutesRemaining = Math.max(0, Math.round(remainingPages * 1.5));
+    for (const s of rawSessions) {
+      if (seenActiveBookIds.has(s.book_id)) continue;
 
-        return {
-          bookId: s.book_id,
-          title: book.title || "Untitled Volume",
-          author: authorNames,
-          coverUrl: book.cover_url ? book.cover_url.replace(/ /g, "%20") : null,
-          currentPage: curPage,
-          totalPages: bookPages,
-          percentage: percent,
-          readingTimeMinutes: s.reading_time_minutes || 0,
-          lastReadAt: s.last_read_at || s.started_at || new Date().toISOString(),
-          estMinutesRemaining,
-        };
+      const book: any = s.books || {};
+      const authorNames =
+        (book.book_authors || [])
+          .map((ba: any) => ba.authors?.name)
+          .filter(Boolean)
+          .join(", ") || "Public Domain";
+
+      const bookPages = book.pages || s.pages || 200;
+      const curPage =
+        s.current_page ||
+        Math.round((Number(s.percentage || 0) / 100) * bookPages);
+      const percent =
+        bookPages > 0
+          ? Math.min(
+              100,
+              Math.max(
+                0,
+                Math.round(
+                  Number(s.percentage) || (curPage > 0 ? (curPage / bookPages) * 100 : 0),
+                ),
+              ),
+            )
+          : 0;
+
+      if (percent >= 100) continue;
+
+      seenActiveBookIds.add(s.book_id);
+      const remainingPages = Math.max(0, bookPages - curPage);
+      const estMinutesRemaining = Math.max(0, Math.round(remainingPages * 1.5));
+
+      activeBooks.push({
+        bookId: s.book_id,
+        title: book.title || "Untitled Volume",
+        author: authorNames,
+        coverUrl: book.cover_url ? book.cover_url.replace(/ /g, "%20") : null,
+        currentPage: curPage,
+        totalPages: bookPages,
+        percentage: percent,
+        readingTimeMinutes: s.reading_time_minutes || 0,
+        lastReadAt: s.last_read_at || s.started_at || new Date().toISOString(),
+        estMinutesRemaining,
       });
+    }
 
     // If no active reading sessions yet, show the user's library entries
     if (activeBooks.length === 0 && rawLibrary.length > 0) {
