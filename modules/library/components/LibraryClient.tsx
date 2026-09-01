@@ -93,7 +93,17 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
   }, [fetchPageData]);
 
   const isOverview = activeViewId === "overview";
-  const hasBooks = data.books.items.length > 0;
+  const displayedBooks = searchQuery.trim()
+    ? data.books.items.filter(
+        (b) =>
+          b.title.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
+          (b.authors || []).some((a) =>
+            a.name.toLowerCase().includes(searchQuery.toLowerCase().trim()),
+          ),
+      )
+    : data.books.items;
+  const hasBooks = displayedBooks.length > 0;
+  const totalLibraryBooks = data.books.items.length;
 
   return (
     <div className="min-h-screen relative w-full">
@@ -151,16 +161,27 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
                 />
               </div>
               <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
-                No books found
+                {searchQuery.trim() ? "No matching books" : "No books found"}
               </h3>
               <p className="text-slate-400 max-w-sm mb-6 text-sm">
-                Your current view has no books in it. Add books to your library to track your reading journey.
+                {searchQuery.trim()
+                  ? `No books in your library match "${searchQuery}".`
+                  : "Your current view has no books in it. Add books to your library to track your reading journey."}
               </p>
-              {isOverview && (
+              {searchQuery.trim() ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => useLibraryStore.getState().setSearchQuery("")}
+                  className="rounded-xl font-bold cursor-pointer"
+                >
+                  Clear Search
+                </Button>
+              ) : isOverview ? (
                 <Button asChild size="lg" className="rounded-xl font-bold">
                   <Link href="/discover">Explore Books</Link>
                 </Button>
-              )}
+              ) : null}
             </Card>
           )}
 
@@ -170,9 +191,9 @@ export default function LibraryClient({ initialData }: LibraryClientProps) {
               className={`animate-fadeIn ${isPending ? "opacity-50" : "opacity-100"} transition-opacity duration-200`}
             >
               {viewMode === "grid" ? (
-                <LibraryGrid books={data.books.items} />
+                <LibraryGrid books={displayedBooks} />
               ) : (
-                <LibraryList books={data.books.items} />
+                <LibraryList books={displayedBooks} />
               )}
             </div>
           )}
