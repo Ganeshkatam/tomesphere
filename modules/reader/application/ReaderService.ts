@@ -170,10 +170,6 @@ export class ReaderService {
       }
 
       this.scheduleAutoSave(anchor);
-
-      if (percentage === 100) {
-        this.sessionFacade.markBookCompleted();
-      }
     });
 
     // Listen for text selections

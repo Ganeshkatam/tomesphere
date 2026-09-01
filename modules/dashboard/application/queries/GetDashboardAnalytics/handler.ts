@@ -98,7 +98,15 @@ export class GetDashboardAnalyticsHandler {
 
     const actualCompletedBookIds = new Set<string>([
       ...rawSessions.filter((s) => Number(s.percentage || 0) >= 100).map((s) => s.book_id),
-      ...rawLibrary.filter((lb) => lb.status === "finished").map((lb) => lb.book_id),
+      ...rawLibrary
+        .filter((lb) => {
+          if (lb.status !== "finished") return false;
+          const matchingSession = rawSessions.find((s) => s.book_id === lb.book_id);
+          // If the user has a session showing uncompleted pages, do not count as completed
+          if (matchingSession && Number(matchingSession.percentage || 0) < 100) return false;
+          return true;
+        })
+        .map((lb) => lb.book_id),
     ]);
     const booksCompleted = actualCompletedBookIds.size;
 
@@ -107,11 +115,7 @@ export class GetDashboardAnalyticsHandler {
       ...rawLibrary.map((l) => l.book_id),
     ]).size;
 
-    const booksStarted = Math.max(
-      actualDistinctStarted,
-      booksCompleted,
-      stats?.books_started || 0
-    );
+    const booksStarted = Math.max(actualDistinctStarted, booksCompleted);
 
     const currentStreak = stats?.current_streak || 0;
     const longestStreak = Math.max(stats?.longest_streak || 0, currentStreak);

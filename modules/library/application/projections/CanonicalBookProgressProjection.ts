@@ -45,34 +45,43 @@ export class CanonicalBookProgressProjection {
     let currentPage: number | undefined = undefined;
     let progressPercentage = 0;
 
-    // 1. If explicitly finished, always 100%
-    if (status === "finished") {
-      progressPercentage = 100;
-      currentPage = totalPages;
-    } else {
-      // 2. Extract current page from anchor or session
-      if (input.locationAnchor) {
-        if (input.locationAnchor.type === "pdf") {
-          const parsed = parseInt(String(input.locationAnchor.value), 10);
-          if (!isNaN(parsed) && parsed > 0) {
-            currentPage = parsed;
-          }
-        } else if (typeof input.locationAnchor.percentage === "number") {
-          progressPercentage = Math.min(100, Math.max(0, Math.round(input.locationAnchor.percentage)));
+    // 1. Extract current page from anchor or session
+    if (input.locationAnchor) {
+      if (input.locationAnchor.type === "pdf") {
+        const parsed = parseInt(String(input.locationAnchor.value), 10);
+        if (!isNaN(parsed) && parsed > 0) {
+          currentPage = parsed;
         }
+      } else if (typeof input.locationAnchor.percentage === "number") {
+        progressPercentage = Math.min(100, Math.max(0, Math.round(input.locationAnchor.percentage)));
       }
+    }
 
-      if (currentPage === undefined && typeof input.sessionCurrentPage === "number" && input.sessionCurrentPage > 0) {
-        currentPage = input.sessionCurrentPage;
-      }
+    if (currentPage === undefined && typeof input.sessionCurrentPage === "number" && input.sessionCurrentPage > 0) {
+      currentPage = input.sessionCurrentPage;
+    }
 
-      // 3. Compute percentage from currentPage vs totalPages if available
-      if (currentPage !== undefined && totalPages !== undefined && totalPages > 0) {
-        const clampedPage = Math.min(totalPages, Math.max(1, currentPage));
-        progressPercentage = Math.min(100, Math.max(0, Math.round((clampedPage / totalPages) * 100)));
-      } else if (typeof input.sessionPercentage === "number" && input.sessionPercentage > 0) {
-        progressPercentage = Math.min(100, Math.max(0, Math.round(input.sessionPercentage)));
+    // 2. Compute percentage from currentPage vs totalPages if available
+    if (currentPage !== undefined && totalPages !== undefined && totalPages > 0) {
+      const clampedPage = Math.min(totalPages, Math.max(1, currentPage));
+      progressPercentage = Math.min(100, Math.max(0, Math.round((clampedPage / totalPages) * 100)));
+    } else if (typeof input.sessionPercentage === "number" && input.sessionPercentage > 0) {
+      progressPercentage = Math.min(100, Math.max(0, Math.round(input.sessionPercentage)));
+    }
+
+    // 3. Reconcile finished status with verified reading progress
+    if (status === "finished") {
+      if (progressPercentage >= 100 || (currentPage === undefined && typeof input.sessionPercentage !== "number")) {
+        progressPercentage = 100;
+        currentPage = totalPages || currentPage;
+      } else if (currentPage !== undefined && totalPages !== undefined && currentPage < totalPages) {
+        // User has explicit partial reading progress in the database
+        status = "currently_reading";
       }
+    } else if (progressPercentage >= 100) {
+      status = "finished";
+    } else if (status === "none" && (currentPage !== undefined || progressPercentage > 0)) {
+      status = "currently_reading";
     }
 
     return {
