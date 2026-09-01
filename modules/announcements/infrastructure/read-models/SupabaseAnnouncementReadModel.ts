@@ -17,7 +17,9 @@ export class SupabaseAnnouncementReadModel implements AnnouncementReadModel {
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Failed to fetch announcements:", error.message);
+        if (process.env.NODE_ENV === "development") {
+          console.warn("Notice: Announcements unavailable:", error.message);
+        }
         return [];
       }
 
@@ -32,8 +34,10 @@ export class SupabaseAnnouncementReadModel implements AnnouncementReadModel {
         startsAt: row.starts_at,
         endsAt: row.ends_at,
       }));
-    } catch (err) {
-      console.error("Failed to fetch announcements:", err);
+    } catch (err: any) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Notice: Announcements fetch skipped:", err?.message || err);
+      }
       return [];
     }
   }
