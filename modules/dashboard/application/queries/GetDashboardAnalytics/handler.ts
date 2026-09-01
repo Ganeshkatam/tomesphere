@@ -89,17 +89,18 @@ export class GetDashboardAnalyticsHandler {
       0
     );
     const computedSessionPages = rawSessions.reduce(
-      (acc, s) => acc + (s.current_page || 0),
+      (acc, s) => acc + (s.pages || 0),
       0
     );
 
     const totalMinutes = Math.max(stats?.minutes_read || 0, computedSessionMinutes);
     const totalPages = Math.max(stats?.pages_read || 0, computedSessionPages);
-    const booksCompleted =
-      stats?.books_completed ||
-      rawSessions.filter((s) => Number(s.percentage || 0) >= 100).length ||
-      rawLibrary.filter((lb) => lb.status === "finished").length ||
-      0;
+
+    const actualCompletedBookIds = new Set<string>([
+      ...rawSessions.filter((s) => Number(s.percentage || 0) >= 100).map((s) => s.book_id),
+      ...rawLibrary.filter((lb) => lb.status === "finished").map((lb) => lb.book_id),
+    ]);
+    const booksCompleted = actualCompletedBookIds.size;
 
     const actualDistinctStarted = new Set([
       ...rawSessions.map((s) => s.book_id),
@@ -107,13 +108,13 @@ export class GetDashboardAnalyticsHandler {
     ]).size;
 
     const booksStarted = Math.max(
-      stats?.books_started || 0,
       actualDistinctStarted,
-      booksCompleted
+      booksCompleted,
+      stats?.books_started || 0
     );
 
     const currentStreak = stats?.current_streak || 0;
-    const longestStreak = stats?.longest_streak || 0;
+    const longestStreak = Math.max(stats?.longest_streak || 0, currentStreak);
 
     const hours = Math.floor(totalMinutes / 60);
     const mins = totalMinutes % 60;
@@ -125,7 +126,9 @@ export class GetDashboardAnalyticsHandler {
         ? Math.min(100, Math.round((booksCompleted / booksStarted) * 100))
         : 0;
     const readingSpeedPPH =
-      totalMinutes > 0 ? Math.round(totalPages / (totalMinutes / 60)) : 0;
+      totalMinutes > 0 && totalPages > 0
+        ? Math.round(totalPages / (totalMinutes / 60))
+        : 0;
 
     // Active in-progress books (strict user data, deduplicated by bookId)
     const seenActiveBookIds = new Set<string>();

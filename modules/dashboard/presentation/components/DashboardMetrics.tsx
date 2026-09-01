@@ -32,8 +32,8 @@ export default function DashboardMetrics({ metrics }: DashboardMetricsProps) {
     },
     {
       label: "Consecutive Cadence",
-      value: `${metrics.currentStreak} Days`,
-      subtext: `Personal best: ${metrics.longestStreak} days`,
+      value: `${metrics.currentStreak} ${metrics.currentStreak === 1 ? "Day" : "Days"}`,
+      subtext: `Personal best: ${metrics.longestStreak} ${metrics.longestStreak === 1 ? "day" : "days"}`,
       icon: Flame,
       color: "text-amber-500 dark:text-amber-400",
       bg: "bg-amber-50/70 dark:bg-amber-950/30 border-amber-200/60 dark:border-amber-800/40",
