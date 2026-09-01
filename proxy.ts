@@ -52,6 +52,8 @@ export async function proxy(request: NextRequest) {
     },
   });
 
+  const isProduction = process.env.NODE_ENV === "production";
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -68,12 +70,33 @@ export async function proxy(request: NextRequest) {
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
+            response.cookies.set(name, value, {
+              ...options,
+              httpOnly: options?.httpOnly ?? true,
+              sameSite: options?.sameSite ?? "lax",
+              secure: options?.secure ?? isProduction,
+              path: options?.path ?? "/",
+            }),
           );
         },
       },
     },
   );
+
+  // Apply strict HTTP security and cookie policy headers
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "SAMEORIGIN");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=()",
+  );
+  if (isProduction) {
+    response.headers.set(
+      "Strict-Transport-Security",
+      "max-age=63072000; includeSubDomains; preload",
+    );
+  }
 
   // IMPORTANT: Use getUser() not getSession().
   // getUser() validates the token with the Supabase Auth server.

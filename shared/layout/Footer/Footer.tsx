@@ -186,6 +186,17 @@ export default function Footer() {
             >
               Cookies
             </Link>
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new Event("open-cookie-preferences"));
+                }
+              }}
+              className="hover:text-[var(--text-primary)] transition-colors cursor-pointer text-left"
+            >
+              Cookie Settings
+            </button>
             <Link
               href="/sitemap"
               className="hover:text-[var(--text-primary)] transition-colors"

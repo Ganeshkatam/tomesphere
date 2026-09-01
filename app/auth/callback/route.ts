@@ -23,6 +23,8 @@ export async function GET(request: NextRequest) {
   const targetPath = next.startsWith("/") ? next : `/${next}`;
   const redirectResponse = NextResponse.redirect(`${origin}${targetPath}`);
 
+  const isProduction = process.env.NODE_ENV === "production";
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -33,7 +35,13 @@ export async function GET(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) =>
-            redirectResponse.cookies.set(name, value, options),
+            redirectResponse.cookies.set(name, value, {
+              ...options,
+              httpOnly: options?.httpOnly ?? true,
+              sameSite: options?.sameSite ?? "lax",
+              secure: options?.secure ?? isProduction,
+              path: options?.path ?? "/",
+            }),
           );
         },
       },

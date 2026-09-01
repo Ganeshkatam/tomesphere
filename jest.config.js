@@ -6,6 +6,7 @@ module.exports = {
   testMatch: [
     "**/modules/**/?(*.)+(spec|test).[jt]s?(x)",
     "**/shared/**/?(*.)+(spec|test).[jt]s?(x)",
+    "**/components/**/?(*.)+(spec|test).[jt]s?(x)",
     "**/app/**/?(*.)+(spec|test).[jt]s?(x)"
   ],
   testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/tests/"],

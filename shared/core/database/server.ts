@@ -8,6 +8,8 @@ import { cookies } from "next/headers";
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
 
+  const isProduction = process.env.NODE_ENV === "production";
+
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -19,7 +21,13 @@ export async function createSupabaseServerClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options),
+              cookieStore.set(name, value, {
+                ...options,
+                httpOnly: options?.httpOnly ?? true,
+                sameSite: options?.sameSite ?? "lax",
+                secure: options?.secure ?? isProduction,
+                path: options?.path ?? "/",
+              }),
             );
           } catch {
             // setAll can fail when called from a Server Component

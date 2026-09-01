@@ -9,6 +9,7 @@ import { SupabaseAnnouncementReadModel } from "@/modules/announcements/infrastru
 import { GetActiveAnnouncementsQueryHandler } from "@/modules/announcements/application/queries/GetActiveAnnouncements/handler";
 import { AnnouncementBanner } from "@/modules/announcements/presentation/components/AnnouncementBanner";
 import { AnnouncementNotice } from "@/modules/announcements/presentation/components/AnnouncementNotice";
+import CookieConsentBanner from "@/components/cookies/CookieConsentBanner";
 
 const atkinson = Atkinson_Hyperlegible({
   subsets: ["latin"],
@@ -125,6 +126,7 @@ export default async function RootLayout({
           {/* Universal Maintenance & System Announcement Banner Across All Routes */}
           <AnnouncementBanner announcements={activeAnnouncements} />
           <AnnouncementNotice announcements={activeAnnouncements} />
+          <CookieConsentBanner />
           {children}
         </Providers>
       </body>
