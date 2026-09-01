@@ -84,21 +84,6 @@ export function ReaderShell({ data }: ReaderShellProps) {
     };
   }, [data.book.id, data.book.fileUrl, data.book.fileType, userId]);
 
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!serviceRef.current) return;
-      if (document.hidden) {
-        serviceRef.current.pauseSession();
-      } else {
-        serviceRef.current.startSession();
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () =>
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, []);
-
   // ─── Keyboard Shortcuts ──────────────────────────────────────────
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

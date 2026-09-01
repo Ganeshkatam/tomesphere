@@ -37,6 +37,8 @@ export class ReaderService {
   private sessionStartTime: number | null = null;
   private accumulatedDurationSeconds: number = 0;
   private uniquePagesVisited: Set<string> = new Set<string>();
+  private serverSessionInitialized: boolean = false;
+  private sessionCompleted: boolean = false;
 
   // Auto-save debounce (5 seconds idle after stopping at a position)
   private autoSaveTimer: NodeJS.Timeout | null = null;
@@ -212,36 +214,35 @@ export class ReaderService {
   private handleVisibilityChange = () => {
     if (typeof document === "undefined") return;
     if (document.visibilityState === "hidden") {
-      this.flushActiveReadingDuration();
+      this.pauseSession();
     } else if (document.visibilityState === "visible") {
-      if (useReaderStore.getState().sessionState === "active") {
-        this.sessionStartTime = Date.now();
-      }
+      this.sessionStartTime = Date.now();
+      useReaderStore.getState().setSessionState("active");
     }
   };
 
   public async flushActiveReadingDuration(): Promise<void> {
     if (this.sessionStartTime) {
-      const now = Date.now();
-      const elapsed = Math.floor((now - this.sessionStartTime) / 1000);
-      if (elapsed > 0) {
-        this.sessionStartTime = now;
-        const currentPages = this.uniquePagesVisited.size;
-        const newPages = Math.max(0, currentPages - this.lastFlushedPagesCount);
-        this.lastFlushedPagesCount = currentPages;
+      this.accumulatedDurationSeconds += Math.floor((Date.now() - this.sessionStartTime) / 1000);
+      this.sessionStartTime = null;
+    }
 
-        // Periodic heartbeat strictly logs active reading duration without altering or spamming position updates
-        await this.sessionFacade.completeSession(elapsed, newPages);
+    if (!this.sessionCompleted && this.serverSessionInitialized) {
+      const duration = this.accumulatedDurationSeconds;
+      const currentPages = this.uniquePagesVisited.size;
+      if (duration > 0 || currentPages > 0) {
+        this.sessionCompleted = true;
+        await this.sessionFacade.completeSession(duration, currentPages);
       }
     }
   }
 
   private handleUnload = () => {
-    if (this.pendingSaveAnchor) {
+    if (this.pendingSaveAnchor && this.pendingSaveAnchor.value !== this.lastSavedPositionValue) {
       this.sessionFacade.saveProgress(this.pendingSaveAnchor);
       this.pendingSaveAnchor = null;
     }
-    this.flushActiveReadingDuration();
+    void this.flushActiveReadingDuration();
   };
 
   public applyPreferences(prefs: any) {
@@ -706,18 +707,21 @@ export class ReaderService {
 
   public startSession(initialPage: number = 1): void {
     const store = useReaderStore.getState();
-    if (store.sessionState === "active") return;
-
     this.sessionStartTime = Date.now();
     store.setSessionState("active");
-    this.sessionFacade.startSession(initialPage);
+
+    if (!this.serverSessionInitialized) {
+      this.serverSessionInitialized = true;
+      this.sessionFacade.startSession(initialPage);
+    }
   }
 
   public pauseSession(): void {
     const store = useReaderStore.getState();
-    if (store.sessionState !== "active") return;
-
-    this.flushActiveReadingDuration();
+    if (this.sessionStartTime) {
+      this.accumulatedDurationSeconds += Math.floor((Date.now() - this.sessionStartTime) / 1000);
+      this.sessionStartTime = null;
+    }
     store.setSessionState("paused");
   }
 
@@ -757,6 +761,8 @@ export class ReaderService {
       if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
       await this.savePosition(currentAnchor);
     }
+
+    await this.flushActiveReadingDuration();
   }
 
   public async destroy(): Promise<void> {
