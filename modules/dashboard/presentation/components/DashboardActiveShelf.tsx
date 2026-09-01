@@ -48,17 +48,17 @@ export default function DashboardActiveShelf({ books }: DashboardActiveShelfProp
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg sm:text-xl font-display font-extrabold text-slate-900 dark:text-white">
-            Active Volumetric Progress
+            Currently Reading
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-            Volumes currently in progress across your reader workspaces
+            Books currently in progress across your library
           </p>
         </div>
         <Link
           href="/me/library"
           className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
         >
-          <span>All Volumes</span>
+          <span>All Books</span>
           <ChevronRight size={14} />
         </Link>
       </div>

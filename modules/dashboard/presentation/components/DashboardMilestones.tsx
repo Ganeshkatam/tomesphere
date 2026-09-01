@@ -32,7 +32,7 @@ export default function DashboardMilestones({ milestones }: DashboardMilestonesP
         <div className="flex items-center gap-2">
           <Award size={18} className="text-amber-500" />
           <h3 className="text-lg font-display font-extrabold text-slate-900 dark:text-white">
-            Archival Honors & Accolades
+            Milestones & Badges
           </h3>
         </div>
         <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
@@ -40,7 +40,7 @@ export default function DashboardMilestones({ milestones }: DashboardMilestonesP
         </span>
       </div>
       <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-6">
-        Milestones unlocked through continuous scholarship and archival reading
+        Badges unlocked through consistent reading habits
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">

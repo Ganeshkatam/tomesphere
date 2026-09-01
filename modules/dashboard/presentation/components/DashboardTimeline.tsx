@@ -30,22 +30,22 @@ export default function DashboardTimeline({ sessions }: DashboardTimelineProps) 
       <div className="flex items-center gap-2 mb-1">
         <History size={18} className="text-indigo-600 dark:text-indigo-400" />
         <h3 className="text-lg font-display font-extrabold text-slate-900 dark:text-white">
-          Session Audit & Historical Telemetry
+          Recent Reading Sessions
         </h3>
       </div>
       <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-6">
-        Verified audit record of recent digital immersion sessions
+        Log of your latest reading activity and recorded sessions
       </p>
 
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
           <thead>
             <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 uppercase tracking-wider font-bold text-[10px]">
-              <th className="pb-3 pr-4">Volume</th>
-              <th className="pb-3 px-4">Session Duration</th>
+              <th className="pb-3 pr-4">Book</th>
+              <th className="pb-3 px-4">Duration</th>
               <th className="pb-3 px-4">Pages Read</th>
-              <th className="pb-3 px-4">Terminal Page</th>
-              <th className="pb-3 pl-4 text-right">Timestamp</th>
+              <th className="pb-3 px-4">Page Reached</th>
+              <th className="pb-3 pl-4 text-right">Date</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">

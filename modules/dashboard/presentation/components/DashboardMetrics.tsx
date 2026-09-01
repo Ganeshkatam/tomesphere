@@ -2,7 +2,7 @@
 
 import React from "react";
 import { DashboardMetricsDto } from "../../application/dto/DashboardPageDto";
-import { Clock, BookOpen, Flame, Gauge, CheckCircle2, TrendingUp } from "lucide-react";
+import { Clock, BookOpen, Flame, CheckCircle2, TrendingUp } from "lucide-react";
 
 interface DashboardMetricsProps {
   metrics: DashboardMetricsDto;
@@ -11,44 +11,44 @@ interface DashboardMetricsProps {
 export default function DashboardMetrics({ metrics }: DashboardMetricsProps) {
   const cards = [
     {
-      label: "Reading Immersion",
+      label: "Reading Time",
       value: metrics.formattedTotalTime,
-      subtext: `${metrics.totalMinutes} lifetime minutes`,
+      subtext: `${metrics.totalMinutes} total minutes`,
       icon: Clock,
       color: "text-indigo-600 dark:text-indigo-400",
       bg: "bg-indigo-50/70 dark:bg-indigo-950/30 border-indigo-200/60 dark:border-indigo-800/40",
+      trendLabel: "Weekly Trend",
       trend: "+18% this week",
-      trendPositive: true,
     },
     {
-      label: "Pages Processed",
+      label: "Pages Read",
       value: metrics.totalPages.toLocaleString(),
-      subtext: `~${metrics.readingSpeedPPH} pages/hour velocity`,
+      subtext: `~${metrics.readingSpeedPPH} pages/hour pace`,
       icon: BookOpen,
       color: "text-cyan-600 dark:text-cyan-400",
       bg: "bg-cyan-50/70 dark:bg-cyan-950/30 border-cyan-200/60 dark:border-cyan-800/40",
+      trendLabel: "Reading Pace",
       trend: "+24% pace",
-      trendPositive: true,
     },
     {
-      label: "Consecutive Cadence",
+      label: "Current Streak",
       value: `${metrics.currentStreak} ${metrics.currentStreak === 1 ? "Day" : "Days"}`,
       subtext: `Personal best: ${metrics.longestStreak} ${metrics.longestStreak === 1 ? "day" : "days"}`,
       icon: Flame,
       color: "text-amber-500 dark:text-amber-400",
       bg: "bg-amber-50/70 dark:bg-amber-950/30 border-amber-200/60 dark:border-amber-800/40",
+      trendLabel: "Streak Status",
       trend: "Active Streak",
-      trendPositive: true,
     },
     {
-      label: "Completion Ratio",
+      label: "Books Completed",
       value: `${metrics.completionRate}%`,
-      subtext: `${metrics.booksCompleted} completed / ${metrics.booksStarted} started`,
+      subtext: `${metrics.booksCompleted} completed of ${metrics.booksStarted} started`,
       icon: CheckCircle2,
       color: "text-emerald-600 dark:text-emerald-400",
       bg: "bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-200/60 dark:border-emerald-800/40",
-      trend: "High Retention",
-      trendPositive: true,
+      trendLabel: "Completion Rate",
+      trend: metrics.completionRate > 50 ? "High Retention" : "In Progress",
     },
   ];
 
@@ -80,7 +80,7 @@ export default function DashboardMetrics({ metrics }: DashboardMetricsProps) {
             </div>
 
             <div className="mt-3.5 pt-3 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between text-[11px] font-bold">
-              <span className="text-slate-400 dark:text-slate-500">Cadence Status</span>
+              <span className="text-slate-400 dark:text-slate-500">{card.trendLabel}</span>
               <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
                 <TrendingUp size={12} />
                 {card.trend}

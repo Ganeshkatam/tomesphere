@@ -52,7 +52,7 @@ export default function DashboardGoalsCard({ goals }: DashboardGoalsCardProps) {
           <div className="flex items-center gap-2">
             <Target size={18} className="text-pink-500" />
             <h3 className="text-lg font-display font-extrabold text-slate-900 dark:text-white">
-              Habit & Challenge Objectives
+              Reading Goals
             </h3>
           </div>
           <button
@@ -65,7 +65,7 @@ export default function DashboardGoalsCard({ goals }: DashboardGoalsCardProps) {
           </button>
         </div>
         <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-6">
-          Quantifiable milestone progression towards personal reading benchmarks
+          Track your daily, weekly, and yearly reading targets
         </p>
 
         {goals.length === 0 ? (

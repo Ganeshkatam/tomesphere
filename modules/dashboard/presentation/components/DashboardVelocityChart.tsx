@@ -40,11 +40,11 @@ export default function DashboardVelocityChart({
               <div className="flex items-center gap-2">
                 <BarChart3 size={18} className="text-indigo-600 dark:text-indigo-400" />
                 <h3 className="text-lg font-display font-extrabold text-slate-900 dark:text-white">
-                  Reading Velocity & Habit Cadence
+                  Reading Activity
                 </h3>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                Daily minutes read over the trailing 7 days vs 30 min daily target
+                Daily minutes read over the past 7 days vs 30-minute daily goal
               </p>
             </div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/60 text-xs font-bold text-indigo-700 dark:text-indigo-300 self-start sm:self-auto">
@@ -119,10 +119,10 @@ export default function DashboardVelocityChart({
       <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col justify-between">
         <div>
           <h3 className="text-lg font-display font-extrabold text-slate-900 dark:text-white mb-1">
-            Diurnal Rhythm
+            Time of Day
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-6">
-            Peak focus distribution across daytime windows
+            When you read throughout the day
           </p>
 
           <div className="space-y-4">
@@ -197,14 +197,14 @@ export default function DashboardVelocityChart({
         </div>
 
         <div className="mt-6 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400">
-          <p className="font-semibold text-slate-800 dark:text-slate-200 mb-0.5">Primary Insight</p>
+          <p className="font-semibold text-slate-800 dark:text-slate-200 mb-0.5">Reading Pattern</p>
           {topWindow ? (
             <span>
-              You achieve your highest focus density during <strong className="text-indigo-600 dark:text-indigo-400">{topWindow.label}</strong> ({topWindow.percent}%) sessions.
+              You read most during <strong className="text-indigo-600 dark:text-indigo-400">{topWindow.label}</strong> ({topWindow.percent}% of reading time).
             </span>
           ) : (
             <span>
-              Log your daily reading sessions to unlock real-time diurnal rhythm analytics.
+              Log your daily reading sessions to see your reading patterns throughout the day.
             </span>
           )}
         </div>

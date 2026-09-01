@@ -38,15 +38,15 @@ export default function DashboardClient({ data }: DashboardClientProps) {
             <div className="space-y-1.5 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-bold text-indigo-200">
                 <Sparkles size={12} className="text-amber-400" />
-                <span>Reading Intelligence & Telemetry</span>
+                <span>Reading Overview</span>
                 <span className="text-indigo-400">•</span>
                 <span>{todayFormatted}</span>
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-extrabold tracking-tight text-white">
-                Reading Analytics Command Center
+                Reading Dashboard
               </h1>
               <p className="text-xs sm:text-sm text-indigo-200/90 font-medium">
-                High-precision reading velocity, volumetric habit progression, and archival scholarship telemetry for {data.user.name}.
+                Track your reading time, pages completed, streak progress, and active volumes for {data.user.name}.
               </p>
             </div>
 
@@ -64,7 +64,7 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all"
               >
                 <Compass size={14} />
-                <span>Browse Archive</span>
+                <span>Explore Books</span>
                 <ArrowUpRight size={14} />
               </Link>
             </div>
