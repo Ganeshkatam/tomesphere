@@ -38,14 +38,12 @@ export class ReaderService {
   private accumulatedDurationSeconds: number = 0;
   private uniquePagesVisited: Set<string> = new Set<string>();
 
-  // Auto-save debounce (5 seconds idle after stopping at a position) & Heartbeat
+  // Auto-save debounce (5 seconds idle after stopping at a position)
   private autoSaveTimer: NodeJS.Timeout | null = null;
   private readonly AUTO_SAVE_DELAY_MS = 5000;
   private pendingSaveAnchor: LocationAnchor | null = null;
   private lastSavedPositionValue: string | null = null;
   private lastFlushedPositionValue: string | null = null;
-  private heartbeatTimer: NodeJS.Timeout | null = null;
-  private readonly HEARTBEAT_INTERVAL_MS = 30000;
   private lastFlushedPagesCount: number = 0;
 
   // In-memory highlight list for hasNote computation and target promotion
@@ -713,21 +711,11 @@ export class ReaderService {
     this.sessionStartTime = Date.now();
     store.setSessionState("active");
     this.sessionFacade.startSession(initialPage);
-
-    if (this.heartbeatTimer) clearInterval(this.heartbeatTimer);
-    this.heartbeatTimer = setInterval(() => {
-      this.flushActiveReadingDuration();
-    }, this.HEARTBEAT_INTERVAL_MS);
   }
 
   public pauseSession(): void {
     const store = useReaderStore.getState();
     if (store.sessionState !== "active") return;
-
-    if (this.heartbeatTimer) {
-      clearInterval(this.heartbeatTimer);
-      this.heartbeatTimer = null;
-    }
 
     this.flushActiveReadingDuration();
     store.setSessionState("paused");
@@ -776,11 +764,6 @@ export class ReaderService {
       window.removeEventListener("beforeunload", this.handleUnload);
       window.removeEventListener("pagehide", this.handleUnload);
       document.removeEventListener("visibilitychange", this.handleVisibilityChange);
-    }
-
-    if (this.heartbeatTimer) {
-      clearInterval(this.heartbeatTimer);
-      this.heartbeatTimer = null;
     }
 
     // Force pending save only if position actually changed
