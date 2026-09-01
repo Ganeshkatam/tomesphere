@@ -8,6 +8,7 @@ import { createSupabaseServerClient } from "@/shared/core/database/server";
 import { SupabaseAnnouncementReadModel } from "@/modules/announcements/infrastructure/read-models/SupabaseAnnouncementReadModel";
 import { GetActiveAnnouncementsQueryHandler } from "@/modules/announcements/application/queries/GetActiveAnnouncements/handler";
 import { AnnouncementBanner } from "@/modules/announcements/presentation/components/AnnouncementBanner";
+import { AnnouncementNotice } from "@/modules/announcements/presentation/components/AnnouncementNotice";
 
 const atkinson = Atkinson_Hyperlegible({
   subsets: ["latin"],
@@ -123,6 +124,7 @@ export default async function RootLayout({
         <Providers>
           {/* Universal Maintenance & System Announcement Banner Across All Routes */}
           <AnnouncementBanner announcements={activeAnnouncements} />
+          <AnnouncementNotice announcements={activeAnnouncements} />
           {children}
         </Providers>
       </body>

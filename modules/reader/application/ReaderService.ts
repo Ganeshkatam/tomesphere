@@ -51,7 +51,6 @@ export class ReaderService {
   private pendingSaveAnchor: LocationAnchor | null = null;
   private lastSavedPositionValue: string | null = null;
   private lastFlushedPositionValue: string | null = null;
-  private lastFlushedPagesCount: number = 0;
 
   // In-memory highlight list for hasNote computation and target promotion
   private highlights: ReaderHighlight[] = [];
