@@ -36,9 +36,14 @@ export class ReaderService {
   private sessionFacade: ReaderSessionFacade;
   private sessionStartTime: number | null = null;
   private accumulatedDurationSeconds: number = 0;
-  private uniquePagesVisited: Set<string> = new Set<string>();
   private serverSessionInitialized: boolean = false;
   private sessionCompleted: boolean = false;
+
+  // Verified reading dwell time tracking (pages only count if actively read >= 15s)
+  private verifiedPagesRead: Set<string> = new Set<string>();
+  private currentPageAnchor: string | null = null;
+  private currentPageEnteredAt: number | null = null;
+  private readonly MIN_PAGE_DWELL_SECONDS = 15;
 
   // Auto-save debounce (5 seconds idle after stopping at a position)
   private autoSaveTimer: NodeJS.Timeout | null = null;
@@ -138,7 +143,16 @@ export class ReaderService {
     // Listen for location changes
     this.renderer.onLocationChanged((anchor: LocationAnchor, percentage: number) => {
       useReaderStore.getState().setAnchor(anchor);
-      this.uniquePagesVisited.add(anchor.value);
+
+      // Verify active dwell time on previous page before moving to new page
+      if (this.currentPageAnchor && this.currentPageAnchor !== anchor.value) {
+        this.recordPageDwell(this.currentPageAnchor);
+        this.currentPageAnchor = anchor.value;
+        this.currentPageEnteredAt = Date.now();
+      } else if (!this.currentPageAnchor) {
+        this.currentPageAnchor = anchor.value;
+        this.currentPageEnteredAt = Date.now();
+      }
 
       // Instant local persistence on every position update
       if (typeof window !== "undefined") {
@@ -203,6 +217,17 @@ export class ReaderService {
     this.startSession(initialPageNumber);
   }
 
+  private recordPageDwell(leavingAnchor?: string | null): void {
+    const anchorToCredit = leavingAnchor || this.currentPageAnchor;
+    if (!anchorToCredit || !this.currentPageEnteredAt) return;
+
+    const dwellSeconds = Math.floor((Date.now() - this.currentPageEnteredAt) / 1000);
+    // User must spend at least MIN_PAGE_DWELL_SECONDS actively engaged on the page
+    if (dwellSeconds >= this.MIN_PAGE_DWELL_SECONDS) {
+      this.verifiedPagesRead.add(anchorToCredit);
+    }
+  }
+
   private setupAutoSaveListeners() {
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", this.handleUnload);
@@ -217,6 +242,7 @@ export class ReaderService {
       this.pauseSession();
     } else if (document.visibilityState === "visible") {
       this.sessionStartTime = Date.now();
+      this.currentPageEnteredAt = Date.now();
       useReaderStore.getState().setSessionState("active");
     }
   };
@@ -226,13 +252,17 @@ export class ReaderService {
       this.accumulatedDurationSeconds += Math.floor((Date.now() - this.sessionStartTime) / 1000);
       this.sessionStartTime = null;
     }
+    this.recordPageDwell();
+    this.currentPageEnteredAt = null;
 
     if (!this.sessionCompleted && this.serverSessionInitialized) {
       const duration = this.accumulatedDurationSeconds;
-      const currentPages = this.uniquePagesVisited.size;
-      if (duration > 0 || currentPages > 0) {
+      const maxPossiblePages = Math.floor(duration / this.MIN_PAGE_DWELL_SECONDS);
+      const verifiedPagesCount = Math.min(this.verifiedPagesRead.size, maxPossiblePages);
+
+      if (duration > 0 || verifiedPagesCount > 0) {
         this.sessionCompleted = true;
-        await this.sessionFacade.completeSession(duration, currentPages);
+        await this.sessionFacade.completeSession(duration, verifiedPagesCount);
       }
     }
   }
@@ -708,6 +738,10 @@ export class ReaderService {
   public startSession(initialPage: number = 1): void {
     const store = useReaderStore.getState();
     this.sessionStartTime = Date.now();
+    this.currentPageEnteredAt = Date.now();
+    if (!this.currentPageAnchor) {
+      this.currentPageAnchor = String(initialPage);
+    }
     store.setSessionState("active");
 
     if (!this.serverSessionInitialized) {
@@ -722,6 +756,8 @@ export class ReaderService {
       this.accumulatedDurationSeconds += Math.floor((Date.now() - this.sessionStartTime) / 1000);
       this.sessionStartTime = null;
     }
+    this.recordPageDwell();
+    this.currentPageEnteredAt = null;
     store.setSessionState("paused");
   }
 
