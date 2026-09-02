@@ -14,12 +14,21 @@ async function getRepository() {
 
 export async function getUnreadNotifications(): Promise<ServerActionResult<Notification[]>> {
   try {
-    const user = await requireAuth();
-    const repository = await getRepository();
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return { success: true, data: [] };
+    }
+
+    const repository = new SupabaseNotificationRepository(supabase);
     const data = await repository.listUnreadForUser(user.id);
     return { success: true, data };
   } catch (error: any) {
-    return { success: false, error: { message: error.message } };
+    return { success: false, error: { message: error?.message || "Failed to fetch notifications" } };
   }
 }
 
