@@ -25,6 +25,7 @@ import {
 import { useReaderStore } from "../state/reader-store";
 import { ReaderSessionFacade } from "./facades/ReaderSessionFacade";
 import { ReaderSessionDto, ReaderPreferencesDto } from "./dto/ReaderPageDto";
+import { safeStorage } from "@/shared/core/storage/privacy-storage";
 
 export class ReaderService {
   private renderer: ReaderRenderer | null = null;
@@ -101,17 +102,15 @@ export class ReaderService {
       }
     }
 
-    if (typeof window !== "undefined") {
+    const cached = safeStorage.getItem(this.storageKey);
+    if (cached) {
       try {
-        const cached = localStorage.getItem(this.storageKey);
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed?.anchor && parsed?.page) {
-            // If we didn't have a server position, or if cache is valid, use it
-            if (!initialAnchor) {
-              initialAnchor = parsed.anchor;
-              initialPageNumber = parseInt(parsed.page, 10) || 1;
-            }
+        const parsed = JSON.parse(cached);
+        if (parsed?.anchor && parsed?.page) {
+          // If we didn't have a server position, or if cache is valid, use it
+          if (!initialAnchor) {
+            initialAnchor = parsed.anchor;
+            initialPageNumber = parseInt(parsed.page, 10) || 1;
           }
         }
       } catch (err) {
@@ -153,20 +152,17 @@ export class ReaderService {
         this.currentPageEnteredAt = Date.now();
       }
 
-      // Instant local persistence on every position update
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem(
-            this.storageKey,
-            JSON.stringify({
-              page: anchor.value,
-              anchor,
-              percentage,
-              updatedAt: Date.now(),
-            }),
-          );
-        } catch {}
-      }
+      // Safe local persistence (only executes if user gave functional storage consent)
+      safeStorage.setItem(
+        this.storageKey,
+        JSON.stringify({
+          page: anchor.value,
+          anchor,
+          percentage,
+          updatedAt: Date.now(),
+        }),
+        "functional"
+      );
 
       this.scheduleAutoSave(anchor);
     });

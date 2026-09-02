@@ -15,6 +15,8 @@ import {
   Zap,
 } from "lucide-react";
 
+import { safeStorage } from "@/shared/core/storage/privacy-storage";
+
 interface TourStep {
   title: string;
   description: string;
@@ -131,12 +133,12 @@ export default function WelcomeTour({ isOpen, onClose }: WelcomeTourProps) {
   };
 
   const completeTour = () => {
-    localStorage.setItem(WELCOME_TOUR_COMPLETED_KEY, "true");
+    safeStorage.setItem(WELCOME_TOUR_COMPLETED_KEY, "true", "functional");
     onClose();
   };
 
   const skipTour = () => {
-    localStorage.setItem(WELCOME_TOUR_SKIPPED_KEY, "true");
+    safeStorage.setItem(WELCOME_TOUR_SKIPPED_KEY, "true", "functional");
     onClose();
   };
 

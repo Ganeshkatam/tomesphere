@@ -1,4 +1,5 @@
 import { BookDto } from "@/modules/library/application/dto/response/BookDto";
+import { safeStorage } from "@/shared/core/storage/privacy-storage";
 
 const MAX_HISTORY = parseInt(process.env.NEXT_PUBLIC_MAX_HISTORY || "20", 10);
 const STORAGE_KEY =
@@ -10,8 +11,6 @@ export interface ViewHistoryItem {
 }
 
 export function addToViewHistory(book: BookDto): void {
-  if (typeof window === "undefined") return;
-
   const history = getViewHistory();
 
   // Remove if already exists
@@ -23,14 +22,12 @@ export function addToViewHistory(book: BookDto): void {
     MAX_HISTORY,
   );
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  safeStorage.setItem(STORAGE_KEY, JSON.stringify(updated), "functional");
 }
 
 export function getViewHistory(): ViewHistoryItem[] {
-  if (typeof window === "undefined") return [];
-
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = safeStorage.getItem(STORAGE_KEY);
     if (!stored) return [];
 
     const parsed = JSON.parse(stored);
@@ -41,6 +38,5 @@ export function getViewHistory(): ViewHistoryItem[] {
 }
 
 export function clearViewHistory(): void {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(STORAGE_KEY);
+  safeStorage.removeItem(STORAGE_KEY);
 }

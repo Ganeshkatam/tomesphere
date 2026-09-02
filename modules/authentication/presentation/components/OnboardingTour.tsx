@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronRight, Check, BookOpen, Star, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { safeStorage } from "@/shared/core/storage/privacy-storage";
 
 const TOUR_STEPS = [
   {
@@ -32,7 +33,7 @@ export default function OnboardingTour() {
 
   useEffect(() => {
     // Check if tour has been completed
-    const hasSeenTour = localStorage.getItem(TOUR_COMPLETED_KEY);
+    const hasSeenTour = safeStorage.getItem(TOUR_COMPLETED_KEY);
     if (!hasSeenTour) {
       // Small delay to allow UI to load
       const timer = setTimeout(() => setIsVisible(true), 1500);
@@ -50,7 +51,7 @@ export default function OnboardingTour() {
 
   const handleComplete = () => {
     setIsVisible(false);
-    localStorage.setItem(TOUR_COMPLETED_KEY, "true");
+    safeStorage.setItem(TOUR_COMPLETED_KEY, "true", "functional");
   };
 
   if (!isVisible) return null;

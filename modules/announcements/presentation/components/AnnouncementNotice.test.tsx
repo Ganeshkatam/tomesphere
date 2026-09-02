@@ -4,6 +4,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import AnnouncementNotice from "./AnnouncementNotice";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import { ANNOUNCEMENT_SEEN_STORAGE_PREFIX } from "../utils/announcement-storage";
+import { saveCookieConsent } from "@/shared/core/storage/privacy-storage";
 
 describe("AnnouncementNotice hover stack queue & behavioral tests", () => {
   const mockFeature: AnnouncementDto = {
@@ -54,6 +55,7 @@ describe("AnnouncementNotice hover stack queue & behavioral tests", () => {
 
   beforeEach(() => {
     window.localStorage.clear();
+    saveCookieConsent({ essential: true, functional: true, analytics: true });
   });
 
   it("1. returns null when announcements list is empty", () => {

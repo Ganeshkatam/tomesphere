@@ -7,6 +7,7 @@ import {
   useState,
   ReactNode,
 } from "react";
+import { safeStorage } from "@/shared/core/storage/privacy-storage";
 
 export type Theme = "system" | "light" | "dark";
 
@@ -22,26 +23,23 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("system");
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("dark");
 
-  // Helper to resolve and apply classes to the HTML element
-  const applyTheme = (targetTheme: Theme) => {
+  const applyTheme = (t: Theme) => {
     const root = document.documentElement;
-    let isDark = false;
+    const isDark =
+      t === "dark" ||
+      (t === "system" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches);
 
-    if (targetTheme === "system") {
-      isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    } else {
-      isDark = targetTheme === "dark";
-    }
-
-    const resolved = isDark ? "dark" : "light";
-    setResolvedTheme(resolved);
-
-    // Temporarily disable transitions to prevent transition flash
+    // Disable transitions during theme change to prevent flash/layout-jank
     root.classList.add("theme-changing");
 
-    // Reset and set class in one atomic operation
-    root.classList.remove("light", "dark");
-    root.classList.add(resolved);
+    if (isDark) {
+      root.classList.add("dark");
+      setResolvedTheme("dark");
+    } else {
+      root.classList.remove("dark");
+      setResolvedTheme("light");
+    }
 
     // Re-enable transitions in the next paint cycle
     requestAnimationFrame(() => {
@@ -53,22 +51,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    try {
-      localStorage.setItem("theme", newTheme);
-    } catch (e) {
-      // Silently fail if localStorage is disabled/restricted
-    }
+    safeStorage.setItem("theme", newTheme, "functional");
     applyTheme(newTheme);
   };
 
   // Load initial theme from localStorage on mount
   useEffect(() => {
-    let savedTheme: Theme = "system";
-    try {
-      savedTheme = (localStorage.getItem("theme") as Theme | null) || "system";
-    } catch (e) {
-      savedTheme = "system";
-    }
+    const savedTheme = (safeStorage.getItem("theme") as Theme | null) || "system";
     setThemeState(savedTheme);
     applyTheme(savedTheme);
   }, []);

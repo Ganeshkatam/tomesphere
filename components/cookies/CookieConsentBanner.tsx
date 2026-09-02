@@ -13,40 +13,15 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-export interface CookiePreferences {
-  essential: boolean;
-  functional: boolean;
-  analytics: boolean;
-  consentTimestamp: string;
-}
+import {
+  CookiePreferences,
+  getStoredCookieConsent,
+  saveCookieConsent,
+  purgeNonEssentialStorage,
+} from "@/shared/core/storage/privacy-storage";
 
-const STORAGE_KEY = "tomesphere_cookie_consent";
-
-export function getStoredCookieConsent(): CookiePreferences | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
-
-export function saveCookieConsent(prefs: Omit<CookiePreferences, "consentTimestamp">): CookiePreferences {
-  const fullPrefs: CookiePreferences = {
-    ...prefs,
-    essential: true, // Always locked true
-    consentTimestamp: new Date().toISOString(),
-  };
-  if (typeof window !== "undefined") {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(fullPrefs));
-      window.dispatchEvent(new CustomEvent("cookie-consent-updated", { detail: fullPrefs }));
-    } catch {}
-  }
-  return fullPrefs;
-}
+export { getStoredCookieConsent, saveCookieConsent, purgeNonEssentialStorage };
+export type { CookiePreferences };
 
 export default function CookieConsentBanner() {
   const [mounted, setMounted] = useState(false);

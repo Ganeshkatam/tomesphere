@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import CookieConsentBanner, {
   getStoredCookieConsent,
   saveCookieConsent,
@@ -55,7 +55,9 @@ describe("CookieConsentBanner", () => {
     saveCookieConsent({ essential: true, functional: true, analytics: false });
     render(<CookieConsentBanner />);
 
-    window.dispatchEvent(new Event("open-cookie-preferences"));
+    act(() => {
+      window.dispatchEvent(new Event("open-cookie-preferences"));
+    });
 
     await waitFor(() => {
       expect(screen.getByText("Cookie & Storage Preferences")).toBeInTheDocument();

@@ -1,4 +1,5 @@
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
+import { safeStorage } from "@/shared/core/storage/privacy-storage";
 
 /**
  * Storage keys:
@@ -58,28 +59,14 @@ export function isEntryEligible(announcement: AnnouncementDto): boolean {
  * Best-effort client device persistence, never authoritative for business logic.
  */
 export function isAnnouncementSeen(id: string): boolean {
-  if (typeof window === "undefined" || !window.localStorage) {
-    return false;
-  }
-  try {
-    return window.localStorage.getItem(`${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${id}`) === "true";
-  } catch {
-    return false;
-  }
+  return safeStorage.getItem(`${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${id}`) === "true";
 }
 
 /**
  * Marks an announcement as acknowledged/seen on this device.
  */
 export function markAnnouncementSeen(id: string): void {
-  if (typeof window === "undefined" || !window.localStorage) {
-    return;
-  }
-  try {
-    window.localStorage.setItem(`${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${id}`, "true");
-  } catch {
-    // Graceful degradation when storage is blocked (e.g. sandbox/incognito quota)
-  }
+  safeStorage.setItem(`${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${id}`, "true", "functional");
 }
 
 /**
@@ -87,32 +74,18 @@ export function markAnnouncementSeen(id: string): void {
  * A banner is hidden if either the banner was explicitly closed OR the announcement was acknowledged.
  */
 export function isBannerDismissed(id: string): boolean {
-  if (typeof window === "undefined" || !window.localStorage) {
-    return false;
-  }
-  try {
-    const bannerDismissed =
-      window.localStorage.getItem(`${ANNOUNCEMENT_BANNER_DISMISSED_PREFIX}${id}`) === "true";
-    const entrySeen =
-      window.localStorage.getItem(`${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${id}`) === "true";
-    return bannerDismissed || entrySeen;
-  } catch {
-    return false;
-  }
+  const bannerDismissed =
+    safeStorage.getItem(`${ANNOUNCEMENT_BANNER_DISMISSED_PREFIX}${id}`) === "true";
+  const entrySeen =
+    safeStorage.getItem(`${ANNOUNCEMENT_SEEN_STORAGE_PREFIX}${id}`) === "true";
+  return bannerDismissed || entrySeen;
 }
 
 /**
  * Marks the passive banner as dismissed on this device without suppressing the entry card.
  */
 export function markBannerDismissed(id: string): void {
-  if (typeof window === "undefined" || !window.localStorage) {
-    return;
-  }
-  try {
-    window.localStorage.setItem(`${ANNOUNCEMENT_BANNER_DISMISSED_PREFIX}${id}`, "true");
-  } catch {
-    // Graceful degradation
-  }
+  safeStorage.setItem(`${ANNOUNCEMENT_BANNER_DISMISSED_PREFIX}${id}`, "true", "functional");
 }
 
 /**

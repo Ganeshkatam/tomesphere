@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import VoiceInput from "@/modules/discovery/search/presentation/components/VoiceInput";
 import { searchBooks } from "@/modules/discovery/search/presentation/actions/search";
+import { safeStorage } from "@/shared/core/storage/privacy-storage";
 
 // ─── Constants ───────────────────────────────────────────────
 const RECENT_SEARCHES_KEY =
@@ -25,9 +26,8 @@ const MAX_RECENT = parseInt(
 
 // ─── Helpers ─────────────────────────────────────────────────
 function getRecentSearches(): string[] {
-  if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(RECENT_SEARCHES_KEY);
+    const raw = safeStorage.getItem(RECENT_SEARCHES_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -35,18 +35,19 @@ function getRecentSearches(): string[] {
 }
 
 function saveRecentSearch(query: string) {
-  if (typeof window === "undefined" || !query.trim()) return;
+  if (!query.trim()) return;
   try {
     const recent = getRecentSearches().filter(
       (s) => s.toLowerCase() !== query.toLowerCase(),
     );
     recent.unshift(query.trim());
-    localStorage.setItem(
+    safeStorage.setItem(
       RECENT_SEARCHES_KEY,
       JSON.stringify(recent.slice(0, MAX_RECENT)),
+      "functional"
     );
   } catch {
-    /* localStorage unavailable */
+    /* storage unavailable */
   }
 }
 
@@ -139,10 +140,8 @@ export default function SearchClient({
   };
 
   const clearRecentSearches = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem(RECENT_SEARCHES_KEY);
-      setRecentSearches([]);
-    }
+    safeStorage.removeItem(RECENT_SEARCHES_KEY);
+    setRecentSearches([]);
   };
 
   return (

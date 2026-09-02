@@ -10,6 +10,7 @@ import {
   ANNOUNCEMENT_BANNER_DISMISSED_PREFIX,
 } from "./announcement-storage";
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
+import { saveCookieConsent } from "@/shared/core/storage/privacy-storage";
 
 describe("announcement-storage policy & persistence tests", () => {
   const mockCritical: AnnouncementDto = {
@@ -19,53 +20,53 @@ describe("announcement-storage policy & persistence tests", () => {
     type: "error",
     isDismissible: false,
     startsAt: "2026-08-27T00:00:00.000Z",
-    endsAt: "2026-08-28T00:00:00.000Z",
+    endsAt: "2026-09-01T00:00:00.000Z",
   };
 
   const mockWarning: AnnouncementDto = {
     id: "a-warn",
-    title: "Scheduled Maintenance",
-    content: "Tonight at midnight.",
+    title: "Scheduled Maintenance Window",
+    content: "Read-only mode for 15 minutes.",
     type: "warning",
     isDismissible: true,
     startsAt: "2026-08-27T00:00:00.000Z",
-    endsAt: "2026-08-28T00:00:00.000Z",
+    endsAt: "2026-09-01T00:00:00.000Z",
   };
 
   const mockErrorDismissible: AnnouncementDto = {
-    id: "a-err",
-    title: "Payment Gateway Degradation",
-    content: "Check status page.",
+    id: "a-err-dismiss",
+    title: "Degraded Search Latency",
+    content: "Search index optimizing.",
     type: "error",
     isDismissible: true,
     startsAt: "2026-08-27T00:00:00.000Z",
-    endsAt: "2026-08-28T00:00:00.000Z",
+    endsAt: "2026-09-01T00:00:00.000Z",
   };
 
   const mockFeature: AnnouncementDto = {
     id: "a-feat",
-    title: "Custom Shelves Released",
-    content: "Organize your personal library with custom shelves.",
+    title: "Enhanced Margin Annotations",
+    content: "Export annotations as Markdown.",
     type: "feature",
     isDismissible: true,
-    startsAt: "2026-08-26T00:00:00.000Z",
+    startsAt: "2026-08-27T00:00:00.000Z",
     endsAt: "2026-09-01T00:00:00.000Z",
   };
 
   const mockGreetings: AnnouncementDto = {
     id: "a-greet",
-    title: "Welcome to TomeSphere",
-    content: "Discover curated public domain volumes.",
+    title: "Welcome Back",
+    content: "Good morning reader.",
     type: "greetings",
     isDismissible: true,
-    startsAt: "2026-08-26T00:00:00.000Z",
+    startsAt: "2026-08-27T00:00:00.000Z",
     endsAt: "2026-09-01T00:00:00.000Z",
   };
 
   const mockInfo: AnnouncementDto = {
     id: "a-info",
-    title: "Did You Know?",
-    content: "Use keyboard shortcuts in reader.",
+    title: "Library Catalog Refresh",
+    content: "10,000 new volumes indexed.",
     type: "info",
     isDismissible: true,
     startsAt: "2026-08-27T00:00:00.000Z",
@@ -84,6 +85,14 @@ describe("announcement-storage policy & persistence tests", () => {
 
   beforeEach(() => {
     window.localStorage.clear();
+    saveCookieConsent({ essential: true, functional: true, analytics: true });
+  });
+
+  it("strictly blocks persisting seen state when user consent has not been granted", () => {
+    window.localStorage.clear();
+    markAnnouncementSeen("unconsented-1");
+    expect(isAnnouncementSeen("unconsented-1")).toBe(false);
+    expect(window.localStorage.getItem("tomesphere_announcement_seen_unconsented-1")).toBeNull();
   });
 
   it("calculates correct priorities according to policy matrix", () => {

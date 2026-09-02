@@ -7,23 +7,14 @@ import { AlertCircle, X, ArrowRight, Megaphone, ShieldAlert } from "lucide-react
 import { AnnouncementDto } from "../../application/dto/AnnouncementDto";
 import { Button } from "@/components/ui/button";
 import AnnouncementCenter from "./AnnouncementCenter";
+import { safeStorage } from "@/shared/core/storage/privacy-storage";
 
 function isTopBannerDismissed(id: string): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    return localStorage.getItem(`tomesphere_top_banner_dismissed_${id}`) === "true";
-  } catch {
-    return false;
-  }
+  return safeStorage.getItem(`tomesphere_top_banner_dismissed_${id}`) === "true";
 }
 
 function markTopBannerDismissed(id: string): void {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(`tomesphere_top_banner_dismissed_${id}`, "true");
-  } catch {
-    // ignore
-  }
+  safeStorage.setItem(`tomesphere_top_banner_dismissed_${id}`, "true", "functional");
 }
 
 function isMaintenanceAnnouncement(type: string): boolean {
