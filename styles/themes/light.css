@@ -1,5 +1,7 @@
 /* Light theme semantic variables */
-html.light {
+:root,
+html.light,
+html:not(.dark) {
   color-scheme: light;
   --primary: var(--indigo-600);
   --primary-light: var(--indigo-500);

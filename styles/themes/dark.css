@@ -1,5 +1,4 @@
 /* Dark theme semantic variables */
-:root,
 html.dark {
   color-scheme: dark;
   --primary: var(--indigo-500);

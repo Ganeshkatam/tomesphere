@@ -35,9 +35,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     if (isDark) {
       root.classList.add("dark");
+      root.classList.remove("light");
       setResolvedTheme("dark");
     } else {
       root.classList.remove("dark");
+      root.classList.add("light");
       setResolvedTheme("light");
     }
 

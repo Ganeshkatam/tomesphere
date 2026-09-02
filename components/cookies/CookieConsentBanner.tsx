@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShieldCheck, Cookie, Lock, Sliders, Check, X, ChevronRight } from "lucide-react";
+import { ShieldCheck, Cookie, Lock, Sliders } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

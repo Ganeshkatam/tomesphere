@@ -145,7 +145,7 @@ export default function SearchClient({
   };
 
   return (
-    <div className="min-h-screen bg-[#0f0f16] text-slate-200 font-sans selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[var(--surface-canvas)] text-[var(--text-primary)] font-sans selection:bg-indigo-500/30">
       <div className="pt-8 pb-12 w-full max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Search Header */}
         <FadeIn className="mb-10">
