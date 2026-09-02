@@ -448,9 +448,15 @@ export default function BookCard({
 
           <div className="mt-2.5 space-y-1.5 pt-1 border-t border-slate-100 dark:border-slate-800/60">
             {/* Reading Progress Indicator if present */}
-            {typeof book.progress === "number" && book.progress > 0 && (
+            {((typeof book.progress === "number" && book.progress > 0) || book.status === "finished") && (
               <div className="space-y-1">
-                <div className="flex items-center justify-between text-[9px] font-bold text-indigo-600 dark:text-indigo-400">
+                <div
+                  className={`flex items-center justify-between text-[9px] font-bold ${
+                    book.status === "finished"
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-indigo-600 dark:text-indigo-400"
+                  }`}
+                >
                   <span>
                     {book.status === "finished"
                       ? "Finished"
@@ -458,15 +464,18 @@ export default function BookCard({
                         ? `p. ${book.currentPage}/${book.totalPages}`
                         : `${book.progress}%`}
                   </span>
-                  <span>{book.progress}%</span>
+                  <span>{book.status === "finished" ? "100%" : `${book.progress}%`}</span>
                 </div>
                 <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all ${book.status === "finished"
-                      ? "bg-emerald-500"
-                      : "bg-indigo-600"
-                      }`}
-                    style={{ width: `${Math.max(4, book.progress)}%` }}
+                    className={`h-full rounded-full transition-all ${
+                      book.status === "finished"
+                        ? "bg-emerald-500"
+                        : "bg-indigo-600"
+                    }`}
+                    style={{
+                      width: book.status === "finished" ? "100%" : `${Math.max(4, book.progress || 0)}%`,
+                    }}
                   />
                 </div>
               </div>

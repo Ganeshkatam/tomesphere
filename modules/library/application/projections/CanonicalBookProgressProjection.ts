@@ -71,15 +71,12 @@ export class CanonicalBookProgressProjection {
 
     // 3. Reconcile finished status with verified reading progress
     if (status === "finished") {
-      if (progressPercentage >= 100 || (currentPage === undefined && typeof input.sessionPercentage !== "number")) {
-        progressPercentage = 100;
-        currentPage = totalPages || currentPage;
-      } else if (currentPage !== undefined && totalPages !== undefined && currentPage < totalPages) {
-        // User has explicit partial reading progress in the database
-        status = "currently_reading";
-      }
+      progressPercentage = 100;
+      currentPage = totalPages || currentPage;
     } else if (progressPercentage >= 100) {
       status = "finished";
+      progressPercentage = 100;
+      currentPage = totalPages || currentPage;
     } else if (status === "none" && (currentPage !== undefined || progressPercentage > 0)) {
       status = "currently_reading";
     }
