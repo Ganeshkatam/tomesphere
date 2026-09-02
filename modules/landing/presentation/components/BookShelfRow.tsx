@@ -187,13 +187,15 @@ export default function BookShelfRow({
               <FeaturedItemCard item={item} />
             </div>
           ))}
-          <div className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col">
-            <ViewAllCard
-              href={viewAllHref}
-              title={viewAllTitle}
-              countLabel={countLabel}
-            />
-          </div>
+          {items.length >= 10 && (
+            <div className="w-[130px] min-[400px]:w-[145px] sm:w-[170px] md:w-[190px] lg:w-[205px] xl:w-[215px] shrink-0 snap-start flex flex-col">
+              <ViewAllCard
+                href={viewAllHref}
+                title={viewAllTitle}
+                countLabel={countLabel}
+              />
+            </div>
+          )}
         </div>
       </div>
     </section>
