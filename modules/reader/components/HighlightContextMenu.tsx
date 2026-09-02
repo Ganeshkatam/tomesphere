@@ -13,11 +13,41 @@ export function HighlightContextMenu({
   onAddNote,
   onDeleteHighlight,
 }: HighlightContextMenuProps) {
-  const { clickedHighlightId, setClickedHighlightId } = useReaderStore();
+  const { clickedHighlightId, setClickedHighlightId, currentAnchor } = useReaderStore();
   const menuRef = useRef<HTMLDivElement>(null);
+  const autoCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const startAutoCloseTimer = (delay = 4000) => {
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+    }
+    autoCloseTimerRef.current = setTimeout(() => {
+      setClickedHighlightId(null);
+    }, delay);
+  };
+
+  const clearAutoCloseTimer = () => {
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+      autoCloseTimerRef.current = null;
+    }
+  };
+
+  // Auto-close on page navigation / location change
+  useEffect(() => {
+    if (clickedHighlightId) {
+      setClickedHighlightId(null);
+    }
+  }, [currentAnchor]);
 
   useEffect(() => {
-    if (!clickedHighlightId) return;
+    if (!clickedHighlightId) {
+      clearAutoCloseTimer();
+      return;
+    }
+
+    // Auto-close after 4 seconds of inactivity
+    startAutoCloseTimer(4000);
 
     const handlePointerDown = (e: PointerEvent | MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -41,6 +71,7 @@ export function HighlightContextMenu({
     window.addEventListener("scroll", handleScroll, { passive: true, capture: true });
 
     return () => {
+      clearAutoCloseTimer();
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("scroll", handleScroll, { capture: true });
@@ -63,6 +94,8 @@ export function HighlightContextMenu({
 
       <div
         ref={menuRef}
+        onMouseEnter={clearAutoCloseTimer}
+        onMouseLeave={() => startAutoCloseTimer(1800)}
         className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900/95 dark:bg-[#1e2227]/95 text-white border border-slate-700/80 shadow-2xl rounded-2xl p-1.5 flex items-center gap-1.5 z-50 animate-in fade-in slide-in-from-bottom-3 duration-150 backdrop-blur-md"
       >
         <button
