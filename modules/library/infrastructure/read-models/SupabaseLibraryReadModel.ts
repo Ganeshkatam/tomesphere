@@ -190,6 +190,7 @@ export class SupabaseLibraryReadModel implements LibraryReadModel {
         name,
         description,
         is_public,
+        cover_image,
         shelf_items (count)
       `)
       .eq("user_id", userId)

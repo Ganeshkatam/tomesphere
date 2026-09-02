@@ -54,7 +54,7 @@ export async function uploadFileToStorage(
     } = supabase.storage.from(bucket).getPublicUrl(fileName);
 
     // Record user permission grant in database
-    if (file.type && (file.type.startsWith("image/") || bucket === "avatars" || bucket === "user-images")) {
+    if (file.type && (file.type.startsWith("image/") || bucket === "avatars" || bucket === "user-images" || bucket === "shelves")) {
       try {
         await supabase.from("user_permissions").insert({
           user_id: user.id,

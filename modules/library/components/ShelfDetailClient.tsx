@@ -81,7 +81,7 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await uploadFileToStorage("user-images", formData);
+      const res = await uploadFileToStorage("shelves", formData);
       if (res.success) {
         setCoverImage(res.data.url);
         showSuccess("Cover image uploaded");
