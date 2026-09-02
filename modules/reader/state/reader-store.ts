@@ -15,15 +15,34 @@ import { ReaderPreferencesDto } from "../application/dto/ReaderPageDto";
 export type SessionState =
   "idle" | "opening" | "active" | "paused" | "completed";
 
+/**
+ * Ephemeral viewport geometry for floating selection toolbar positioning.
+ * Derived from Range.getBoundingClientRect() at selection time.
+ * Becomes stale on scroll, zoom, iframe reflow, or viewport change --
+ * consumers must treat this as transient presentation data, never persisted.
+ */
+export interface SelectionRect {
+  readonly top: number;
+  readonly left: number;
+  readonly width: number;
+  readonly height: number;
+  readonly bottom: number;
+  readonly right: number;
+}
+
 export interface ActiveSelection {
   anchor: SelectionAnchor;
   text: string;
+  /** Ephemeral viewport-relative geometry. Stale after scroll/zoom/resize. */
+  rect?: SelectionRect;
 }
 
 export interface ActiveNoteEditor {
   target: AnnotationTarget;
   existingNoteId?: string;
   initialBody?: string;
+  quoteText?: string;
+  color?: string;
 }
 
 export interface TocItem {

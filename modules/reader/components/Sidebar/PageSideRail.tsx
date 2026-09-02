@@ -22,7 +22,8 @@ interface PageThumbnailItemProps {
   isBookmarked: boolean;
   service: ReaderService | null;
   onClick: (pageNum: number) => void;
-  activeRef?: React.RefObject<HTMLDivElement | null>;
+  onToggleBookmark: (pageNum: number) => void;
+  activeRef?: React.Ref<HTMLDivElement>;
 }
 
 function PageThumbnailItem({
@@ -31,6 +32,7 @@ function PageThumbnailItem({
   isBookmarked,
   service,
   onClick,
+  onToggleBookmark,
   activeRef,
 }: PageThumbnailItemProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -117,17 +119,24 @@ function PageThumbnailItem({
   }, [theme]);
 
   return (
-    <button
-      type="button"
-      ref={isActive ? (activeRef as any) : null}
-      onClick={() => onClick(pageNum)}
-      className="flex flex-col items-center cursor-pointer group select-none py-1 w-full shrink-0 focus:outline-none"
-      title={`Jump to Page ${pageNum}`}
+    <div
+      ref={isActive ? activeRef : undefined}
+      className="flex flex-col items-center group select-none py-1 w-full shrink-0"
     >
       {/* Sized precisely so 5 pages fit viewable vertically at a time */}
       <div
         ref={containerRef}
-        className={`w-[100px] sm:w-[108px] md:w-[115px] aspect-[8.5/11] bg-white rounded-md relative overflow-hidden transition-all duration-150 ${cardBorderClass}`}
+        role="button"
+        tabIndex={0}
+        onClick={() => onClick(pageNum)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick(pageNum);
+          }
+        }}
+        title={`Jump to Page ${pageNum}`}
+        className={`w-[100px] sm:w-[108px] md:w-[115px] aspect-[8.5/11] bg-white rounded-md relative overflow-hidden transition-all duration-150 cursor-pointer focus:outline-none ${cardBorderClass}`}
       >
         <canvas
           ref={canvasRef}
@@ -153,18 +162,43 @@ function PageThumbnailItem({
           </div>
         )}
 
-        {isBookmarked && (
-          <div className="absolute top-1 right-1 text-amber-500 bg-black/60 p-0.5 rounded shadow-xs">
-            <Bookmark size={11} className="fill-current" />
-          </div>
-        )}
+        {/* Interactive Bookmark page toggle button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleBookmark(pageNum);
+          }}
+          aria-label={
+            isBookmarked
+              ? `Remove bookmark for page ${pageNum}`
+              : `Bookmark page ${pageNum}`
+          }
+          title={
+            isBookmarked
+              ? `Remove bookmark for page ${pageNum}`
+              : `Bookmark page ${pageNum}`
+          }
+          className={`absolute top-1 right-1 p-1 rounded transition-all z-10 cursor-pointer ${
+            isBookmarked
+              ? "text-amber-500 bg-black/75 hover:bg-black/90 scale-100 shadow-sm"
+              : "text-slate-300 bg-black/50 hover:text-amber-400 hover:bg-black/80 opacity-0 group-hover:opacity-100 focus:opacity-100 shadow-sm"
+          }`}
+        >
+          <Bookmark size={12} className={isBookmarked ? "fill-current" : ""} />
+        </button>
       </div>
 
-      {/* Page Number */}
-      <span className={`text-xs font-semibold mt-1 font-mono transition-colors ${pageNumClass}`}>
+      {/* Page Number Button */}
+      <button
+        type="button"
+        onClick={() => onClick(pageNum)}
+        className={`text-xs font-semibold mt-1 font-mono transition-colors cursor-pointer hover:underline focus:outline-none ${pageNumClass}`}
+        title={`Jump to Page ${pageNum}`}
+      >
         {pageNum}
-      </span>
-    </button>
+      </button>
+    </div>
   );
 }
 
@@ -213,6 +247,10 @@ export function PageSideRail({ service }: PageSideRailProps) {
       type: "pdf",
       value: String(pageNum),
     });
+  };
+
+  const handleToggleBookmark = (pageNum: number) => {
+    service?.togglePageBookmark(pageNum);
   };
 
   const pagesArray = useMemo(() => {
@@ -321,6 +359,7 @@ export function PageSideRail({ service }: PageSideRailProps) {
                 isBookmarked={bookmarkedPages.has(pageNum)}
                 service={service}
                 onClick={handlePageClick}
+                onToggleBookmark={handleToggleBookmark}
                 activeRef={activePageRef}
               />
             ))}

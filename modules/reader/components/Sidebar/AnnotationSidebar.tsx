@@ -392,9 +392,14 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
 
         {sidebarTab === "bookmarks" &&
           bookmarkViews.map(({ bookmark, isCurrent, preview }) => {
-            const label =
+            const isPdf = bookmark.anchor.type === "pdf";
+            const pageNum = isPdf ? bookmark.anchor.value : undefined;
+            const primaryTitle =
               bookmark.label ||
-              `Bookmark • ${new Date(bookmark.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`;
+              (pageNum ? `Page ${pageNum}` : "Bookmark");
+            const timeAgo = formatDistanceToNow(new Date(bookmark.createdAt), {
+              addSuffix: true,
+            });
 
             return (
               <div
@@ -405,7 +410,7 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
                 onClick={() => service.goToLocation(bookmark.anchor)}
               >
                 <div className="flex-1 min-w-0 pr-2">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-0.5">
                     <Bookmark
                       size={14}
                       className={
@@ -415,11 +420,22 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
                       }
                     />
                     <span className={`text-xs sm:text-sm font-semibold truncate ${themeStyles.textPrimary}`}>
-                      {label}
+                      {primaryTitle}
                     </span>
                   </div>
+                  <div className="flex items-center gap-2 text-[10px] text-slate-400 pl-5">
+                    <span className="flex items-center gap-1">
+                      <Clock size={10} />
+                      {timeAgo}
+                    </span>
+                    {pageNum && (
+                      <span className="font-mono text-slate-400 dark:text-slate-500">
+                        • p. {pageNum}
+                      </span>
+                    )}
+                  </div>
                   {preview && (
-                    <p className={`text-xs line-clamp-2 mt-0.5 ${themeStyles.textSecondary}`}>
+                    <p className={`text-xs line-clamp-2 mt-1 pl-5 ${themeStyles.textSecondary}`}>
                       {preview}
                     </p>
                   )}
@@ -432,8 +448,8 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
                     e.stopPropagation();
                     service.deleteBookmark(bookmark.id);
                   }}
-                  aria-label={`Delete bookmark: ${label}`}
-                  className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 p-1.5 text-slate-400 hover:text-red-500 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-all cursor-pointer h-auto w-auto"
+                  aria-label={`Delete bookmark: ${primaryTitle}`}
+                  className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 p-1.5 text-slate-400 hover:text-red-500 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-all cursor-pointer h-auto w-auto shrink-0"
                 >
                   <Trash2 size={13} />
                 </Button>

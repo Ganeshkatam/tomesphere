@@ -4,6 +4,7 @@ import {
   ReaderHighlight,
 } from "@/shared/core/events/types";
 import { ReaderPreferencesDto } from "../dto/ReaderPageDto";
+import { SelectionRect } from "../../state/reader-store";
 
 export interface ReaderRenderer {
   initialize(bookUrl: string, container: HTMLElement): Promise<void>;
@@ -33,7 +34,7 @@ export interface ReaderRenderer {
     callback: (anchor: LocationAnchor, percentage: number) => void,
   ): () => void;
   onTextSelected(
-    callback: (anchor: SelectionAnchor, text: string) => void,
+    callback: (anchor: SelectionAnchor, text: string, rect?: SelectionRect) => void,
   ): () => void;
   onHighlightClicked(callback: (id: string) => void): () => void;
 }

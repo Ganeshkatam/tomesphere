@@ -6,6 +6,7 @@ import {
   ReaderHighlight,
 } from "@/shared/core/events/types";
 import { ReaderPreferencesDto } from "../../../application/dto/ReaderPageDto";
+import { SelectionRect } from "../../../state/reader-store";
 
 export class EpubJsRenderer implements ReaderRenderer {
   private book: Book | null = null;
@@ -15,7 +16,7 @@ export class EpubJsRenderer implements ReaderRenderer {
     (anchor: LocationAnchor, percentage: number) => void
   > = new Set();
   private selectionListeners: Set<
-    (anchor: SelectionAnchor, text: string) => void
+    (anchor: SelectionAnchor, text: string, rect?: SelectionRect) => void
   > = new Set();
   private highlightClickListeners: Set<(id: string) => void> = new Set();
 
@@ -36,14 +37,57 @@ export class EpubJsRenderer implements ReaderRenderer {
   };
 
   private handleSelected = (cfiRange: string, contents: any) => {
-    const text = contents.window.getSelection().toString();
+    const iframeWindow = contents.window;
+    const text = iframeWindow.getSelection().toString();
     const anchor: SelectionAnchor = {
       version: 1,
       start: { type: "epubcfi", value: cfiRange },
       end: { type: "epubcfi", value: cfiRange },
     };
-    this.selectionListeners.forEach((listener) => listener(anchor, text));
-    contents.window.getSelection().removeAllRanges();
+
+    // Transform iframe-local Range geometry to parent viewport coordinates.
+    // EPUB.js renders inside an iframe, so range.getBoundingClientRect()
+    // returns coordinates relative to the iframe document viewport.
+    // We must offset by the iframe's own bounding rect to produce
+    // parent-viewport-relative SelectionRect.
+    let rect: SelectionRect | undefined;
+    try {
+      const sel = iframeWindow.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        const range = sel.getRangeAt(0);
+        const iframeRect = range.getBoundingClientRect();
+        if (iframeRect.width > 0 && iframeRect.height > 0) {
+          // Find the iframe element in the parent document
+          const iframeEl = contents.document?.defaultView?.frameElement as HTMLIFrameElement | null;
+          if (iframeEl) {
+            const iframeBounds = iframeEl.getBoundingClientRect();
+            rect = {
+              top: iframeRect.top + iframeBounds.top,
+              left: iframeRect.left + iframeBounds.left,
+              width: iframeRect.width,
+              height: iframeRect.height,
+              bottom: iframeRect.bottom + iframeBounds.top,
+              right: iframeRect.right + iframeBounds.left,
+            };
+          } else {
+            // Fallback: use iframe-local coordinates directly
+            rect = {
+              top: iframeRect.top,
+              left: iframeRect.left,
+              width: iframeRect.width,
+              height: iframeRect.height,
+              bottom: iframeRect.bottom,
+              right: iframeRect.right,
+            };
+          }
+        }
+      }
+    } catch {
+      // Range geometry unavailable; popup falls back to static positioning
+    }
+
+    this.selectionListeners.forEach((listener) => listener(anchor, text, rect));
+    iframeWindow.getSelection().removeAllRanges();
   };
 
   async initialize(bookUrl: string, container: HTMLElement): Promise<void> {
@@ -139,7 +183,7 @@ export class EpubJsRenderer implements ReaderRenderer {
   private highlightIdToCfi: Map<string, string> = new Map();
 
   onTextSelected(
-    callback: (anchor: SelectionAnchor, text: string) => void,
+    callback: (anchor: SelectionAnchor, text: string, rect?: SelectionRect) => void,
   ): () => void {
     this.selectionListeners.add(callback);
     return () => this.selectionListeners.delete(callback);

@@ -232,7 +232,7 @@
   box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
 }
 
-/* PDF.js Text Selection Layer */
+/* PDF.js Text Selection Layer -- calibrated for pdfjs-dist 6.x */
 .tomesphere-pdf-text-layer,
 .textLayer {
   position: absolute;
@@ -241,6 +241,8 @@
   overflow: clip;
   opacity: 1;
   line-height: 1;
+  letter-spacing: normal;
+  word-spacing: normal;
   -webkit-text-size-adjust: none;
   -moz-text-size-adjust: none;
   text-size-adjust: none;
@@ -248,8 +250,9 @@
   transform-origin: 0 0;
   caret-color: CanvasText;
   z-index: 5;
-  user-select: text;
-  -webkit-user-select: text;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
   pointer-events: auto;
 
   --min-font-size: 1;
@@ -265,6 +268,9 @@
   cursor: text;
   transform-origin: 0% 0%;
   pointer-events: auto;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
 }
 
 .tomesphere-pdf-text-layer > :not(.markedContent),
@@ -284,18 +290,31 @@
   display: contents;
 }
 
+/* Selection highlight contrast -- target spans specifically, never container or structural elements */
 .tomesphere-pdf-text-layer span::selection,
-.tomesphere-pdf-text-layer ::selection,
-.textLayer span::selection,
-.textLayer ::selection {
+.textLayer span::selection {
   background: rgba(99, 102, 241, 0.4) !important;
   color: transparent !important;
 }
 
 .tomesphere-pdf-text-layer span::-moz-selection,
-.tomesphere-pdf-text-layer ::-moz-selection,
-.textLayer span::-moz-selection,
-.textLayer ::-moz-selection {
+.textLayer span::-moz-selection {
   background: rgba(99, 102, 241, 0.4) !important;
   color: transparent !important;
 }
+
+/* Prevent selection highlight on line breaks */
+.tomesphere-pdf-text-layer br::selection,
+.textLayer br::selection,
+.tomesphere-pdf-text-layer br::-moz-selection,
+.textLayer br::-moz-selection {
+  background: transparent !important;
+  color: transparent !important;
+}
+
+/* Suppress endOfContent selection artifacts */
+.tomesphere-pdf-text-layer .endOfContent,
+.textLayer .endOfContent {
+  display: none !important;
+}
+

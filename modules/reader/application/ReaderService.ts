@@ -168,8 +168,8 @@ export class ReaderService {
     });
 
     // Listen for text selections
-    this.renderer.onTextSelected((anchor: SelectionAnchor, text: string) => {
-      useReaderStore.getState().setActiveSelection({ anchor, text });
+    this.renderer.onTextSelected((anchor: SelectionAnchor, text: string, rect?) => {
+      useReaderStore.getState().setActiveSelection({ anchor, text, rect });
       useReaderStore.getState().setClickedHighlightId(null); // dismiss context menu
     });
 
@@ -447,11 +447,15 @@ export class ReaderService {
   public openNoteEditor(
     target: AnnotationTarget,
     existingNote?: ReaderNote,
+    quoteText?: string,
+    color?: string,
   ): void {
     useReaderStore.getState().setActiveNote({
       target,
       existingNoteId: existingNote?.id,
       initialBody: existingNote?.bodyMarkdown,
+      quoteText,
+      color,
     });
   }
 
@@ -460,14 +464,16 @@ export class ReaderService {
       (n) =>
         n.target.type === "highlight" && n.target.highlightId === highlightId,
     );
+    const highlight = this.highlights.find((h) => h.id === highlightId);
 
     const target: AnnotationTarget = { type: "highlight", highlightId };
 
-    if (existing) {
-      this.openNoteEditor(target, existing);
-    } else {
-      this.openNoteEditor(target);
-    }
+    this.openNoteEditor(
+      target,
+      existing,
+      highlight?.selectedText,
+      highlight?.color,
+    );
 
     useReaderStore.getState().setClickedHighlightId(null);
   }
@@ -609,21 +615,34 @@ export class ReaderService {
     return this.bookmarks.some((b) => b.anchor.value === currentAnchor.value);
   }
 
-  public async toggleBookmark(): Promise<void> {
-    const currentAnchor = useReaderStore.getState().currentAnchor;
-    if (!currentAnchor) return;
+  public isPageBookmarked(pageNumber: number): boolean {
+    const val = String(pageNumber);
+    return this.bookmarks.some((b) => b.anchor.value === val);
+  }
+
+  public async toggleBookmark(
+    targetAnchor?: LocationAnchor,
+    customLabel?: string,
+  ): Promise<void> {
+    const anchor = targetAnchor || useReaderStore.getState().currentAnchor;
+    if (!anchor) return;
 
     const existing = this.bookmarks.find(
-      (b) => b.anchor.value === currentAnchor.value,
+      (b) => b.anchor.value === anchor.value,
     );
 
     if (existing) {
       await this.deleteBookmark(existing.id);
     } else {
       try {
+        const label =
+          customLabel ||
+          (anchor.type === "pdf" ? `Page ${anchor.value}` : undefined);
+
         const res = await createBookmarkAction({
           bookId: this.bookId,
-          anchor: currentAnchor,
+          anchor,
+          label,
         });
 
         if (res.success) {
@@ -631,7 +650,8 @@ export class ReaderService {
             id: res.data.id,
             userId: this.userId,
             bookId: this.bookId,
-            anchor: currentAnchor,
+            anchor,
+            label,
             createdAt: new Date().toISOString(),
           };
 
@@ -643,6 +663,14 @@ export class ReaderService {
       }
     }
   }
+
+  public async togglePageBookmark(pageNumber: number): Promise<void> {
+    await this.toggleBookmark(
+      { type: "pdf", value: String(pageNumber) },
+      `Page ${pageNumber}`,
+    );
+  }
+
 
   public async deleteBookmark(bookmarkId: string): Promise<void> {
     try {

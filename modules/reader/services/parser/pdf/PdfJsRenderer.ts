@@ -6,7 +6,7 @@ import {
   ReaderHighlight,
 } from "@/shared/core/events/types";
 import { ReaderPreferencesDto } from "../../../application/dto/ReaderPageDto";
-import { useReaderStore } from "../../../state/reader-store";
+import { useReaderStore, SelectionRect } from "../../../state/reader-store";
 
 if (typeof window !== "undefined" && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
   pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
@@ -57,10 +57,12 @@ export class PdfJsRenderer implements ReaderRenderer {
   > = new Set();
 
   private selectionListeners: Set<
-    (anchor: SelectionAnchor, text: string) => void
+    (anchor: SelectionAnchor, text: string, rect?: SelectionRect) => void
   > = new Set();
   private highlightClickListeners: Set<(id: string) => void> = new Set();
   private highlightsMap: Map<string, ReaderHighlight> = new Map();
+  private handleDocumentMouseUp: (() => void) | null = null;
+  private handleDocumentTouchEnd: (() => void) | null = null;
 
   async initialize(bookUrl: string, container: HTMLElement): Promise<void> {
     await this.destroy();
@@ -279,21 +281,36 @@ export class PdfJsRenderer implements ReaderRenderer {
     container.addEventListener("touchend", this.handleTouchEnd, { passive: true });
     container.addEventListener("touchcancel", this.handleTouchEnd, { passive: true });
 
-    // Listen for text selections on rendered PDF pages
+    // Listen for text selections on rendered PDF pages.
+    // We listen on document scope (not just the container) so that pointer
+    // releases outside the page element still capture the active selection.
     const handleTextSelection = (): void => {
+      // Small defer to let the browser finalize the Selection object
       setTimeout(() => {
         const sel = window.getSelection();
-        if (!sel || sel.isCollapsed) return;
+        if (!sel || sel.isCollapsed || sel.rangeCount === 0) {
+          if (useReaderStore.getState().activeSelection) {
+            useReaderStore.getState().setActiveSelection(null);
+          }
+          return;
+        }
 
         const selectedText = sel.toString().trim();
-        if (selectedText.length === 0) return;
+        if (selectedText.length === 0) {
+          if (useReaderStore.getState().activeSelection) {
+            useReaderStore.getState().setActiveSelection(null);
+          }
+          return;
+        }
 
-        const anchorNode = sel.anchorNode;
-        const wrapper =
-          anchorNode instanceof Element
-            ? anchorNode.closest<HTMLElement>(`.${PAGE_CLASS}`)
-            : anchorNode?.parentElement?.closest<HTMLElement>(`.${PAGE_CLASS}`);
+        // Verify the selection originates within our container
+        const range = sel.getRangeAt(0);
+        const startNode = range.startContainer;
+        const startEl = startNode instanceof Element ? startNode : startNode.parentElement;
+        if (!startEl || !container.contains(startEl)) return;
 
+        // Determine source page number from the selection anchor
+        const wrapper = startEl.closest<HTMLElement>(`.${PAGE_CLASS}`);
         const pageNumber = wrapper?.dataset.pageNumber
           ? Number(wrapper.dataset.pageNumber)
           : this.currentPageNum;
@@ -304,14 +321,36 @@ export class PdfJsRenderer implements ReaderRenderer {
           end: { type: "pdf", value: String(pageNumber) },
         };
 
+        // Derive ephemeral viewport geometry from the browser's actual Range
+        let rect: SelectionRect | undefined;
+        try {
+          const domRect = range.getBoundingClientRect();
+          if (domRect.width > 0 && domRect.height > 0) {
+            rect = {
+              top: domRect.top,
+              left: domRect.left,
+              width: domRect.width,
+              height: domRect.height,
+              bottom: domRect.bottom,
+              right: domRect.right,
+            };
+          }
+        } catch {
+          // Range geometry unavailable; popup falls back to static positioning
+        }
+
         this.selectionListeners.forEach((listener) =>
-          listener(anchor, selectedText),
+          listener(anchor, selectedText, rect),
         );
       }, 30);
     };
 
-    container.addEventListener("mouseup", handleTextSelection);
-    container.addEventListener("touchend", handleTextSelection);
+    // Document-level listeners ensure selection completion is captured
+    // even when the pointer release occurs outside the page container.
+    this.handleDocumentMouseUp = handleTextSelection;
+    this.handleDocumentTouchEnd = handleTextSelection;
+    document.addEventListener("mouseup", this.handleDocumentMouseUp);
+    document.addEventListener("touchend", this.handleDocumentTouchEnd);
   }
 
   private initialPinchDistance = 0;
@@ -554,7 +593,7 @@ export class PdfJsRenderer implements ReaderRenderer {
     canvas.style.backgroundColor = "white";
     canvas.style.borderRadius = "4px";
     canvas.style.objectFit = "contain";
-    canvas.style.userSelect = "text";
+    canvas.style.userSelect = "none";
     canvas.setAttribute("aria-label", `Rendered PDF page ${pageNumber}`);
 
     // 6. Wrapper Layout: Display as centered flex container
@@ -633,12 +672,17 @@ export class PdfJsRenderer implements ReaderRenderer {
     textLayerDiv.style.inset = "0";
     textLayerDiv.style.width = `${viewport.width}px`;
     textLayerDiv.style.height = `${viewport.height}px`;
-    textLayerDiv.style.overflow = "hidden";
+    textLayerDiv.style.overflow = "clip";
     textLayerDiv.style.pointerEvents = "auto";
-    textLayerDiv.style.userSelect = "text";
+    textLayerDiv.style.userSelect = "none";
     textLayerDiv.style.zIndex = "5";
+    // PDF.js 6.x mandatory CSS variables for sub-pixel text layer calibration
     textLayerDiv.style.setProperty("--scale-factor", String(viewport.scale));
-    textLayerDiv.style.setProperty("--total-scale-factor", String(viewport.scale));
+    textLayerDiv.style.setProperty("--user-unit", "1");
+    textLayerDiv.style.setProperty("--total-scale-factor", `calc(${viewport.scale} * var(--user-unit, 1))`);
+    textLayerDiv.style.setProperty("--scale-round-x", "1px");
+    textLayerDiv.style.setProperty("--scale-round-y", "1px");
+    textLayerDiv.style.setProperty("--min-font-size", "1");
     pageContainer.appendChild(textLayerDiv);
 
     try {
@@ -662,6 +706,8 @@ export class PdfJsRenderer implements ReaderRenderer {
       if (!rendered) {
         textLayerDiv.innerHTML = "";
         const items = (textContent.items as any[]) || [];
+        // Build all spans first without synchronous layout reads to avoid thrashing
+        const deferredScaling: { span: HTMLSpanElement; targetWidth: number; angle: number }[] = [];
         for (const item of items) {
           if (!item.str) continue;
           const span = document.createElement("span");
@@ -672,6 +718,11 @@ export class PdfJsRenderer implements ReaderRenderer {
           const targetWidth = (item.width || 0) * viewport.scale;
           const angle = Math.atan2(tx[1], tx[0]);
 
+          // PDF coordinate tx[5] is the font baseline. The transform matrix
+          // maps PDF user-space to viewport-space with Y-axis flipped, so
+          // tx[5] already accounts for the coordinate inversion. Position
+          // the span top at (baseline - fontHeight) which places the full
+          // glyph box correctly per the PDF page transform.
           span.style.position = "absolute";
           span.style.left = `${tx[4]}px`;
           span.style.top = `${tx[5] - fontHeight}px`;
@@ -687,7 +738,20 @@ export class PdfJsRenderer implements ReaderRenderer {
 
           textLayerDiv.appendChild(span);
 
-          if (targetWidth > 0) {
+          if (targetWidth > 0 && angle === 0) {
+            deferredScaling.push({ span, targetWidth, angle });
+          } else if (angle !== 0) {
+            // Non-zero rotation: apply rotation transform immediately (no width measurement needed)
+            span.style.transform = `rotate(${angle}rad)`;
+            if (targetWidth > 0) {
+              deferredScaling.push({ span, targetWidth, angle });
+            }
+          }
+        }
+        // Single layout read pass after all spans are in the DOM
+        // This avoids N synchronous layout thrashes inside the span-creation loop
+        if (deferredScaling.length > 0) {
+          for (const { span, targetWidth, angle } of deferredScaling) {
             const actualWidth = span.getBoundingClientRect().width;
             if (actualWidth > 0) {
               const scaleX = targetWidth / actualWidth;
@@ -1211,7 +1275,7 @@ export class PdfJsRenderer implements ReaderRenderer {
   }
 
   onTextSelected(
-    callback: (anchor: SelectionAnchor, text: string) => void,
+    callback: (anchor: SelectionAnchor, text: string, rect?: SelectionRect) => void,
   ): () => void {
     this.selectionListeners.add(callback);
     return () => this.selectionListeners.delete(callback);
@@ -1330,6 +1394,16 @@ export class PdfJsRenderer implements ReaderRenderer {
     this.container?.removeEventListener("touchmove", this.handleTouchMove);
     this.container?.removeEventListener("touchend", this.handleTouchEnd);
     this.container?.removeEventListener("touchcancel", this.handleTouchEnd);
+
+    if (this.handleDocumentMouseUp) {
+      document.removeEventListener("mouseup", this.handleDocumentMouseUp);
+      this.handleDocumentMouseUp = null;
+    }
+    if (this.handleDocumentTouchEnd) {
+      document.removeEventListener("touchend", this.handleDocumentTouchEnd);
+      this.handleDocumentTouchEnd = null;
+    }
+
     this.observer?.disconnect();
     this.observer = null;
 
