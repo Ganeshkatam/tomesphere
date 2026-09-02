@@ -79,10 +79,10 @@ export function ConnectedAccountsScreen({
       </div>
 
       {/* Main Container */}
-      <div className="p-6 bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-2xl space-y-6">
-        <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-default)]">
-          <Link2 size={18} className="text-indigo-400" />
-          <h3 className="text-sm font-bold text-slate-50 uppercase tracking-wider">
+      <div className="p-6 bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs space-y-6">
+        <div className="flex items-center gap-2 pb-3 border-b border-slate-200 dark:border-slate-800">
+          <Link2 size={18} className="text-indigo-600 dark:text-indigo-400" />
+          <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
             Sign-in Identities
           </h3>
         </div>
@@ -90,31 +90,31 @@ export function ConnectedAccountsScreen({
         {/* Identities List */}
         <div className="space-y-4">
           {/* 1. Email & Password Identity */}
-          <div className="p-5 rounded-xl bg-[var(--surface-default)] border border-[var(--border-default)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-5 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex-shrink-0">
+              <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex-shrink-0">
                 <Mail size={20} />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-bold text-slate-100">
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                     Email & Password
                   </h4>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 uppercase tracking-wider">
                     <CheckCircle2 size={10} />
                     Primary
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-1">{primaryEmail}</p>
-                <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
-                  <ShieldCheck size={12} className="text-indigo-400" />
+                <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mt-1">{primaryEmail}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+                  <ShieldCheck size={12} className="text-indigo-600 dark:text-indigo-400" />
                   Secured with password authentication
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2 self-end sm:self-center">
-              <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">
+              <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1">
                 <Lock size={12} />
                 Active
               </span>
@@ -122,9 +122,9 @@ export function ConnectedAccountsScreen({
           </div>
 
           {/* 2. Google OAuth Identity */}
-          <div className="p-5 rounded-xl bg-[var(--surface-default)] border border-[var(--border-default)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-5 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/50 flex-shrink-0 flex items-center justify-center w-11 h-11">
+              <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 flex-shrink-0 flex items-center justify-center w-11 h-11">
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
@@ -147,29 +147,29 @@ export function ConnectedAccountsScreen({
 
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-bold text-slate-100">
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                     Google Account
                   </h4>
                   {isGoogleConnected ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 uppercase tracking-wider">
                       <CheckCircle2 size={10} />
                       Connected
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700 uppercase tracking-wider">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 uppercase tracking-wider">
                       Not Linked
                     </span>
                   )}
                 </div>
 
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
                   {isGoogleConnected
                     ? googleIdentity?.email || "Connected via OAuth 2.0"
                     : "Sign in with your Google account seamlessly in one click."}
                 </p>
 
                 {isGoogleConnected && googleIdentity?.createdAt && (
-                  <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
                     <Calendar size={12} />
                     Linked on {new Date(googleIdentity.createdAt).toLocaleDateString()}
                   </p>
@@ -182,7 +182,7 @@ export function ConnectedAccountsScreen({
                 <button
                   type="button"
                   onClick={handleDisconnect}
-                  className="px-4 py-2 text-xs font-bold text-slate-400 hover:text-rose-400 border border-[var(--border-default)] hover:border-rose-500/30 rounded-xl transition-all uppercase tracking-wider"
+                  className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 border border-slate-200 dark:border-slate-700 hover:border-rose-300 dark:hover:border-rose-500/30 rounded-xl transition-all uppercase tracking-wider cursor-pointer"
                 >
                   Unlink
                 </button>
@@ -191,7 +191,7 @@ export function ConnectedAccountsScreen({
                   type="button"
                   onClick={handleConnectGoogle}
                   disabled={isLinking}
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all shadow-sm disabled:opacity-50 uppercase tracking-wider"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all shadow-sm disabled:opacity-50 uppercase tracking-wider cursor-pointer"
                 >
                   <ExternalLink size={13} />
                   <span>{isLinking ? "Connecting..." : "Connect Google"}</span>

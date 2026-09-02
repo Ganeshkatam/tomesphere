@@ -16,22 +16,22 @@ export default function CollectionsScreen({
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div>
-        <h2 className="text-2xl font-bold text-slate-50">My Collections</h2>
-        <p className="text-sm text-slate-400 mt-1">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">My Collections</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
           Your curated shelves and book collections.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-6 rounded-2xl bg-[var(--surface-default)] border border-[var(--border-default)] shadow-sm flex flex-col justify-between">
+        <div className="p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
                 <BookOpen size={20} className="fill-blue-500/20" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-50">Recent</h3>
-                <p className="text-xs text-slate-400 font-semibold">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Recent</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
                   {recentBooks.length} recently read
                 </p>
               </div>
@@ -41,7 +41,7 @@ export default function CollectionsScreen({
               {recentBooks.slice(0, 3).map((book) => (
                 <div
                   key={book.id}
-                  className="flex items-center gap-3 p-2 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-subtle)]"
+                  className="flex items-center gap-3 p-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs"
                 >
                   <div className="relative w-8 h-10 shrink-0">
                     <Image
@@ -51,15 +51,15 @@ export default function CollectionsScreen({
                       }
                       alt={book.title || "Book Cover"}
                       fill
-                      className="object-cover rounded shadow-sm"
+                      className="object-cover rounded shadow-xs"
                       sizes="32px"
                     />
                   </div>
                   <div className="min-w-0">
-                    <h4 className="text-xs font-bold text-slate-50 truncate">
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
                       {book.title}
                     </h4>
-                    <p className="text-[10px] text-slate-400 font-semibold truncate">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold truncate">
                       {book.authors?.map((a) => a.name).join(", ") || "Unknown"}
                     </p>
                   </div>
@@ -70,23 +70,23 @@ export default function CollectionsScreen({
 
           <Link
             href="/me/reading?status=finished"
-            className="mt-6 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors text-right"
+            className="mt-6 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors text-right"
           >
-            View all books ?
+            View all books →
           </Link>
         </div>
 
-        <div className="p-6 rounded-2xl bg-[var(--surface-default)] border border-[var(--border-default)] border-dashed shadow-sm flex flex-col items-center justify-center text-center">
-          <div className="w-12 h-12 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-default)] flex items-center justify-center text-slate-400 mb-3">
+        <div className="p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 border-dashed shadow-xs flex flex-col items-center justify-center text-center">
+          <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 mb-3 shadow-xs">
             <Library size={24} />
           </div>
-          <h3 className="text-base font-bold text-slate-50">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">
             Create Custom Shelf
           </h3>
-          <p className="text-xs text-slate-400 max-w-[200px] mt-1 font-medium">
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-[200px] mt-1 font-medium">
             Group books by topic, course curriculum, or reading clubs.
           </p>
-          <button className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md">
+          <button className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm uppercase tracking-wider cursor-pointer">
             New Shelf
           </button>
         </div>

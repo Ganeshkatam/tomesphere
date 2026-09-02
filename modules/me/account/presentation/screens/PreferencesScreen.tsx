@@ -35,51 +35,51 @@ export default function PreferencesScreen({
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div>
-        <h2 className="text-2xl font-bold text-slate-50">Preferences</h2>
-        <p className="text-sm text-slate-400 mt-1">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Preferences</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
           Configure layout themes, notifications, and reader settings.
         </p>
       </div>
 
       {/* Visual themes Preferences */}
-      <div className="p-6 rounded-2xl bg-[var(--surface-default)] border border-[var(--border-default)] shadow-sm space-y-4">
+      <div className="p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
         <div className="flex items-center gap-3">
-          <Settings className="w-5 h-5 text-indigo-400" />
+          <Settings className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           <div>
-            <h3 className="text-base font-bold text-slate-50">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">
               Theme Appearance
             </h3>
-            <p className="text-xs text-slate-400 font-semibold">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
               Change display color scheme
             </p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between p-4 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-subtle)]">
-          <span className="text-sm text-slate-300 font-bold">Theme Mode</span>
+        <div className="flex items-center justify-between p-4 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs">
+          <span className="text-sm text-slate-700 dark:text-slate-300 font-bold">Theme Mode</span>
           <ThemeToggle />
         </div>
       </div>
 
       {/* Notification settings */}
-      <div className="p-6 rounded-2xl bg-[var(--surface-default)] border border-[var(--border-default)] shadow-sm space-y-4">
+      <div className="p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
         <div className="flex items-center gap-3">
-          <Bell className="w-5 h-5 text-pink-400" />
+          <Bell className="w-5 h-5 text-pink-500 dark:text-pink-400" />
           <div>
-            <h3 className="text-base font-bold text-slate-50">Notifications</h3>
-            <p className="text-xs text-slate-400 font-semibold">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Notifications</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
               Manage alerts and newsletters
             </p>
           </div>
         </div>
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-subtle)]">
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs">
             <div>
-              <div className="text-xs sm:text-sm font-bold text-slate-50">
+              <div className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
                 Email Alerts
               </div>
-              <div className="text-[10px] text-slate-400 mt-0.5 font-semibold">
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-semibold">
                 Receive emails when you earn badges or progress goals
               </div>
             </div>
@@ -92,16 +92,16 @@ export default function PreferencesScreen({
                   emailAlerts: e.target.checked,
                 })
               }
-              className="w-5 h-5 accent-indigo-650 rounded"
+              className="w-5 h-5 accent-indigo-600 rounded cursor-pointer"
             />
           </div>
 
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-subtle)]">
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs">
             <div>
-              <div className="text-xs sm:text-sm font-bold text-slate-50">
+              <div className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
                 Weekly Digest
               </div>
-              <div className="text-[10px] text-slate-400 mt-0.5 font-semibold">
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-semibold">
                 Weekly summaries of read books and study progress statistics
               </div>
             </div>
@@ -114,7 +114,7 @@ export default function PreferencesScreen({
                   weeklyDigest: e.target.checked,
                 })
               }
-              className="w-5 h-5 accent-indigo-650 rounded"
+              className="w-5 h-5 accent-indigo-600 rounded cursor-pointer"
             />
           </div>
         </div>
@@ -122,7 +122,7 @@ export default function PreferencesScreen({
         <div className="text-right">
           <button
             onClick={handleSaveNotifications}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm uppercase tracking-wider cursor-pointer"
           >
             Save Notification settings
           </button>
@@ -130,14 +130,14 @@ export default function PreferencesScreen({
       </div>
 
       {/* Reader Preferences */}
-      <div className="p-6 rounded-2xl bg-[var(--surface-default)] border border-[var(--border-default)] shadow-sm space-y-4">
+      <div className="p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
         <div className="flex items-center gap-3">
-          <BookOpen className="w-5 h-5 text-emerald-400" />
+          <BookOpen className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
           <div>
-            <h3 className="text-base font-bold text-slate-50">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">
               Reader Settings
             </h3>
-            <p className="text-xs text-slate-400 font-semibold">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
               Customize default layout margins and fonts in reader
             </p>
           </div>
@@ -145,7 +145,7 @@ export default function PreferencesScreen({
 
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
               Default Font Family
             </label>
             <select
@@ -156,7 +156,7 @@ export default function PreferencesScreen({
                   fontFamily: e.target.value,
                 })
               }
-              className="w-full bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-xl px-4 py-2 text-slate-50 text-sm focus:outline-none"
+              className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-all cursor-pointer shadow-xs"
             >
               <option value="Inter">Sans Serif (Inter)</option>
               <option value="Outfit">Outfit (Display)</option>
@@ -165,7 +165,7 @@ export default function PreferencesScreen({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
               Default Text Size
             </label>
             <select
@@ -176,7 +176,7 @@ export default function PreferencesScreen({
                   fontSize: e.target.value,
                 })
               }
-              className="w-full bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-xl px-4 py-2 text-slate-50 text-sm focus:outline-none"
+              className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-all cursor-pointer shadow-xs"
             >
               <option value="14px">Small (14px)</option>
               <option value="16px">Normal (16px)</option>
@@ -189,7 +189,7 @@ export default function PreferencesScreen({
         <div className="text-right">
           <button
             onClick={handleSaveReader}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm uppercase tracking-wider cursor-pointer"
           >
             Save Reader settings
           </button>

@@ -64,16 +64,16 @@ const FIELD_META: Record<
     label: "Display Name",
     placeholder: "Enter your display name",
     icon: User,
-    color: "text-indigo-400",
-    bgColor: "bg-indigo-500/10",
+    color: "text-indigo-600 dark:text-indigo-400",
+    bgColor: "bg-indigo-50 dark:bg-indigo-500/10",
     maxLength: 50,
   },
   bio: {
     label: "Bio",
     placeholder: "Tell us a little about yourself...",
     icon: FileText,
-    color: "text-emerald-400",
-    bgColor: "bg-emerald-500/10",
+    color: "text-emerald-600 dark:text-emerald-400",
+    bgColor: "bg-emerald-50 dark:bg-emerald-500/10",
     maxLength: 160,
     multiline: true,
   },
@@ -81,8 +81,8 @@ const FIELD_META: Record<
     label: "Location",
     placeholder: "e.g. San Francisco, CA",
     icon: MapPin,
-    color: "text-amber-400",
-    bgColor: "bg-amber-500/10",
+    color: "text-amber-600 dark:text-amber-400",
+    bgColor: "bg-amber-50 dark:bg-amber-500/10",
     maxLength: 100,
   },
 };
@@ -248,21 +248,21 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
     switch (saveStatus) {
       case "saving":
         return (
-          <span className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+          <span className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             <Loader2 size={12} className="animate-spin" />
             Saving
           </span>
         );
       case "saved":
         return (
-          <span className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
+          <span className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
             <CheckCircle2 size={12} />
             All changes saved
           </span>
         );
       case "error":
         return (
-          <span className="flex items-center gap-1.5 text-[11px] font-bold text-red-400 uppercase tracking-wider">
+          <span className="flex items-center gap-1.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider">
             <CloudOff size={12} />
             Save failed
           </span>
@@ -282,9 +282,9 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
       {/*  AVATAR HERO                                                  */}
       {/* ============================================================ */}
       <div className="flex flex-col items-center text-center">
-        <div className="relative group mb-5">
-          <div className="w-28 h-28 rounded-full p-[3px] bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-            <div className="w-full h-full relative rounded-full overflow-hidden bg-[var(--surface-raised)] flex items-center justify-center">
+        <div className="relative group mb-4">
+          <div className="w-28 h-28 rounded-full p-[3px] bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md">
+            <div className="w-full h-full relative rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
               {avatarUrl ? (
                 <Image
                   src={avatarUrl}
@@ -295,7 +295,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
                   priority
                 />
               ) : (
-                <span className="text-3xl font-bold bg-gradient-to-br from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                <span className="text-3xl font-extrabold bg-gradient-to-br from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
                   {getInitials(formData.displayName)}
                 </span>
               )}
@@ -325,17 +325,17 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
           />
         </div>
 
-        <h3 className="text-lg font-bold text-slate-50">
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white">
           {formData.displayName || "Your Name"}
         </h3>
-        <p className="text-sm text-slate-500 mt-0.5">{initialValues.email}</p>
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-0.5">{initialValues.email}</p>
 
         <div className="flex items-center gap-2 mt-4">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={avatarUploading}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-indigo-400 border border-indigo-500/30 hover:border-indigo-500/60 hover:bg-indigo-500/5 rounded-xl transition-all disabled:opacity-50 uppercase tracking-wider"
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/30 hover:border-indigo-400 dark:hover:border-indigo-500/60 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 rounded-xl transition-all disabled:opacity-50 uppercase tracking-wider cursor-pointer shadow-xs"
           >
             <ImagePlus size={13} />
             {avatarUrl ? "Change Photo" : "Upload Photo"}
@@ -345,7 +345,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
               type="button"
               onClick={handleAvatarRemove}
               disabled={avatarUploading}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-red-400 border border-red-500/20 hover:border-red-500/40 hover:bg-red-500/5 rounded-xl transition-all disabled:opacity-50 uppercase tracking-wider"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 hover:border-rose-300 dark:hover:border-rose-500/40 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all disabled:opacity-50 uppercase tracking-wider cursor-pointer shadow-xs"
             >
               <Trash2 size={13} />
               Remove
@@ -357,12 +357,12 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
       {/* ============================================================ */}
       {/*  PROFILE FIELDS CARD                                         */}
       {/* ============================================================ */}
-      <div className="p-6 bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-2xl">
+      <div className="p-6 bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs">
         {/* Card header */}
-        <div className="flex items-center justify-between pb-4 mb-1 border-b border-[var(--border-default)]">
+        <div className="flex items-center justify-between pb-4 mb-1 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <User size={18} className="text-indigo-400" />
-            <h3 className="text-sm font-bold text-slate-50 uppercase tracking-wider">
+            <User size={18} className="text-indigo-600 dark:text-indigo-400" />
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               Profile Information
             </h3>
           </div>
@@ -370,7 +370,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
         </div>
 
         {/* Fields */}
-        <div className="divide-y divide-[var(--border-default)]">
+        <div className="divide-y divide-slate-200/80 dark:divide-slate-800/80">
           {FIELDS.map((key) => {
             const meta = FIELD_META[key];
             const Icon = meta.icon;
@@ -385,7 +385,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
                     <div className={`p-1.5 rounded-lg ${meta.bgColor}`}>
                       <Icon size={13} className={meta.color} />
                     </div>
-                    <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                       {meta.label}
                     </span>
                   </div>
@@ -395,7 +395,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
                       type="button"
                       onClick={() => startEditing(key)}
                       disabled={editingField !== null && editingField !== key}
-                      className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/5 rounded-lg opacity-0 group-hover:opacity-100 transition-all disabled:opacity-0 uppercase tracking-wider"
+                      className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-200/60 dark:hover:bg-indigo-500/10 rounded-lg opacity-80 group-hover:opacity-100 transition-all disabled:opacity-0 uppercase tracking-wider cursor-pointer"
                     >
                       <Pencil size={11} />
                       Edit
@@ -415,7 +415,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
                       rows={3}
                       autoFocus
                       placeholder={meta.placeholder}
-                      className="w-full bg-[var(--surface-default)] border border-indigo-500/50 rounded-xl px-4 py-3 text-sm font-medium text-slate-50 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-none"
+                      className="w-full bg-white dark:bg-slate-950 border border-indigo-400 dark:border-indigo-500/50 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-all resize-none shadow-xs"
                     />
                   ) : (
                     <input
@@ -427,7 +427,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
                       maxLength={meta.maxLength}
                       autoFocus
                       placeholder={meta.placeholder}
-                      className="w-full bg-[var(--surface-default)] border border-indigo-500/50 rounded-xl px-4 py-3 text-sm font-medium text-slate-50 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                      className="w-full bg-white dark:bg-slate-950 border border-indigo-400 dark:border-indigo-500/50 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-all shadow-xs"
                     />
                   )
                 ) : (
@@ -435,10 +435,12 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
                     type="button"
                     onClick={() => startEditing(key)}
                     disabled={editingField !== null}
-                    className="w-full text-left pl-9 disabled:cursor-default"
+                    className="w-full text-left pl-9 disabled:cursor-default group/val hover:bg-slate-100/60 dark:hover:bg-slate-800/30 rounded-lg p-1.5 -ml-1.5 transition-colors cursor-pointer"
                   >
                     <p
-                      className={`text-sm font-medium leading-relaxed ${value ? "text-slate-100" : "text-slate-600 italic"
+                      className={`text-sm font-medium leading-relaxed ${value
+                          ? "text-slate-800 dark:text-slate-200"
+                          : "text-slate-400 dark:text-slate-500 italic"
                         }`}
                     >
                       {value || "Not set"}

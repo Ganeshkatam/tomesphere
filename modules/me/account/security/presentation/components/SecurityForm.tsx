@@ -48,8 +48,8 @@ export function SecurityForm() {
       {/* PASSWORD SECTION */}
       <section className="space-y-4">
         <div className="flex items-center gap-2 mb-4 pb-2 border-b border-[var(--border-default)]">
-          <Key size={18} className="text-emerald-400" />
-          <h3 className="text-sm font-bold text-slate-50 uppercase tracking-wider">
+          <Key size={18} className="text-emerald-500 dark:text-emerald-400" />
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
             Change Password
           </h3>
         </div>

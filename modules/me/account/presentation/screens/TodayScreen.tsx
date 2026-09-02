@@ -46,10 +46,10 @@ export default function TodayScreen({
     <div className="space-y-8 animate-in fade-in duration-300">
       {/* Header Greeting */}
       <div>
-        <h2 className="text-3xl font-extrabold text-slate-50 tracking-tight">
+        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           {getGreeting()}, {name}
         </h2>
-        <p className="text-slate-400 mt-1 text-sm font-medium">
+        <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm font-medium">
           Here is your reading and learning state for today.
         </p>
       </div>
@@ -57,18 +57,18 @@ export default function TodayScreen({
       {/* Split Grid: Primary Tasks & Goals */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Currently Reading Card */}
-        <div className="md:col-span-2 p-6 rounded-2xl bg-[var(--surface-default)] border border-[var(--border-default)] hover:border-[var(--border-strong)] transition-all duration-200 shadow-sm flex flex-col justify-between">
+        <div className="md:col-span-2 p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <BookOpen size={16} className="text-indigo-400" />
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-400">
+              <BookOpen size={16} className="text-indigo-600 dark:text-indigo-400" />
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                 Continue Reading
               </span>
             </div>
 
             {currentReading ? (
               <div className="flex gap-4">
-                <div className="relative w-20 h-28 shrink-0 rounded-xl shadow-md border border-[var(--border-subtle)] overflow-hidden">
+                <div className="relative w-20 h-28 shrink-0 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 overflow-hidden">
                   <Image
                     src={
                       currentReading.cover_url ||
@@ -81,25 +81,25 @@ export default function TodayScreen({
                   />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-lg font-bold text-slate-50 truncate">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white truncate">
                     {currentReading.title}
                   </h3>
-                  <p className="text-xs text-slate-400 font-semibold truncate mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold truncate mt-0.5">
                     {currentReading.author}
                   </p>
-                  <span className="inline-block mt-3 px-2 py-0.5 bg-indigo-600/20 text-indigo-300 rounded-md text-[10px] font-bold uppercase tracking-wider">
+                  <span className="inline-block mt-3 px-2 py-0.5 bg-indigo-50 dark:bg-indigo-600/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20 rounded-md text-[10px] font-bold uppercase tracking-wider">
                     {currentReading.progress}% Completed
                   </span>
                 </div>
               </div>
             ) : (
               <div className="py-6 text-center">
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   No books currently in progress.
                 </p>
                 <Link
                   href="/discover"
-                  className="inline-block mt-3 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+                  className="inline-block mt-3 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors"
                 >
                   Browse Library →
                 </Link>
@@ -108,13 +108,13 @@ export default function TodayScreen({
           </div>
 
           {currentReading && (
-            <div className="mt-5 pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-semibold">
+            <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
                 Active progress tracked
               </span>
               <Link
                 href={`/read/${currentReading.id}`}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md shrink-0"
+                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-md shrink-0 uppercase tracking-wider"
               >
                 Open Reader
               </Link>
@@ -123,24 +123,24 @@ export default function TodayScreen({
         </div>
 
         {/* Goals Progress Widget */}
-        <div className="p-6 rounded-2xl bg-[var(--surface-default)] border border-[var(--border-default)] hover:border-[var(--border-strong)] transition-all duration-200 shadow-sm flex flex-col justify-between">
+        <div className="p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Target size={16} className="text-pink-400" />
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-pink-400">
+              <Target size={16} className="text-pink-500 dark:text-pink-400" />
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-pink-500 dark:text-pink-400">
                 Goals & Targets
               </span>
             </div>
 
             <div className="space-y-4">
               <div>
-                <div className="flex justify-between text-sm font-bold text-slate-50">
+                <div className="flex justify-between text-sm font-bold text-slate-900 dark:text-white">
                   <span>Reading Goal</span>
                   <span>
                     {booksReadCount} / {readingGoal} Books
                   </span>
                 </div>
-                <div className="w-full bg-[var(--surface-raised)] rounded-full h-2 mt-2 overflow-hidden border border-[var(--border-subtle)]">
+                <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 mt-2 overflow-hidden border border-slate-300/50 dark:border-slate-700/50">
                   <div
                     className="bg-gradient-to-r from-pink-500 to-indigo-500 h-full rounded-full transition-all duration-500"
                     style={{
@@ -150,13 +150,13 @@ export default function TodayScreen({
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 mt-4 p-3.5 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-subtle)]">
+              <div className="flex items-center gap-3 mt-4 p-3.5 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs">
                 <Flame className="w-6 h-6 text-orange-500 fill-orange-500/20" />
                 <div>
-                  <div className="text-sm font-bold text-slate-50">
+                  <div className="text-sm font-bold text-slate-900 dark:text-white">
                     {streak} Days
                   </div>
-                  <div className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">
+                  <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">
                     Active Reading Streak
                   </div>
                 </div>
@@ -166,7 +166,7 @@ export default function TodayScreen({
 
           <Link
             href="/me/progress"
-            className="mt-6 flex items-center justify-between text-xs font-bold text-slate-400 hover:text-slate-200 transition-colors group"
+            className="mt-6 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors group"
           >
             <span>View Progress Goals</span>
             <ChevronRight
@@ -178,51 +178,51 @@ export default function TodayScreen({
       </div>
 
       {/* Quick Stats Grid */}
-      <div className="p-6 rounded-2xl bg-[var(--surface-default)] border border-[var(--border-default)] shadow-sm space-y-4">
+      <div className="p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
         <div className="flex items-center gap-2">
-          <CheckCircle2 size={16} className="text-emerald-400" />
-          <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400">
+          <CheckCircle2 size={16} className="text-emerald-500 dark:text-emerald-400" />
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
             Quick Stats
           </span>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-subtle)] text-center">
-            <Library className="w-5 h-5 mx-auto text-indigo-400 fill-indigo-400/10 mb-1" />
-            <div className="text-xl font-bold text-slate-50">
+          <div className="p-4 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs text-center">
+            <Library className="w-5 h-5 mx-auto text-indigo-600 dark:text-indigo-400 fill-indigo-400/10 mb-1" />
+            <div className="text-xl font-bold text-slate-900 dark:text-white">
               {dashboardData.librarySummary.totalBooks}
             </div>
-            <div className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">
+            <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider mt-0.5">
               Total Books
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-subtle)] text-center">
-            <BookOpen className="w-5 h-5 mx-auto text-blue-400 fill-blue-400/10 mb-1" />
-            <div className="text-xl font-bold text-slate-50">
+          <div className="p-4 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs text-center">
+            <BookOpen className="w-5 h-5 mx-auto text-blue-600 dark:text-blue-400 fill-blue-400/10 mb-1" />
+            <div className="text-xl font-bold text-slate-900 dark:text-white">
               {dashboardData.librarySummary.currentlyReadingCount}
             </div>
-            <div className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">
+            <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider mt-0.5">
               Reading
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-subtle)] text-center">
-            <BookMarked className="w-5 h-5 mx-auto text-purple-400 fill-purple-400/10 mb-1" />
-            <div className="text-xl font-bold text-slate-50">
+          <div className="p-4 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs text-center">
+            <BookMarked className="w-5 h-5 mx-auto text-purple-600 dark:text-purple-400 fill-purple-400/10 mb-1" />
+            <div className="text-xl font-bold text-slate-900 dark:text-white">
               {dashboardData.librarySummary.wantToReadCount}
             </div>
-            <div className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">
+            <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider mt-0.5">
               Want To Read
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-subtle)] text-center">
-            <FolderTree className="w-5 h-5 mx-auto text-emerald-400 fill-emerald-400/10 mb-1" />
-            <div className="text-xl font-bold text-slate-50">
+          <div className="p-4 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs text-center">
+            <FolderTree className="w-5 h-5 mx-auto text-emerald-600 dark:text-emerald-400 fill-emerald-400/10 mb-1" />
+            <div className="text-xl font-bold text-slate-900 dark:text-white">
               {dashboardData.collectionsSummary.totalCollections}
             </div>
-            <div className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">
+            <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider mt-0.5">
               Collections
             </div>
           </div>

@@ -178,12 +178,12 @@ export function NotificationsForm({ initialValues }: NotificationsFormProps) {
       </div>
 
       {/* Main Settings Card */}
-      <div className="p-6 bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-2xl">
+      <div className="p-6 bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs">
         {/* Card Header with live autosave indicator */}
-        <div className="flex items-center justify-between pb-4 mb-2 border-b border-[var(--border-default)]">
+        <div className="flex items-center justify-between pb-4 mb-2 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <Bell size={18} className="text-indigo-400" />
-            <h3 className="text-sm font-bold text-slate-50 uppercase tracking-wider">
+            <Bell size={18} className="text-indigo-600 dark:text-indigo-400" />
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               Notification Channels
             </h3>
           </div>
@@ -191,7 +191,7 @@ export function NotificationsForm({ initialValues }: NotificationsFormProps) {
         </div>
 
         {/* Toggles List */}
-        <div className="divide-y divide-[var(--border-default)]">
+        <div className="divide-y divide-slate-200/80 dark:divide-slate-800/80">
           {TOGGLE_ITEMS.map((item) => {
             const Icon = item.icon;
             const isEnabled = preferences[item.key];
@@ -209,10 +209,10 @@ export function NotificationsForm({ initialValues }: NotificationsFormProps) {
                     <Icon size={16} className={item.iconColor} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-slate-100">
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                       {item.label}
                     </h4>
-                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed max-w-xl">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed max-w-xl">
                       {item.description}
                     </p>
                   </div>
@@ -225,8 +225,8 @@ export function NotificationsForm({ initialValues }: NotificationsFormProps) {
                   aria-checked={isEnabled}
                   disabled={isItemSaving}
                   onClick={() => handleToggle(item.key)}
-                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[var(--surface-default)] disabled:opacity-50 ${
-                    isEnabled ? "bg-indigo-600" : "bg-slate-700/60"
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 disabled:opacity-50 ${
+                    isEnabled ? "bg-indigo-600" : "bg-slate-200 dark:bg-slate-700/60"
                   }`}
                 >
                   <span
@@ -242,18 +242,18 @@ export function NotificationsForm({ initialValues }: NotificationsFormProps) {
       </div>
 
       {/* Delivery Channels Card */}
-      <div className="p-6 bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-2xl">
-        <div className="flex items-center justify-between pb-4 mb-2 border-b border-[var(--border-default)]">
+      <div className="p-6 bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs">
+        <div className="flex items-center justify-between pb-4 mb-2 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <Send size={18} className="text-violet-400" />
-            <h3 className="text-sm font-bold text-slate-50 uppercase tracking-wider">
+            <Send size={18} className="text-violet-600 dark:text-violet-400" />
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               Delivery Channels
             </h3>
           </div>
           {renderStatus()}
         </div>
 
-        <div className="divide-y divide-[var(--border-default)]">
+        <div className="divide-y divide-slate-200/80 dark:divide-slate-800/80">
           {DELIVERY_CHANNEL_ITEMS.map((item) => {
             const Icon = item.icon;
             const isEnabled = preferences[item.key];
@@ -271,10 +271,10 @@ export function NotificationsForm({ initialValues }: NotificationsFormProps) {
                     <Icon size={16} className={item.iconColor} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-slate-100">
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                       {item.label}
                     </h4>
-                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed max-w-xl">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed max-w-xl">
                       {item.description}
                     </p>
                   </div>
@@ -286,8 +286,8 @@ export function NotificationsForm({ initialValues }: NotificationsFormProps) {
                   aria-checked={isEnabled}
                   disabled={isItemSaving}
                   onClick={() => handleToggle(item.key)}
-                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[var(--surface-default)] disabled:opacity-50 ${
-                    isEnabled ? "bg-indigo-600" : "bg-slate-700/60"
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 disabled:opacity-50 ${
+                    isEnabled ? "bg-indigo-600" : "bg-slate-200 dark:bg-slate-700/60"
                   }`}
                 >
                   <span

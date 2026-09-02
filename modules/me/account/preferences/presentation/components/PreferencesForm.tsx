@@ -38,8 +38,8 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl bg-[var(--surface-raised)] border border-[var(--border-default)] overflow-hidden">
-      <div className="px-6 pt-6 pb-4 border-b border-[var(--border-default)]">
+    <section className="rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div className="px-6 pt-6 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-3">
           <div
             className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${iconColor}`}
@@ -47,10 +47,10 @@ function SectionCard({
             <Icon size={18} />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[var(--text-primary)]">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
               {title}
             </h3>
-            <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               {description}
             </p>
           </div>
@@ -69,8 +69,8 @@ function FieldLabel({
   children: React.ReactNode;
 }) {
   return (
-    <label className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2.5">
-      {Icon && <Icon size={13} className="opacity-60" />}
+    <label className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2.5">
+      {Icon && <Icon size={13} className="text-indigo-600 dark:text-indigo-400" />}
       {children}
     </label>
   );
@@ -89,12 +89,12 @@ function ToggleSwitch({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-default)] ${
-        checked ? "bg-indigo-600" : "bg-slate-600"
+      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900 ${
+        checked ? "bg-indigo-600" : "bg-slate-200 dark:bg-slate-700/60"
       }`}
     >
       <span
-        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ${
+        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ${
           checked ? "translate-x-5" : "translate-x-0"
         }`}
       />
@@ -126,18 +126,18 @@ function StepperControl({
         type="button"
         onClick={onDecrement}
         disabled={numVal <= min}
-        className="w-8 h-8 rounded-lg bg-[var(--surface-overlay)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--surface-default)] hover:border-[var(--border-strong)] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
       >
         <Minus size={14} />
       </button>
-      <span className="min-w-[48px] text-center text-sm font-bold font-mono text-[var(--text-primary)]">
+      <span className="min-w-[48px] text-center text-sm font-bold font-mono text-slate-900 dark:text-white">
         {label}
       </span>
       <button
         type="button"
         onClick={onIncrement}
         disabled={numVal >= max}
-        className="w-8 h-8 rounded-lg bg-[var(--surface-overlay)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--surface-default)] hover:border-[var(--border-strong)] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
       >
         <Plus size={14} />
       </button>
@@ -203,8 +203,8 @@ export function PreferencesForm({
                     }
                     className={`flex flex-col items-center gap-2.5 py-4 rounded-xl border-2 transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-indigo-500/10 border-indigo-500/60 text-indigo-400 shadow-sm shadow-indigo-500/10"
-                        : "bg-[var(--surface-overlay)] border-transparent text-[var(--text-tertiary)] hover:border-[var(--border-strong)] hover:text-[var(--text-secondary)]"
+                        ? "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-600 dark:border-indigo-500/60 text-indigo-700 dark:text-indigo-400 shadow-xs"
+                        : "bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
                     <theme.icon size={22} strokeWidth={isSelected ? 2.2 : 1.8} />
@@ -229,7 +229,7 @@ export function PreferencesForm({
                   },
                 })
               }
-              className="w-full bg-[var(--surface-overlay)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-sm font-medium text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-all appearance-none cursor-pointer hover:border-[var(--border-strong)]"
+              className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-all appearance-none cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 shadow-xs"
             >
               <option value="en">English (US)</option>
               <option value="es">Espanol</option>
@@ -245,7 +245,7 @@ export function PreferencesForm({
       {/* ── READER DEFAULTS ────────────────────────────────── */}
       <SectionCard
         icon={BookOpen}
-        iconColor="bg-emerald-500/15 text-emerald-400"
+        iconColor="bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
         title="Reader Defaults"
         description="Configure how books and documents appear in the reader."
       >
@@ -289,8 +289,8 @@ export function PreferencesForm({
                   }
                   className={`group relative rounded-xl border-2 p-2.5 transition-all cursor-pointer ${
                     isSelected
-                      ? "border-indigo-500/60 shadow-sm shadow-indigo-500/10"
-                      : "border-transparent hover:border-[var(--border-strong)]"
+                      ? "border-indigo-600 dark:border-indigo-500/60 shadow-xs bg-indigo-50/30 dark:bg-indigo-500/5"
+                      : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-950"
                   }`}
                 >
                   {/* Mini page preview */}
@@ -307,14 +307,14 @@ export function PreferencesForm({
                   <span
                     className={`text-xs font-bold block text-center ${
                       isSelected
-                        ? "text-indigo-400"
-                        : "text-[var(--text-tertiary)] group-hover:text-[var(--text-secondary)]"
+                        ? "text-indigo-700 dark:text-indigo-400"
+                        : "text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white"
                     }`}
                   >
                     {theme.label}
                   </span>
                   {isSelected && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center shadow-md">
+                    <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center shadow-md">
                       <svg
                         viewBox="0 0 12 12"
                         className="w-3 h-3 text-white fill-current"
@@ -341,7 +341,7 @@ export function PreferencesForm({
                   reader: { ...formData.reader, fontFamily: e.target.value },
                 })
               }
-              className="w-full bg-[var(--surface-overlay)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-sm font-medium text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-all appearance-none cursor-pointer hover:border-[var(--border-strong)]"
+              className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-all appearance-none cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 shadow-xs"
             >
               <option value="Inter">Inter (Sans-serif)</option>
               <option value="Merriweather">Merriweather (Serif)</option>
@@ -406,8 +406,8 @@ export function PreferencesForm({
                     }
                     className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-indigo-500/10 border-indigo-500/60 text-indigo-400"
-                        : "bg-[var(--surface-overlay)] border-transparent text-[var(--text-tertiary)] hover:border-[var(--border-strong)] hover:text-[var(--text-secondary)]"
+                        ? "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-600 dark:border-indigo-500/60 text-indigo-700 dark:text-indigo-400 shadow-xs"
+                        : "bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
                     <opt.icon size={14} />
@@ -456,16 +456,16 @@ export function PreferencesForm({
         </div>
 
         {/* Hyphenation Toggle */}
-        <div className="flex items-center justify-between p-4 rounded-xl bg-[var(--surface-overlay)] border border-[var(--border-default)]">
+        <div className="flex items-center justify-between p-4 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-[var(--surface-default)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)]">
+            <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
               <SplitSquareHorizontal size={16} />
             </div>
             <div>
-              <p className="text-sm font-bold text-[var(--text-primary)]">
+              <p className="text-sm font-bold text-slate-900 dark:text-white">
                 Hyphenation
               </p>
-              <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Automatically break words across lines for cleaner paragraph edges
               </p>
             </div>
@@ -484,19 +484,19 @@ export function PreferencesForm({
 
       {/* ── SAVE ACTION ────────────────────────────────────── */}
       <div className="flex items-center justify-between pt-2">
-        <p className="text-xs text-[var(--text-tertiary)]">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Changes are applied after saving.
         </p>
         <button
           type="button"
           onClick={handleSave}
           disabled={isPending}
-          className="px-7 py-2.5 text-sm font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-500 active:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 disabled:opacity-50 disabled:shadow-none flex items-center gap-2 cursor-pointer"
+          className="px-7 py-2.5 text-xs font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-md disabled:opacity-50 flex items-center gap-2 uppercase tracking-wider cursor-pointer"
         >
           {isPending ? (
-            <Loader2 size={16} className="animate-spin" />
+            <Loader2 size={15} className="animate-spin" />
           ) : (
-            <Save size={16} />
+            <Save size={15} />
           )}
           {isPending ? "Saving..." : "Save Preferences"}
         </button>
