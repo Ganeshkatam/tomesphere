@@ -6,15 +6,21 @@ import { SettingsToolbar } from "./SettingsToolbar";
 const mockUpdatePreference = jest.fn();
 const mockSetSidebarOpen = jest.fn();
 const mockSetSidebarTab = jest.fn();
+const mockSetSideRailOpen = jest.fn();
+const mockSetSideRailTab = jest.fn();
 const mockSetAppTheme = jest.fn();
 
 let mockStore = {
   preferences: { theme: "light", fontSize: 16, zoom: 100 },
   updatePreference: mockUpdatePreference,
   sidebarOpen: false,
-  sidebarTab: "toc",
+  sidebarTab: "search",
   setSidebarOpen: mockSetSidebarOpen,
   setSidebarTab: mockSetSidebarTab,
+  sideRailOpen: false,
+  sideRailTab: "thumbnails" as "thumbnails" | "outline",
+  setSideRailOpen: mockSetSideRailOpen,
+  setSideRailTab: mockSetSideRailTab,
 };
 
 jest.mock("@/modules/reader/state/reader-store", () => ({
@@ -41,9 +47,13 @@ describe("SettingsToolbar presentation and Popover interaction", () => {
       preferences: { theme: "light", fontSize: 16, zoom: 100 },
       updatePreference: mockUpdatePreference,
       sidebarOpen: false,
-      sidebarTab: "toc",
+      sidebarTab: "search",
       setSidebarOpen: mockSetSidebarOpen,
       setSidebarTab: mockSetSidebarTab,
+      sideRailOpen: false,
+      sideRailTab: "thumbnails",
+      setSideRailOpen: mockSetSideRailOpen,
+      setSideRailTab: mockSetSideRailTab,
     };
   });
 
@@ -62,6 +72,14 @@ describe("SettingsToolbar presentation and Popover interaction", () => {
     fireEvent.click(screen.getByRole("button", { name: "Search in Volume" }));
     expect(mockSetSidebarTab).toHaveBeenCalledWith("search");
     expect(mockSetSidebarOpen).toHaveBeenCalledWith(true);
+  });
+
+  it("toggles document outline in side rail when clicking Table of Contents", () => {
+    render(<SettingsToolbar service={mockService as any} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Table of Contents" }));
+    expect(mockSetSideRailTab).toHaveBeenCalledWith("outline");
+    expect(mockSetSideRailOpen).toHaveBeenCalledWith(true);
   });
 
   it("opens Reader Settings popover when clicking Settings button", () => {

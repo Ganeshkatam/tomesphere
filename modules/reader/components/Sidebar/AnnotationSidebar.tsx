@@ -32,8 +32,6 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
     sidebarTab,
     setSidebarTab,
     preferences,
-    tableOfContents,
-    totalPages,
   } = useReaderStore();
   const theme = preferences.theme || "light";
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -43,6 +41,7 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
 
   const annotations = service.getAnnotations();
   const bookmarkViews = service.getBookmarkViews();
+  const currentTab = sidebarTab === "bookmarks" ? "bookmarks" : "annotations";
 
   const handleCopy = (text: string, id: string) => {
     if (text) {
@@ -53,7 +52,7 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
   };
 
   const handleTabChange = (
-    tab: "annotations" | "bookmarks" | "toc" | "search",
+    tab: "annotations" | "bookmarks",
   ) => {
     setSidebarTab(tab);
   };
@@ -115,10 +114,8 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
         className={`flex items-center justify-between px-4 py-3 border-b transition-colors ${themeStyles.headerBorder}`}
       >
         <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider">
-          {sidebarTab === "annotations" && `Annotations (${annotations.length})`}
-          {sidebarTab === "bookmarks" && `Bookmarks (${bookmarkViews.length})`}
-          {sidebarTab === "toc" && `Table of Contents (${tableOfContents.length || totalPages})`}
-          {sidebarTab === "search" && "Search Volume"}
+          {currentTab === "annotations" && `Notes (${annotations.length})`}
+          {currentTab === "bookmarks" && `Bookmarks (${bookmarkViews.length})`}
         </h3>
 
         <Button
@@ -133,28 +130,15 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
         </Button>
       </div>
 
-      {/* Tabs */}
+      {/* Tabs: Notes and Bookmarks */}
       <div className={`flex border-b transition-colors ${themeStyles.headerBorder}`} role="tablist">
         <button
           type="button"
           role="tab"
-          aria-selected={sidebarTab === "toc"}
-          onClick={() => handleTabChange("toc")}
-          className={`flex-1 py-2.5 text-xs font-semibold transition-colors cursor-pointer text-center ${
-            sidebarTab === "toc"
-              ? themeStyles.tabActive
-              : themeStyles.tabInactive
-          }`}
-        >
-          Contents
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={sidebarTab === "annotations"}
+          aria-selected={currentTab === "annotations"}
           onClick={() => handleTabChange("annotations")}
           className={`flex-1 py-2.5 text-xs font-semibold transition-colors cursor-pointer text-center ${
-            sidebarTab === "annotations"
+            currentTab === "annotations"
               ? themeStyles.tabActive
               : themeStyles.tabInactive
           }`}
@@ -164,10 +148,10 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
         <button
           type="button"
           role="tab"
-          aria-selected={sidebarTab === "bookmarks"}
+          aria-selected={currentTab === "bookmarks"}
           onClick={() => handleTabChange("bookmarks")}
           className={`flex-1 py-2.5 text-xs font-semibold transition-colors cursor-pointer text-center ${
-            sidebarTab === "bookmarks"
+            currentTab === "bookmarks"
               ? themeStyles.tabActive
               : themeStyles.tabInactive
           }`}
@@ -178,84 +162,13 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-        {/* TAB: Table of Contents */}
-        {sidebarTab === "toc" && (
-          <div className="space-y-1.5">
-            {tableOfContents.length > 0 ? (
-              tableOfContents.map((item) => (
-                <div key={item.id} className="space-y-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      service.goToLocation({ type: "pdf", value: String(item.pageNumber) });
-                    }}
-                    className={`w-full text-left p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-between text-xs group ${themeStyles.card}`}
-                  >
-                    <span className={`font-semibold truncate pr-2 ${themeStyles.textPrimary}`}>
-                      {item.title}
-                    </span>
-                    <span className="text-[11px] font-mono text-slate-400 shrink-0">
-                      p. {item.pageNumber}
-                    </span>
-                  </button>
-
-                  {item.items && item.items.length > 0 && (
-                    <div className="pl-3 space-y-1 border-l border-slate-200 dark:border-slate-800 ml-2">
-                      {item.items.map((sub) => (
-                        <button
-                          key={sub.id}
-                          type="button"
-                          onClick={() => {
-                            service.goToLocation({ type: "pdf", value: String(sub.pageNumber) });
-                          }}
-                          className={`w-full text-left p-2 rounded-lg transition-all cursor-pointer flex items-center justify-between text-[11px] ${themeStyles.card}`}
-                        >
-                          <span className={`truncate pr-2 ${themeStyles.textSecondary}`}>
-                            {sub.title}
-                          </span>
-                          <span className="text-[10px] font-mono text-slate-400 shrink-0">
-                            p. {sub.pageNumber}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div className="space-y-1.5">
-                <p className={`text-xs ${themeStyles.emptyText} mb-2`}>
-                  No embedded outline found. Quick page navigation:
-                </p>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                  <button
-                    key={pageNum}
-                    type="button"
-                    onClick={() => {
-                      service.goToLocation({ type: "pdf", value: String(pageNum) });
-                    }}
-                    className={`w-full text-left px-3 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-between text-xs ${themeStyles.card}`}
-                  >
-                    <span className={`font-medium ${themeStyles.textPrimary}`}>
-                      {pageNum === 1 ? "Page 1 • Cover & Title" : `Page ${pageNum}`}
-                    </span>
-                    <span className="text-[11px] font-mono text-slate-400 shrink-0">
-                      p. {pageNum}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-        
-        {sidebarTab === "annotations" && annotations.length === 0 && (
+        {currentTab === "annotations" && annotations.length === 0 && (
           <div className={`text-center mt-12 text-xs sm:text-sm ${themeStyles.emptyText}`}>
             No highlights or notes yet.
           </div>
         )}
 
-        {sidebarTab === "annotations" &&
+        {currentTab === "annotations" &&
           annotations.map(({ highlight, note }) => (
             <div
               key={highlight.id}
@@ -403,13 +316,13 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
             </div>
           ))}
 
-        {sidebarTab === "bookmarks" && bookmarkViews.length === 0 && (
+        {currentTab === "bookmarks" && bookmarkViews.length === 0 && (
           <div className={`text-center mt-12 text-xs sm:text-sm ${themeStyles.emptyText}`}>
             No bookmarks yet.
           </div>
         )}
 
-        {sidebarTab === "bookmarks" &&
+        {currentTab === "bookmarks" &&
           bookmarkViews.map(({ bookmark, isCurrent, preview }) => {
             const isPdf = bookmark.anchor.type === "pdf";
             const pageNum = isPdf ? bookmark.anchor.value : undefined;

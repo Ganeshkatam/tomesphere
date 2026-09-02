@@ -82,6 +82,7 @@ interface ReaderSessionState {
 
   // Side Rail (Pages & Thumbnails) state
   sideRailOpen: boolean;
+  sideRailTab: "thumbnails" | "outline";
   totalPages: number;
 
   // Preferences
@@ -102,6 +103,7 @@ interface ReaderSessionState {
   setSidebarOpen: (open: boolean) => void;
   setSidebarTab: (tab: "annotations" | "bookmarks" | "toc" | "search") => void;
   setSideRailOpen: (open: boolean) => void;
+  setSideRailTab: (tab: "thumbnails" | "outline") => void;
   setTotalPages: (total: number) => void;
   setPreferences: (prefs: ReaderPreferencesDto) => void;
   updatePreference: <K extends keyof ReaderPreferencesDto>(
@@ -126,6 +128,7 @@ export const useReaderStore = create<ReaderSessionState>((set) => ({
   sidebarOpen: false,
   sidebarTab: "annotations",
   sideRailOpen: true,
+  sideRailTab: "thumbnails",
   totalPages: 1,
   preferences: {
     theme: "light",
@@ -153,6 +156,7 @@ export const useReaderStore = create<ReaderSessionState>((set) => ({
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
   setSidebarTab: (tab) => set({ sidebarTab: tab }),
   setSideRailOpen: (open) => set({ sideRailOpen: open }),
+  setSideRailTab: (tab) => set({ sideRailTab: tab }),
   setTotalPages: (total) => set({ totalPages: Math.max(1, total) }),
   setPreferences: (prefs) => set({ preferences: prefs }),
   updatePreference: (key, value) =>

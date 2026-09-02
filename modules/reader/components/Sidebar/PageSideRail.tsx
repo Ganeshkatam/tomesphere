@@ -210,9 +210,24 @@ export function PageSideRail({ service }: PageSideRailProps) {
     bookmarks,
     preferences,
     tableOfContents,
+    sideRailTab,
+    setSideRailTab,
   } = useReaderStore();
   const theme = preferences.theme || "light";
-  const [activeTab, setActiveTab] = useState<"thumbnails" | "outline">("thumbnails");
+  const [activeTab, setActiveTabState] = useState<"thumbnails" | "outline">(
+    sideRailTab || "thumbnails",
+  );
+
+  useEffect(() => {
+    if (sideRailTab) {
+      setActiveTabState(sideRailTab);
+    }
+  }, [sideRailTab]);
+
+  const setActiveTab = (tab: "thumbnails" | "outline") => {
+    setActiveTabState(tab);
+    setSideRailTab?.(tab);
+  };
   const activePageRef = useRef<HTMLDivElement | null>(null);
   const railScrollContainerRef = useRef<HTMLDivElement | null>(null);
 

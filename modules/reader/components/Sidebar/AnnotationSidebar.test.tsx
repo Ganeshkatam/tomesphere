@@ -84,8 +84,10 @@ describe("AnnotationSidebar presentation and delegation", () => {
     expect(mockSetSidebarOpen).toHaveBeenCalledWith(false);
   });
 
-  it("switches tabs when clicking tab buttons", () => {
+  it("switches tabs when clicking tab buttons and does not render Contents tab", () => {
     render(<AnnotationSidebar service={mockService as any} />);
+
+    expect(screen.queryByRole("tab", { name: /Contents/i })).not.toBeInTheDocument();
 
     const bookmarksTab = screen.getByRole("tab", { name: /Bookmarks/i });
     fireEvent.click(bookmarksTab);

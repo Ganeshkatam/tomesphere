@@ -19,8 +19,18 @@ interface SettingsToolbarProps {
 }
 
 export function SettingsToolbar({ service, fileType }: SettingsToolbarProps) {
-  const { preferences, updatePreference, sidebarOpen, sidebarTab, setSidebarOpen, setSidebarTab } =
-    useReaderStore();
+  const {
+    preferences,
+    updatePreference,
+    sidebarOpen,
+    sidebarTab,
+    setSidebarOpen,
+    setSidebarTab,
+    sideRailOpen,
+    sideRailTab,
+    setSideRailOpen,
+    setSideRailTab,
+  } = useReaderStore();
   const { theme: appTheme, setTheme: setAppTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -145,17 +155,17 @@ export function SettingsToolbar({ service, fileType }: SettingsToolbarProps) {
               variant="ghost"
               size="icon"
               onClick={() => {
-                if (sidebarOpen && sidebarTab === "toc") {
-                  setSidebarOpen(false);
+                if (sideRailOpen && sideRailTab === "outline") {
+                  setSideRailOpen(false);
                 } else {
-                  setSidebarTab("toc");
-                  setSidebarOpen(true);
+                  setSideRailTab("outline");
+                  setSideRailOpen(true);
                 }
               }}
               aria-label="Table of Contents"
-              aria-expanded={sidebarOpen && sidebarTab === "toc"}
+              aria-expanded={sideRailOpen && sideRailTab === "outline"}
               className={`p-2 rounded-xl transition-colors cursor-pointer h-auto w-auto ${
-                sidebarOpen && sidebarTab === "toc"
+                sideRailOpen && sideRailTab === "outline"
                   ? themeStyles.activeBtn
                   : themeStyles.btn
               }`}
