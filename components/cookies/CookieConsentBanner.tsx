@@ -112,12 +112,12 @@ export default function CookieConsentBanner() {
               <div className="flex items-center gap-2 ml-auto">
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => setShowModal(true)}
-                  className="rounded-xl text-xs font-bold border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer h-9 px-3"
+                  className="rounded-xl text-xs font-bold bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer h-9 px-3 transition-colors shadow-xs"
                 >
-                  <Sliders className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
+                  <Sliders className="w-3.5 h-3.5 mr-1.5 text-slate-600 dark:text-slate-300" />
                   Preferences
                 </Button>
                 <Button
@@ -125,7 +125,7 @@ export default function CookieConsentBanner() {
                   variant="secondary"
                   size="sm"
                   onClick={handleAcceptEssentialOnly}
-                  className="rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer h-9 px-3"
+                  className="rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-700 border border-transparent dark:border-slate-700/60 cursor-pointer h-9 px-3 transition-colors"
                 >
                   Essential Only
                 </Button>
@@ -134,7 +134,7 @@ export default function CookieConsentBanner() {
                   variant="default"
                   size="sm"
                   onClick={handleAcceptAll}
-                  className="rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20 cursor-pointer h-9 px-4"
+                  className="rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/25 cursor-pointer h-9 px-4 transition-all"
                 >
                   Accept All
                 </Button>
@@ -240,10 +240,10 @@ export default function CookieConsentBanner() {
               <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={handleSaveCustom}
-                  className="rounded-xl text-xs font-bold border-slate-200 dark:border-slate-700 cursor-pointer h-10 px-4 w-full sm:w-auto"
+                  className="rounded-xl text-xs font-bold bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer h-10 px-4 w-full sm:w-auto shadow-xs"
                 >
                   Save Choices
                 </Button>
