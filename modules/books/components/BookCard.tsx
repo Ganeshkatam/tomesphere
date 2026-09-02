@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,14 +12,6 @@ import { getBookShelvesAction, toggleBookInShelfAction } from "@/app/(workspace)
 import { CollectionDto } from "@/modules/library/application/dto/response/CollectionDto";
 import { showSuccess, showError } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
 
 export interface BookCardModel {
   readonly id: string;
@@ -62,6 +55,69 @@ export default function BookCard({
   const [shelves, setShelves] = useState<CollectionDto[]>([]);
   const [containingShelfIds, setContainingShelfIds] = useState<string[]>([]);
   const [isLoadingShelves, setIsLoadingShelves] = useState(false);
+  const [menuCoords, setMenuCoords] = useState<{ top: number; left: number } | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const updateCoords = useCallback(() => {
+    if (!buttonRef.current || typeof window === "undefined") return;
+    const rect = buttonRef.current.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) return;
+
+    const menuWidth = 224;
+    const menuHeight = 260;
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const top =
+      spaceBelow < menuHeight + 20
+        ? Math.max(10, rect.top - menuHeight - 6)
+        : rect.bottom + 6;
+
+    const left = Math.max(
+      12,
+      Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - 12),
+    );
+    setMenuCoords({ top, left });
+  }, []);
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    updateCoords();
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node | null;
+      if (!target) return;
+      if (menuRef.current && menuRef.current.contains(target)) return;
+      if (buttonRef.current && buttonRef.current.contains(target)) return;
+      setIsMenuOpen(false);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsMenuOpen(false);
+      }
+    };
+
+    const handleScrollOrResize = () => {
+      updateCoords();
+    };
+
+    const timer = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+    }, 20);
+
+    document.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("scroll", handleScrollOrResize, true);
+    window.addEventListener("resize", handleScrollOrResize);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("scroll", handleScrollOrResize, true);
+      window.removeEventListener("resize", handleScrollOrResize);
+    };
+  }, [isMenuOpen, updateCoords]);
 
   const authorNames = useMemo(() => {
     if (!book.authors || book.authors.length === 0) return "TomeSphere Library";
@@ -107,6 +163,21 @@ export default function BookCard({
     } finally {
       setIsLoadingShelves(false);
     }
+  };
+
+  const lastToggleTimeRef = useRef<number>(0);
+  const toggleMenu = (e: React.SyntheticEvent) => {
+    e.stopPropagation();
+    const now = Date.now();
+    if (now - lastToggleTimeRef.current < 200) return;
+    lastToggleTimeRef.current = now;
+    setIsMenuOpen((prev) => {
+      const next = !prev;
+      if (next) {
+        loadShelves();
+      }
+      return next;
+    });
   };
 
   const handleToggleShelf = async (shelfId: string, shelfName: string) => {
@@ -200,11 +271,10 @@ export default function BookCard({
 
           {/* Hover & Focus-Within Overlay with Read & Shelf Options */}
           <div
-            className={`absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent transition-opacity duration-300 flex items-end justify-between p-2.5 z-10 ${
-              isMenuOpen
+            className={`absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent transition-opacity duration-300 flex items-end justify-between p-2.5 z-10 ${isMenuOpen
                 ? "opacity-100 pointer-events-auto"
                 : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none"
-            }`}
+              }`}
           >
             <Button
               asChild
@@ -221,151 +291,177 @@ export default function BookCard({
               </Link>
             </Button>
 
-            {/* Add to Shelf & Status Dropdown */}
+            {/* Add to Shelf & Status Button */}
             <div className="pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-              <DropdownMenu
-                open={isMenuOpen}
-                onOpenChange={(open) => {
-                  setIsMenuOpen(open);
-                  if (open) {
-                    loadShelves();
+              <Button
+                ref={buttonRef}
+                type="button"
+                size="icon"
+                aria-label={`Options for ${book.title}`}
+                onClick={toggleMenu}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  if (typeof navigator !== "undefined" && navigator.userAgent?.includes("jsdom")) {
+                    toggleMenu(e);
                   }
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    toggleMenu(e);
+                  }
+                }}
+                className="w-7 h-7 rounded-xl bg-black/60 hover:bg-black/90 backdrop-blur-md text-white border border-white/25 flex items-center justify-center transition-colors cursor-pointer shadow-md active:scale-95"
               >
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    type="button"
-                    size="icon"
-                    aria-label={`Options for ${book.title}`}
-                    className="w-7 h-7 rounded-xl bg-black/60 hover:bg-black/90 backdrop-blur-md text-white border border-white/25 flex items-center justify-center transition-colors cursor-pointer shadow-md active:scale-95"
-                  >
-                    <FolderPlus size={13} />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  side="bottom"
-                  sideOffset={8}
-                  collisionPadding={16}
-                  className="w-56 p-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl text-slate-900 dark:text-slate-100 z-50"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <DropdownMenuLabel className="text-[10px] uppercase font-extrabold text-slate-500 dark:text-slate-400 px-2 py-1 tracking-wider">
-                    Reading Status
-                  </DropdownMenuLabel>
-                  <DropdownMenuItem
-                    onClick={() => handleStatusSelect("want_to_read")}
-                    className={`flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
-                      book.status === "want_to_read"
-                        ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 font-bold"
-                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
-                    }`}
-                  >
-                    <BookOpen size={14} className="text-amber-500 shrink-0" />
-                    <span className="truncate">Want to Read</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleStatusSelect("currently_reading")}
-                    className={`flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
-                      book.status === "reading" || book.status === "currently_reading"
-                        ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 font-bold"
-                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
-                    }`}
-                  >
-                    <Clock size={14} className="text-indigo-500 shrink-0" />
-                    <span className="truncate">Currently Reading</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleStatusSelect("finished")}
-                    className={`flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
-                      book.status === "finished"
-                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-bold"
-                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
-                    }`}
-                  >
-                    <Check size={14} className="text-emerald-500 shrink-0" />
-                    <span className="truncate">Finished</span>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuSeparator className="my-1.5 bg-slate-100 dark:bg-slate-800" />
-
-                  <DropdownMenuLabel className="text-[10px] uppercase font-extrabold text-slate-500 dark:text-slate-400 px-2 py-1 tracking-wider">
-                    Custom Shelves
-                  </DropdownMenuLabel>
-
-                  {isLoadingShelves ? (
-                    <div className="flex items-center justify-center py-4 text-slate-400">
-                      <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
-                    </div>
-                  ) : shelves.length === 0 ? (
-                    <div className="text-center py-3 px-2">
-                      <p className="text-xs text-slate-600 dark:text-slate-400 mb-1.5 font-medium">No custom shelves yet</p>
-                      <Button
-                        asChild
-                        variant="ghost"
-                        size="sm"
-                        className="h-auto text-xs text-indigo-600 dark:text-indigo-400 font-bold p-0 hover:bg-transparent hover:underline"
-                      >
-                        <Link
-                          href="/me/shelves"
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1"
-                        >
-                          <FolderPlus size={12} />
-                          <span>Create Shelf</span>
-                        </Link>
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="max-h-48 overflow-y-auto space-y-0.5 scrollbar-thin">
-                      {shelves.map((shelf) => {
-                        const isInShelf = containingShelfIds.includes(shelf.id);
-                        return (
-                          <DropdownMenuItem
-                            key={shelf.id}
-                            onSelect={(e) => {
-                              e.preventDefault();
-                              handleToggleShelf(shelf.id, shelf.name);
-                            }}
-                            className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
-                              isInShelf
-                                ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold"
-                                : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
-                            }`}
-                          >
-                            <span className="truncate pr-1">{shelf.name}</span>
-                            <div
-                              className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 border ${
-                                isInShelf
-                                  ? "bg-indigo-600 border-indigo-600 text-white"
-                                  : "border-slate-300 dark:border-slate-700"
-                              }`}
-                            >
-                              {isInShelf && <Check size={9} strokeWidth={3} />}
-                            </div>
-                          </DropdownMenuItem>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  <DropdownMenuSeparator className="my-1.5 bg-slate-100 dark:bg-slate-800" />
-
-                  <DropdownMenuItem asChild className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <Link
-                      href="/me/shelves"
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex items-center justify-between w-full"
-                    >
-                      <span>Manage Shelves</span>
-                      <span>→</span>
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                <FolderPlus size={13} />
+              </Button>
             </div>
           </div>
         </div>
+
+        {/* Floating Shelf & Status Dropdown Portal */}
+        {isMenuOpen &&
+          typeof document !== "undefined" &&
+          createPortal(
+            <div
+              ref={menuRef}
+              onClick={(e) => e.stopPropagation()}
+              style={
+                menuCoords
+                  ? {
+                    position: "fixed",
+                    top: `${menuCoords.top}px`,
+                    left: `${menuCoords.left}px`,
+                  }
+                  : { position: "fixed", top: 0, left: 0 }
+              }
+              className="w-56 p-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl text-slate-900 dark:text-slate-100 z-[9999] animate-in fade-in zoom-in-95 duration-150 select-text"
+            >
+              <div className="text-[10px] uppercase font-extrabold text-slate-500 dark:text-slate-400 px-2 py-1 tracking-wider">
+                Reading Status
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  handleStatusSelect("want_to_read");
+                  setIsMenuOpen(false);
+                }}
+                className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors text-left ${book.status === "want_to_read"
+                    ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 font-bold"
+                    : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+              >
+                <BookOpen size={14} className="text-amber-500 shrink-0" />
+                <span className="truncate">Want to Read</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleStatusSelect("currently_reading");
+                  setIsMenuOpen(false);
+                }}
+                className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors text-left ${book.status === "reading" || book.status === "currently_reading"
+                    ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 font-bold"
+                    : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+              >
+                <Clock size={14} className="text-indigo-500 shrink-0" />
+                <span className="truncate">Currently Reading</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleStatusSelect("finished");
+                  setIsMenuOpen(false);
+                }}
+                className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors text-left ${book.status === "finished"
+                    ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-bold"
+                    : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+              >
+                <Check size={14} className="text-emerald-500 shrink-0" />
+                <span className="truncate">Finished</span>
+              </button>
+
+              <div className="my-1.5 h-px bg-slate-100 dark:bg-slate-800" />
+
+              <div className="text-[10px] uppercase font-extrabold text-slate-500 dark:text-slate-400 px-2 py-1 tracking-wider">
+                Custom Shelves
+              </div>
+
+              {isLoadingShelves ? (
+                <div className="flex items-center justify-center py-4 text-slate-400">
+                  <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
+                </div>
+              ) : shelves.length === 0 ? (
+                <div className="text-center py-3 px-2">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-1.5 font-medium">No custom shelves yet</p>
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto text-xs text-indigo-600 dark:text-indigo-400 font-bold p-0 hover:bg-transparent hover:underline"
+                  >
+                    <Link
+                      href="/me/shelves"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsMenuOpen(false);
+                      }}
+                      className="inline-flex items-center gap-1"
+                    >
+                      <FolderPlus size={12} />
+                      <span>Create Shelf</span>
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="max-h-48 overflow-y-auto space-y-0.5 scrollbar-thin">
+                  {shelves.map((shelf) => {
+                    const isInShelf = containingShelfIds.includes(shelf.id);
+                    return (
+                      <button
+                        key={shelf.id}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleShelf(shelf.id, shelf.name);
+                        }}
+                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors text-left ${isInShelf
+                            ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold"
+                            : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                          }`}
+                      >
+                        <span className="truncate pr-1">{shelf.name}</span>
+                        <div
+                          className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 border ${isInShelf
+                              ? "bg-indigo-600 border-indigo-600 text-white"
+                              : "border-slate-300 dark:border-slate-700"
+                            }`}
+                        >
+                          {isInShelf && <Check size={9} strokeWidth={3} />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="my-1.5 h-px bg-slate-100 dark:bg-slate-800" />
+
+              <Link
+                href="/me/shelves"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMenuOpen(false);
+                }}
+                className="flex items-center justify-between w-full text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <span>Manage Shelves</span>
+                <span>→</span>
+              </Link>
+            </div>,
+            document.body,
+          )}
 
         {/* Card Details Section Below Cover */}
         <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between bg-white dark:bg-slate-900">
@@ -395,8 +491,8 @@ export default function BookCard({
                 <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all ${book.status === "finished"
-                        ? "bg-emerald-500"
-                        : "bg-indigo-600"
+                      ? "bg-emerald-500"
+                      : "bg-indigo-600"
                       }`}
                     style={{ width: `${Math.max(4, book.progress)}%` }}
                   />
