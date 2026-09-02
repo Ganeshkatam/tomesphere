@@ -238,46 +238,49 @@ export default function BookCard({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-56 p-1.5"
+                  className="w-56 p-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl text-slate-900 dark:text-slate-100 z-50"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <DropdownMenuLabel className="text-[10px] uppercase font-bold text-slate-400 px-2 py-1">
+                  <DropdownMenuLabel className="text-[10px] uppercase font-extrabold text-slate-500 dark:text-slate-400 px-2 py-1 tracking-wider">
                     Reading Status
                   </DropdownMenuLabel>
                   <DropdownMenuItem
                     onClick={() => handleStatusSelect("want_to_read")}
-                    className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs cursor-pointer ${book.status === "want_to_read"
-                        ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 font-bold"
-                        : ""
-                      }`}
+                    className={`flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
+                      book.status === "want_to_read"
+                        ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 font-bold"
+                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                    }`}
                   >
-                    <BookOpen size={13} className="text-amber-500 shrink-0" />
+                    <BookOpen size={14} className="text-amber-500 shrink-0" />
                     <span className="truncate">Want to Read</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleStatusSelect("currently_reading")}
-                    className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs cursor-pointer ${book.status === "reading" || book.status === "currently_reading"
-                        ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-bold"
-                        : ""
-                      }`}
+                    className={`flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
+                      book.status === "reading" || book.status === "currently_reading"
+                        ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 font-bold"
+                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                    }`}
                   >
-                    <Clock size={13} className="text-indigo-500 shrink-0" />
+                    <Clock size={14} className="text-indigo-500 shrink-0" />
                     <span className="truncate">Currently Reading</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleStatusSelect("finished")}
-                    className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs cursor-pointer ${book.status === "finished"
-                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 font-bold"
-                        : ""
-                      }`}
+                    className={`flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
+                      book.status === "finished"
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-bold"
+                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                    }`}
                   >
-                    <Check size={13} className="text-emerald-500 shrink-0" />
+                    <Check size={14} className="text-emerald-500 shrink-0" />
                     <span className="truncate">Finished</span>
                   </DropdownMenuItem>
 
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="my-1.5 bg-slate-100 dark:bg-slate-800" />
 
-                  <DropdownMenuLabel className="text-[10px] uppercase font-bold text-slate-400 px-2 py-1">
+                  <DropdownMenuLabel className="text-[10px] uppercase font-extrabold text-slate-500 dark:text-slate-400 px-2 py-1 tracking-wider">
                     Custom Shelves
                   </DropdownMenuLabel>
 
@@ -287,19 +290,19 @@ export default function BookCard({
                     </div>
                   ) : shelves.length === 0 ? (
                     <div className="text-center py-3 px-2">
-                      <p className="text-[11px] text-slate-400 mb-1.5">No custom shelves yet</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 mb-1.5 font-medium">No custom shelves yet</p>
                       <Button
                         asChild
                         variant="ghost"
                         size="sm"
-                        className="h-auto text-[11px] text-indigo-600 dark:text-indigo-400 font-bold p-0 hover:bg-transparent"
+                        className="h-auto text-xs text-indigo-600 dark:text-indigo-400 font-bold p-0 hover:bg-transparent hover:underline"
                       >
                         <Link
                           href="/me/shelves"
                           onClick={(e) => e.stopPropagation()}
                           className="inline-flex items-center gap-1"
                         >
-                          <FolderPlus size={11} />
+                          <FolderPlus size={12} />
                           <span>Create Shelf</span>
                         </Link>
                       </Button>
@@ -315,17 +318,19 @@ export default function BookCard({
                               e.preventDefault();
                               handleToggleShelf(shelf.id, shelf.name);
                             }}
-                            className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-xs cursor-pointer ${isInShelf
+                            className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
+                              isInShelf
                                 ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold"
-                                : ""
-                              }`}
+                                : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                            }`}
                           >
                             <span className="truncate pr-1">{shelf.name}</span>
                             <div
-                              className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 border ${isInShelf
+                              className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 border ${
+                                isInShelf
                                   ? "bg-indigo-600 border-indigo-600 text-white"
                                   : "border-slate-300 dark:border-slate-700"
-                                }`}
+                              }`}
                             >
                               {isInShelf && <Check size={9} strokeWidth={3} />}
                             </div>
@@ -335,9 +340,9 @@ export default function BookCard({
                     </div>
                   )}
 
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="my-1.5 bg-slate-100 dark:bg-slate-800" />
 
-                  <DropdownMenuItem asChild className="text-[10px] text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer">
+                  <DropdownMenuItem asChild className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
                     <Link
                       href="/me/shelves"
                       onClick={(e) => e.stopPropagation()}
