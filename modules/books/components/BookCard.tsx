@@ -155,11 +155,14 @@ export default function BookCard({
   };
 
   const loadShelves = async () => {
+    if (isLoadingShelves) return;
     setIsLoadingShelves(true);
     try {
       const data = await getBookShelvesAction(book.id);
-      setShelves(data.shelves);
-      setContainingShelfIds(data.containingShelfIds);
+      if (data) {
+        setShelves(data.shelves || []);
+        setContainingShelfIds(data.containingShelfIds || []);
+      }
     } catch (err) {
       console.error("Failed to load user shelves", err);
     } finally {
@@ -173,13 +176,12 @@ export default function BookCard({
     const now = Date.now();
     if (now - lastToggleTimeRef.current < 200) return;
     lastToggleTimeRef.current = now;
-    setIsMenuOpen((prev) => {
-      const next = !prev;
-      if (next && showShelves) {
-        loadShelves();
-      }
-      return next;
-    });
+
+    const willOpen = !isMenuOpen;
+    setIsMenuOpen(willOpen);
+    if (willOpen && showShelves) {
+      loadShelves();
+    }
   };
 
   const handleToggleShelf = async (shelfId: string, shelfName: string) => {
