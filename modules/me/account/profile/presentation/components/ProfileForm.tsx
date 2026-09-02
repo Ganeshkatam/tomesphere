@@ -110,6 +110,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [editingField, setEditingField] = useState<FieldKey | null>(null);
   const [avatarUrl, setAvatarUrl] = useState(initialValues.avatarUrl);
+  const [avatarError, setAvatarError] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const {
     pendingFile: pendingAvatarFile,
@@ -285,7 +286,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
         <div className="relative group mb-4">
           <div className="w-28 h-28 rounded-full p-[3px] bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md">
             <div className="w-full h-full relative rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-              {avatarUrl ? (
+              {avatarUrl && !avatarError ? (
                 <Image
                   src={avatarUrl}
                   alt="Avatar"
@@ -293,6 +294,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
                   fill
                   sizes="112px"
                   priority
+                  onError={() => setAvatarError(true)}
                 />
               ) : (
                 <span className="text-3xl font-extrabold bg-gradient-to-br from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">

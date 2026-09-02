@@ -36,6 +36,7 @@ export function TodayLayoutShell({
   children,
 }: TodayLayoutShellProps) {
   const pathname = usePathname();
+  const [avatarError, setAvatarError] = React.useState(false);
 
   const getInitials = (name: string) => {
     const parts = name.trim().split(/\s+/);
@@ -93,7 +94,7 @@ export function TodayLayoutShell({
           <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
             {/* Avatar */}
             <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 border border-indigo-200 dark:border-indigo-900/50 flex items-center justify-center text-white font-extrabold text-2xl shadow-md shrink-0 overflow-hidden">
-              {userSummary.avatarUrl ? (
+              {userSummary.avatarUrl && !avatarError ? (
                 <Image
                   src={userSummary.avatarUrl}
                   alt={userSummary.name}
@@ -101,6 +102,7 @@ export function TodayLayoutShell({
                   className="object-cover"
                   sizes="80px"
                   unoptimized
+                  onError={() => setAvatarError(true)}
                 />
               ) : (
                 <span>{getInitials(userSummary.name)}</span>

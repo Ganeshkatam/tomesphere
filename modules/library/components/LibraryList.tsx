@@ -15,6 +15,7 @@ interface LibraryListProps {
 
 export default function LibraryList({ books }: LibraryListProps) {
   const { selection } = useLibraryStore();
+  const [coverErrors, setCoverErrors] = React.useState<Record<string, boolean>>({});
 
   if (books.length === 0) {
     return null;
@@ -40,16 +41,17 @@ export default function LibraryList({ books }: LibraryListProps) {
               aria-label={`Read ${item.title}`}
               className="relative w-12 sm:w-14 aspect-[2/3] flex-shrink-0 rounded-xl overflow-hidden shadow-md border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              {item.coverUrl ? (
+              {item.coverUrl && !coverErrors[item.bookId] ? (
                 <Image
                   src={item.coverUrl}
                   alt=""
                   fill
                   className="object-cover"
+                  onError={() => setCoverErrors((prev) => ({ ...prev, [item.bookId]: true }))}
                 />
               ) : (
-                <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                  <span className="text-[10px] text-slate-400">No cover</span>
+                <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-center p-1">
+                  <span className="text-[10px] font-bold text-slate-400 line-clamp-1">{item.title.charAt(0)}</span>
                 </div>
               )}
             </Link>

@@ -66,6 +66,7 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
   const [name, setName] = useState(shelf.name);
   const [description, setDescription] = useState(shelf.description || "");
   const [coverImage, setCoverImage] = useState(shelf.coverImage || "");
+  const [isBannerCoverError, setIsBannerCoverError] = useState(false);
   const [isPublic, setIsPublic] = useState(shelf.isPublic);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -191,7 +192,7 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
 
         {/* Shelf Header Banner */}
         <div className="relative overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 md:p-10 mb-8 shadow-xl shadow-slate-950/20">
-          {shelf.coverImage ? (
+          {shelf.coverImage && !isBannerCoverError ? (
             <Image
               src={shelf.coverImage}
               alt={shelf.name}
@@ -199,6 +200,7 @@ export default function ShelfDetailClient({ shelf: initialShelf, initialBooks }:
               className="object-cover opacity-30 scale-105"
               priority
               sizes="100vw"
+              onError={() => setIsBannerCoverError(true)}
             />
           ) : (
             <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />

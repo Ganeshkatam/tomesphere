@@ -31,6 +31,7 @@ export function UserMenu({ user }: UserMenuProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,24 +52,16 @@ export function UserMenu({ user }: UserMenuProps) {
       if (parts.length >= 2) {
         return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
       }
-      return user.name.substring(0, 2).toUpperCase();
+      return user.name.slice(0, 2).toUpperCase();
     }
-    if (user.email) {
-      return user.email.substring(0, 2).toUpperCase();
-    }
-    return "U";
+    return "TS";
   };
 
   const handleSignOut = async () => {
-    try {
-      setIsSigningOut(true);
-      setIsOpen(false);
-      await logOut();
-    } catch (err) {
-      console.error("Failed to sign out:", err);
-    } finally {
-      window.location.href = "/login";
-    }
+    setIsSigningOut(true);
+    await logOut();
+    router.push("/");
+    router.refresh();
   };
 
   return (
@@ -81,7 +74,7 @@ export function UserMenu({ user }: UserMenuProps) {
         aria-label="Account menu"
         aria-expanded={isOpen}
       >
-        {user.avatarUrl ? (
+        {user.avatarUrl && !avatarError ? (
           <Image
             src={user.avatarUrl}
             alt={user.name || "User avatar"}
@@ -89,6 +82,7 @@ export function UserMenu({ user }: UserMenuProps) {
             fill
             sizes="40px"
             priority
+            onError={() => setAvatarError(true)}
           />
         ) : (
           <span className="group-hover:scale-110 transition-transform">
@@ -104,7 +98,7 @@ export function UserMenu({ user }: UserMenuProps) {
           <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800/80">
             <div className="flex items-center gap-3">
               <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gradient-to-tr from-indigo-600 to-purple-600 text-white font-bold text-sm flex items-center justify-center shrink-0 border border-indigo-400/30">
-                {user.avatarUrl ? (
+                {user.avatarUrl && !avatarError ? (
                   <Image
                     src={user.avatarUrl}
                     alt={user.name || "Avatar"}
@@ -112,6 +106,7 @@ export function UserMenu({ user }: UserMenuProps) {
                     fill
                     sizes="40px"
                     loading="eager"
+                    onError={() => setAvatarError(true)}
                   />
                 ) : (
                   getInitials()

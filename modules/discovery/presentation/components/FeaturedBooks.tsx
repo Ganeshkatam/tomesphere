@@ -27,6 +27,7 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
   const [isPaused, setIsPaused] = useState(false);
   const [showShelfMenu, setShowShelfMenu] = useState(false);
   const [shelfSuccess, setShelfSuccess] = useState<string | null>(null);
+  const [failedCoverIds, setFailedCoverIds] = useState<Record<string, boolean>>({});
 
   const validItems = useMemo(() => {
     return (items || []).filter(
@@ -115,7 +116,7 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
         <div className="relative z-10 flex flex-col sm:flex-row gap-6 sm:gap-8 items-start sm:items-center">
           {/* Cover */}
           <div className="relative w-36 sm:w-44 md:w-52 aspect-[2/3] shrink-0 rounded-2xl overflow-hidden shadow-2xl border border-white/10 group-hover:scale-[1.02] transition-transform duration-300">
-            {primary.coverUrl ? (
+            {primary.coverUrl && !failedCoverIds[primary.id] ? (
               <Image
                 src={primary.coverUrl.replace(/ /g, "%20")}
                 alt={primary.title}
@@ -123,6 +124,7 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
                 className="object-cover transition-opacity duration-500"
                 sizes="(max-width: 640px) 144px, 208px"
                 priority
+                onError={() => setFailedCoverIds((prev) => ({ ...prev, [primary.id]: true }))}
               />
             ) : (
               <DefaultBookCover
@@ -329,13 +331,14 @@ export function FeaturedBooks({ items }: FeaturedBooksProps) {
                     }}
                   >
                     <div className="relative w-12 sm:w-14 aspect-[2/3] shrink-0 rounded-xl overflow-hidden shadow-xs border border-slate-200/60 dark:border-slate-800 group-hover:scale-105 transition-transform">
-                      {book.coverUrl ? (
+                      {book.coverUrl && !failedCoverIds[book.id] ? (
                         <Image
                           src={book.coverUrl.replace(/ /g, "%20")}
                           alt={book.title}
                           fill
                           className="object-cover"
                           sizes="56px"
+                          onError={() => setFailedCoverIds((prev) => ({ ...prev, [book.id]: true }))}
                         />
                       ) : (
                         <DefaultBookCover

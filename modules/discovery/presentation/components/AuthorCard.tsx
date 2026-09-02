@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { BookOpen, Feather } from "lucide-react";
@@ -63,6 +63,8 @@ const AUTHOR_GRADIENTS = [
 ];
 
 export function AuthorCard({ author, index = 0 }: AuthorCardProps) {
+  const [imageError, setImageError] = React.useState(false);
+
   // Deterministic theme selection based on author name or index
   const theme = useMemo(() => {
     let hash = index;
@@ -90,13 +92,14 @@ export function AuthorCard({ author, index = 0 }: AuthorCardProps) {
         <div
           className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shadow-md ${theme.shadow} border ${theme.border} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}
         >
-          {author.imageUrl ? (
+          {author.imageUrl && !imageError ? (
             <Image
               src={author.imageUrl.replace(/ /g, "%20")}
               alt={author.name}
               fill
               className="object-cover"
               sizes="80px"
+              onError={() => setImageError(true)}
             />
           ) : (
             <div

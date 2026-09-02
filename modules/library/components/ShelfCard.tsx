@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ShelfSummaryDto } from "../application/dto/response/ShelvesPageDto";
@@ -23,6 +23,8 @@ interface ShelfCardProps {
 
 export default function ShelfCard({ shelf, onEdit, onDelete }: ShelfCardProps) {
   const router = useRouter();
+  const [coverError, setCoverError] = useState(false);
+  const [bookCoverErrors, setBookCoverErrors] = useState<Record<string, boolean>>({});
 
   const handleNavigate = () => {
     router.push(`/me/shelves/${shelf.id}`);
@@ -34,13 +36,13 @@ export default function ShelfCard({ shelf, onEdit, onDelete }: ShelfCardProps) {
 
   return (
     <Card className="group relative overflow-hidden transition-all duration-300 flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-black/50 border-border bg-card">
-      
+
       {/* Cover Visual Area */}
-      <div 
+      <div
         className="aspect-[4/3] w-full cursor-pointer overflow-hidden relative bg-slate-950"
         onClick={handleNavigate}
       >
-        {shelf.coverImage ? (
+        {shelf.coverImage && !coverError ? (
           /* Custom Shelf Cover Artwork */
           <div className="relative w-full h-full flex flex-col items-center justify-center select-none overflow-hidden">
             <Image
@@ -49,6 +51,7 @@ export default function ShelfCard({ shelf, onEdit, onDelete }: ShelfCardProps) {
               fill
               className="object-cover scale-105 group-hover:scale-110 transition-transform duration-700 ease-out"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              onError={() => setCoverError(true)}
             />
             {/* Ambient Lighting & Vignette */}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent pointer-events-none" />
@@ -62,6 +65,10 @@ export default function ShelfCard({ shelf, onEdit, onDelete }: ShelfCardProps) {
               fill
               className="object-cover opacity-35 scale-105 group-hover:scale-110 transition-transform duration-700 ease-out"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              onError={(e) => {
+                // Ensure default image also doesn't show broken icon
+                e.currentTarget.style.display = "none";
+              }}
             />
             {/* Ambient Lighting & Vignette */}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-900/60" />
@@ -80,13 +87,14 @@ export default function ShelfCard({ shelf, onEdit, onDelete }: ShelfCardProps) {
           <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-[2px] bg-slate-800">
             {covers.map((book) => (
               <div key={book.bookId} className="relative w-full h-full bg-slate-900 overflow-hidden">
-                {book.coverUrl ? (
+                {book.coverUrl && !bookCoverErrors[book.bookId] ? (
                   <Image
                     src={book.coverUrl}
                     alt={book.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 768px) 50vw, 25vw"
+                    onError={() => setBookCoverErrors((prev) => ({ ...prev, [book.bookId]: true }))}
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center w-full h-full p-2 bg-gradient-to-br from-slate-800 to-slate-900 text-slate-400 text-center">
@@ -102,7 +110,7 @@ export default function ShelfCard({ shelf, onEdit, onDelete }: ShelfCardProps) {
             ))}
           </div>
         )}
-        
+
         {/* Subtle Hover Overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors z-20 pointer-events-none" />
       </div>
@@ -110,7 +118,7 @@ export default function ShelfCard({ shelf, onEdit, onDelete }: ShelfCardProps) {
       {/* Content */}
       <div className="p-5 flex flex-col flex-1">
         <div className="flex justify-between items-start mb-2">
-          <h3 
+          <h3
             className="font-bold text-lg leading-tight cursor-pointer hover:text-primary transition-colors line-clamp-1"
             onClick={handleNavigate}
             title={shelf.name}
@@ -132,7 +140,7 @@ export default function ShelfCard({ shelf, onEdit, onDelete }: ShelfCardProps) {
           <span className="text-xs font-medium text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
             {shelf.bookCount} {shelf.bookCount === 1 ? "book" : "books"}
           </span>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
