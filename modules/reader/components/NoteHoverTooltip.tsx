@@ -25,9 +25,15 @@ interface NoteHoverTooltipProps {
 export function NoteHoverTooltip({ onEditNote }: NoteHoverTooltipProps) {
   const { notes, clickedHighlightId, activeNote } = useReaderStore();
   const [hovered, setHovered] = useState<HoveredNoteState | null>(null);
+  const hoveredRef = useRef<HoveredNoteState | null>(null);
   const hideTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isOverTooltipRef = useRef(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
+
+  const updateHovered = useCallback((val: HoveredNoteState | null) => {
+    hoveredRef.current = val;
+    setHovered(val);
+  }, []);
 
   const clearHideTimer = useCallback(() => {
     if (hideTimerRef.current) {
@@ -40,15 +46,15 @@ export function NoteHoverTooltip({ onEditNote }: NoteHoverTooltipProps) {
     clearHideTimer();
     hideTimerRef.current = setTimeout(() => {
       if (!isOverTooltipRef.current) {
-        setHovered(null);
+        updateHovered(null);
       }
     }, 180);
-  }, [clearHideTimer]);
+  }, [clearHideTimer, updateHovered]);
 
   useEffect(() => {
     // Hide tooltip if context menu or note editor is active
     if (clickedHighlightId || activeNote) {
-      setHovered(null);
+      updateHovered(null);
       return;
     }
 
@@ -75,6 +81,13 @@ export function NoteHoverTooltip({ onEditNote }: NoteHoverTooltipProps) {
       const highlightId = highlightEl.dataset.highlightId;
       if (!highlightId) return;
 
+      // If already displaying tooltip for this highlight, stay firmly anchored at the top right
+      // and avoid recalculating or jumping between lines
+      if (hoveredRef.current?.highlightId === highlightId) {
+        clearHideTimer();
+        return;
+      }
+
       // Find if there's a note attached to this highlight
       const attachedNote = notes.find(
         (n) =>
@@ -90,18 +103,57 @@ export function NoteHoverTooltip({ onEditNote }: NoteHoverTooltipProps) {
 
       clearHideTimer();
 
-      const elRect = highlightEl.getBoundingClientRect();
-      setHovered({
-        note: attachedNote,
-        highlightId,
-        rect: {
+      // Query all elements on the page belonging to this highlight to calculate
+      // the composite bounding box of the entire highlight block
+      const allHighlightEls = Array.from(
+        document.querySelectorAll<HTMLElement>(`[data-highlight-id="${highlightId}"]`),
+      );
+
+      const rects = allHighlightEls
+        .map((el) => el.getBoundingClientRect())
+        .filter((r) => r.width > 0 && r.height > 0);
+
+      let targetRect: HoveredNoteState["rect"];
+
+      if (rects.length > 0) {
+        // Top-most vertical boundary of the entire highlight
+        const minTop = Math.min(...rects.map((r) => r.top));
+
+        // Find all line rects on the top line row (within 8px tolerance)
+        const topRowRects = rects.filter((r) => Math.abs(r.top - minTop) < 8);
+        const topRowRight = Math.max(...topRowRects.map((r) => r.right));
+        const topRowBottom = Math.max(...topRowRects.map((r) => r.bottom));
+        const overallMaxRight = Math.max(...rects.map((r) => r.right));
+        const overallMinLeft = Math.min(...rects.map((r) => r.left));
+        const overallMaxBottom = Math.max(...rects.map((r) => r.bottom));
+
+        // Anchor to the right edge at the top of the highlight
+        const anchorRight = Math.max(topRowRight, overallMaxRight);
+
+        targetRect = {
+          top: minTop,
+          bottom: topRowBottom,
+          left: overallMinLeft,
+          right: anchorRight,
+          width: anchorRight - overallMinLeft,
+          height: overallMaxBottom - minTop,
+        };
+      } else {
+        const elRect = highlightEl.getBoundingClientRect();
+        targetRect = {
           top: elRect.top,
           bottom: elRect.bottom,
           left: elRect.left,
           right: elRect.right,
           width: elRect.width,
           height: elRect.height,
-        },
+        };
+      }
+
+      updateHovered({
+        note: attachedNote,
+        highlightId,
+        rect: targetRect,
       });
     };
 
@@ -113,14 +165,18 @@ export function NoteHoverTooltip({ onEditNote }: NoteHoverTooltipProps) {
         return;
       }
 
-      const relatedHighlight = related?.closest("[data-highlight-id]");
-      if (!relatedHighlight) {
-        scheduleHide();
+      const relatedHighlight = related?.closest<HTMLElement>("[data-highlight-id]");
+      // If moving to another line or element of the same highlight, do NOT hide
+      if (relatedHighlight?.dataset.highlightId === hoveredRef.current?.highlightId) {
+        clearHideTimer();
+        return;
       }
+
+      scheduleHide();
     };
 
     const handleScrollOrResize = () => {
-      setHovered(null);
+      updateHovered(null);
     };
 
     document.addEventListener("mouseover", handleMouseOver, { passive: true });
@@ -135,27 +191,27 @@ export function NoteHoverTooltip({ onEditNote }: NoteHoverTooltipProps) {
       window.removeEventListener("resize", handleScrollOrResize);
       clearHideTimer();
     };
-  }, [notes, clickedHighlightId, activeNote, clearHideTimer, scheduleHide]);
+  }, [notes, clickedHighlightId, activeNote, clearHideTimer, scheduleHide, updateHovered]);
 
   if (!hovered) return null;
 
   const { note, highlightId, rect } = hovered;
 
-  // Calculate tooltip position anchored to the right tip of the highlight
+  // Calculate tooltip position anchored to the top-right of the overall highlight
   const tooltipWidth = 270;
   const margin = 16;
 
   // Align to right edge of the highlight, with bounds clamping to screen
-  let left = rect.right - tooltipWidth + 20;
+  let left = rect.right - tooltipWidth + 24;
   left = Math.max(margin, Math.min(window.innerWidth - tooltipWidth - margin, left));
 
-  // Position above the right tip by default; if not enough space at top, show below
+  // Position above the top of the highlight; if not enough space at top, show below
   const showBelow = rect.top < 120;
   const top = showBelow ? rect.bottom + 8 : rect.top - 8;
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setHovered(null);
+    updateHovered(null);
     onEditNote?.(highlightId);
   };
 
