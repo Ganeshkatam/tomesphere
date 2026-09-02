@@ -37,6 +37,8 @@ export async function createShelfAction(data: {
   return created;
 }
 
+import { deleteFileFromStorage } from "@/modules/storage/presentation/actions/storage";
+
 export async function updateShelfAction(
   id: string,
   data: { name?: string; description?: string; isPublic?: boolean; coverImage?: string | null },
@@ -51,6 +53,13 @@ export async function updateShelfAction(
 
   const repository = new SupabaseCollectionRepository(supabase);
   
+  // Track existing shelf cover for storage cleanup
+  let oldCoverImage: string | null = null;
+  if (data.coverImage !== undefined) {
+    const existing = await repository.getCollection(id, user.id);
+    oldCoverImage = existing?.coverImage || null;
+  }
+
   await updateCollection(repository, {
     id,
     userId: user.id,
@@ -59,6 +68,16 @@ export async function updateShelfAction(
     isPublic: data.isPublic,
     coverImage: data.coverImage,
   });
+
+  // If cover image changed, delete old shelf image from storage
+  if (
+    oldCoverImage &&
+    data.coverImage !== undefined &&
+    oldCoverImage !== data.coverImage &&
+    oldCoverImage.includes("/shelves/")
+  ) {
+    await deleteFileFromStorage("shelves", oldCoverImage);
+  }
 
   revalidatePath("/me/shelves");
   revalidatePath(`/me/shelves/${id}`);
@@ -75,11 +94,18 @@ export async function deleteShelfAction(id: string) {
   }
 
   const repository = new SupabaseCollectionRepository(supabase);
-  
+  const existing = await repository.getCollection(id, user.id);
+  const oldCoverImage = existing?.coverImage || null;
+
   await deleteCollection(repository, {
     id,
     userId: user.id,
   });
+
+  // Clean up shelf cover from storage bucket
+  if (oldCoverImage && oldCoverImage.includes("/shelves/")) {
+    await deleteFileFromStorage("shelves", oldCoverImage);
+  }
 
   revalidatePath("/me/shelves");
   revalidatePath("/me/library");
