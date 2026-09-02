@@ -4,9 +4,9 @@ import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Play, BookOpen, Clock, Check, Star, Loader2, FolderPlus } from "lucide-react";
+import { Play, BookOpen, Clock, Check, Star, Loader2, FolderPlus, Info, Trash2, MoreVertical, ArrowRight } from "lucide-react";
 import DefaultBookCover from "./DefaultBookCover";
-import { changeReadingStateAction } from "@/modules/library/presentation/actions/library";
+import { changeReadingStateAction, removeBookFromLibraryAction } from "@/modules/library/presentation/actions/library";
 import { getBookShelvesAction, toggleBookInShelfAction } from "@/app/(workspace)/me/shelves/actions";
 import { CollectionDto } from "@/modules/library/application/dto/response/CollectionDto";
 import { showSuccess, showError, showInfo } from "@/lib/toast";
@@ -190,6 +190,21 @@ export default function BookCard({
     }
   };
 
+  const handleRemoveFromLibrary = async () => {
+    setIsMenuOpen(false);
+    try {
+      const res = await removeBookFromLibraryAction(book.id);
+      if (res.success) {
+        showSuccess(`Removed "${book.title}" from library`);
+        router.refresh();
+      } else {
+        showError(res.error?.message || "Failed to remove from library");
+      }
+    } catch (err: any) {
+      showError(err?.message || "Failed to remove book");
+    }
+  };
+
   return (
     <div className="relative w-full flex flex-col group select-none">
       {/* Book Card Shell */}
@@ -231,13 +246,14 @@ export default function BookCard({
             </div>
           )}
 
-          {/* Hover & Focus-Within Overlay with Read & Shelf Options */}
+          {/* Hover & Focus-Within Overlay with Read, Info & Shelf Options */}
           <div
             className={`absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent transition-opacity duration-300 flex items-end justify-between p-2.5 z-10 ${isMenuOpen
               ? "opacity-100 pointer-events-auto"
               : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none"
               }`}
           >
+            {/* Primary Read/Resume Button */}
             <Button
               asChild
               size="sm"
@@ -253,8 +269,26 @@ export default function BookCard({
               </Link>
             </Button>
 
-            {/* Add to Shelf & Status Button */}
-            <div className="pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+            {/* Quick Action Buttons Group */}
+            <div className="flex items-center gap-1.5 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+              {/* Quick Book Details Button */}
+              <Button
+                asChild
+                type="button"
+                size="icon"
+                aria-label={`View details for ${book.title}`}
+                className="w-7 h-7 rounded-xl bg-black/60 hover:bg-black/90 backdrop-blur-md text-white border border-white/25 flex items-center justify-center transition-colors cursor-pointer shadow-md active:scale-95"
+              >
+                <Link
+                  href={`/book/${book.slug || book.id}`}
+                  onClick={(e) => e.stopPropagation()}
+                  title="Book Overview & Details"
+                >
+                  <Info size={13} />
+                </Link>
+              </Button>
+
+              {/* Add to Shelf & Status Options Button */}
               <Popover
                 open={isMenuOpen}
                 onOpenChange={(open) => {
@@ -348,6 +382,21 @@ export default function BookCard({
                     <span className="truncate">Finished</span>
                   </button>
 
+                  <div className="my-1.5 h-px bg-slate-100 dark:bg-slate-800" />
+
+                  {/* View Details Link */}
+                  <Link
+                    href={`/book/${book.slug || book.id}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                  >
+                    <Info size={14} className="text-slate-400 shrink-0" />
+                    <span className="truncate">Book Overview & Info</span>
+                  </Link>
+
                   {showShelves && (
                     <>
                       <div className="my-1.5 h-px bg-slate-100 dark:bg-slate-800" />
@@ -427,6 +476,20 @@ export default function BookCard({
                         <span>Manage Shelves</span>
                         <span>→</span>
                       </Link>
+                    </>
+                  )}
+
+                  {book.status && book.status !== "none" && (
+                    <>
+                      <div className="my-1.5 h-px bg-slate-100 dark:bg-slate-800" />
+                      <button
+                        type="button"
+                        onClick={handleRemoveFromLibrary}
+                        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors text-left cursor-pointer"
+                      >
+                        <Trash2 size={13} className="shrink-0 text-rose-500" />
+                        <span>Remove from Library</span>
+                      </button>
                     </>
                   )}
                 </PopoverContent>
