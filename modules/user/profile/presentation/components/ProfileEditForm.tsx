@@ -2,7 +2,10 @@
 
 import { Save, X, Upload, Loader2 } from "lucide-react";
 import { useState, useTransition } from "react";
-import { uploadFileToStorage } from "@/modules/storage/presentation/actions/storage";
+import {
+  uploadFileToStorage,
+  deleteFileFromStorage,
+} from "@/modules/storage/presentation/actions/storage";
 import { showError, showSuccess } from "@/lib/toast";
 import Image from "next/image";
 import { updateProfileAction } from "../actions/profile";
@@ -34,12 +37,16 @@ export function ProfileEditForm({ profile, userEmail }: ProfileEditFormProps) {
   const performAvatarUpload = async (file: File) => {
     setUploadingAvatar(true);
     try {
+      const oldAvatarUrl = formData.avatarUrl;
       const formDataUpload = new FormData();
       formDataUpload.append("file", file);
 
       const res = await uploadFileToStorage("avatars", formDataUpload);
       if (res.success && res.data?.url) {
         setFormData({ ...formData, avatarUrl: res.data.url });
+        if (oldAvatarUrl && oldAvatarUrl !== res.data.url) {
+          await deleteFileFromStorage("avatars", oldAvatarUrl);
+        }
         showSuccess("Avatar uploaded successfully");
       } else if (!res.success) {
         showError(res.error.message || "Failed to upload avatar");

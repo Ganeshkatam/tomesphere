@@ -81,6 +81,70 @@ export async function uploadFileToStorage(
   }
 }
 
+export async function deleteFileFromStorage(
+  bucket: string,
+  fileUrlOrPath: string,
+): Promise<ServerActionResult<void>> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const identityProvider = new SupabaseIdentityProvider(supabase);
+    const user = await identityProvider.currentUser();
+
+    if (!user) {
+      return { success: false, error: { message: "Not authenticated" } };
+    }
+
+    if (!fileUrlOrPath) {
+      return { success: true, data: undefined };
+    }
+
+    // Extract storage object path from public URL if full URL is passed
+    let storagePath = fileUrlOrPath;
+    const bucketMarker = `/${bucket}/`;
+    const markerIndex = fileUrlOrPath.indexOf(bucketMarker);
+    if (markerIndex !== -1) {
+      storagePath = fileUrlOrPath.substring(markerIndex + bucketMarker.length);
+    } else if (fileUrlOrPath.startsWith("http://") || fileUrlOrPath.startsWith("https://")) {
+      try {
+        const urlObj = new URL(fileUrlOrPath);
+        const parts = urlObj.pathname.split(`/${bucket}/`);
+        if (parts.length > 1) {
+          storagePath = parts[1];
+        }
+      } catch {
+        // Fallback to substring
+      }
+    }
+
+    storagePath = decodeURIComponent(storagePath);
+
+    // Strip query parameters if any exist
+    if (storagePath.includes("?")) {
+      storagePath = storagePath.split("?")[0];
+    }
+
+    const { error: deleteError } = await supabase.storage
+      .from(bucket)
+      .remove([storagePath]);
+
+    if (deleteError) {
+      return {
+        success: false,
+        error: { message: `Delete failed: ${deleteError.message}` },
+      };
+    }
+
+    return { success: true, data: undefined };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: {
+        message: error instanceof Error ? error.message : "Delete failed",
+      },
+    };
+  }
+}
+
 export async function checkUserPermissionAction(
   permissionType: string = "photo_upload"
 ): Promise<ServerActionResult<{ granted: boolean }>> {

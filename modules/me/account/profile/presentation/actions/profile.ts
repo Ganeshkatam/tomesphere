@@ -57,7 +57,10 @@ export async function updateProfileAction(
 const MAX_AVATAR_SIZE = 2 * 1024 * 1024; // 2MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-import { uploadFileToStorage } from "@/modules/storage/presentation/actions/storage";
+import {
+  uploadFileToStorage,
+  deleteFileFromStorage,
+} from "@/modules/storage/presentation/actions/storage";
 
 export async function uploadAvatarAction(
   formData: FormData
@@ -83,6 +86,12 @@ export async function uploadAvatarAction(
       return { success: false, error: { message: "Image must be smaller than 2MB." } };
     }
 
+    // Retrieve existing profile first to track old avatar URL for cleanup
+    const profileRepo = new SupabaseProfileRepository(supabase);
+    const userId = UserId.create(user.id);
+    const profile = await profileRepo.findById(userId);
+    const oldAvatarUrl = profile?.avatarUrl;
+
     const storageFormData = new FormData();
     storageFormData.append("file", file);
 
@@ -96,14 +105,15 @@ export async function uploadAvatarAction(
 
     const avatarUrl = storageResult.data.url;
 
-    // Update profile record
-    const profileRepo = new SupabaseProfileRepository(supabase);
-    const userId = UserId.create(user.id);
-    const profile = await profileRepo.findById(userId);
-
+    // Update profile record with new avatar URL
     if (profile) {
       profile.avatarUrl = avatarUrl;
       await profileRepo.save(profile);
+    }
+
+    // Mandatory cleanup: delete old avatar image from storage bucket after successfully updating
+    if (oldAvatarUrl && oldAvatarUrl !== avatarUrl) {
+      await deleteFileFromStorage("avatars", oldAvatarUrl);
     }
 
     revalidatePath("/me/account/profile");
@@ -124,19 +134,21 @@ export async function removeAvatarAction(): Promise<ServerActionResult<void>> {
       return { success: false, error: { message: "Unauthorized. Please log in." } };
     }
 
-    // Remove from storage (best-effort, ignore errors if file doesn't exist)
-    await supabase.storage
-      .from("avatars")
-      .remove([`${user.id}/avatar.jpg`, `${user.id}/avatar.png`, `${user.id}/avatar.webp`]);
-
-    // Clear avatar_url in profile
+    // Retrieve existing profile to clean up avatar image
     const profileRepo = new SupabaseProfileRepository(supabase);
     const userId = UserId.create(user.id);
     const profile = await profileRepo.findById(userId);
+    const oldAvatarUrl = profile?.avatarUrl;
 
+    // Clear avatar_url in profile
     if (profile) {
       profile.avatarUrl = null;
       await profileRepo.save(profile);
+    }
+
+    // Clean up old avatar image from storage
+    if (oldAvatarUrl) {
+      await deleteFileFromStorage("avatars", oldAvatarUrl);
     }
 
     revalidatePath("/me/account/profile");
