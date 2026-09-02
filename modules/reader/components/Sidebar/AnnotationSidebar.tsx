@@ -70,6 +70,9 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
       textPrimary: "text-slate-900",
       textSecondary: "text-slate-500",
       emptyText: "text-slate-400",
+      noteBox: "bg-amber-50/75 border border-amber-200/85 text-slate-800 shadow-xs",
+      noteBadge: "text-amber-700 font-bold",
+      noteText: "text-slate-800",
     },
     dark: {
       sidebar: "bg-[#1e2227] border-l border-[#2e3440] text-slate-200 shadow-2xl",
@@ -82,6 +85,9 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
       textPrimary: "text-slate-100",
       textSecondary: "text-slate-400",
       emptyText: "text-slate-500",
+      noteBox: "bg-[#1a1d21] border border-[#333a46] text-slate-200 shadow-xs",
+      noteBadge: "text-amber-400 font-bold",
+      noteText: "text-slate-200",
     },
     sepia: {
       sidebar: "bg-[#f4ecd8] border-l border-[#e4d7b8] text-[#5b4636] shadow-xl",
@@ -94,6 +100,9 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
       textPrimary: "text-[#382b21]",
       textSecondary: "text-[#755c48]",
       emptyText: "text-[#8a725b]",
+      noteBox: "bg-[#fbf4e2] border border-[#dfd3b9] text-[#5b4636] shadow-xs",
+      noteBadge: "text-[#8b5a2b] font-bold",
+      noteText: "text-[#382b21]",
     },
   }[theme];
 
@@ -350,19 +359,29 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
 
                 {/* Attached Note Box */}
                 {note ? (
-                  <div className="mt-2.5 p-2.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50">
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      service.openNoteForHighlight(highlight.id);
+                    }}
+                    className={`mt-2.5 p-2.5 rounded-xl cursor-pointer transition-all hover:ring-1 hover:ring-amber-400/50 ${themeStyles.noteBox}`}
+                    title="Click to edit note"
+                  >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+                      <span className={`text-[10px] uppercase tracking-wider flex items-center gap-1 ${themeStyles.noteBadge}`}>
                         <MessageSquare size={11} /> Note
                       </span>
-                      <span className="text-[10px] text-slate-400">
-                        {formatDistanceToNow(new Date(note.updatedAt), {
-                          addSuffix: true,
-                        })}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-slate-400">
+                          {formatDistanceToNow(new Date(note.updatedAt), {
+                            addSuffix: true,
+                          })}
+                        </span>
+                        <Pencil size={10} className="text-slate-400 hover:text-amber-600 transition-colors" />
+                      </div>
                     </div>
                     <p
-                      className={`text-xs whitespace-pre-wrap ${themeStyles.textPrimary}`}
+                      className={`text-xs whitespace-pre-wrap leading-relaxed ${themeStyles.noteText}`}
                     >
                       {note.bodyMarkdown}
                     </p>
@@ -374,7 +393,7 @@ export function AnnotationSidebar({ service }: AnnotationSidebarProps) {
                       e.stopPropagation();
                       service.openNoteForHighlight(highlight.id);
                     }}
-                    className="mt-1 text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
+                    className={`mt-1 text-[11px] hover:underline flex items-center gap-1 cursor-pointer transition-colors ${themeStyles.noteBadge}`}
                   >
                     <MessageSquarePlus size={12} />
                     Add note to this highlight
