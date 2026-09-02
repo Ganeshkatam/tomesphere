@@ -118,10 +118,10 @@ export default function BookShelfRow({
   return (
     <section
       ref={sectionRef}
-      className={`max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 w-full group/shelf relative transition-all duration-700 ease-out ${
+      className={`max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 w-full group/shelf relative transition-opacity duration-700 ease-out ${
         isRevealed
-          ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-8 pointer-events-none min-h-[100px]"
+          ? "opacity-100"
+          : "opacity-0 pointer-events-none min-h-[100px]"
       }`}
     >
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">

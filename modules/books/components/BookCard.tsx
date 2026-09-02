@@ -162,7 +162,7 @@ export default function BookCard({
       {/* Book Card Shell */}
       <div
         onClick={handleCardClick}
-        className="w-full rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500/60 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer flex flex-col transition-all duration-300 [transform:translateZ(0)]"
+        className="w-full rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500/60 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer flex flex-col transition-all duration-300"
       >
         {/* Cover Aspect [2/3] with Quick Hover Action Overlay */}
         <div className="relative aspect-[2/3] w-full shrink-0 overflow-hidden rounded-t-2xl bg-slate-100 dark:bg-slate-950">
@@ -199,7 +199,13 @@ export default function BookCard({
           )}
 
           {/* Hover & Focus-Within Overlay with Read & Shelf Options */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 flex items-end justify-between p-2.5 z-10 pointer-events-none">
+          <div
+            className={`absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent transition-opacity duration-300 flex items-end justify-between p-2.5 z-10 ${
+              isMenuOpen
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none"
+            }`}
+          >
             <Button
               asChild
               size="sm"
@@ -238,6 +244,9 @@ export default function BookCard({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
+                  side="bottom"
+                  sideOffset={8}
+                  collisionPadding={16}
                   className="w-56 p-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl text-slate-900 dark:text-slate-100 z-50"
                   onClick={(e) => e.stopPropagation()}
                 >
