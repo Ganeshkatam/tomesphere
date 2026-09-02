@@ -10,7 +10,7 @@ import DefaultBookCover from "./DefaultBookCover";
 import { changeReadingStateAction } from "@/modules/library/presentation/actions/library";
 import { getBookShelvesAction, toggleBookInShelfAction } from "@/app/(workspace)/me/shelves/actions";
 import { CollectionDto } from "@/modules/library/application/dto/response/CollectionDto";
-import { showSuccess, showError } from "@/lib/toast";
+import { showSuccess, showError, showInfo } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 
 export interface BookCardModel {
@@ -42,12 +42,14 @@ interface BookCardProps {
     status: "want_to_read" | "currently_reading" | "finished",
   ) => void;
   priority?: boolean;
+  showShelves?: boolean;
 }
 
 export default function BookCard({
   book,
   onAddToList,
   priority = false,
+  showShelves = true,
 }: BookCardProps) {
   const router = useRouter();
   const [hasError, setHasError] = useState(false);
@@ -173,7 +175,7 @@ export default function BookCard({
     lastToggleTimeRef.current = now;
     setIsMenuOpen((prev) => {
       const next = !prev;
-      if (next) {
+      if (next && showShelves) {
         loadShelves();
       }
       return next;
@@ -196,7 +198,18 @@ export default function BookCard({
       );
     } catch (err: any) {
       setContainingShelfIds(containingShelfIds); // revert on failure
-      showError(err.message || "Failed to update shelf");
+      const errorMsg = err?.message || "";
+      if (
+        errorMsg.toLowerCase().includes("unauthorized") ||
+        err?.code === "UNAUTHORIZED"
+      ) {
+        showInfo("Please sign in to manage custom shelves.", {
+          title: "Sign In Required",
+        });
+        router.push("/login?returnUrl=/me/shelves");
+      } else {
+        showError(errorMsg || "Failed to update shelf");
+      }
     }
   };
 
@@ -221,10 +234,34 @@ export default function BookCard({
         );
         router.refresh();
       } else {
-        showError(res.error.message || "Failed to update status");
+        const errorMsg = res.error?.message || "";
+        if (
+          errorMsg.toLowerCase().includes("unauthorized") ||
+          res.error?.code === "UNAUTHORIZED"
+        ) {
+          showInfo("Please sign in to save books to your reading list.", {
+            title: "Sign In Required",
+          });
+          const returnPath = encodeURIComponent(`/book/${book.slug || book.id}`);
+          router.push(`/login?returnUrl=${returnPath}`);
+        } else {
+          showError(errorMsg || "Failed to update status");
+        }
       }
     } catch (err: any) {
-      showError(err.message || "Failed to update status");
+      const errorMsg = err?.message || "";
+      if (
+        errorMsg.toLowerCase().includes("unauthorized") ||
+        err?.code === "UNAUTHORIZED"
+      ) {
+        showInfo("Please sign in to save books to your reading list.", {
+          title: "Sign In Required",
+        });
+        const returnPath = encodeURIComponent(`/book/${book.slug || book.id}`);
+        router.push(`/login?returnUrl=${returnPath}`);
+      } else {
+        showError(errorMsg || "Failed to update status");
+      }
     }
   };
 
@@ -382,83 +419,87 @@ export default function BookCard({
                 <span className="truncate">Finished</span>
               </button>
 
-              <div className="my-1.5 h-px bg-slate-100 dark:bg-slate-800" />
+              {showShelves && (
+                <>
+                  <div className="my-1.5 h-px bg-slate-100 dark:bg-slate-800" />
 
-              <div className="text-[10px] uppercase font-extrabold text-slate-500 dark:text-slate-400 px-2 py-1 tracking-wider">
-                Custom Shelves
-              </div>
+                  <div className="text-[10px] uppercase font-extrabold text-slate-500 dark:text-slate-400 px-2 py-1 tracking-wider">
+                    Custom Shelves
+                  </div>
 
-              {isLoadingShelves ? (
-                <div className="flex items-center justify-center py-4 text-slate-400">
-                  <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
-                </div>
-              ) : shelves.length === 0 ? (
-                <div className="text-center py-3 px-2">
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-1.5 font-medium">No custom shelves yet</p>
-                  <Button
-                    asChild
-                    variant="ghost"
-                    size="sm"
-                    className="h-auto text-xs text-indigo-600 dark:text-indigo-400 font-bold p-0 hover:bg-transparent hover:underline"
-                  >
-                    <Link
-                      href="/me/shelves"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsMenuOpen(false);
-                      }}
-                      className="inline-flex items-center gap-1"
-                    >
-                      <FolderPlus size={12} />
-                      <span>Create Shelf</span>
-                    </Link>
-                  </Button>
-                </div>
-              ) : (
-                <div className="max-h-48 overflow-y-auto space-y-0.5 scrollbar-thin">
-                  {shelves.map((shelf) => {
-                    const isInShelf = containingShelfIds.includes(shelf.id);
-                    return (
-                      <button
-                        key={shelf.id}
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleToggleShelf(shelf.id, shelf.name);
-                        }}
-                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors text-left ${isInShelf
-                            ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold"
-                            : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
-                          }`}
+                  {isLoadingShelves ? (
+                    <div className="flex items-center justify-center py-4 text-slate-400">
+                      <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
+                    </div>
+                  ) : shelves.length === 0 ? (
+                    <div className="text-center py-3 px-2">
+                      <p className="text-xs text-slate-600 dark:text-slate-400 mb-1.5 font-medium">No custom shelves yet</p>
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="sm"
+                        className="h-auto text-xs text-indigo-600 dark:text-indigo-400 font-bold p-0 hover:bg-transparent hover:underline"
                       >
-                        <span className="truncate pr-1">{shelf.name}</span>
-                        <div
-                          className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 border ${isInShelf
-                              ? "bg-indigo-600 border-indigo-600 text-white"
-                              : "border-slate-300 dark:border-slate-700"
-                            }`}
+                        <Link
+                          href="/me/shelves"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsMenuOpen(false);
+                          }}
+                          className="inline-flex items-center gap-1"
                         >
-                          {isInShelf && <Check size={9} strokeWidth={3} />}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+                          <FolderPlus size={12} />
+                          <span>Create Shelf</span>
+                        </Link>
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="max-h-48 overflow-y-auto space-y-0.5 scrollbar-thin">
+                      {shelves.map((shelf) => {
+                        const isInShelf = containingShelfIds.includes(shelf.id);
+                        return (
+                          <button
+                            key={shelf.id}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleShelf(shelf.id, shelf.name);
+                            }}
+                            className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs cursor-pointer transition-colors text-left ${isInShelf
+                                ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold"
+                                : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                              }`}
+                          >
+                            <span className="truncate pr-1">{shelf.name}</span>
+                            <div
+                              className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 border ${isInShelf
+                                  ? "bg-indigo-600 border-indigo-600 text-white"
+                                  : "border-slate-300 dark:border-slate-700"
+                                }`}
+                            >
+                              {isInShelf && <Check size={9} strokeWidth={3} />}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <div className="my-1.5 h-px bg-slate-100 dark:bg-slate-800" />
+
+                  <Link
+                    href="/me/shelves"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center justify-between w-full text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    <span>Manage Shelves</span>
+                    <span>→</span>
+                  </Link>
+                </>
               )}
-
-              <div className="my-1.5 h-px bg-slate-100 dark:bg-slate-800" />
-
-              <Link
-                href="/me/shelves"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsMenuOpen(false);
-                }}
-                className="flex items-center justify-between w-full text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
-              >
-                <span>Manage Shelves</span>
-                <span>→</span>
-              </Link>
             </div>,
             document.body,
           )}
