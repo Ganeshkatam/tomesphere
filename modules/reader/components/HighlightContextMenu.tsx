@@ -81,23 +81,12 @@ export function HighlightContextMenu({
   if (!clickedHighlightId) return null;
 
   return (
-    <>
-      {/* Invisible full-screen backdrop to immediately capture any outside click */}
-      <div
-        className="fixed inset-0 z-40 bg-transparent"
-        onClick={() => setClickedHighlightId(null)}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          setClickedHighlightId(null);
-        }}
-      />
-
-      <div
-        ref={menuRef}
-        onMouseEnter={clearAutoCloseTimer}
-        onMouseLeave={() => startAutoCloseTimer(1800)}
-        className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900/95 dark:bg-[#1e2227]/95 text-white border border-slate-700/80 shadow-2xl rounded-2xl p-1.5 flex items-center gap-1.5 z-50 animate-in fade-in slide-in-from-bottom-3 duration-150 backdrop-blur-md"
-      >
+    <div
+      ref={menuRef}
+      onMouseEnter={clearAutoCloseTimer}
+      onMouseLeave={() => startAutoCloseTimer(1800)}
+      className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900/95 dark:bg-[#1e2227]/95 text-white border border-slate-700/80 shadow-2xl rounded-2xl p-1.5 flex items-center gap-1.5 z-50 animate-in fade-in slide-in-from-bottom-3 duration-150 backdrop-blur-md"
+    >
         <button
           type="button"
           onClick={() => {
@@ -135,6 +124,5 @@ export function HighlightContextMenu({
           <X size={13} />
         </button>
       </div>
-    </>
   );
 }

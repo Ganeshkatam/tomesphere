@@ -1253,6 +1253,46 @@ export class PdfJsRenderer implements ReaderRenderer {
 
       highlightLayer.appendChild(overlay);
     }
+
+    // If highlight has an attached note, render an indicator badge inside the highlight layer
+    // so it scrolls with the page in 100% hardware-accelerated synchronization
+    if (highlight.hasNote && merged.length > 0) {
+      const topRect = merged[0];
+      const maxRight = Math.max(...merged.map((r) => r.right));
+      const rightAnchor = Math.max(topRect.right, maxRight);
+
+      const badge = document.createElement("div");
+      badge.dataset.noteIndicatorBadge = highlight.id;
+      badge.dataset.highlightId = highlight.id;
+      badge.className = "tomesphere-note-badge";
+      badge.style.position = "absolute";
+      badge.style.left = `${rightAnchor - 6}px`;
+      badge.style.top = `${topRect.top - 8}px`;
+      badge.style.width = "20px";
+      badge.style.height = "20px";
+      badge.style.borderRadius = "9999px";
+      badge.style.backgroundColor = "#f59e0b"; // amber-500
+      badge.style.boxShadow = "0 2px 6px rgba(0,0,0,0.25)";
+      badge.style.display = "flex";
+      badge.style.alignItems = "center";
+      badge.style.justifyContent = "center";
+      badge.style.cursor = "pointer";
+      badge.style.pointerEvents = "auto";
+      badge.style.zIndex = "10";
+      badge.style.transition = "transform 0.15s ease";
+      badge.title = "Attached note";
+
+      badge.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="#78350f" stroke="#78350f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z"/><path d="M15 3v6h6"/></svg>`;
+
+      badge.onmouseenter = () => {
+        badge.style.transform = "scale(1.2)";
+      };
+      badge.onmouseleave = () => {
+        badge.style.transform = "scale(1)";
+      };
+
+      highlightLayer.appendChild(badge);
+    }
   }
 
   async highlight(highlight: ReaderHighlight): Promise<void> {

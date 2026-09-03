@@ -520,6 +520,10 @@ export class ReaderService {
             this.highlights = this.highlights.map((h) =>
               h.id === targetHighlightId ? { ...h, hasNote: true } : h,
             );
+            const updatedH = this.highlights.find((h) => h.id === targetHighlightId);
+            if (updatedH && this.renderer) {
+              this.renderer.highlight(updatedH);
+            }
           }
         }
       }
@@ -540,21 +544,22 @@ export class ReaderService {
       this.notes = this.notes.filter((n) => n.id !== noteId);
 
       if (deleted && deleted.target.type === "highlight") {
+        const targetHighlightId = (
+          deleted.target as { type: "highlight"; highlightId: string }
+        ).highlightId;
         const stillHasNote = this.notes.some(
           (n) =>
             n.target.type === "highlight" &&
-            n.target.highlightId ===
-              (deleted.target as { type: "highlight"; highlightId: string })
-                .highlightId,
+            n.target.highlightId === targetHighlightId,
         );
         if (!stillHasNote) {
           this.highlights = this.highlights.map((h) =>
-            h.id ===
-            (deleted.target as { type: "highlight"; highlightId: string })
-              .highlightId
-              ? { ...h, hasNote: false }
-              : h,
+            h.id === targetHighlightId ? { ...h, hasNote: false } : h,
           );
+          const updatedH = this.highlights.find((h) => h.id === targetHighlightId);
+          if (updatedH && this.renderer) {
+            this.renderer.highlight(updatedH);
+          }
         }
       }
 
