@@ -1,13 +1,12 @@
--- Migration: Retire Legacy Skills Table
+-- Migration: Soft-Deprecate Legacy Skills Table
 -- Date: 2026-10-24
--- Scope: Schema Modernization — Elimination of Portfolio-Era Tables in Favor of Product-First Data Model
+-- Scope: Schema Modernization — Elimination of Public Exposure for Portfolio-Era Skills Table
+-- Data Safety: 12 live records archived to supabase/seeds/legacy_skills_archive.json.
 -- Dependencies Audit: Verified zero foreign keys, zero views, zero trigger dependencies, zero frontend UI usage.
 
--- 1. Drop associated RLS policy
-DROP POLICY IF EXISTS "Public read skills" ON public.skills;
+-- 1. Restrict public policy to reject all public reads
+ALTER POLICY "Public read skills" ON public.skills USING (false);
 
--- 2. Drop associated indexes
-DROP INDEX IF EXISTS public.idx_skills_category;
+-- 2. Revoke SELECT privileges from public/anon/authenticated roles
+REVOKE SELECT ON public.skills FROM anon, authenticated;
 
--- 3. Drop legacy skills table
-DROP TABLE IF EXISTS public.skills CASCADE;
