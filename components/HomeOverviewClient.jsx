@@ -10,10 +10,19 @@ import {
   Layers,
   Smartphone,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Shield,
+  Zap,
+  Sparkles,
+  Gift,
+  Calendar,
+  Tag,
+  CheckCircle2,
+  Terminal,
+  Activity
 } from 'lucide-react';
 
-export default function HomeOverviewClient({ projects = [] }) {
+export default function HomeOverviewClient({ projects = [], profile, updates = [], offers = [] }) {
   const [homeQuery, setHomeQuery] = useState('');
   const [activeSlide, setActiveSlide] = useState(0);
   const sliderRef = useRef(null);
@@ -234,34 +243,127 @@ export default function HomeOverviewClient({ projects = [] }) {
         )}
       </section>
 
-      <section className="home-discovery-feature-band" aria-label="Updates and offers">
-        <article className="home-discovery-feature">
-          <div className="home-discovery-feature-icon"><Layers size={20} /></div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <h3>Latest from makers</h3>
-            <p>Release notes, product improvements, and announcements in one feed.</p>
+      {/* Architecture & Engineering Standards Section */}
+      <section className="home-discovery-section" aria-labelledby="standards-heading">
+        <div className="home-discovery-section-head">
+          <div>
+            <div className="home-discovery-eyebrow">Studio Tenets</div>
+            <h2 id="standards-heading" className="home-discovery-heading">Engineered Without Noise</h2>
+            <p className="home-discovery-blurb">Every product across TomeSphere adheres to four uncompromising product quality benchmarks.</p>
           </div>
-          <Link href="/updates">View updates <ArrowRight size={14} /></Link>
-        </article>
-        <article className="home-discovery-feature">
-          <div className="home-discovery-feature-icon"><ArrowUpRight size={20} /></div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <h3>Offers & opportunities</h3>
-            <p>Find currently published promotions and access details.</p>
+          <Link href="/about" className="home-discovery-textlink">Learn more about our craft <ArrowRight size={15} /></Link>
+        </div>
+
+        <div className="home-standards-grid">
+          <div className="home-standard-card">
+            <div className="home-standard-icon-box standard-icon-cyan">
+              <Zap size={22} />
+            </div>
+            <h3 className="home-standard-title">Edge Latency</h3>
+            <p className="home-standard-desc">
+              Sub-second cold starts and global edge distribution ensure every tool opens instantly without friction or loading fatigue.
+            </p>
+            <div className="home-standard-metric">Instantaneous &middot; Edge cached</div>
           </div>
-          <Link href="/offers">View offers <ArrowRight size={14} /></Link>
-        </article>
+
+          <div className="home-standard-card">
+            <div className="home-standard-icon-box standard-icon-violet">
+              <Shield size={22} />
+            </div>
+            <h3 className="home-standard-title">Defensive Isolation</h3>
+            <p className="home-standard-desc">
+              Independent databases, least-privilege security policies, and strict API sanitization prevent cross-system data leakages.
+            </p>
+            <div className="home-standard-metric">Row-level security &middot; Encrypted</div>
+          </div>
+
+          <div className="home-standard-card">
+            <div className="home-standard-icon-box standard-icon-emerald">
+              <Terminal size={22} />
+            </div>
+            <h3 className="home-standard-title">Clean Runtime Delivery</h3>
+            <p className="home-standard-desc">
+              Zero tracking telemetry bloat, minimal bundle weights, and native performance across Android, desktop, and mobile browsers.
+            </p>
+            <div className="home-standard-metric">Lightweight &middot; Zero telemetry bloat</div>
+          </div>
+
+          <div className="home-standard-card">
+            <div className="home-standard-icon-box standard-icon-rose">
+              <Sparkles size={22} />
+            </div>
+            <h3 className="home-standard-title">Human-First Ergonomics</h3>
+            <p className="home-standard-desc">
+              Distraction-free typographic layouts, cohesive dark and light palettes, and tactile micro-interactions that respect user focus.
+            </p>
+            <div className="home-standard-metric">Crafted UX &middot; Dual-mode contrast</div>
+          </div>
+        </div>
       </section>
 
-      <section className="home-discovery-section">
-        <div className="home-discovery-feature" style={{ padding: 'clamp(24px, 4vw, 44px)' }}>
-          <div className="home-discovery-feature-icon"><Compass size={22} /></div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="home-discovery-eyebrow">The idea behind TomeSphere</div>
-            <h2 className="home-discovery-heading">One place to discover independent software.</h2>
-            <p className="home-discovery-blurb">Explore each product, understand what it does, and continue to its intended destination. Products remain independent, with their own purpose and experience.</p>
+      {/* Connected Changelog Stream (Live from Backend) */}
+      {updates.length > 0 && (
+        <section className="home-discovery-section" aria-labelledby="changelog-heading">
+          <div className="home-discovery-section-head">
+            <div>
+              <div className="home-discovery-eyebrow">Real-Time Progression</div>
+              <h2 id="changelog-heading" className="home-discovery-heading">Recent Releases &amp; Shipments</h2>
+              <p className="home-discovery-blurb">Verified deployment changelogs and platform upgrades from active product pipelines.</p>
+            </div>
+            <Link href="/updates" className="home-discovery-textlink">Browse all updates <ArrowRight size={15} /></Link>
           </div>
-          <Link href="/about" className="home-discovery-textlink">Our approach <ArrowRight size={15} /></Link>
+
+          <div className="home-changelog-grid">
+            {updates.map((item) => (
+              <article key={item.id || item.slug} className="home-changelog-card">
+                <div className="home-changelog-meta-row">
+                  <span className={`badge update-type-badge update-type-${item.update_type?.toLowerCase()}`}>
+                    {item.update_type}
+                  </span>
+                  {item.version && <span className="badge badge-mono">{item.version}</span>}
+                  {item.projects?.name && (
+                    <span className="home-changelog-product-tag">
+                      <Tag size={11} /> {item.projects.name}
+                    </span>
+                  )}
+                </div>
+                <h3 className="home-changelog-title">
+                  <Link href={`/updates/${item.slug}`}>{item.title}</Link>
+                </h3>
+                <p className="home-changelog-summary">{item.summary}</p>
+                <div className="home-changelog-action">
+                  <Link href={`/updates/${item.slug}`}>
+                    View release notes <ArrowUpRight size={13} />
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Active Promotion Banner / Community Gateway */}
+      <section className="home-discovery-section">
+        <div className="home-community-banner">
+          <div className="home-community-content">
+            <div className="home-discovery-eyebrow" style={{ color: '#c4b5fd' }}>Community &amp; Inquiries</div>
+            <h2 className="home-community-title">Building purposeful digital software.</h2>
+            <p className="home-community-desc">
+              Have thoughts, collaboration ideas, or feedback on any TomeSphere platform? Leave a note on our community guestbook or reach out directly.
+            </p>
+            <div className="home-community-actions">
+              <Link href="/guestbook" className="btn-primary-glow">
+                Sign Community Wall <ArrowRight size={15} />
+              </Link>
+              <Link href="/contact" className="btn-secondary-glass" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.2)' }}>
+                Contact Studio
+              </Link>
+            </div>
+          </div>
+          <div className="home-community-decor" aria-hidden="true">
+            <div className="home-community-orb" />
+            <Activity size={120} className="home-community-icon-bg" />
+          </div>
         </div>
       </section>
     </div>
