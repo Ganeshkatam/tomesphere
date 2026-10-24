@@ -10,7 +10,7 @@ html[data-theme="dark"] {
   --bg-base: #07080d;
   --bg-surface: #0e111a;
   --bg-surface-elevated: #141824;
-  --bg-surface-glass: rgba(18, 22, 34, 0.78);
+  --bg-surface-glass: rgba(14, 17, 26, 0.92);
   --bg-card: rgba(18, 23, 37, 0.72);
   --bg-card-hover: rgba(26, 32, 51, 0.92);
 
@@ -46,7 +46,7 @@ html[data-theme="light"] {
   --bg-base: #f8fafc;
   --bg-surface: #ffffff;
   --bg-surface-elevated: #f1f5f9;
-  --bg-surface-glass: rgba(255, 255, 255, 0.88);
+  --bg-surface-glass: rgba(255, 255, 255, 0.94);
   --bg-card: rgba(255, 255, 255, 0.95);
   --bg-card-hover: #ffffff;
 
@@ -2178,8 +2178,10 @@ body {
   margin-top: 12px;
   padding: 10px clamp(14px, 2vw, 24px);
   background: var(--bg-surface-glass);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-color: var(--border-subtle);
-  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
 .nav-link {
@@ -2624,15 +2626,10 @@ a:focus-visible {
 }
 
 .product-detail-header {
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 27, 75, 0.4) 100%);
-  border: 1px solid var(--border-subtle);
-  padding: 40px;
   margin-bottom: 36px;
   position: relative;
-  overflow: hidden;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 }
+
 
 .product-detail-badges {
   display: flex;
@@ -4458,6 +4455,25 @@ select:focus-visible,
   background: var(--accent-primary);
   border-color: var(--accent-primary);
   color: #ffffff;
+}
+
+[data-theme="light"] .btn-secondary-glass {
+  background: rgba(15, 23, 42, 0.05);
+  border-color: rgba(15, 23, 42, 0.12);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .btn-secondary-glass:hover {
+  background: rgba(15, 23, 42, 0.09);
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="light"] .detail-meta-pill {
+  background: #f1f5f9;
+  border-color: rgba(15, 23, 42, 0.1);
+  color: var(--text-secondary);
 }
 
 [data-theme="light"] .search-input {

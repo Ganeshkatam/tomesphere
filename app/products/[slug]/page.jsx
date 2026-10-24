@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   ArrowLeft,
+  ArrowRight,
   ArrowUpRight,
   Globe,
   Github,
@@ -396,41 +397,66 @@ export default async function ProductDetailPage({ params }) {
             </div>
           </div>
 
-          <div className="work-grid">
+          <div className="projects-masonry" style={{ marginTop: '24px' }}>
             {relatedProducts.map((p) => {
               const pSafeUrl = getSafeWebUrl(p.url);
+              const pDetailHref = `/products/${p.slug || p.id}`;
+              const pIsMobileApp = p.category?.toLowerCase().includes('mobile') || p.tags?.some(t => t.toLowerCase().includes('android') || t.toLowerCase().includes('mobile'));
+              const pIsGitHub = pSafeUrl && pSafeUrl.includes('github.com');
+              const pLaunchLabel = pIsMobileApp && pIsGitHub ? 'Repo' : (pIsGitHub ? 'Repo' : 'Launch');
+
               return (
-                <div key={p.id} className="work-card">
-                  <div className="work-card-head">
-                    <span className="work-card-category">{p.category}</span>
-                    <span className="work-card-badge">
-                      <span className="status-indicator-dot" />
-                      {p.status}
-                    </span>
+                <article key={p.id} className="project-card-modern">
+                  <div className="project-card-header">
+                    <div className="project-badge-row">
+                      <span className={`card-status-badge ${p.status === 'Live' ? 'badge-live' : 'badge-draft'}`}>
+                        <span className="status-indicator-dot" />
+                        {p.status}
+                      </span>
+                      <span className="card-category-badge">{p.category}</span>
+                    </div>
+                    {p.year && <span className="card-year-label">{p.year}</span>}
                   </div>
 
-                  <Link href={`/products/${p.slug || p.id}`} className="work-card-title-link">
-                    <h3 className="work-card-title">{p.name}</h3>
-                  </Link>
-                  {p.tagline && <p className="work-card-tagline">{p.tagline}</p>}
-                  <p className="work-card-description">{p.description}</p>
+                  <div className="card-content-area">
+                    <h3 className="card-title">
+                      <Link href={pDetailHref} className="card-title-link">
+                        {p.name}
+                      </Link>
+                    </h3>
+                    <div className="card-url-row">
+                      {pIsMobileApp ? <Smartphone size={12} /> : <Globe size={12} />}
+                      <span>{p.url || (pIsMobileApp ? 'Native Android' : 'Independent runtime')}</span>
+                    </div>
+                    <p className="card-description">{p.description}</p>
 
-                  <div className="work-card-actions">
-                    <Link href={`/products/${p.slug || p.id}`} className="btn-detail-link">
-                      View details
-                    </Link>
-                    {pSafeUrl && (
-                      <a
-                        href={pSafeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="work-card-link"
-                      >
-                        Launch <ArrowUpRight size={14} />
-                      </a>
+                    {p.tags && p.tags.length > 0 && (
+                      <div className="card-tags-list">
+                        {p.tags.slice(0, 4).map((t) => (
+                          <span key={t} className="card-tag-item">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
                     )}
+
+                    <div className="card-dual-actions">
+                      <Link href={pDetailHref} className="btn-detail-link">
+                        View Details <ArrowRight size={13} />
+                      </Link>
+                      {pSafeUrl && (
+                        <a
+                          href={pSafeUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="btn-launch-link"
+                        >
+                          {pLaunchLabel} <ArrowUpRight size={13} />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>
