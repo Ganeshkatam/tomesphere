@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Search, Globe, ArrowUpRight, ArrowRight, Smartphone } from 'lucide-react';
 
@@ -9,7 +9,7 @@ export default function WorkCatalogClient({ initialProjects = [] }) {
   const [activeFilter, setActiveFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const initialQuery = params.get('q');
     if (initialQuery) setSearchQuery(initialQuery);
