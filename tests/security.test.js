@@ -679,11 +679,18 @@ test('Phase C: Updates & Offers Data Contracts, Expiry & Validation', async (t) 
     assert.ok(sql.includes('CONSTRAINT check_offer_dates CHECK (end_date > start_date)'));
     assert.ok(sql.includes("CONSTRAINT check_offer_status CHECK (status IN ('Published', 'Draft', 'Expired'))"));
 
-    // RLS enabled and mutation revoked
+    // RLS enabled and all mutations and administrative privileges revoked
     assert.ok(sql.includes('ALTER TABLE public.updates ENABLE ROW LEVEL SECURITY;'));
     assert.ok(sql.includes('ALTER TABLE public.offers ENABLE ROW LEVEL SECURITY;'));
-    assert.ok(sql.includes('REVOKE INSERT, UPDATE, DELETE ON public.updates FROM anon, authenticated;'));
-    assert.ok(sql.includes('REVOKE INSERT, UPDATE, DELETE ON public.offers FROM anon, authenticated;'));
+    assert.ok(sql.includes('REVOKE INSERT, UPDATE, DELETE, TRUNCATE, TRIGGER, REFERENCES ON public.updates FROM anon, authenticated;'));
+    assert.ok(sql.includes('REVOKE INSERT, UPDATE, DELETE, TRUNCATE, TRIGGER, REFERENCES ON public.offers FROM anon, authenticated;'));
+
+    // Check dedicated remediation migration exists
+    const remediationMigrationPath = resolve(process.cwd(), 'supabase/migrations/20261025_revoke_dangerous_public_privileges.sql');
+    assert.ok(existsSync(remediationMigrationPath), 'Remediation migration must exist');
+    const remSql = readFileSync(remediationMigrationPath, 'utf-8');
+    assert.ok(remSql.includes('REVOKE TRUNCATE, TRIGGER, REFERENCES ON public.updates FROM anon, authenticated;'));
+    assert.ok(remSql.includes('REVOKE TRUNCATE, TRIGGER, REFERENCES ON public.offers FROM anon, authenticated;'));
 
     // Temporal publication and expiry policies
     assert.ok(sql.includes("status = 'Published' AND published_at <= NOW()"), 'Must enforce published_at <= NOW() on updates');
