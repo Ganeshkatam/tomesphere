@@ -68,10 +68,10 @@ The repository currently defines 7 canonical ecosystem products:
    - Tagline: *Fashion Ecommerce with 3D Virtual Try-On*
    - Launch Target: `https://fitmirror.tomesphere.in`
    - Tags: TypeScript, 3D Virtual Try-On, FitSeller, Merchant Portal
-5. **MyStays** (`slug: mystays`, `category: MARKETPLACE`, `status: Live`, `featured: false`)
-   - Tagline: *Long-Term Housing & PG Discovery Platform*
-   - Launch Target: `https://mystays.tomesphere.in`
-   - Tags: TypeScript, Real Estate, Search & Filters, Accommodation
+5. **EliteStay** (`slug: elitestay`, `category: MARKETPLACE`, `status: Live`, `featured: true`)
+   - Tagline: *Premium Accommodation & Living Platform*
+   - Launch Target: `https://elitestay.tomesphere.in`
+   - Tags: TypeScript, Next.js, Real Estate, Search & Filters, Accommodation
 6. **gk-dev-cli** (`slug: gk-dev-cli`, `category: DEVELOPER TOOLS`, `status: Live`, `featured: false`)
    - Tagline: *Developer Task Orchestration & Discovery CLI*
    - Launch Target: `https://github.com/Ganeshkatam/gk-dev-cli`

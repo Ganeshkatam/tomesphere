@@ -99,7 +99,7 @@ VALUES
   4
 ),
 (
-  'proj_mystays',
+  'proj_elitestay',
   'elitestay',
   'EliteStay',
   'MARKETPLACE',
