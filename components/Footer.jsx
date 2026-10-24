@@ -22,6 +22,8 @@ export default function Footer({ profile }) {
 
       <div className="footer-links-row">
         <Link href="/products" className="footer-nav-link">Products</Link>
+        <Link href="/updates" className="footer-nav-link">Updates</Link>
+        <Link href="/offers" className="footer-nav-link">Offers</Link>
         <Link href="/about" className="footer-nav-link">About Studio</Link>
         <Link href="/guestbook" className="footer-nav-link">Guestbook</Link>
         <Link href="/contact" className="footer-nav-link">Contact</Link>

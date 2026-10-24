@@ -38,7 +38,7 @@ export default async function AboutPage() {
 
         <div className="capabilities-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
           <div className="capability-card">
-            <div className="capability-icon-box" style={{ background: 'rgba(99, 102, 241, 0.12)', color: '#818cf8', borderColor: 'rgba(99, 102, 241, 0.3)' }}>
+            <div className="capability-icon-box" style={{ background: 'rgba(99, 102, 241, 0.12)', color: 'var(--accent-primary)', borderColor: 'rgba(99, 102, 241, 0.3)' }}>
               <Eye size={24} />
             </div>
             <h3 className="capability-title">Distraction-Free Craft</h3>

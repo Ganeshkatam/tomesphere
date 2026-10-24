@@ -47,7 +47,10 @@ export const metadata = {
 };
 
 export const viewport = {
-  themeColor: '#f8fafc',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f8fafc' },
+    { media: '(prefers-color-scheme: dark)', color: '#07080d' },
+  ],
   width: 'device-width',
   initialScale: 1,
 };
@@ -57,11 +60,17 @@ export default async function RootLayout({ children }) {
 
   return (
     <html
-      data-theme="light"
       lang="en"
       className={`${outfit.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('site-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`
+          }}
+        />
+      </head>
       <body>
         <div className="ambient-wrapper" aria-hidden="true">
           <div className="ambient-grid" />

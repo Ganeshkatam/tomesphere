@@ -17,13 +17,13 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState('dark');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('site-theme') || 'light';
-    setTheme(savedTheme);
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    const activeTheme = localStorage.getItem('site-theme') || document.documentElement.getAttribute('data-theme') || 'dark';
+    setTheme(activeTheme);
+    document.documentElement.setAttribute('data-theme', activeTheme);
   }, []);
 
   useEffect(() => {
@@ -111,7 +111,7 @@ export default function Navbar() {
             <div className="mobile-nav-header">
               <div>
                 <span className="brand-name">TomeSphere</span>
-                <div className="brand-tag">Product Discovery & Information Hub</div>
+                <div className="brand-tag">Independent digital studio · tomesphere.in</div>
               </div>
               <button
                 type="button"
@@ -137,6 +137,17 @@ export default function Navbar() {
                 );
               })}
             </nav>
+            <div className="mobile-nav-footer">
+              <button
+                type="button"
+                className="mobile-theme-toggle-btn"
+                onClick={toggleTheme}
+                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                <span>{theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
