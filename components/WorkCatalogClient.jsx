@@ -9,6 +9,12 @@ export default function WorkCatalogClient({ initialProjects = [] }) {
   const [activeFilter, setActiveFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const initialQuery = params.get('q');
+    if (initialQuery) setSearchQuery(initialQuery);
+  }, []);
+
   const categories = ['ALL', ...new Set(products.map(p => p.category).filter(Boolean))];
 
   const visibleProjects = products.filter(p => {
