@@ -14,7 +14,11 @@ import {
   ExternalLink,
   Gift,
   Clock,
-  Smartphone
+  Smartphone,
+  Code2,
+  Tv,
+  Building2,
+  Compass
 } from 'lucide-react';
 import { apiClient } from '../../../lib/api-client.js';
 import { projectService } from '../../../server/services/project.service.js';
@@ -34,6 +38,29 @@ function getSafeWebUrl(rawUrl) {
   } catch {
     return null;
   }
+}
+
+function getProductIcon(project, size = 26) {
+  const slug = (project?.slug || project?.id || project?.name || '').toLowerCase();
+  const category = (project?.category || '').toUpperCase();
+  const tags = Array.isArray(project?.tags) ? project.tags.map(t => t.toLowerCase()) : [];
+
+  if (category === 'MOBILE' || tags.some(t => /android|ios|mobile/.test(t)) || slug.includes('calclens')) {
+    return <Smartphone size={size} />;
+  }
+  if (slug.includes('book') || slug.includes('garden')) {
+    return <Layers size={size} />;
+  }
+  if (slug.includes('street') || slug.includes('craft')) {
+    return <Code2 size={size} />;
+  }
+  if (slug.includes('watch') || slug.includes('stream')) {
+    return <Tv size={size} />;
+  }
+  if (slug.includes('stay') || slug.includes('elites')) {
+    return <Building2 size={size} />;
+  }
+  return <Compass size={size} />;
 }
 
 async function getProduct(slug) {
@@ -76,7 +103,6 @@ export async function generateMetadata({ params }) {
   try {
     project = await getProduct(slug);
   } catch {
-    // In metadata generation, fall back gracefully if API is temporarily unavailable
     project = null;
   }
 
@@ -114,7 +140,6 @@ export default async function ProductDetailPage({ params }) {
     notFound();
   }
 
-  // Format destination URL safely
   const launchHref = getSafeWebUrl(project.url);
   const githubHref = project.github_url ? getSafeWebUrl(project.github_url) : null;
   const displayUrl = launchHref ? launchHref.replace(/^https?:\/\//, '').replace(/\/$/, '') : (project.url || '');
@@ -127,7 +152,6 @@ export default async function ProductDetailPage({ params }) {
       ? 'View Repository' 
       : (isMobileApp ? 'Open App' : 'Launch Application');
 
-  // Fetch related products, verified updates, and active offers in parallel
   let relatedProducts = [];
   let productUpdates = [];
   let productOffers = [];
@@ -163,40 +187,48 @@ export default async function ProductDetailPage({ params }) {
 
       {/* Product Hero Header */}
       <header className="product-detail-header">
-        <div className="product-header-badge-row">
-          <span className={`card-status-badge ${project.status === 'Live' ? 'badge-live' : 'badge-draft'}`}>
-            <span className="status-indicator-dot" />
-            {project.status}
-          </span>
-          <span className="card-category-badge">{project.category}</span>
-          {project.year && (
-            <span className="detail-meta-pill">
-              <Calendar size={12} /> {project.year}
-            </span>
-          )}
-        </div>
+        <div className="product-detail-hero-orb" aria-hidden="true" />
+        <div className="product-detail-header-inner">
+          <div className="product-detail-glyph-box" aria-hidden="true">
+            {getProductIcon(project, 30)}
+          </div>
+          <div className="product-detail-header-text">
+            <div className="product-header-badge-row">
+              <span className={`card-status-badge ${project.status === 'Live' ? 'badge-live' : 'badge-draft'}`}>
+                <span className="status-indicator-dot" />
+                {project.status}
+              </span>
+              <span className="card-category-badge">{project.category}</span>
+              {project.year && (
+                <span className="detail-meta-pill">
+                  <Calendar size={12} /> {project.year}
+                </span>
+              )}
+            </div>
 
-        <h1 className="product-detail-title">{project.name}</h1>
-        {project.tagline && (
-          <p className="product-detail-tagline">{project.tagline}</p>
-        )}
+            <h1 className="product-detail-title">{project.name}</h1>
+            {project.tagline && (
+              <p className="product-detail-tagline">{project.tagline}</p>
+            )}
 
-        <div className="product-header-actions">
-          {launchHref ? (
-            <a
-              href={launchHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary-glow btn-launch-highlight"
-            >
-              {primaryActionLabel} <ArrowUpRight size={16} />
-            </a>
-          ) : (
-            <span className="btn-disabled-placeholder">Launch URL Not Available</span>
-          )}
-          <Link href="/products" className="btn-secondary-glass">
-            <ArrowLeft size={15} /> All Products
-          </Link>
+            <div className="product-header-actions">
+              {launchHref ? (
+                <a
+                  href={launchHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary-glow btn-launch-highlight"
+                >
+                  {primaryActionLabel} <ArrowUpRight size={16} />
+                </a>
+              ) : (
+                <span className="btn-disabled-placeholder">Launch URL Not Available</span>
+              )}
+              <Link href="/products" className="btn-secondary-glass">
+                <ArrowLeft size={15} /> All Products
+              </Link>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -403,11 +435,14 @@ export default async function ProductDetailPage({ params }) {
               const pDetailHref = `/products/${p.slug || p.id}`;
               const pIsMobileApp = p.category?.toLowerCase().includes('mobile') || p.tags?.some(t => t.toLowerCase().includes('android') || t.toLowerCase().includes('mobile'));
               const pIsGitHub = pSafeUrl && pSafeUrl.includes('github.com');
-              const pLaunchLabel = pIsMobileApp && pIsGitHub ? 'Repo' : (pIsGitHub ? 'Repo' : 'Launch');
+              const pLaunchLabel = pIsMobileApp && pIsGitHub ? 'GitHub Repo' : (pIsGitHub ? 'GitHub' : 'Launch Runtime');
 
               return (
                 <article key={p.id} className="project-card-modern">
-                  <div className="project-card-header">
+                  <div className="project-card-hero-mini">
+                    <div className="project-card-glyph-mini" aria-hidden="true">
+                      {getProductIcon(p, 20)}
+                    </div>
                     <div className="project-badge-row">
                       <span className={`card-status-badge ${p.status === 'Live' ? 'badge-live' : 'badge-draft'}`}>
                         <span className="status-indicator-dot" />
@@ -424,9 +459,12 @@ export default async function ProductDetailPage({ params }) {
                         {p.name}
                       </Link>
                     </h3>
+                    {p.tagline && (
+                      <p className="card-tagline-text">{p.tagline}</p>
+                    )}
                     <div className="card-url-row">
                       {pIsMobileApp ? <Smartphone size={12} /> : <Globe size={12} />}
-                      <span>{p.url || (pIsMobileApp ? 'Native Android' : 'Independent runtime')}</span>
+                      <span>{p.url || (pIsMobileApp ? 'Native Android (APK / GitHub)' : 'Independent runtime')}</span>
                     </div>
                     <p className="card-description">{p.description}</p>
 
@@ -442,7 +480,8 @@ export default async function ProductDetailPage({ params }) {
 
                     <div className="card-dual-actions">
                       <Link href={pDetailHref} className="btn-detail-link">
-                        View Details <ArrowRight size={13} />
+                        <span>Specifications</span>
+                        <ArrowRight size={13} />
                       </Link>
                       {pSafeUrl && (
                         <a
@@ -451,7 +490,8 @@ export default async function ProductDetailPage({ params }) {
                           rel="noreferrer"
                           className="btn-launch-link"
                         >
-                          {pLaunchLabel} <ArrowUpRight size={13} />
+                          <span>{pLaunchLabel}</span>
+                          <ArrowUpRight size={13} />
                         </a>
                       )}
                     </div>
