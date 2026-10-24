@@ -1,0 +1,98 @@
+[
+  {
+    "id": "9e02ae4c-0d52-4cbf-9a82-6156776276ab",
+    "name": "Clean Architecture",
+    "category": "Architecture",
+    "proficiency": "Expert",
+    "display_order": 8,
+    "created_at": "2026-10-23T15:08:49.680566Z"
+  },
+  {
+    "id": "f641cd15-c448-447c-a857-a9e392f426d8",
+    "name": "Node.js",
+    "category": "Backend",
+    "proficiency": "Advanced",
+    "display_order": 4,
+    "created_at": "2026-10-23T15:08:49.680566Z"
+  },
+  {
+    "id": "ece51c02-8c29-47f4-b692-69872a3330d7",
+    "name": "WebSockets / Real-Time",
+    "category": "Backend",
+    "proficiency": "Advanced",
+    "display_order": 7,
+    "created_at": "2026-10-23T15:08:49.680566Z"
+  },
+  {
+    "id": "696ec50d-832a-43a5-814a-1834c9aa943a",
+    "name": "REST & GraphQL",
+    "category": "Backend",
+    "proficiency": "Advanced",
+    "display_order": 12,
+    "created_at": "2026-10-23T15:08:49.680566Z"
+  },
+  {
+    "id": "e11e04f3-26c9-49d3-ae58-bc867c13eb8c",
+    "name": "PostgreSQL",
+    "category": "Database & Cloud",
+    "proficiency": "Advanced",
+    "display_order": 5,
+    "created_at": "2026-10-23T15:08:49.680566Z"
+  },
+  {
+    "id": "16d9432d-f280-4a32-8702-89e76479be18",
+    "name": "Supabase",
+    "category": "Database & Cloud",
+    "proficiency": "Advanced",
+    "display_order": 6,
+    "created_at": "2026-10-23T15:08:49.680566Z"
+  },
+  {
+    "id": "47e742c0-9456-43ac-8d8c-7c3b12addf9c",
+    "name": "Docker",
+    "category": "DevOps & Tooling",
+    "proficiency": "Proficient",
+    "display_order": 10,
+    "created_at": "2026-10-23T15:08:49.680566Z"
+  },
+  {
+    "id": "d76d6298-6182-4e30-aa91-12b558383222",
+    "name": "Next.js 16",
+    "category": "Frontend",
+    "proficiency": "Expert",
+    "display_order": 1,
+    "created_at": "2026-10-23T15:08:49.680566Z"
+  },
+  {
+    "id": "b1637800-a862-46a5-90b9-efdff32b8859",
+    "name": "React 19",
+    "category": "Frontend",
+    "proficiency": "Expert",
+    "display_order": 2,
+    "created_at": "2026-10-23T15:08:49.680566Z"
+  },
+  {
+    "id": "2f3e6182-ffca-409e-96c1-42bfb91a2ca5",
+    "name": "Tailwind CSS",
+    "category": "Frontend",
+    "proficiency": "Advanced",
+    "display_order": 9,
+    "created_at": "2026-10-23T15:08:49.680566Z"
+  },
+  {
+    "id": "51ba20af-0f62-48ad-b83d-5ebcc137c02d",
+    "name": "TypeScript",
+    "category": "Languages",
+    "proficiency": "Expert",
+    "display_order": 3,
+    "created_at": "2026-10-23T15:08:49.680566Z"
+  },
+  {
+    "id": "90ceee41-c86c-4573-8778-8807d7522f52",
+    "name": "Kotlin",
+    "category": "Languages",
+    "proficiency": "Proficient",
+    "display_order": 11,
+    "created_at": "2026-10-23T15:08:49.680566Z"
+  }
+]
