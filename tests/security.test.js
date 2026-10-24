@@ -665,7 +665,7 @@ test('Phase C: Updates & Offers Data Contracts, Expiry & Validation', async (t) 
   });
 
   await t.test('migration SQL contract strictly defines schema, check constraints, RLS and temporal publication policies', () => {
-    const migrationPath = resolve(process.cwd(), 'supabase/migrations/20261024_create_updates_and_offers.sql');
+    const migrationPath = resolve(process.cwd(), 'supabase/migrations/20261024000000_create_updates_and_offers.sql');
     assert.ok(existsSync(migrationPath), 'Migration SQL must exist');
     const sql = readFileSync(migrationPath, 'utf-8');
 
@@ -686,11 +686,18 @@ test('Phase C: Updates & Offers Data Contracts, Expiry & Validation', async (t) 
     assert.ok(sql.includes('REVOKE INSERT, UPDATE, DELETE, TRUNCATE, TRIGGER, REFERENCES ON public.offers FROM anon, authenticated;'));
 
     // Check dedicated remediation migration exists
-    const remediationMigrationPath = resolve(process.cwd(), 'supabase/migrations/20261025_revoke_dangerous_public_privileges.sql');
+    const remediationMigrationPath = resolve(process.cwd(), 'supabase/migrations/20261025000000_revoke_dangerous_public_privileges.sql');
     assert.ok(existsSync(remediationMigrationPath), 'Remediation migration must exist');
     const remSql = readFileSync(remediationMigrationPath, 'utf-8');
     assert.ok(remSql.includes('REVOKE TRUNCATE, TRIGGER, REFERENCES ON public.updates FROM anon, authenticated;'));
     assert.ok(remSql.includes('REVOKE TRUNCATE, TRIGGER, REFERENCES ON public.offers FROM anon, authenticated;'));
+
+    // Check soft-deprecation migration exists
+    const softDeprecateMigrationPath = resolve(process.cwd(), 'supabase/migrations/20261025010000_soft_deprecate_skills_table.sql');
+    assert.ok(existsSync(softDeprecateMigrationPath), 'Soft deprecate migration must exist');
+    const softSql = readFileSync(softDeprecateMigrationPath, 'utf-8');
+    assert.ok(softSql.includes('ALTER POLICY "Public read skills" ON public.skills USING (false);'));
+    assert.ok(softSql.includes('REVOKE SELECT ON public.skills FROM anon, authenticated;'));
 
     // Temporal publication and expiry policies
     assert.ok(sql.includes("status = 'Published' AND published_at <= NOW()"), 'Must enforce published_at <= NOW() on updates');

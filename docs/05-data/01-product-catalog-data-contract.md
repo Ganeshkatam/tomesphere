@@ -174,7 +174,7 @@ The `metrics` column allows storing verified product signals without database sc
 ## 6. Three-Tier Status Classification
 
 ### 6.1 Verified Current State
-- Schema implemented in `supabase/migrations/20261023_init_tomesphere_schema.sql`.
+- Schema implemented in `supabase/migrations/20261023000000_init_tomesphere_schema.sql`.
 - Seed records for 7 production ecosystem products in `supabase/seed.sql`.
 - Server payload validator in `server/validators/project.validator.js` enforcing length and type checks.
 - 29 security and validator test cases passing in `tests/security.test.js`.

@@ -91,7 +91,7 @@ ALTER TABLE public.contacts ENABLE ROW LEVEL SECURITY;
 ## 6. Three-Tier Status Classification
 
 ### 6.1 Verified Current State
-- Row Level Security active and verified across all 5 tables in Supabase (`supabase/migrations/20261023_init_tomesphere_schema.sql`).
+- Row Level Security active and verified across all tables in Supabase (`supabase/migrations/20261023000000_init_tomesphere_schema.sql`).
 - Timing-safe admin authorization guard implemented in `server/auth/admin-auth.js`.
 - Security test suite passing with 29 automated assertions in `tests/security.test.js`.
 - Vercel preview deployment suppression active in `vercel.json`.
