@@ -31,25 +31,18 @@ export default function HomeOverviewClient({ projects = [] }) {
           <p className="home-discovery-lede">
             Explore thoughtfully built software for productivity, creativity, learning, and everyday life—all in one curated place.
           </p>
-          <div className="home-discovery-search" role="search">
+          <form className="home-discovery-search" role="search" action="/products" method="get">
             <Compass size={18} aria-hidden="true" />
             <input
               type="search"
+              name="q"
               placeholder="Search products, tools, and ideas…"
               aria-label="Search products"
               value={homeQuery}
               onChange={(event) => setHomeQuery(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                  window.location.href = `/products?q=${encodeURIComponent(homeQuery)}`;
-                }
-              }}
             />
-            <button type="button" onClick={() => { window.location.href = `/products?q=${encodeURIComponent(homeQuery)}`; }}>
-              Search <ArrowRight size={15} />
-            </button>
-          </div>
+            <button type="submit">Search <ArrowRight size={15} /></button>
+          </form>
           <div className="home-discovery-actions" style={{ marginTop: '16px' }}>
             <Link href="/products" className="btn-primary-glow">Browse all products <ArrowRight size={16} /></Link>
             <Link href="/about" className="btn-secondary-glass">About TomeSphere <ArrowUpRight size={15} /></Link>
