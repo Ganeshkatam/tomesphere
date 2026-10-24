@@ -1,6 +1,8 @@
 'use client';
 
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -182,6 +184,7 @@ function AbstractTomeSphereVisual({ mouseX = 50, mouseY = 50 }) {
 }
 
 export default function HomeOverviewClient({ projects = [] }) {
+  const [homeQuery, setHomeQuery] = useState('');
   const previewProjects = projects.slice(0, 4);
 
   const productHref = (project) => `/products/${project.slug || project.id}`;
@@ -200,11 +203,25 @@ export default function HomeOverviewClient({ projects = [] }) {
           <p className="home-discovery-lede">
             Explore thoughtfully built software for productivity, creativity, learning, and everyday life—all in one curated place.
           </p>
-          <form action="/products" method="get" className="home-discovery-search" role="search">
+          <div className="home-discovery-search" role="search">
             <Compass size={18} aria-hidden="true" />
-            <input type="search" name="q" placeholder="Search products, tools, and ideas…" aria-label="Search products" />
-            <button type="submit">Explore catalog <ArrowRight size={15} /></button>
-          </form>
+            <input
+              type="search"
+              placeholder="Search products, tools, and ideas…"
+              aria-label="Search products"
+              value={homeQuery}
+              onChange={(event) => setHomeQuery(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  window.location.href = `/products?q=${encodeURIComponent(homeQuery)}`;
+                }
+              }}
+            />
+            <button type="button" onClick={() => { window.location.href = `/products?q=${encodeURIComponent(homeQuery)}`; }}>
+              Search <ArrowRight size={15} />
+            </button>
+          </div>
           <div className="home-discovery-actions" style={{ marginTop: '16px' }}>
             <Link href="/products" className="btn-primary-glow">Browse all products <ArrowRight size={16} /></Link>
             <Link href="/about" className="btn-secondary-glass">About TomeSphere <ArrowUpRight size={15} /></Link>
