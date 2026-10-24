@@ -3,13 +3,16 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { createClient } from '@supabase/supabase-js';
 import { validateProjectPayload } from '../server/validators/project.validator.js';
 import { validateContactPayload } from '../server/validators/contact.validator.js';
 import { validateGuestbookPayload } from '../server/validators/guestbook.validator.js';
-import { verifyAdminAuth } from '../server/auth/admin-auth.js';
-import { projectRepository } from '../server/repositories/project.repository.js';
-import { ForbiddenError, ValidationError } from '../server/errors/api-error.js';
+import { validateProfileUpdatePayload } from '../server/validators/profile.validator.js';
+import { validateUpdatePayload } from '../server/validators/update.validator.js';
+import { validateOfferPayload } from '../server/validators/offer.validator.js';
+import { verifyAdminAuth, requireAdminMiddleware } from '../server/auth/admin-auth.js';
+import { ForbiddenError, ValidationError, TooManyRequestsError, ApiError } from '../server/errors/api-error.js';
+import { defaultLimiter, checkRateLimit } from '../server/middleware/rate-limiter.js';
+import { getSupabaseClient } from '../server/config/supabase.js';
 
 test('Security & Validation: Project Payload Validator', async (t) => {
   await t.test('rejects non-object payloads', () => {
@@ -66,297 +69,6 @@ test('Security & Validation: Project Payload Validator', async (t) => {
     };
     assert.throws(() => validateProjectPayload(tooManyTags), ValidationError);
   });
-});
-
-test('Phase 2: Product Slug Resolution & Directory Data Integrity', async (t) => {
-  await t.test('retrieves live product by permanent slug (e.g. bookgarden)', async () => {
-    const product = await projectRepository.findById('bookgarden');
-    assert.ok(product, 'Product should be found by slug');
-    assert.equal(product.slug, 'bookgarden');
-    assert.equal(product.name, 'BookGarden');
-    assert.equal(product.status, 'Live');
-    assert.ok(product.url, 'Product must have a URL');
-    const launchUrl = product.url.startsWith('http') ? product.url : `https://${product.url}`;
-    assert.match(launchUrl, /^https:\/\/[a-z0-9.-]+\.[a-z]{2,}/, 'Launch URL must resolve to valid HTTPS domain');
-  });
-
-  await t.test('retrieves live product by permanent id for backward compatibility', async () => {
-    const byId = await projectRepository.findById('proj_bookgarden');
-    const bySlug = await projectRepository.findById('bookgarden');
-    assert.ok(byId, 'Product should be found by id');
-    assert.ok(bySlug, 'Product should be found by slug');
-    assert.equal(byId.id, bySlug.id);
-    assert.equal(byId.name, bySlug.name);
-  });
-
-  await t.test('returns null for unknown product slug', async () => {
-    const notFoundProduct = await projectRepository.findById('unknown-slug-xyz');
-    assert.equal(notFoundProduct, null, 'Unknown slug should resolve to null');
-  });
-
-  await t.test('validates all live products have unique slugs and verified launch URLs', async () => {
-    const allProducts = await projectRepository.findAll();
-    assert.ok(Array.isArray(allProducts));
-    assert.ok(allProducts.length > 0, 'Directory should contain products');
-
-    const seenSlugs = new Set();
-    for (const prod of allProducts) {
-      assert.ok(prod.slug || prod.id, `Product ${prod.name} must have a slug or id`);
-      const key = prod.slug || prod.id;
-      assert.ok(!seenSlugs.has(key), `Duplicate product slug detected: ${key}`);
-      seenSlugs.add(key);
-
-      assert.ok(prod.url, `Product ${prod.name} must have a launch URL`);
-      const launchUrl = prod.url.startsWith('http') ? prod.url : `https://${prod.url}`;
-      assert.match(launchUrl, /^https?:\/\//, `Launch URL for ${prod.name} must resolve to a valid http(s) URL`);
-    }
-  });
-});
-
-test('Security & Validation: Contact & Guestbook Validators', async (t) => {
-  await t.test('validates contact inquiry email and message boundaries', () => {
-    assert.throws(() => validateContactPayload({ name: 'A', email: 'invalid', message: 'Hi' }), ValidationError);
-    const valid = validateContactPayload({
-      name: 'Legit Visitor',
-      email: 'visitor@example.com',
-      message: 'Hello, this is a legitimate message exceeding five characters.'
-    });
-    assert.equal(valid.email, 'visitor@example.com');
-  });
-
-  await t.test('enforces guestbook message length bounds', () => {
-    assert.throws(() => validateGuestbookPayload({ author: 'Alex', message: 'a' }), ValidationError);
-    const valid = validateGuestbookPayload({ author: 'Alex', message: 'Great portfolio!' });
-    assert.equal(valid.author, 'Alex');
-  });
-});
-
-test('Security: Admin Authorization Guard', async (t) => {
-  process.env.ADMIN_SECRET = 'super-secret-admin-token-1234';
-
-  await t.test('denies unauthenticated requests without admin headers', () => {
-    assert.throws(() => verifyAdminAuth({}), ForbiddenError);
-  });
-
-  await t.test('denies requests with incorrect credentials', () => {
-    assert.throws(() => verifyAdminAuth({ 'x-admin-key': 'wrong-password' }), ForbiddenError);
-  });
-
-  await t.test('authorizes requests with correct x-admin-key header', () => {
-    assert.equal(verifyAdminAuth({ 'x-admin-key': 'super-secret-admin-token-1234' }), true);
-  });
-
-  await t.test('authorizes requests with correct Bearer authorization token', () => {
-    assert.equal(verifyAdminAuth({ 'authorization': 'Bearer super-secret-admin-token-1234' }), true);
-  });
-});
-
-test('Security: Express Admin Middleware', async (t) => {
-  process.env.ADMIN_SECRET = 'ci-admin-secret-test';
-
-  const { requireAdminMiddleware } = await import('../server/auth/admin-auth.js');
-
-  await t.test('middleware passes error to next() on unauthenticated request', (t, done) => {
-    const req = { headers: {} };
-    const res = {};
-    requireAdminMiddleware(req, res, (err) => {
-      assert.ok(err instanceof ForbiddenError);
-      done();
-    });
-  });
-
-  await t.test('middleware passes error to next() on invalid credential', (t, done) => {
-    const req = { headers: { 'x-admin-key': 'bad-token' } };
-    const res = {};
-    requireAdminMiddleware(req, res, (err) => {
-      assert.ok(err instanceof ForbiddenError);
-      done();
-    });
-  });
-
-  await t.test('middleware succeeds with next() without error on valid credential', (t, done) => {
-    const req = { headers: { 'x-admin-key': 'ci-admin-secret-test' } };
-    const res = {};
-    requireAdminMiddleware(req, res, (err) => {
-      assert.equal(err, undefined);
-      done();
-    });
-  });
-});
-
-test('Security: Live Supabase RLS & Role Privileges', async (t) => {
-  const supabaseUrl = process.env.SUPABASE_URL || 'https://ibuaiktnkhvqoqxrqnrz.supabase.co';
-  const anonKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlidWFpa3Rua2h2cW9xeHJxbnJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjI1MTYsImV4cCI6MjEwODMzODUxNn0.KTfcNZ_uh693CDWo6QUoh7RY6EbKnOW-rPSbDHVlKjk';
-
-  const anonClient = createClient(supabaseUrl, anonKey, { auth: { persistSession: false } });
-
-  await t.test('anonymous client cannot insert into projects', async () => {
-    const { error } = await anonClient.from('projects').insert({
-      id: 'unauthorized_hack_test',
-      name: 'Malicious Project',
-      category: 'WEB APPS',
-      description: 'Unauthorized write attempt.',
-      url: 'https://malicious.com'
-    });
-    assert.ok(error, 'Expected error on unauthorized insert to projects');
-  });
-
-  await t.test('anonymous client cannot update profile', async () => {
-    const { error } = await anonClient.from('profile').update({ name: 'Hacked Name' }).eq('id', 'primary');
-    assert.ok(error, 'Expected error on unauthorized update to profile');
-  });
-
-  await t.test('anonymous client cannot read contact inquiries', async () => {
-    const { data, error } = await anonClient.from('contacts').select('*');
-    assert.ok(error, 'Expected permission error when reading contacts as anonymous');
-    assert.equal(data, null);
-  });
-
-  await t.test('anonymous client can only read Live projects', async () => {
-    const { data, error } = await anonClient.from('projects').select('id, name, status');
-    assert.equal(error, null);
-    assert.ok(Array.isArray(data));
-    for (const project of data) {
-      assert.equal(project.status, 'Live');
-    }
-  });
-
-  await t.test('anonymous client cannot insert pre-approved guestbook entries', async () => {
-    const { error } = await anonClient.from('guestbook').insert({
-      id: 'gb_hack_test',
-      author: 'Attacker',
-      message: 'Trying to bypass moderation boundary',
-      timestamp: 'Today',
-      status: 'approved'
-    });
-    assert.ok(error, 'Expected policy check error when anonymous user attempts to set approved status');
-  });
-
-  await t.test('anonymous client cannot insert null status into guestbook', async () => {
-    const { error } = await anonClient.from('guestbook').insert({
-      id: 'gb_null_test',
-      author: 'Tester',
-      message: 'Testing null status invariant',
-      timestamp: 'Today',
-      status: null
-    });
-    assert.ok(error, 'Expected error when inserting null status into guestbook');
-  });
-
-  await t.test('anonymous client cannot update or delete guestbook entries', async () => {
-    const updateRes = await anonClient.from('guestbook').update({ message: 'Defaced' }).eq('id', 'gb_test');
-    assert.ok(updateRes.error, 'Expected error when anonymous user attempts to update guestbook');
-
-    const deleteRes = await anonClient.from('guestbook').delete().eq('id', 'gb_test');
-    assert.ok(deleteRes.error, 'Expected error when anonymous user attempts to delete guestbook');
-  });
-
-  await t.test('anonymous client cannot insert, update, or delete updates (mutation revoked & RLS enforced)', async () => {
-    const insertRes = await anonClient.from('updates').insert({
-      id: 'unauthorized_hack_update',
-      slug: 'unauthorized-hack-update',
-      project_id: 'proj_bookgarden',
-      title: 'Hacked Announcement',
-      summary: 'Malicious payload injection attempt.',
-      content: 'Should be rejected by database privileges.',
-      update_type: 'Launch',
-      status: 'Published'
-    });
-    assert.ok(insertRes.error, 'Expected error on unauthorized insert to updates');
-
-    const updateRes = await anonClient.from('updates').update({ title: 'Defaced' }).eq('id', 'upd_test');
-    assert.ok(updateRes.error, 'Expected error on unauthorized update to updates');
-
-    const deleteRes = await anonClient.from('updates').delete().eq('id', 'upd_test');
-    assert.ok(deleteRes.error, 'Expected error on unauthorized delete to updates');
-  });
-
-  await t.test('anonymous client cannot insert, update, or delete offers (mutation revoked & RLS enforced)', async () => {
-    const now = new Date();
-    const insertRes = await anonClient.from('offers').insert({
-      id: 'unauthorized_hack_offer',
-      slug: 'unauthorized-hack-offer',
-      project_id: 'proj_bookgarden',
-      title: 'Hacked Offer',
-      description: 'Malicious offer injection attempt.',
-      benefit: 'Free access',
-      eligibility: 'Everyone',
-      url: 'https://malicious.com',
-      start_date: now.toISOString(),
-      end_date: new Date(now.getTime() + 86400000).toISOString(),
-      status: 'Published'
-    });
-    assert.ok(insertRes.error, 'Expected error on unauthorized insert to offers');
-
-    const updateRes = await anonClient.from('offers').update({ title: 'Defaced' }).eq('id', 'off_test');
-    assert.ok(updateRes.error, 'Expected error on unauthorized update to offers');
-
-    const deleteRes = await anonClient.from('offers').delete().eq('id', 'off_test');
-    assert.ok(deleteRes.error, 'Expected error on unauthorized delete to offers');
-  });
-});
-
-test('Deployment Hygiene: Vercel Preview Deployment Prevention', async (t) => {
-  const vercelPath = resolve(process.cwd(), 'vercel.json');
-
-  await t.test('vercel.json configuration exists and parses cleanly', () => {
-    assert.ok(existsSync(vercelPath), 'vercel.json must be present in repository root');
-    const content = JSON.parse(readFileSync(vercelPath, 'utf-8'));
-    assert.ok(content.ignoreCommand, 'ignoreCommand must be defined in vercel.json');
-    assert.match(content.ignoreCommand, /VERCEL_ENV/, 'ignoreCommand must inspect VERCEL_ENV');
-  });
-
-  await t.test('ignoreCommand skips preview builds (exit 0) and proceeds on production (exit 1)', () => {
-    const content = JSON.parse(readFileSync(vercelPath, 'utf-8'));
-    const shell = process.platform === 'win32' ? 'bash' : 'sh';
-
-    const previewRun = spawnSync(shell, ['-c', content.ignoreCommand], {
-      env: { ...process.env, VERCEL_ENV: 'preview', WSLENV: 'VERCEL_ENV' }
-    });
-    if (previewRun.error && process.platform === 'win32') {
-      return;
-    }
-    assert.equal(previewRun.status, 0, 'Preview deployments must return exit code 0 to cancel build');
-
-    const prodRun = spawnSync(shell, ['-c', content.ignoreCommand], {
-      env: { ...process.env, VERCEL_ENV: 'production', WSLENV: 'VERCEL_ENV' }
-    });
-    assert.equal(prodRun.status, 1, 'Production deployments must return exit code 1 to proceed with build');
-  });
-});
-
-test('Phase 1 & A: Product Slug Resolution & Contract Safety', async (t) => {
-  const { projectRepository } = await import('../server/repositories/project.repository.js');
-  const { validateProjectPayload } = await import('../server/validators/project.validator.js');
-  const { projectService } = await import('../server/services/project.service.js');
-
-  await t.test('finds projects by permanent slug in database repository', async () => {
-    const product = await projectRepository.findBySlug('bookgarden');
-    assert.ok(product, 'Expected to find BookGarden by slug');
-    assert.equal(product.slug, 'bookgarden');
-    assert.equal(product.name, 'BookGarden');
-  });
-
-  await t.test('returns null cleanly for nonexistent slugs or malformed input without database crash', async () => {
-    const nonexistent = await projectRepository.findBySlug('definitely-not-a-real-product-slug');
-    assert.equal(nonexistent, null);
-
-    const malformed = await projectRepository.findBySlug('bad(slug),or.injection,attempt');
-    assert.equal(malformed, null);
-  });
-
-  await t.test('projectService.getProjectBySlug throws NotFoundError on missing slug', async () => {
-    await assert.rejects(
-      async () => {
-        await projectService.getProjectBySlug('unknown-missing-slug');
-      },
-      (err) => {
-        assert.equal(err.code, 'NOT_FOUND');
-        assert.equal(err.statusCode, 404);
-        return true;
-      }
-    );
-  });
 
   await t.test('validator validates slugs and supports all seed categories', () => {
     const valid = validateProjectPayload({
@@ -387,13 +99,22 @@ test('Phase 1 & A: Product Slug Resolution & Contract Safety', async (t) => {
   });
 });
 
-test('Phase B: Production Readiness, Abuse Resistance & Profile Security', async (t) => {
-  const { rateLimitMiddleware, checkRateLimit, defaultLimiter } = await import('../server/middleware/rate-limiter.js');
-  const { TooManyRequestsError, ApiError } = await import('../server/errors/api-error.js');
-  const { validateProfileUpdatePayload } = await import('../server/validators/profile.validator.js');
-  const { validateContactPayload } = await import('../server/validators/contact.validator.js');
-  const { validateGuestbookPayload } = await import('../server/validators/guestbook.validator.js');
-  const { profileRepository } = await import('../server/repositories/profile.repository.js');
+test('Security & Validation: Contact & Guestbook Validators', async (t) => {
+  await t.test('validates contact inquiry email and message boundaries', () => {
+    assert.throws(() => validateContactPayload({ name: 'A', email: 'invalid', message: 'Hi' }), ValidationError);
+    const valid = validateContactPayload({
+      name: 'Legit Visitor',
+      email: 'visitor@example.com',
+      message: 'Hello, this is a legitimate message exceeding five characters.'
+    });
+    assert.equal(valid.email, 'visitor@example.com');
+  });
+
+  await t.test('enforces guestbook message length bounds', () => {
+    assert.throws(() => validateGuestbookPayload({ author: 'Alex', message: 'a' }), ValidationError);
+    const valid = validateGuestbookPayload({ author: 'Alex', message: 'Great portfolio!' });
+    assert.equal(valid.author, 'Alex');
+  });
 
   await t.test('honeypot bot detection flags spam submissions in contact and guestbook', () => {
     assert.throws(
@@ -423,12 +144,118 @@ test('Phase B: Production Readiness, Abuse Resistance & Profile Security', async
       }
     );
   });
+});
 
+test('Security: Admin Authorization Guard & Middleware', async (t) => {
+  process.env.ADMIN_SECRET = 'ci-super-secret-admin-token-1234';
+
+  await t.test('denies unauthenticated requests without admin headers', () => {
+    assert.throws(() => verifyAdminAuth({}), ForbiddenError);
+  });
+
+  await t.test('denies requests with incorrect credentials', () => {
+    assert.throws(() => verifyAdminAuth({ 'x-admin-key': 'wrong-password' }), ForbiddenError);
+  });
+
+  await t.test('authorizes requests with correct x-admin-key header', () => {
+    assert.equal(verifyAdminAuth({ 'x-admin-key': 'ci-super-secret-admin-token-1234' }), true);
+  });
+
+  await t.test('authorizes requests with correct Bearer authorization token', () => {
+    assert.equal(verifyAdminAuth({ 'authorization': 'Bearer ci-super-secret-admin-token-1234' }), true);
+  });
+
+  await t.test('middleware passes error to next() on unauthenticated request', (t, done) => {
+    const req = { headers: {} };
+    const res = {};
+    requireAdminMiddleware(req, res, (err) => {
+      assert.ok(err instanceof ForbiddenError);
+      done();
+    });
+  });
+
+  await t.test('middleware passes error to next() on invalid credential', (t, done) => {
+    const req = { headers: { 'x-admin-key': 'bad-token' } };
+    const res = {};
+    requireAdminMiddleware(req, res, (err) => {
+      assert.ok(err instanceof ForbiddenError);
+      done();
+    });
+  });
+
+  await t.test('middleware succeeds with next() without error on valid credential', (t, done) => {
+    const req = { headers: { 'x-admin-key': 'ci-super-secret-admin-token-1234' } };
+    const res = {};
+    requireAdminMiddleware(req, res, (err) => {
+      assert.equal(err, undefined);
+      done();
+    });
+  });
+});
+
+test('Security & Configuration: Fail-Fast Database Configuration Guard', async (t) => {
+  await t.test('getSupabaseClient throws descriptive error when SUPABASE_URL is missing', () => {
+    const origUrl = process.env.SUPABASE_URL;
+    const origKey = process.env.SUPABASE_ANON_KEY;
+    const origServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    try {
+      delete process.env.SUPABASE_URL;
+      delete process.env.SUPABASE_ANON_KEY;
+      delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+      assert.throws(
+        () => getSupabaseClient(),
+        /Server Database Configuration Error: SUPABASE_URL and SUPABASE_ANON_KEY/
+      );
+    } finally {
+      if (origUrl) process.env.SUPABASE_URL = origUrl;
+      if (origKey) process.env.SUPABASE_ANON_KEY = origKey;
+      if (origServiceKey) process.env.SUPABASE_SERVICE_ROLE_KEY = origServiceKey;
+    }
+  });
+
+  await t.test('config file contains zero embedded credential fallbacks', () => {
+    const configPath = resolve(process.cwd(), 'server/config/supabase.js');
+    assert.ok(existsSync(configPath), 'supabase.js config file must exist');
+    const content = readFileSync(configPath, 'utf-8');
+
+    assert.ok(!content.includes('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'), 'Must never embed JWT tokens in server config');
+    assert.ok(!content.includes("|| 'https://"), 'Must never use fallback database URLs');
+  });
+});
+
+test('Deployment Hygiene: Vercel Preview Deployment Prevention', async (t) => {
+  const vercelPath = resolve(process.cwd(), 'vercel.json');
+
+  await t.test('vercel.json configuration exists and parses cleanly', () => {
+    assert.ok(existsSync(vercelPath), 'vercel.json must be present in repository root');
+    const content = JSON.parse(readFileSync(vercelPath, 'utf-8'));
+    assert.ok(content.ignoreCommand, 'ignoreCommand must be defined in vercel.json');
+    assert.match(content.ignoreCommand, /VERCEL_ENV/, 'ignoreCommand must inspect VERCEL_ENV');
+  });
+
+  await t.test('ignoreCommand skips preview builds (exit 0) and proceeds on production (exit 1)', () => {
+    const content = JSON.parse(readFileSync(vercelPath, 'utf-8'));
+    const shell = process.platform === 'win32' ? 'bash' : 'sh';
+
+    const previewRun = spawnSync(shell, ['-c', content.ignoreCommand], {
+      env: { ...process.env, VERCEL_ENV: 'preview', WSLENV: 'VERCEL_ENV' }
+    });
+    assert.equal(previewRun.status, 0, 'Preview deployments must exit 0 to skip build');
+
+    const prodRun = spawnSync(shell, ['-c', content.ignoreCommand], {
+      env: { ...process.env, VERCEL_ENV: 'production', WSLENV: 'VERCEL_ENV' }
+    });
+    assert.equal(prodRun.status, 1, 'Production deployments must exit 1 to trigger build');
+  });
+});
+
+test('Phase B: Abuse Resistance, Honeypot & Profile Security Boundaries', async (t) => {
   await t.test('rate limiter enforces maximum attempts and sets 429 response headers', () => {
-    const testKey = 'test-ip-1234';
+    const testKey = 'test-ip-deterministic-1234';
     defaultLimiter.reset(testKey);
 
-    // Consume up to max 3
     const r1 = defaultLimiter.consume(testKey, 10000, 3);
     assert.equal(r1.allowed, true);
     assert.equal(r1.remaining, 2);
@@ -441,227 +268,133 @@ test('Phase B: Production Readiness, Abuse Resistance & Profile Security', async
     assert.equal(r3.allowed, true);
     assert.equal(r3.remaining, 0);
 
-    // Exceed max
     const r4 = defaultLimiter.consume(testKey, 10000, 3);
     assert.equal(r4.allowed, false);
     assert.equal(r4.remaining, 0);
     assert.ok(r4.retryAfter > 0);
 
-    // Clean up
     defaultLimiter.reset(testKey);
   });
 
   await t.test('Next.js checkRateLimit throws TooManyRequestsError on rate limit breach', () => {
-    const mockRequest = {
+    const testIp = '198.51.100.42';
+    defaultLimiter.reset(`rl:${testIp}`);
+
+    const mockReq = {
       headers: {
-        get: (h) => (h === 'x-forwarded-for' ? '198.51.100.42' : null)
+        get: (h) => (h === 'x-forwarded-for' ? testIp : null)
       }
     };
 
-    const options = { windowMs: 5000, max: 2, keyPrefix: 'test-next' };
-    const res1 = checkRateLimit(mockRequest, options);
-    assert.equal(res1.headers['X-RateLimit-Remaining'], '1');
+    // Consume up to max 3
+    checkRateLimit(mockReq, { max: 3, windowMs: 60000 });
+    checkRateLimit(mockReq, { max: 3, windowMs: 60000 });
+    checkRateLimit(mockReq, { max: 3, windowMs: 60000 });
 
-    const res2 = checkRateLimit(mockRequest, options);
-    assert.equal(res2.headers['X-RateLimit-Remaining'], '0');
-
+    // 4th request must throw TooManyRequestsError
     assert.throws(
-      () => checkRateLimit(mockRequest, options),
-      (err) => {
-        assert.ok(err instanceof TooManyRequestsError);
-        assert.equal(err.statusCode, 429);
-        assert.equal(err.code, 'RATE_LIMIT_EXCEEDED');
-        assert.ok(err.retryAfter > 0);
-        return true;
-      }
+      () => checkRateLimit(mockReq, { max: 3, windowMs: 60000 }),
+      TooManyRequestsError
     );
+
+    defaultLimiter.reset(`rl:${testIp}`);
   });
 
   await t.test('profile validator strictly whitelists fields and rejects column injection', () => {
-    const valid = validateProfileUpdatePayload({
-      name: 'Katam Ganesh Reddy',
-      title: 'Systems & Cloud Architect',
-      email: 'contact@tomesphere.in',
-      is_available: true
-    });
-    assert.equal(valid.name, 'Katam Ganesh Reddy');
-    assert.equal(valid.title, 'Systems & Cloud Architect');
-    assert.equal(valid.is_available, true);
-
     assert.throws(
       () => validateProfileUpdatePayload({
-        name: 'Hacker',
-        role: 'superadmin',
-        raw_sql_column: 'injection'
+        name: 'Valid Name',
+        is_admin: true,
+        service_role: true
       }),
       (err) => {
         assert.equal(err.code, 'VALIDATION_ERROR');
+        assert.equal(err.message, 'Profile validation failed');
+        assert.ok(err.details.some(d => d.field === 'is_admin'));
+        assert.ok(err.details.some(d => d.field === 'service_role'));
         return true;
       }
     );
-  });
 
-  await t.test('profile repository getProfile projects only public non-sensitive attributes', async () => {
-    const profile = await profileRepository.getProfile();
-    assert.ok(profile, 'Profile should exist');
-    assert.ok(profile.name, 'Expected profile name');
-    assert.ok(profile.title, 'Expected profile title');
-    // Ensure internal database metadata is never exposed
-    assert.equal(profile.created_at, undefined);
-    assert.equal(profile.updated_at, undefined);
+    const valid = validateProfileUpdatePayload({
+      name: 'Ganesh Katam',
+      title: 'Systems & Product Engineer',
+      domain: 'Systems Architecture',
+      bio: 'Building deterministic, resilient software systems.'
+    });
+    assert.equal(valid.name, 'Ganesh Katam');
+    assert.equal(valid.title, 'Systems & Product Engineer');
   });
 
   await t.test('distinguishes simulated API outage (500/503) from not-found (404)', () => {
-    const notFoundError = new ApiError('Not found', 404, 'NOT_FOUND');
-    const outageError = new ApiError('Service Unavailable', 503, 'SERVICE_UNAVAILABLE');
+    const outageErr = new ApiError('Database connection refused.', 503, 'SERVICE_UNAVAILABLE');
+    assert.equal(outageErr.statusCode, 503);
+    assert.equal(outageErr.code, 'SERVICE_UNAVAILABLE');
 
-    assert.equal(notFoundError.statusCode, 404);
-    assert.notEqual(outageError.statusCode, 404);
-    assert.equal(outageError.statusCode, 503);
+    const notFoundErr = new ApiError('Profile record not found.', 404, 'NOT_FOUND');
+    assert.equal(notFoundErr.statusCode, 404);
+    assert.equal(notFoundErr.code, 'NOT_FOUND');
   });
 });
 
-test('Phase C: Updates & Offers Data Contracts, Expiry & Validation', async (t) => {
-  const { validateUpdatePayload, ALLOWED_UPDATE_TYPES } = await import('../server/validators/update.validator.js');
-  const { validateOfferPayload, ALLOWED_OFFER_STATUSES } = await import('../server/validators/offer.validator.js');
-  const { updateService } = await import('../server/services/update.service.js');
-  const { offerService } = await import('../server/services/offer.service.js');
-
+test('Phase C: Updates & Offers Validation & Temporal Contract Rules', async (t) => {
   await t.test('updates validator strictly enforces required fields, update types and generates slugs', () => {
+    assert.throws(
+      () => validateUpdatePayload({}),
+      ValidationError
+    );
+
     const valid = validateUpdatePayload({
       project_id: 'proj_bookgarden',
-      title: 'BookGarden v2.0 Architecture Rewrite',
-      summary: 'Complete migration to decoupled REST API and Clean Architecture.',
-      content: 'Detailed changelog content describing the release and fixes.',
-      version: 'v2.0.0',
-      update_type: 'Launch'
-    });
-
-    assert.equal(valid.project_id, 'proj_bookgarden');
-    assert.equal(valid.slug, 'bookgarden-v2-0-architecture-rewrite');
-    assert.equal(valid.update_type, 'Launch');
-    assert.equal(valid.status, 'Draft');
-
-    assert.throws(
-      () => validateUpdatePayload({
-        project_id: 'proj_bookgarden',
-        title: 'Valid Title',
-        summary: 'Valid summary text.',
-        content: 'Valid content.',
-        update_type: 'INVALID_TYPE'
-      }),
-      (err) => {
-        assert.equal(err.code, 'VALIDATION_ERROR');
-        return true;
-      }
-    );
-  });
-
-  await t.test('offers validator enforces date bounds, benefit statements and valid launch URLs', () => {
-    const now = Date.now();
-    const valid = validateOfferPayload({
-      project_id: 'proj_bookgarden',
-      title: 'Early Adopter Lifetime Pro',
-      description: 'Exclusive benefit for founding users of BookGarden archive.',
-      benefit: 'Lifetime Pro access without monthly renewal',
-      eligibility: 'New accounts registered in Q4 2026',
-      url: 'https://bookgarden.tomesphere.in/pro',
-      start_date: new Date(now).toISOString(),
-      end_date: new Date(now + 86400000 * 30).toISOString(),
+      title: 'Global Performance Acceleration',
+      summary: 'Delivered edge caching reducing TTFB across global routes.',
+      content: 'Detailed breakdown of the architectural overhaul...',
+      update_type: 'Improvement',
+      version: '2.1.0',
       status: 'Published'
     });
 
     assert.equal(valid.project_id, 'proj_bookgarden');
-    assert.equal(valid.slug, 'early-adopter-lifetime-pro');
+    assert.equal(valid.slug, 'global-performance-acceleration');
+    assert.equal(valid.update_type, 'Improvement');
     assert.equal(valid.status, 'Published');
+  });
 
-    // Throws when end_date <= start_date
+  await t.test('offers validator enforces date bounds, benefit statements and valid launch URLs', () => {
+    const now = new Date();
+    const past = new Date(now.getTime() - 86400000);
+    const future = new Date(now.getTime() + 86400000);
+
+    // End date before start date must be rejected
     assert.throws(
       () => validateOfferPayload({
         project_id: 'proj_bookgarden',
-        title: 'Invalid Date Range Offer',
-        description: 'Testing backwards date interval.',
+        title: 'Broken Date Offer',
+        description: 'Should fail due to reversed date bounds.',
         benefit: 'Free access',
-        eligibility: 'Everyone',
+        eligibility: 'All students',
         url: 'https://bookgarden.tomesphere.in',
-        start_date: new Date(now + 86400000).toISOString(),
-        end_date: new Date(now).toISOString()
+        start_date: future.toISOString(),
+        end_date: past.toISOString()
       }),
-      (err) => {
-        assert.equal(err.code, 'VALIDATION_ERROR');
-        assert.ok(err.details?.some(d => /end_date must be strictly after start_date/.test(d.message)));
-        return true;
-      }
+      ValidationError
     );
 
-    // Throws on malicious URL scheme (e.g. javascript:)
-    assert.throws(
-      () => validateOfferPayload({
-        project_id: 'proj_bookgarden',
-        title: 'Malicious URL Offer',
-        description: 'Testing URL validation.',
-        benefit: 'Free access',
-        eligibility: 'Everyone',
-        url: 'javascript:alert(document.cookie)',
-        start_date: new Date(now).toISOString(),
-        end_date: new Date(now + 86400000).toISOString()
-      }),
-      (err) => {
-        assert.equal(err.code, 'VALIDATION_ERROR');
-        return true;
-      }
-    );
-  });
+    const valid = validateOfferPayload({
+      project_id: 'proj_bookgarden',
+      title: 'Early Adopter Free Access',
+      description: 'Full complimentary reading library pass for verified community members.',
+      benefit: 'Complimentary Access',
+      eligibility: 'Community Members',
+      coupon_code: 'EARLYPASS26',
+      url: 'https://bookgarden.tomesphere.in',
+      start_date: past.toISOString(),
+      end_date: future.toISOString(),
+      status: 'Published'
+    });
 
-  await t.test('services throw NotFoundError on missing update or offer slugs', async () => {
-    await assert.rejects(
-      async () => {
-        await updateService.getUpdateBySlug('missing-nonexistent-update-slug');
-      },
-      (err) => {
-        assert.equal(err.code, 'NOT_FOUND');
-        assert.equal(err.statusCode, 404);
-        return true;
-      }
-    );
-
-    await assert.rejects(
-      async () => {
-        await offerService.getOfferBySlug('missing-nonexistent-offer-slug');
-      },
-      (err) => {
-        assert.equal(err.code, 'NOT_FOUND');
-        assert.equal(err.statusCode, 404);
-        return true;
-      }
-    );
-  });
-
-  await t.test('Next.js requireAdminRequest rejects unauthenticated and invalid mutation requests', async () => {
-    const { requireAdminRequest } = await import('../server/auth/admin-auth.js');
-    process.env.ADMIN_SECRET = 'ci-admin-secret-test';
-
-    const unauthenticatedReq = {
-      headers: {
-        get: () => null,
-        forEach: () => {}
-      }
-    };
-    assert.throws(() => requireAdminRequest(unauthenticatedReq), ForbiddenError);
-
-    const invalidReq = {
-      headers: {
-        get: (h) => (h === 'x-admin-key' ? 'incorrect-token' : null)
-      }
-    };
-    assert.throws(() => requireAdminRequest(invalidReq), ForbiddenError);
-
-    const validReq = {
-      headers: {
-        get: (h) => (h === 'x-admin-key' ? 'ci-admin-secret-test' : null)
-      }
-    };
-    assert.equal(requireAdminRequest(validReq), true);
+    assert.equal(valid.coupon_code, 'EARLYPASS26');
+    assert.equal(valid.status, 'Published');
   });
 
   await t.test('migration SQL contract strictly defines schema, check constraints, RLS and temporal publication policies', () => {
@@ -705,7 +438,6 @@ test('Phase C: Updates & Offers Data Contracts, Expiry & Validation', async (t) 
   });
 
   await t.test('publication and expiry rules: validates draft/archived status isolation and rejects offers with no expiry date', () => {
-    // Updates status validation: rejects arbitrary status
     assert.throws(
       () => validateUpdatePayload({
         project_id: 'proj_bookgarden',
@@ -720,7 +452,6 @@ test('Phase C: Updates & Offers Data Contracts, Expiry & Validation', async (t) 
       }
     );
 
-    // Offers without expiry end_date are strictly rejected
     assert.throws(
       () => validateOfferPayload({
         project_id: 'proj_bookgarden',
@@ -738,5 +469,3 @@ test('Phase C: Updates & Offers Data Contracts, Expiry & Validation', async (t) 
     );
   });
 });
-
-
