@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -181,21 +181,8 @@ function AbstractTomeSphereVisual({ mouseX = 50, mouseY = 50 }) {
   );
 }
 
-export default function HomeOverviewClient({
-  profile,
-  projects = []
-}) {
-  const [heroMouse, setHeroMouse] = useState({ x: 50, y: 25 });
-
-  const handleHeroMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setHeroMouse({ x: Math.round(x), y: Math.round(y) });
-  };
-
+export default function HomeOverviewClient({ projects = [] }) {
   const previewProjects = projects.slice(0, 4);
-  const founderName = profile?.name || 'Katam Ganesh Reddy';
 
   const productHref = (project) => `/products/${project.slug || project.id}`;
   const statusLabel = (status) => status || 'In progress';
