@@ -12,7 +12,8 @@ import {
   ShieldCheck,
   ExternalLink,
   Gift,
-  Clock
+  Clock,
+  Smartphone
 } from 'lucide-react';
 import { apiClient } from '../../../lib/api-client.js';
 import { projectService } from '../../../server/services/project.service.js';
@@ -117,6 +118,14 @@ export default async function ProductDetailPage({ params }) {
   const githubHref = project.github_url ? getSafeWebUrl(project.github_url) : null;
   const displayUrl = launchHref ? launchHref.replace(/^https?:\/\//, '').replace(/\/$/, '') : (project.url || '');
 
+  const isMobileApp = project.category?.toUpperCase() === 'MOBILE' || (Array.isArray(project.tags) && project.tags.some(t => /android|ios|mobile/i.test(t)));
+  const isGitHubUrl = launchHref && /github\.com/i.test(launchHref);
+  const primaryActionLabel = isMobileApp && isGitHubUrl 
+    ? 'View Android Repository' 
+    : isGitHubUrl 
+      ? 'View Repository' 
+      : (isMobileApp ? 'Open App' : 'Launch Application');
+
   // Fetch related products, verified updates, and active offers in parallel
   let relatedProducts = [];
   let productUpdates = [];
@@ -179,7 +188,7 @@ export default async function ProductDetailPage({ params }) {
               rel="noopener noreferrer"
               className="btn-primary-glow btn-launch-highlight"
             >
-              Launch Application <ArrowUpRight size={16} />
+              {primaryActionLabel} <ArrowUpRight size={16} />
             </a>
           ) : (
             <span className="btn-disabled-placeholder">Launch URL Not Available</span>
@@ -268,14 +277,14 @@ export default async function ProductDetailPage({ params }) {
                 </div>
               )}
               <div className="spec-item">
-                <dt className="spec-label">Target Domain</dt>
+                <dt className="spec-label">{isMobileApp ? 'Platform / Repository' : 'Target Domain'}</dt>
                 <dd className="spec-value">
                   {launchHref ? (
                     <a href={launchHref} target="_blank" rel="noopener noreferrer" className="spec-link">
-                      <Globe size={13} /> {displayUrl}
+                      {isMobileApp ? <Smartphone size={13} /> : <Globe size={13} />} {displayUrl}
                     </a>
                   ) : (
-                    <span>{displayUrl || 'Independent runtime'}</span>
+                    <span>{displayUrl || (isMobileApp ? 'Native Android' : 'Independent runtime')}</span>
                   )}
                 </dd>
               </div>
@@ -288,16 +297,22 @@ export default async function ProductDetailPage({ params }) {
           <div className="detail-launch-card">
             <div className="launch-card-header">
               <div className="launch-icon-container">
-                <Globe size={22} />
+                {isMobileApp ? <Smartphone size={22} /> : <Globe size={22} />}
               </div>
               <div>
-                <h3 className="launch-card-title">Live Application</h3>
-                <span className="launch-card-sub">Independent Platform</span>
+                <h3 className="launch-card-title">
+                  {project.status === 'Live' ? (isMobileApp ? 'Android App' : 'Live Application') : 'In Development'}
+                </h3>
+                <span className="launch-card-sub">
+                  {isMobileApp ? 'Native Android' : 'Independent Platform'}
+                </span>
               </div>
             </div>
 
             <p className="launch-card-explanation">
-              This application is independently deployed and maintained within the TomeSphere product ecosystem. Launching will direct you to its production domain.
+              {isMobileApp
+                ? 'This is a native Android mobile application built with Kotlin, CameraX, and Jetpack Compose. Continuous recognition and math evaluation run on-device.'
+                : 'This application is independently deployed and maintained within the TomeSphere product ecosystem. Launching will direct you to its production domain.'}
             </p>
 
             {launchHref && (
@@ -307,11 +322,11 @@ export default async function ProductDetailPage({ params }) {
                 rel="noopener noreferrer"
                 className="btn-primary-glow launch-block-btn"
               >
-                Launch {project.name} <ArrowUpRight size={15} />
+                {primaryActionLabel} <ArrowUpRight size={15} />
               </a>
             )}
 
-            {githubHref && (
+            {githubHref && githubHref !== launchHref && (
               <a
                 href={githubHref}
                 target="_blank"

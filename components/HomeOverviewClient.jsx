@@ -7,7 +7,8 @@ import {
   ArrowUpRight,
   Globe,
   Compass,
-  Layers
+  Layers,
+  Smartphone
 } from 'lucide-react';
 
 function AbstractTomeSphereVisual({ mouseX = 50, mouseY = 50 }) {
@@ -273,7 +274,10 @@ export default function HomeOverviewClient({
         <div className="projects-masonry">
           {previewProjects.map(project => {
             const detailHref = `/products/${project.slug || project.id}`;
-            const launchHref = project.url?.startsWith('http') ? project.url : `https://${project.url}`;
+            const launchHref = project.url ? (project.url.startsWith('http') ? project.url : `https://${project.url}`) : null;
+            const isMobileApp = project.category?.toUpperCase() === 'MOBILE' || (Array.isArray(project.tags) && project.tags.some(t => /android|ios|mobile/i.test(t)));
+            const isGitHubUrl = launchHref && /github\.com/i.test(launchHref);
+            const launchLabel = isMobileApp && isGitHubUrl ? 'Repo' : (isGitHubUrl ? 'Repo' : 'Launch');
 
             return (
               <article key={project.id} className="project-card-modern">
@@ -295,8 +299,8 @@ export default function HomeOverviewClient({
                     </Link>
                   </h3>
                   <div className="card-url-row">
-                    <Globe size={12} />
-                    <span>{project.url}</span>
+                    {isMobileApp ? <Smartphone size={12} /> : <Globe size={12} />}
+                    <span>{project.url || (isMobileApp ? 'Native Android' : 'Independent runtime')}</span>
                   </div>
                   <p className="card-description">{project.description}</p>
 
@@ -314,14 +318,16 @@ export default function HomeOverviewClient({
                     <Link href={detailHref} className="btn-detail-link">
                       View Details <ArrowRight size={13} />
                     </Link>
-                    <a
-                      href={launchHref}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="btn-launch-link"
-                    >
-                      Launch <ArrowUpRight size={13} />
-                    </a>
+                    {launchHref && (
+                      <a
+                        href={launchHref}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn-launch-link"
+                      >
+                        {launchLabel} <ArrowUpRight size={13} />
+                      </a>
+                    )}
                   </div>
                 </div>
               </article>

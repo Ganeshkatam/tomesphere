@@ -137,16 +137,16 @@ VALUES
   'calclens',
   'CalcLens',
   'MOBILE',
-  'Mobile Visual Math & Equation Solver',
-  'Mobile visual calculation and OCR camera assistant designed for instantaneous mathematical recognition and equation resolution.',
-  'github.com/Ganeshkatam/CalcLens',
-  NULL,
+  'Camera-First Real-Time Visual Math Solver for Android',
+  'Native Android camera-first mathematical interface that continuously recognizes arithmetic expressions in a live video feed and projects computed answers directly over physical equations in real time using CameraX, Google ML Kit, and Jetpack Compose.',
+  'https://github.com/Ganeshkatam/CalcLens',
+  'https://github.com/Ganeshkatam/CalcLens',
   NULL,
   'lavender',
   false,
   'In progress',
   '2025',
-  '["Kotlin", "Android", "Computer Vision", "Mobile App"]'::jsonb,
+  '["Android", "Kotlin", "Jetpack Compose", "CameraX", "ML Kit", "Computer Vision"]'::jsonb,
   7
 )
 ON CONFLICT (id) DO UPDATE SET

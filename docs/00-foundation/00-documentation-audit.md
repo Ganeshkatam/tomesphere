@@ -77,9 +77,11 @@ The repository currently defines 7 canonical ecosystem products:
    - Launch Target: `https://github.com/Ganeshkatam/gk-dev-cli`
    - Tags: JavaScript, Node.js, CLI Tooling, Automation
 7. **CalcLens** (`slug: calclens`, `category: MOBILE`, `status: In progress`, `featured: false`)
-   - Tagline: *Mobile Visual Math & Equation Solver*
-   - Launch Target: `https://github.com/Ganeshkatam/CalcLens`
-   - Tags: Kotlin, Android, Computer Vision, Mobile App
+   - Platform: Native Android (Kotlin, Jetpack Compose, CameraX, Google ML Kit)
+   - Tagline: *Camera-First Real-Time Visual Math Solver for Android*
+   - Launch Target: `https://github.com/Ganeshkatam/CalcLens` (Repository & Architecture Specs)
+   - Note: Native Android mobile application; does not use a web subdomain.
+   - Tags: Android, Kotlin, Jetpack Compose, CameraX, ML Kit, Computer Vision
 
 ---
 
