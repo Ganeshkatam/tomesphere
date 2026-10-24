@@ -67,9 +67,9 @@ CREATE TRIGGER trigger_offers_updated_at
 ALTER TABLE public.updates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.offers ENABLE ROW LEVEL SECURITY;
 
--- Revoke mutation privileges from anon/authenticated
-REVOKE INSERT, UPDATE, DELETE ON public.updates FROM anon, authenticated;
-REVOKE INSERT, UPDATE, DELETE ON public.offers FROM anon, authenticated;
+-- Revoke mutation and dangerous administrative privileges from anon/authenticated
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE, TRIGGER, REFERENCES ON public.updates FROM anon, authenticated;
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE, TRIGGER, REFERENCES ON public.offers FROM anon, authenticated;
 
 -- Grant SELECT privileges to anon/authenticated
 GRANT SELECT ON public.updates TO anon, authenticated;

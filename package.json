@@ -9,7 +9,9 @@
     "start": "node server/server.js",
     "start:frontend": "next start",
     "server": "node server/server.js",
-    "test": "node --test tests/security.test.js"
+    "test": "node --test tests/security.test.js",
+    "test:integration": "node --env-file-if-exists=.env.local --test tests/integration.test.js",
+    "test:all": "node --env-file-if-exists=.env.local --test tests/security.test.js tests/integration.test.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
