@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Sun, Moon, Menu, X, Layers } from 'lucide-react';
 
@@ -56,13 +57,19 @@ export default function Navbar() {
       <header className="site-header">
         <div className="brand-wrapper">
           <Link href="/" className="brand-monogram" aria-label="TomeSphere Homepage">
-            TS
+            <Image
+              src="/assets/tomesphere-logo-mark.png"
+              alt="TomeSphere Logo"
+              width={24}
+              height={24}
+              className="brand-monogram-img"
+              priority
+            />
           </Link>
           <div>
             <Link href="/" className="brand-name">
               TomeSphere
             </Link>
-            <div className="brand-tag">Independent digital studio · tomesphere.in</div>
           </div>
         </div>
 

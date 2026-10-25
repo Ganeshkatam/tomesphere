@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Linkedin, Github, Mail } from 'lucide-react';
 
 export default function Footer({ profile }) {
@@ -14,7 +15,13 @@ export default function Footer({ profile }) {
         <div className="footer-brand-column">
           <div className="footer-brand-header">
             <Link href="/" className="brand-monogram" aria-label="TomeSphere">
-              TS
+              <Image
+                src="/assets/tomesphere-logo-mark.png"
+                alt="TomeSphere Logo"
+                width={24}
+                height={24}
+                className="brand-monogram-img"
+              />
             </Link>
             <div>
               <div className="footer-brand-title">TomeSphere</div>
@@ -25,8 +32,8 @@ export default function Footer({ profile }) {
             Purposeful software, creator tools, and dependable web platforms built with clean architecture and distraction-free craft.
           </p>
           <div className="footer-status-pill">
-            <span className="status-indicator-dot" />
-            <span>All systems operational &middot; tomesphere.in</span>
+            {/* <span className="status-indicator-dot" /> */}
+            {/* <span>All systems operational &middot; tomesphere.in</span> */}
           </div>
         </div>
 

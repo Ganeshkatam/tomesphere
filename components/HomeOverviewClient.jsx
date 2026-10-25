@@ -112,7 +112,7 @@ export default function HomeOverviewClient({ projects = [], profile, updates = [
           <div className="home-discovery-icon icon-code"><Globe /></div>
           <div className="home-discovery-icon icon-palette"><Compass /></div>
           <div className="home-discovery-icon icon-leaf"><Smartphone /></div>
-          <div className="home-discovery-note"><strong>Thoughtfully built.</strong> Independently maintained.</div>
+          {/* <div className="home-discovery-note"><strong>Thoughtfully built.</strong> Independently maintained.</div> */}
         </div>
       </section>
 
@@ -355,7 +355,7 @@ export default function HomeOverviewClient({ projects = [], profile, updates = [
               <Link href="/guestbook" className="btn-primary-glow">
                 Sign Community Wall <ArrowRight size={15} />
               </Link>
-              <Link href="/contact" className="btn-secondary-glass" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.2)' }}>
+              <Link href="/contact" className="btn-secondary-glass" style={{ color: '#ffffff', borderColor: 'rgba(255, 255, 255, 0.2)' }}>
                 Contact Studio
               </Link>
             </div>
