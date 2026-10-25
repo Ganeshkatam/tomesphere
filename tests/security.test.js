@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { validateProjectPayload } from '../server/validators/project.validator.js';
 import { validateContactPayload } from '../server/validators/contact.validator.js';
 import { validateGuestbookPayload } from '../server/validators/guestbook.validator.js';
+import { validateFeedbackPayload } from '../server/validators/feedback.validator.js';
 import { validateProfileUpdatePayload } from '../server/validators/profile.validator.js';
 import { validateUpdatePayload } from '../server/validators/update.validator.js';
 import { validateOfferPayload } from '../server/validators/offer.validator.js';
@@ -143,6 +144,50 @@ test('Security & Validation: Contact & Guestbook Validators', async (t) => {
         return true;
       }
     );
+  });
+
+  await t.test('guestbook validator normalizes category tags correctly', () => {
+    const feedbackEntry = validateGuestbookPayload({ author: 'Dev', message: 'Insightful thoughts', category: 'feedback' });
+    assert.equal(feedbackEntry.category, 'FEEDBACK');
+
+    const defaultEntry = validateGuestbookPayload({ author: 'Dev', message: 'Hello world', category: 'unknown_cat' });
+    assert.equal(defaultEntry.category, 'GENERAL');
+  });
+
+  await t.test('feedback validator validates message length, rating bounds and categories', () => {
+    assert.throws(() => validateFeedbackPayload(null), ValidationError);
+    assert.throws(() => validateFeedbackPayload({ message: 'Hi' }), ValidationError); // under 5 chars
+
+    // Invalid rating (> 5)
+    assert.throws(
+      () => validateFeedbackPayload({ message: 'Solid work here.', rating: 6 }),
+      ValidationError
+    );
+
+    // Honeypot detection
+    assert.throws(
+      () => validateFeedbackPayload({ message: 'Great portfolio.', website: 'http://spam.org' }),
+      (err) => {
+        assert.equal(err.code, 'VALIDATION_ERROR');
+        assert.match(err.message, /Automated bot submission detected/);
+        return true;
+      }
+    );
+
+    // Valid feedback
+    const valid = validateFeedbackPayload({
+      category: 'suggestion',
+      rating: 5,
+      message: 'Could you add dark mode toggle shortcut?',
+      name: 'PowerUser',
+      email: 'user@example.com'
+    });
+
+    assert.equal(valid.category, 'SUGGESTION');
+    assert.equal(valid.rating, 5);
+    assert.equal(valid.message, 'Could you add dark mode toggle shortcut?');
+    assert.equal(valid.name, 'PowerUser');
+    assert.equal(valid.email, 'user@example.com');
   });
 });
 

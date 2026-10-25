@@ -17,19 +17,33 @@ export class GuestbookRepository {
       throw new ApiError('Unable to retrieve guestbook entries at this time.', 500, 'DATABASE_ERROR');
     }
 
-    return (data || []).map(entry => ({
-      id: entry.id,
-      author: entry.author,
-      message: entry.message,
-      timestamp: entry.timestamp
-    }));
+    return (data || []).map(entry => {
+      let category = 'GENERAL';
+      let cleanMessage = entry.message || '';
+      const match = cleanMessage.match(/^\[(FEEDBACK|IDEA|GREETING|GENERAL)\]\s*(.*)$/i);
+      if (match) {
+        category = match[1].toUpperCase();
+        cleanMessage = match[2];
+      }
+      return {
+        id: entry.id,
+        author: entry.author,
+        message: cleanMessage,
+        rawMessage: entry.message,
+        category,
+        timestamp: entry.timestamp
+      };
+    });
   }
 
-  async create({ author, message }) {
+  async create({ author, message, category = 'GENERAL' }) {
+    const categoryTag = category && category !== 'GENERAL' ? `[${category}] ` : '';
+    const storedMessage = `${categoryTag}${message.trim()}`;
+
     const entry = {
       id: `gb_${randomUUID().replace(/-/g, '').slice(0, 16)}`,
       author: author.trim(),
-      message: message.trim(),
+      message: storedMessage,
       timestamp: new Date().toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -57,7 +71,8 @@ export class GuestbookRepository {
     return {
       id: data.id,
       author: data.author,
-      message: data.message,
+      message: message.trim(),
+      category: category || 'GENERAL',
       timestamp: data.timestamp
     };
   }

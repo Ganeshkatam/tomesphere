@@ -3,6 +3,7 @@ import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import FeedbackWidget from '../components/FeedbackWidget';
 import { apiClient } from '../lib/api-client';
 
 const outfit = Outfit({
@@ -83,6 +84,7 @@ export default async function RootLayout({ children }) {
           {children}
           <Footer profile={profile} />
         </div>
+        <FeedbackWidget />
         <Analytics />
       </body>
     </html>

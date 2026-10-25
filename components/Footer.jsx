@@ -40,25 +40,25 @@ export default function Footer({ profile }) {
         <div className="footer-nav-columns">
           <div className="footer-column">
             <div className="footer-column-heading">Ecosystem</div>
-            <Link href="/products" className="footer-nav-link">Software Directory</Link>
-            <Link href="/updates" className="footer-nav-link">Product Changelog</Link>
-            <Link href="/offers" className="footer-nav-link">Access &amp; Offers</Link>
+            <Link href="/products" className="footer-nav-link">Products</Link>
+            <Link href="/updates" className="footer-nav-link">Product Updates</Link>
+            <Link href="/offers" className="footer-nav-link">Offers</Link>
           </div>
 
           <div className="footer-column">
             <div className="footer-column-heading">Studio</div>
-            <Link href="/about" className="footer-nav-link">Design Philosophy</Link>
-            <Link href="/guestbook" className="footer-nav-link">Community Wall</Link>
-            <Link href="/contact" className="footer-nav-link">Direct Inquiries</Link>
+            <Link href="/about" className="footer-nav-link">About</Link>
+            <Link href="/guestbook" className="footer-nav-link">Guestbook</Link>
+            <Link href="/contact" className="footer-nav-link">Contact</Link>
           </div>
 
           <div className="footer-column">
             <div className="footer-column-heading">Connect</div>
-            {github && (
+            {/* {github && (
               <a href={`https://${github}`} target="_blank" rel="noreferrer" className="footer-nav-link">
                 <Github size={14} /> GitHub
               </a>
-            )}
+            )} */}
             {linkedin && (
               <a href={`https://${linkedin}`} target="_blank" rel="noreferrer" className="footer-nav-link">
                 <Linkedin size={14} /> LinkedIn
@@ -66,7 +66,7 @@ export default function Footer({ profile }) {
             )}
             {email && (
               <a href={`mailto:${email}`} className="footer-nav-link">
-                <Mail size={14} /> Email Studio
+                <Mail size={14} /> Email Us
               </a>
             )}
           </div>

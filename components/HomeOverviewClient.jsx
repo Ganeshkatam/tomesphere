@@ -346,7 +346,7 @@ export default function HomeOverviewClient({ projects = [], profile, updates = [
       <section className="home-discovery-section">
         <div className="home-community-banner">
           <div className="home-community-content">
-            <div className="home-discovery-eyebrow" style={{ color: '#c4b5fd' }}>Community &amp; Inquiries</div>
+            <div className="home-discovery-eyebrow">Community &amp; Inquiries</div>
             <h2 className="home-community-title">Building purposeful digital software.</h2>
             <p className="home-community-desc">
               Have thoughts, collaboration ideas, or feedback on any TomeSphere platform? Leave a note on our community guestbook or reach out directly.
@@ -355,7 +355,7 @@ export default function HomeOverviewClient({ projects = [], profile, updates = [
               <Link href="/guestbook" className="btn-primary-glow">
                 Sign Community Wall <ArrowRight size={15} />
               </Link>
-              <Link href="/contact" className="btn-secondary-glass" style={{ color: '#ffffff', borderColor: 'rgba(255, 255, 255, 0.2)' }}>
+              <Link href="/contact" className="btn-secondary-glass">
                 Contact Studio
               </Link>
             </div>
